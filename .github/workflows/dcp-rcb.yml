@@ -55,7 +55,7 @@ jobs:
           -DBUILD_EXAMPLES=OFF
           -DBUILD_BENCHMARKS=OFF
           -DBUILD_EXTRAS=OFF
-          -DWITH_OPENMP=OFF
+          -DWITH_OPENMP=ON
 
       - name: Build and install OpenFHE
         if: steps.cache-openfhe.outputs.cache-hit != 'true'
