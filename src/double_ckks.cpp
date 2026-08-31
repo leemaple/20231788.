@@ -322,7 +322,7 @@ void DoubleCKKS::ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const {
         Invalid("DCP input must have the exact fresh degree-two FIXEDMANUAL scaling factor");
     }
     ValidateCiphertext(ciphertext, fullModuli_, 0, 2, expectedInputScalingFactor_, ciphertext->GetKeyTag(),
-                       ciphertext->GetSlots(), 2, "ciphertext", "DCP input");
+                       ciphertext->GetSlots(), 2, "pair", "DCP input");
 }
 
 CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
