@@ -1,0 +1,35 @@
+DCP/RCB Windows/MinGW64 strict-consumer red evidence
+
+Observed: 2026-08-31 21:48 CST (Asia/Shanghai)
+Project commit: 91fd77bd263799ce5b1cd2c4e8f203b92e8c8a78
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions windows-2022 / MSYS2 MINGW64
+Run: https://github.com/leemaple/20231788./actions/runs/33398384157
+Conclusion: project-consumer compile red; production source and tests did not compile
+
+Exact dependency/project commands:
+
+  cmake -S "$OPENFHE_SOURCE" -B "$OPENFHE_BUILD" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="$OPENFHE_PREFIX" \
+    -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF \
+    -DBUILD_BENCHMARKS=OFF -DBUILD_EXTRAS=OFF -DWITH_OPENMP=ON
+  cmake --build "$OPENFHE_BUILD" --parallel 2
+  cmake --install "$OPENFHE_BUILD"
+  cmake -S . -B "$PROJECT_BUILD" \
+    -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="$OPENFHE_PREFIX"
+  cmake --build "$PROJECT_BUILD" --parallel 2
+
+The exact pristine OpenFHE dependency configured, built, and installed
+successfully. Both project-owned translation units then failed while consuming
+the installed public OpenFHE headers under strict `-std=c++17`:
+
+  discretegaussiangenerator.h:202:20: error: 'M_E' was not declared in this scope
+  discretegaussiangenerator.h:206:20: error: 'M_E' was not declared in this scope
+
+MinGW hides these non-standard math constants in strict language mode unless the
+consumer opts into math definitions. The intended minimal fix is a MinGW-only
+public `_USE_MATH_DEFINES` compile definition on the project library, which also
+propagates to consumers of its public OpenFHE-bearing header. The fix will not
+modify OpenFHE, enable GNU language extensions, weaken warnings, or change tests.
+Linux in the same run remained warning-clean and passed 1/1 CTest.
