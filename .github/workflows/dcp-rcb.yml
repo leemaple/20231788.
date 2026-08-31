@@ -1,0 +1,76 @@
+name: DCP RCB TDD
+
+on:
+  push:
+    branches:
+      - codex/dcp-rcb-01
+      - cleanroom/reimplement-mult2-20260831
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+  OPENFHE_PREFIX: ${{ github.workspace }}/.ci/openfhe-install
+
+jobs:
+  linux-gcc:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out clean-room source
+        uses: actions/checkout@v4
+
+      - name: Check out pristine OpenFHE 1.5.0
+        uses: actions/checkout@v4
+        with:
+          repository: openfheorg/openfhe-development
+          ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+          path: .ci/openfhe-src
+          submodules: recursive
+
+      - name: Verify OpenFHE provenance
+        shell: bash
+        run: |
+          actual="$(git -C .ci/openfhe-src rev-parse HEAD)"
+          test "$actual" = "$OPENFHE_COMMIT"
+          git -C .ci/openfhe-src status --short
+
+      - name: Cache pristine OpenFHE install
+        id: cache-openfhe
+        uses: actions/cache@v4
+        with:
+          path: .ci/openfhe-install
+          key: openfhe-1.5.0-${{ runner.os }}-gcc-${{ env.OPENFHE_COMMIT }}
+
+      - name: Configure OpenFHE
+        if: steps.cache-openfhe.outputs.cache-hit != 'true'
+        run: >-
+          cmake -S .ci/openfhe-src -B .ci/openfhe-build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_INSTALL_PREFIX=${OPENFHE_PREFIX}
+          -DBUILD_UNITTESTS=OFF
+          -DBUILD_EXAMPLES=OFF
+          -DBUILD_BENCHMARKS=OFF
+          -DBUILD_EXTRAS=OFF
+          -DWITH_OPENMP=OFF
+
+      - name: Build and install OpenFHE
+        if: steps.cache-openfhe.outputs.cache-hit != 'true'
+        run: |
+          cmake --build .ci/openfhe-build --parallel 2
+          cmake --install .ci/openfhe-build
+
+      - name: Configure clean-room project
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+
+      - name: Build warning-clean project
+        run: cmake --build build --parallel 2
+
+      - name: Run DCP and RCB tests
+        run: ctest --test-dir build --output-on-failure
