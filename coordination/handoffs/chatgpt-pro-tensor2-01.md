@@ -67,7 +67,7 @@ implementation is present.
 
 - Ego Lite task space: numeric ID 77, `chatgpt-pro-tensor2-01`, agent-owned.
 - New independent conversation:
-  `https://chatgpt.com/c/WEB:56560151-96a0-423d-8825-31f19f1272cb`.
+  `https://chatgpt.com/c/6a95b63d-a2f0-83ec-ac5b-a64ee02ef08c`.
 
 At approximately 2026-09-01 01:13 CST, Codex opened a blank new ChatGPT Pro
 conversation in the new task space. The page showed the signed-in Pro account
@@ -93,6 +93,69 @@ The request was submitted exactly once. Post-send readback confirmed:
 - an empty composer;
 - `Thinking` and `Stop answering`, with no send control.
 
-Do not refresh, stop, prod, edit, resend, retry, or open a duplicate task while
-ChatGPT Pro is working. The task space remains open solely to collect the
-natural result. No Tensor2 patch, verdict, build, or test result is claimed yet.
+While ChatGPT Pro was working, the response was not refreshed, stopped,
+prodded, edited, resent, retried, or duplicated. The task space remained open
+solely to collect the natural result. No Tensor2 patch, build, or test result
+was claimed at submission time.
+
+## First input-gate result
+
+ChatGPT Pro completed naturally after 1m50s and returned `blocked` before any
+algorithm review, patch, build, or test. Codex first observed the completed
+response at approximately 2026-09-01 01:32 CST; the response was never stopped,
+refreshed, prodded, edited, or duplicated.
+
+The measurable archive identities all passed, including exact size/hash,
+2,219 central-directory entries, `unzip -t`, 1,961 manifest entries, and the
+task/source/OpenFHE/paper/prior-review identities. The sole blocker was evidence
+placement: internal `HANDOFF_CONTENTS.md` did not itself state the entry count,
+two Gitleaks results, integrity, targeted exclusions, or extracted-tree
+equality, and delegated final archive size/hash to the dispatch message without
+naming a separate external binding record.
+
+The returned evidence ZIP was downloaded exactly once:
+
+- file: `tensor2-pro-01-blocked-input-gate.zip`;
+- size: 2,930 bytes;
+- SHA-256:
+  `6a0bc77fc1ed7838fc933140bdcdfd764973efe8ae5b8dfa28bd61a67875febb`;
+- members: `BLOCKED_INPUT_GATE.md` and `VERIFICATION_COMMANDS.txt`;
+- archive integrity: passed;
+- Gitleaks 8.30.1: approximately 5.30 KB scanned, no leaks;
+- both files were read completely;
+- no Tensor2 source or test patch exists to reuse.
+
+The ignored verified copy is under
+`artifacts/handoffs/chatgpt-pro-tensor2-01/output/`.
+
+## Corrected r2 input package
+
+The correction preserves the exact task, paper, OpenFHE, CI, prior-review, and
+source bytes. Recursive comparison with the first package shows only
+`HANDOFF_CONTENTS.md` and its derived `MANIFEST.sha256` differ.
+
+- ZIP:
+  `artifacts/handoffs/chatgpt-pro-tensor2-01/20231788-cleanroom-tensor2-base-87c84b-ci334114-r2.zip`;
+- final size: 8,691,359 bytes;
+- final SHA-256:
+  `eea8aca629e98bfc4fc719c2c7ddbf38610f654630bf92d499d5aa75826753be`;
+- central-directory entries: 2,219;
+- internal handoff SHA-256:
+  `af07d16bb5815a2276a33e9c0554a40da9a1216dbbca723ca750698d4d989508`;
+- external binding file:
+  `20231788-cleanroom-tensor2-base-87c84b-ci334114-r2.binding.md`;
+- external binding SHA-256:
+  `b62aaa15784fe5a71eece4ffadd21814bace6fe9f3c6c36e4356335368083e79`;
+- staged Gitleaks 8.30.1: approximately 24.53 MB, no leaks;
+- freshly extracted Gitleaks 8.30.1: approximately 24.53 MB, no leaks;
+- binding-file Gitleaks 8.30.1: approximately 3.05 KB, no leaks;
+- `unzip -t`: passed;
+- all 1,961 manifest entries: passed;
+- targeted filename/directory exclusions: passed;
+- final staged/extracted recursive byte equality: passed.
+
+The binding file is supplied beside the ZIP because an archive cannot contain
+its own final hash. The internal handoff explicitly names that mechanism and
+records every non-self-referential result. Resumption must occur once in this
+same conversation, from the input gate, with both attachments and no reuse of
+the blocked attempt.
