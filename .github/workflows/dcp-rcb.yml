@@ -38,6 +38,11 @@ jobs:
           test "$actual" = "$OPENFHE_COMMIT"
           git -C .ci/openfhe-src status --short
 
+      - name: Install independent-oracle test dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libboost-dev
+
       - name: Cache pristine OpenFHE install
         id: cache-openfhe
         uses: actions/cache@v4
