@@ -248,6 +248,8 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
                                     double recordedScalingFactor,
                                     const std::string& keyTag,
                                     std::uint32_t slots,
+                                    std::size_t componentCount,
+                                    const char* stateLabel,
                                     const char* label) const {
     if (!ciphertext) {
         Invalid(std::string(label) + " is null");
@@ -259,23 +261,25 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
         Invalid(std::string(label) + " must use CKKS packed encoding metadata");
     }
     if (ciphertext->GetLevel() != level) {
-        Invalid(std::string(label) + " level does not match its pair state");
+        Invalid(std::string(label) + " level does not match its " + stateLabel + " state");
     }
-    if (ciphertext->NumberCiphertextElements() != 2) {
-        Invalid(std::string(label) + " must contain exactly two RLWE components");
+    if (ciphertext->NumberCiphertextElements() != componentCount) {
+        const std::string componentCountText =
+            componentCount == 2 ? "two" : (componentCount == 3 ? "three" : std::to_string(componentCount));
+        Invalid(std::string(label) + " must contain exactly " + componentCountText + " RLWE components");
     }
     if (ciphertext->GetNoiseScaleDeg() != noiseScaleDegree) {
-        Invalid(std::string(label) + " noise-scale degree does not match its pair state");
+        Invalid(std::string(label) + " noise-scale degree does not match its " + stateLabel + " state");
     }
     if (!std::isfinite(ciphertext->GetScalingFactor()) || ciphertext->GetScalingFactor() <= 0.0 ||
         ciphertext->GetScalingFactor() != recordedScalingFactor) {
-        Invalid(std::string(label) + " recorded scaling factor does not match its pair state");
+        Invalid(std::string(label) + " recorded scaling factor does not match its " + stateLabel + " state");
     }
     if (ciphertext->GetKeyTag().empty() || ciphertext->GetKeyTag() != keyTag) {
-        Invalid(std::string(label) + " key tag does not match its pair state");
+        Invalid(std::string(label) + " key tag does not match its " + stateLabel + " state");
     }
     if (ciphertext->GetSlots() != slots) {
-        Invalid(std::string(label) + " slots do not match its pair state");
+        Invalid(std::string(label) + " slots do not match its " + stateLabel + " state");
     }
 
     const auto& expectedTowerParameters = parameters_->GetElementParams()->GetParams();
@@ -318,7 +322,7 @@ void DoubleCKKS::ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const {
         Invalid("DCP input must have the exact fresh degree-two FIXEDMANUAL scaling factor");
     }
     ValidateCiphertext(ciphertext, fullModuli_, 0, 2, expectedInputScalingFactor_, ciphertext->GetKeyTag(),
-                       ciphertext->GetSlots(), "DCP input");
+                       ciphertext->GetSlots(), 2, "ciphertext", "DCP input");
 }
 
 CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
@@ -413,9 +417,9 @@ void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
     }
 
     ValidateCiphertext(pair.high_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
-                       pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "pair high");
+                       pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, 2, "pair", "pair high");
     ValidateCiphertext(pair.low_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
-                       pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "pair low");
+                       pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, 2, "pair", "pair low");
 }
 
 void DoubleCKKS::ValidateTensorCompatibility(const CiphertextPair& left, const CiphertextPair& right) const {
@@ -451,65 +455,6 @@ void DoubleCKKS::ValidateTensorCompatibility(const CiphertextPair& left, const C
     }
     if (left.componentCount_ != right.componentCount_) {
         Invalid("Tensor2 input component counts do not match");
-    }
-}
-
-void DoubleCKKS::ValidateTensorCiphertext(const ReadOnlyCiphertext& ciphertext,
-                                          const std::vector<lbcrypto::NativeInteger>& orderedModuli,
-                                          std::size_t level,
-                                          std::size_t noiseScaleDegree,
-                                          double recordedScalingFactor,
-                                          const std::string& keyTag,
-                                          std::uint32_t slots,
-                                          const char* label) const {
-    if (!ciphertext) {
-        Invalid(std::string(label) + " is null");
-    }
-    if (ciphertext->GetCryptoContext().get() != context_.get()) {
-        Invalid(std::string(label) + " belongs to a different context");
-    }
-    if (ciphertext->GetEncodingType() != lbcrypto::CKKS_PACKED_ENCODING) {
-        Invalid(std::string(label) + " must use CKKS packed encoding metadata");
-    }
-    if (ciphertext->GetLevel() != level) {
-        Invalid(std::string(label) + " level does not match its Tensor2 state");
-    }
-    if (ciphertext->NumberCiphertextElements() != 3) {
-        Invalid(std::string(label) + " must contain exactly three RLWE components");
-    }
-    if (ciphertext->GetNoiseScaleDeg() != noiseScaleDegree) {
-        Invalid(std::string(label) + " noise-scale degree does not match its Tensor2 state");
-    }
-    if (!std::isfinite(ciphertext->GetScalingFactor()) || ciphertext->GetScalingFactor() <= 0.0 ||
-        ciphertext->GetScalingFactor() != recordedScalingFactor) {
-        Invalid(std::string(label) + " recorded scaling factor does not match its Tensor2 state");
-    }
-    if (ciphertext->GetKeyTag().empty() || ciphertext->GetKeyTag() != keyTag) {
-        Invalid(std::string(label) + " key tag does not match its Tensor2 state");
-    }
-    if (ciphertext->GetSlots() != slots) {
-        Invalid(std::string(label) + " slots do not match its Tensor2 state");
-    }
-
-    const auto& expectedTowerParameters = parameters_->GetElementParams()->GetParams();
-    if (level > fullModuli_.size() || orderedModuli.size() != fullModuli_.size() - level) {
-        Invalid(std::string(label) + " level and active-basis size disagree");
-    }
-
-    for (const auto& element : ciphertext->GetElements()) {
-        if (element.GetFormat() != Format::EVALUATION) {
-            Invalid(std::string(label) + " must be in evaluation format");
-        }
-        if (!SameOrderedModuli(OrderedModuli(element), orderedModuli)) {
-            Invalid(std::string(label) + " ordered RNS basis mismatch");
-        }
-        const auto& towers = element.GetAllElements();
-        for (std::size_t index = 0; index < towers.size(); ++index) {
-            if (towers[index].GetRootOfUnity() != expectedTowerParameters[index]->GetRootOfUnity() ||
-                towers[index].GetCyclotomicOrder() != expectedTowerParameters[index]->GetCyclotomicOrder()) {
-                Invalid(std::string(label) + " tower parameters do not match the bound context");
-            }
-        }
     }
 }
 
@@ -554,10 +499,10 @@ void DoubleCKKS::ValidateTensorResult(const TensorCiphertextPair& pair) const {
         Invalid("Tensor2 result paper-scale descriptor is inconsistent");
     }
 
-    ValidateTensorCiphertext(pair.high_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
-                             pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "Tensor2 high");
-    ValidateTensorCiphertext(pair.low_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
-                             pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "Tensor2 low");
+    ValidateCiphertext(pair.high_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
+                       pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, 3, "Tensor2", "Tensor2 high");
+    ValidateCiphertext(pair.low_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
+                       pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, 3, "Tensor2", "Tensor2 low");
 }
 
 TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const CiphertextPair& right) const {
