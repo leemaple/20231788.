@@ -430,6 +430,7 @@ void TestDcpAndRcbExactOracle() {
     Check(fixture.input->NumberCiphertextElements() == inputBefore->NumberCiphertextElements(),
           "DCP mutated input component count");
     Check(fixture.input->GetElements() == inputBefore->GetElements(), "DCP mutated input elements");
+    Check(*fixture.input == *inputBefore, "DCP mutated input observable ciphertext state");
 
     const auto highBefore = pair.GetHigh()->Clone();
     const auto lowBefore  = pair.GetLow()->Clone();
@@ -438,6 +439,8 @@ void TestDcpAndRcbExactOracle() {
                             "RCB result");
     Check(pair.GetHigh()->GetElements() == highBefore->GetElements(), "RCB mutated pair high elements");
     Check(pair.GetLow()->GetElements() == lowBefore->GetElements(), "RCB mutated pair low elements");
+    Check(*pair.GetHigh() == *highBefore, "RCB mutated pair high observable ciphertext state");
+    Check(*pair.GetLow() == *lowBefore, "RCB mutated pair low observable ciphertext state");
     CheckCiphertextMetadata(pair.GetHigh(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
                             "DCP high after RCB");
     CheckCiphertextMetadata(pair.GetLow(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
