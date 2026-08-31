@@ -24,6 +24,7 @@ using lbcrypto::CryptoContext;
 using lbcrypto::DCRTPoly;
 using lbcrypto::NativeInteger;
 using openfhe_2023_1788::DoubleCKKS;
+using openfhe_2023_1788::PaperScaleDescriptor;
 using openfhe_2023_1788::PairLifecycle;
 
 class TestFailure final : public std::runtime_error {
@@ -369,8 +370,13 @@ void TestDcpAndRcbExactOracle() {
     Check(pair.GetLevel() == 1, "DCP pair level mismatch");
     Check(pair.GetNoiseScaleDegree() == 2, "DCP pair noise-scale degree mismatch");
     Check(pair.GetRecordedScalingFactor() == recordedScale, "DCP pair recorded scaling factor mismatch");
-    Check(pair.GetPaperScale() == static_cast<long double>(recordedScale) / divisorBig.convert_to<long double>(),
-          "DCP paper scale mismatch");
+    const auto& paperScale = pair.GetPaperScale();
+    Check(paperScale.inputRecordedScalingFactor == recordedScale, "DCP paper input scale mismatch");
+    Check(paperScale.divisor == divisor, "DCP paper divisor mismatch");
+    Check(paperScale.approximateLogicalScalingFactor ==
+              static_cast<long double>(recordedScale) / divisorBig.convert_to<long double>(),
+          "DCP paper logical scale mismatch");
+    Check(divisor.Mod(NativeInteger(2)) == NativeInteger(1), "DCP divisor must be odd");
     Check(pair.GetKeyTag() == keyTag, "DCP pair key tag mismatch");
     Check(pair.GetFormat() == Format::EVALUATION, "DCP pair format mismatch");
     Check(pair.GetComponentCount() == 2, "DCP pair component count mismatch");
@@ -416,6 +422,10 @@ void TestValidationBeforeRawAccess() {
     nonFiniteScale->SetScalingFactor(std::numeric_limits<double>::quiet_NaN());
     CheckThrows([&] { module.DCP(nonFiniteScale); }, "non-finite scaling factor");
 
+    auto wrongFiniteScale = fixture.input->Clone();
+    wrongFiniteScale->SetScalingFactor(fixture.input->GetScalingFactor() * 2.0);
+    CheckThrows([&] { module.DCP(wrongFiniteScale); }, "wrong finite scaling factor");
+
     auto wrongComponents = fixture.input->Clone();
     auto componentVector = wrongComponents->GetElements();
     componentVector.push_back(componentVector.front());
@@ -450,12 +460,82 @@ void TestValidationBeforeRawAccess() {
     CheckThrows([&] { DoubleCKKS invalidModule(automaticContext); }, "non-FIXEDMANUAL context");
 }
 
+void TestRcbRejectsTamperedPairStorage() {
+    auto fixture = MakeFixture();
+    DoubleCKKS module(fixture.context);
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetHigh());
+        high->SetKeyTag("tampered-key-tag");
+        CheckThrows([&] { module.RCB(pair); }, "tampered pair key tag");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetHigh());
+        high->GetElements().push_back(high->GetElements().front());
+        CheckThrows([&] { module.RCB(pair); }, "tampered pair component count");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto low  = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetLow());
+        auto elements = low->GetElements();
+        for (auto& element : elements) {
+            auto towers = element.GetAllElements();
+            std::swap(towers[0], towers[1]);
+            element = DCRTPoly(towers);
+        }
+        low->SetElements(std::move(elements));
+        CheckThrows([&] { module.RCB(pair); }, "tampered pair basis order");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto low  = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetLow());
+        for (auto& element : low->GetElements()) {
+            element.SetFormat(Format::COEFFICIENT);
+        }
+        CheckThrows([&] { module.RCB(pair); }, "tampered pair format");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto low  = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetLow());
+        low->SetScalingFactor(low->GetScalingFactor() * 2.0);
+        CheckThrows([&] { module.RCB(pair); }, "tampered pair scaling factor");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetHigh());
+        high->SetLevel(0);
+        CheckThrows([&] { module.RCB(pair); }, "tampered pair level");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto low  = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetLow());
+        low->SetNoiseScaleDeg(1);
+        CheckThrows([&] { module.RCB(pair); }, "tampered pair noise-scale degree");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto& paperScale = const_cast<PaperScaleDescriptor&>(pair.GetPaperScale());
+        paperScale.approximateLogicalScalingFactor *= 2.0L;
+        CheckThrows([&] { module.RCB(pair); }, "tampered pair paper scale");
+    }
+}
+
 }  // namespace
 
 int main() {
     try {
         TestDcpAndRcbExactOracle();
         TestValidationBeforeRawAccess();
+        TestRcbRejectsTamperedPairStorage();
         lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
         std::cout << "DCP/RCB independent-oracle tests passed\n";
         return 0;
