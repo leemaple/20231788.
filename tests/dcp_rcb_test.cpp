@@ -568,6 +568,12 @@ void TestValidationBeforeRawAccess() {
     CheckThrowsInvalidArgument([&] { module.DCP(reorderedBasis); }, "ordered RNS basis mismatch",
                                "reordered basis");
 
+    auto emptyKeyTag = fixture.input->Clone();
+    emptyKeyTag->SetKeyTag("");
+    CheckThrowsInvalidArgument([&] { module.DCP(emptyKeyTag); },
+                               "DCP input key tag does not match its pair state",
+                               "empty DCP input key tag preserves legacy diagnostic");
+
     auto otherFixture = MakeFixture(36);
     DoubleCKKS otherModule(otherFixture.context);
     CheckThrowsInvalidArgument([&] { module.DCP(otherFixture.input); }, "belongs to a different context",
