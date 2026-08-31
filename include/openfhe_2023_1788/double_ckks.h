@@ -16,8 +16,6 @@ using ReadOnlyCiphertext = std::shared_ptr<const lbcrypto::CiphertextImpl<lbcryp
 
 enum class PairLifecycle : std::uint8_t {
     ReadyForFirstMult,
-    ReadyForRS2,
-    RefreshRequired,
 };
 
 struct PaperScaleDescriptor final {
