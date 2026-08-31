@@ -618,6 +618,31 @@ void TestMutualCompatibility() {
                                "Tensor2 mutual slot compatibility");
 }
 
+void TestPreArithmeticKeyCompatibility() {
+    auto fixture = MakeTensorFixture();
+    DoubleCKKS module(fixture.context);
+
+    auto secondKeys = fixture.context->KeyGen();
+    auto secondPlaintext = fixture.context->MakeCKKSPackedPlaintext(std::vector<double>{0.0}, 2, 0);
+    auto secondInput = fixture.context->Encrypt(secondPlaintext, secondKeys.publicKey);
+    auto deterministicElements = fixture.rightInput->GetElements();
+    secondInput->SetElements(std::move(deterministicElements));
+
+    const auto left = module.DCP(fixture.leftInput);
+    const auto right = module.DCP(secondInput);
+
+    // Both pairs are individually valid and slots match. OpenFHE TypeCheck also
+    // rejects different key tags, so the project-owned diagnostic proves that
+    // Tensor2 checks mutual compatibility before invoking multiplication.
+    (void)module.RCB(left);
+    (void)module.RCB(right);
+    Check(left.GetSlots() == right.GetSlots(), "key-compatibility fixture has unequal slots");
+    Check(left.GetKeyTag() != right.GetKeyTag(), "key-compatibility fixture did not create distinct key tags");
+
+    CheckThrowsInvalidArgument([&] { (void)module.Tensor2(left, right); }, "Tensor2 input key tags do not match",
+                               "Tensor2 pre-arithmetic key compatibility");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -632,6 +657,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "mutual_compatibility") {
         return &TestMutualCompatibility;
+    }
+    if (name == "prearithmetic_key_compatibility") {
+        return &TestPreArithmeticKeyCompatibility;
     }
     throw TestFailure("unknown Tensor2 test case: " + name);
 }

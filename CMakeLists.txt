@@ -63,3 +63,4 @@ add_test(NAME tensor2_valid_arithmetic_immutability COMMAND tensor2_test valid_a
 add_test(NAME tensor2_result_scale_contract COMMAND tensor2_test result_scale_contract)
 add_test(NAME tensor2_right_input_validation COMMAND tensor2_test right_input_validation)
 add_test(NAME tensor2_mutual_compatibility COMMAND tensor2_test mutual_compatibility)
+add_test(NAME tensor2_prearithmetic_key_compatibility COMMAND tensor2_test prearithmetic_key_compatibility)

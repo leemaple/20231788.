@@ -44,6 +44,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends libboost-dev
 
+      - name: Report toolchain versions
+        run: |
+          cmake --version
+          c++ --version
+
       - name: Cache pristine OpenFHE install
         id: cache-openfhe
         uses: actions/cache@v4
@@ -137,6 +142,13 @@ jobs:
             mingw-w64-x86_64-boost
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-gcc
+
+      - name: Report toolchain versions
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          cmake --version
+          g++ --version
 
       - name: Verify OpenFHE provenance
         shell: msys2 {0}
