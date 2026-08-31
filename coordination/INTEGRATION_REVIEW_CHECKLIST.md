@@ -30,6 +30,13 @@ implementation and not evidence that any test has passed.
   `q_div`; an initial decomposition consumes `q_div`. The intended scale
   relation is approximately `Delta = q_div * q_l`, subject to the concrete
   prime schedule and error bound.
+- The pair has a logical scale attached to its **recombined** plaintext. If the
+  inputs have logical scales `S1` and `S2`, then `DCP` preserves that logical
+  scale, `Tensor2` produces `S1 * S2 / q_div`, `Relin2` preserves it, and
+  `RS2` produces `S1 * S2 / (q_div * q_l)`. For equal input scale `Delta`, the
+  last expression returns approximately `Delta`. Standard OpenFHE tensor or
+  modulus-reduction metadata does not account for Tensor2's implicit
+  `/ q_div`; a candidate must set or separately track this value explicitly.
 - Theorem 4.8 requires
   `N * (M_high * q_div + M_low)^2 + E_relin + h < Q_l / 2` and bounds the
   recombined multiplication error by
@@ -54,11 +61,15 @@ implementation and not evidence that any test has passed.
   arbitrary basis with the same number of towers as a valid prefix can run
   while using the wrong tables/key residues. A lifted `Q_l * q_div` basis must
   prove ordered-prime identity with the evaluation-key context, not merely
-  matching ring dimension or tower count.
+  matching ring dimension or tower count. BV key switching has the analogous
+  prefix assumption: it truncates evaluation-key polynomials with
+  `DropLastElements(full_size - current_size)`.
 - CKKS `ModReduceInternalInPlace` calls `DropLastElementAndScale`, assumes the
   crypto-parameter tower ordering, and mutates level, noise-scale degree, and
   scaling factor. It is valid only when the exact required prime is the next
-  configured tower to drop.
+  configured tower to drop. Blindly using this ciphertext-level operation for
+  `DCP` also applies ordinary CKKS metadata transitions, which do not by
+  themselves represent the pair's preserved logical scale.
 - `LevelReduceInternalInPlace` only drops towers and increments level. It does
   not implement quotient rounding or a centered remainder.
 - Public scalar `EvalMult` may encode a CKKS scalar, alter scale metadata, and
