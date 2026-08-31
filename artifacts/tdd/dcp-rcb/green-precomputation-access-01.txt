@@ -1,0 +1,41 @@
+DCP local rescale-factor derivation green evidence
+
+Observed: 2026-08-31 19:50 CST (Asia/Shanghai)
+Project commit: 59bba42d386dd043bdcb4371014c42bb965befd9
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
+Run: https://github.com/leemaple/20231788./actions/runs/33388778949
+Conclusion: success
+
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
+Production no longer reads OpenFHE's unchecked outer precomputation tables. For
+each retained modulus `q_i`, it derives the exact factors required by the unchanged
+OpenFHE `DropLastElementAndScale` operation:
+
+  divisor inverse  = q_div^-1 mod q_i
+  quotient factor  = -q_div^-1 mod q_i
+
+The strict project build completed:
+
+  [ 25%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+  [ 50%] Built target openfhe_2023_1788
+  [ 75%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+  [100%] Built target dcp_rcb_test
+
+Exact retained CTest result:
+
+  Start 1: dcp_rcb
+  1/1 Test #1: dcp_rcb ..........................   Passed    0.02 sec
+  100% tests passed, 0 tests failed out of 1
+  Total Test time (real) =   0.08 sec
+
+The passing suite includes the pre-existing independent CRT oracle, the three-tower
+minimum case, and the new context with absent OpenFHE DCP precomputation rows. It
+therefore checks every coefficient and retained tower rather than accepting only
+the absence of a crash. The GitHub Node.js action annotation is external metadata,
+not a project compiler warning.
