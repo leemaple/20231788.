@@ -69,11 +69,24 @@ For fresh DCP pair members, each OpenFHE ciphertext currently records noise-scal
 degree 2 and `SF = baseSF^2`. Raw `EvalMultNoRelin` consequently records degree
 4 and `SF^2 = baseSF^4`. Paper Tensor2, however, represents a product divided by
 `q_div`; for the intended first multiplication where `q_div` approximates but
-is not equal to `baseSF`, the OpenFHE-normalized result contract is degree 3 and
-recorded factor `SF1 * SF2 / baseSF`, while the separate paper/recombined scale
-is `S1 * S2 / q_div`. This conclusion is derived from the paper and observed
-metadata transitions; the exact normalization design remains subject to
-independent ChatGPT Pro review and coefficient-preservation tests.
+is not equal to `baseSF`, the candidate OpenFHE-normalized result contract is
+degree 3 and recorded factor `SF1 * SF2 / baseSF`. This is a derived candidate,
+not yet an acceptance fact; the external review must prove it from the paper
+and official source before any test or metadata write encodes it.
+
+Two paper-scale views must remain distinct. Let `H_i` be the DCP
+high-component logical scale already recorded for input pair `i`, and let `R_i`
+be the logical scale of `q_div * high_i + low_i`. Independent expectations are:
+
+```text
+H_out = H_1 * H_2
+R_out = R_1 * R_2 / q_div
+```
+
+Expected tests must derive both values from the input manifests and divisor,
+never from the Tensor2 result. If the OpenFHE recorded transition cannot be
+proved consistently with both paper values, the slice is blocked rather than
+resolved through an unproved metadata-only correction.
 
 ## Minimal seam expected for review
 
@@ -85,8 +98,9 @@ independent ChatGPT Pro review and coefficient-preservation tests.
   contract. Assert that normalization does not alter a polynomial coefficient,
   basis tower, or level.
 - Return a distinct read-only three-component result type whose constructor is
-  private to `DoubleCKKS`; do not let it enter DCP/RCB APIs that require two
-  components.
+  private to `DoubleCKKS`; the type itself represents Tensor2 state, so do not
+  add a lifecycle enum or mirrored state flag. Do not let it enter DCP/RCB APIs
+  that require two components.
 - Preserve all four input ciphertext objects in their complete OpenFHE equality
   state.
 - Do not add Relin2, RS2, Mult2, pair addition/subtraction, refresh, `t>2`, or a
@@ -98,26 +112,36 @@ independent ChatGPT Pro review and coefficient-preservation tests.
   `Z_q[X]/(X^N+1)` must calculate all three components, every coefficient, and
   every active RNS tower without calling an OpenFHE/production multiplication
   helper for the expected value.
+- The deterministic fixtures must contain both an explicit
+  `X^(N-1) * X = -1` wraparound witness and a signed product that crosses an
+  active tower modulus; otherwise ordinary convolution or missing signed
+  reduction can false-pass.
 - Convert copied polynomials to coefficient form for oracle comparison; do not
   mutate production inputs to observe them.
-- Prove omission rather than only matching the cross term: construct inputs for
-  which independent `l1 tensor l2` is nonzero and show the actual low output is
-  not cross-plus-low-low.
+- Prove omission rather than only matching the cross term: identify at least
+  one exact active tower/component/coefficient where independent
+  `l1 tensor l2` is nonzero modulo the tower, and show the actual low output is
+  not cross-plus-low-low at that witness.
 - Assert unchanged ordered basis, level 1, evaluation format, exact context,
-  encoding, key tag, slots, three components, result lifecycle/type, recorded
-  degree/factor, divisor, and both paper-scale quantities.
-- Add fail-fast cases for each individual pair invariant plus at least mutual
-  key-tag and slot-count incompatibility. Existing DCP/RCB tests must remain
-  unchanged in strength.
+  encoding, key tag, slots, three components, result type, proved recorded
+  degree/factor, divisor, `H_out`, and `R_out`.
+- Reuse the already tested complete pair validator for both operands and add one
+  right-input corruption test to prove that call path. Separately add one
+  public construction of individually valid pairs with incompatible slots to
+  prove mutual validation. Do not duplicate all RCB invariant cases or add a
+  production test hook. An invalid lifecycle case is impossible while only
+  `ReadyForFirstMult` exists and its getter returns by value, so it is deferred
+  until a second valid lifecycle is introduced.
 
 ## Open design question to resolve before acceptance
 
 The current `PaperScaleDescriptor` has DCP-specific fields
 `inputRecordedScalingFactor` and `approximateLogicalScalingFactor`. The latter
 describes the high quotient component after DCP, while the pair as recombined
-still carries the input logical scale. Tensor2 needs both the high-component and
-recombined-pair views after a further division by `q_div`. The implementation
-must either make the existing names unambiguous with the smallest coherent
-descriptor correction, or prove that a separate minimal Tensor result
-descriptor is clearer. It must not silently identify the actual RNS prime
-`q_div` with OpenFHE's real `baseSF`.
+still carries the input logical scale. Tensor2 needs explicit `H_out` and
+`R_out`. This slice freezes the existing DCP descriptor/API; the implementation
+must add only the smallest separate Tensor-result descriptor. If that is
+provably insufficient and a DCP API change is required, the task is blocked
+pending approval rather than allowed to reopen the reviewed DCP contract. The
+design must not silently identify the actual RNS prime `q_div` with OpenFHE's
+real `baseSF`.
