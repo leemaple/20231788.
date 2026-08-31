@@ -135,7 +135,6 @@ jobs:
             mingw-w64-x86_64-boost
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-ninja
 
       - name: Verify OpenFHE provenance
         shell: msys2 {0}
@@ -154,7 +153,7 @@ jobs:
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           source="$(cygpath -u "$OPENFHE_SOURCE")"
           build="$(cygpath -u "$OPENFHE_BUILD")"
-          cmake -S "$source" -B "$build" -G Ninja \
+          cmake -S "$source" -B "$build" \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$prefix" \
             -DBUILD_UNITTESTS=OFF \
@@ -177,7 +176,7 @@ jobs:
         run: |
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           build="$(cygpath -u "$PROJECT_BUILD")"
-          cmake -S . -B "$build" -G Ninja \
+          cmake -S . -B "$build" \
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_PREFIX_PATH="$prefix"
 
