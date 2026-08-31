@@ -130,8 +130,8 @@ DoubleCKKS::DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context)
     }
 
     const auto elementParameters = parameters_->GetElementParams();
-    if (!elementParameters || elementParameters->GetParams().size() < 4) {
-        Invalid("the first Mult2 lifecycle requires at least four ordered Q towers");
+    if (!elementParameters || elementParameters->GetParams().size() < 3) {
+        Invalid("the first Mult2 lifecycle requires at least three ordered Q towers");
     }
 
     fullModuli_.reserve(elementParameters->GetParams().size());
