@@ -45,7 +45,7 @@ Boundary coefficients include `0`, `+/-1`, `+/-(q-1)/2`, `+/-(q+1)/2`, values on
 - Use independently generated two-component pairs and the schoolbook negacyclic oracle.
 - Check both three-component results against `high1 tensor high2` and `high1 tensor low2 + low1 tensor high2`.
 - Separately prove that the low-low product is absent by choosing inputs for which it is nonzero.
-- Assert the logical-scale transition `S1 * S2 / q_div`, noise-scale degree 3, unchanged level, and exactly three RLWE components in each output member.
+- Assert both the paper/logical transition `S1 * S2 / q_div` and the FIXEDMANUAL recorded transition `SF1 * SF2 / 2^p`, plus noise-scale degree 3, unchanged level, and exactly three RLWE components in each output member.
 
 ### Relin2
 
@@ -59,7 +59,7 @@ Boundary coefficients include `0`, `+/-1`, `+/-(q-1)/2`, `+/-(q+1)/2`, values on
 
 - Compute ordinary centered rescaling independently for `high` and `q_div * high + low`.
 - Assert exact pair identity `RCB(RS2(pair)) = RS(RCB(pair))` coefficientwise modulo `Q_(l-1)`.
-- Assert consumption of exactly `q_l`, level increment, logical-scale division by `q_l`, and noise-scale degree reduction from 3 to 2.
+- Assert consumption of exactly `q_l`, level increment, paper/logical-scale division by `q_l`, recorded-scale division by `2^p`, and noise-scale degree reduction from 3 to 2.
 
 ### Mult2
 
