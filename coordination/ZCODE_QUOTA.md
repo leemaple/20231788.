@@ -9,3 +9,5 @@ All Windows and other ZCode/Zima sessions use the same BigModel Coding Plan acco
 Source page: `https://bigmodel.cn/coding-plan/personal/usage`
 
 Browser task-space name: `zcode-quota-check` (reuse by name; numeric IDs are not stable).
+
+The existing daily 07:00 project-report heartbeat was updated at 2026-08-31 17:24 CST to include a read-only quota snapshot and allocation recommendation. The app permits only one heartbeat on this task, so the active continuous project Goal—not a duplicate automation—owns the one-time post-18:31 recheck.
