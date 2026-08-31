@@ -137,6 +137,18 @@ and deferred exact-Relin2 prerequisites. It is not an implementation task or a
 source/build/test claim. The record is
 `coordination/reviews/rs2-preflight.md`.
 
+At approximately 2026-09-01 07:23 CST, the Relin2 Pro response ended with the
+explicit terminal UI error `Message delivery timed out. Please try again.`
+after about 46 minutes and multiple spaced read-only checks. Visible checkpoints
+showed that Pro had passed outer attachment/archive/manifest/tree gates,
+resolved a temporary-index tree mismatch, and entered implementation
+inspection, but it returned no verdict, patch, or ZIP. Codex then used the
+page's built-in `Retry` exactly once at approximately 07:24. That control
+replayed the same original self-contained message and three attachments; no new
+prompt, attachment, user message, refresh, or duplicate conversation was
+created. Readback showed `Stop answering` active. No second retry or other
+interruption is allowed while this recovery response runs.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`

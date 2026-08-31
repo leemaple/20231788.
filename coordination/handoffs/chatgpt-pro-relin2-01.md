@@ -79,8 +79,20 @@ The request was sent exactly once. Post-send readback confirmed:
 - active `Thinking` and `Stop answering` state;
 - no `Send prompt` control.
 
-ChatGPT Pro is still working. Do not refresh, stop, prod, edit, resend, retry,
-or open a duplicate conversation while the response is active. Keep task space
-85 open solely to collect and verify the natural result. At submission time no
-Relin2 patch, build, CTest, Linux, Windows, warning-clean, witness, precision,
-performance, or security result is claimed.
+At approximately 07:23 CST, after about 46 minutes and multiple spaced
+read-only checks, the response reached the explicit terminal error `Message
+delivery timed out. Please try again.` It had visibly completed the attachment,
+archive, manifest, tree-identity, and toolchain availability gates, resolved a
+temporary-index tree mismatch by recognizing that ignored-but-tracked files
+needed forced addition, and entered OpenFHE/project implementation inspection.
+It returned no verdict, patch, or ZIP.
+
+At approximately 07:24 CST, Codex used the page's built-in `Retry` control
+exactly once. This retried the same original, self-contained user message and
+its three attachments; Codex did not refresh, edit, resend text, upload another
+copy, create a second user message, or open a duplicate conversation. Readback
+showed the error/Retry control removed and `Stop answering` active. Do not
+refresh, stop, prod, edit, resend, retry again, or duplicate the conversation
+while this recovery response is active. Keep task space 85 open solely for
+verified collection. No Relin2 patch, build, CTest, Linux, Windows,
+warning-clean, witness, precision, performance, or security result is claimed.
