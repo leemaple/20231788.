@@ -41,6 +41,10 @@ This schedule must be rejected if the supplied basis, tower order, evaluation ke
 - **Inferred:** both HYBRID and BV safely support a current ciphertext basis only when it is the exact ordered prefix expected by the full evaluation key. Matching tower count alone is insufficient.
 - **Observed:** CKKS `ModReduceInternalInPlace` changes noise-scale degree, level, scaling factor, and every DCRT element together (`src/pke/lib/scheme/ckksrns/ckksrns-leveledshe.cpp:164-191`).
 - **Inferred:** DCP cannot blindly call ciphertext-level ModReduce because pair decomposition needs the element quotient/remainder identity while preserving pair logical-scale semantics explicitly.
+- **Observed:** under `FIXEDMANUAL`, `GetScalingFactorReal` returns the fixed approximate factor `2^p` (`src/pke/include/schemerns/rns-cryptoparameters.h:598-618`). CKKS encoding first scales by that factor, multiplies by one more CRT copy when `noiseScaleDeg == 2`, and records `scalingFactor = pow(scalingFactor, noiseScaleDeg)` (`src/pke/lib/encoding/ckkspackedencoding.cpp:115-337`).
+- **Observed:** the public `MakeCKKSPackedPlaintext` accepts `noiseScaleDeg`, and the encryption wrapper copies the plaintext's noise-scale degree and scaling factor to the ciphertext (`src/pke/include/cryptocontext.h:1161-1207,1241-1301`). Therefore a fresh `FIXEDMANUAL` plaintext encoded with `noiseScaleDeg == 2` has an actual and recorded scale of `2^(2p)`; this is not merely a metadata override.
+- **Observed:** the non-first `FIXEDMANUAL` RNS primes are generated around a common `p`-bit prime, while the first modulus is handled separately (`src/pke/lib/scheme/ckksrns/ckksrns-parametergeneration.cpp:415-517`). Hence adjacent `p`-bit towers chosen as `q_l` and `q_div` satisfy `q_l * q_div approximately 2^(2p)`, but neither factor nor their product is exactly `2^p` or `2^(2p)`.
+- **Inferred:** the initial paper-scale requirement can be represented without mutating ciphertext metadata: encode and encrypt at `noiseScaleDeg == 2`, then assert that the measured ratio `2^(2p) / (q_l * q_div)` is within the test parameter's explicit tolerance. The implementation and tests must say “approximately,” not claim exact scale equality.
 
 ## Explicit next-multiplication boundary
 
@@ -52,8 +56,7 @@ The accepted first slice should fail fast on a second Mult2 attempt and test tha
 
 1. Verify with an independent signed big-integer/CRT oracle that OpenFHE's last-tower division matches the paper's nearest-integer quotient and centered remainder at tie and negative cases.
 2. Determine and assert the exact OpenFHE ciphertext metadata changes for DCP, Tensor2, Relin2, and RS2 rather than relying only on DCRT tower counts.
-3. Prove how a paper-scale `Delta` approximately equal to `q_div * q_l` is represented by OpenFHE 1.5.0 encoding/scaling metadata under the chosen scaling technique.
-4. Verify the zero-tower modulus raise and both full/prefix key-switch calls under the configured HYBRID and/or BV technique on an actual runner.
-5. Derive the executable precision threshold directly from Theorem 4.8 and the selected parameter vector.
+3. Verify the zero-tower modulus raise and both full/prefix key-switch calls under the configured HYBRID and/or BV technique on an actual runner.
+4. Derive the executable precision threshold directly from Theorem 4.8 and the selected parameter vector.
 
 No build, encryption, decryption, or test has been run for these conclusions yet.
