@@ -4,9 +4,10 @@ Prepared: 2026-09-01 Asia/Shanghai
 
 Status: read-only paper/OpenFHE preflight for the next bounded slice. No Relin2
 source, test, build, execution, or external-agent delivery is claimed here.
-The provisional implementation base is Tensor2 exact head
-`55f3b43c47b5b2464625afcc6a1f244724336d5b`; a final external task must bind
-the actual accepted base after the active Tensor2 exact-current closure review.
+The provisional implementation base is the Tensor2 exact source/test head
+`fb862a3dfeeb0b79eb8f0e4218749d8a898e96c9`; a final external task must still
+bind the accepted exact SHA after the active Tensor2 exact-current closure
+review.
 
 ## Scope boundary
 
@@ -200,7 +201,9 @@ the integer `q_div` with `baseSF`.
 4. Read `GetAllEvalMultKeys` and fail with stable project-owned
    `std::invalid_argument` before arithmetic unless:
    - the Tensor key tag is present;
-   - the vector contains at least one non-null key;
+   - the vector contains at least one key; extra later keys are permitted, while
+     only index zero is validated and consumed for this three-component input;
+   - that first key is non-null;
    - the key context is the bound context;
    - the key tag matches;
    - only the first `s^2` key that this three-component input will consume is
@@ -213,8 +216,10 @@ the integer `q_div` with `baseSF`.
      entry is in evaluation format, and every entry has the exact bound
      context `ParamsQP` basis;
    - for BV, its A/B vector lengths equal the full-`Q` digit decomposition
-     count derived from the bound context and digit size, every entry is in
-     evaluation format, and every entry has the exact full ordered `Q` basis.
+     count derived from the bound context and digit size (`|Q|` when digit size
+     is zero, otherwise the sum of `ceil(q_i.GetMSB() / digitSize)`), every
+     entry is in evaluation format, and every entry has the exact full ordered
+     `Q` basis.
 5. Raise high by multiplying every active tower of all three components by the
    integer `q_div`, append an evaluation-format zero tower using the bound
    context's final tower parameters, install the elements, then set level zero.
@@ -236,7 +241,10 @@ the integer `q_div` with `baseSF`.
    result before returning.
 
 No production `try`/`catch`, key-cache mutation, upstream modification,
-speculative compatibility path, or direct `KeySwitchCore` call is needed.
+speculative compatibility path, lock/compatibility layer, or direct
+`KeySwitchCore` call is needed. Public `Relinearize` reads the global evaluation
+key cache again after the project preflight. This bounded slice therefore does
+not promise thread safety against concurrent mutation of that cache.
 
 ## Provisional OpenFHE metadata mapping
 
@@ -278,8 +286,9 @@ At minimum, the independent runtime cases are:
 - `relin2_valid_arithmetic_metadata_immutability`: generate the ordinary
   evaluation key; use a test-owned append-zero-tower construction, public
   OpenFHE relinearization primitive, and Boost `cpp_int` centered DCP oracle;
-  compare every output component/tower/coefficient against `(u, v+w)`; assert
-  the exact recombination identity and deep input immutability.
+  compare every output component/tower/coefficient against `(u, v+w)` modulo
+  its active `Q_l` residue; assert the exact per-residue recombination identity
+  and deep input immutability.
 - `relin2_result_state_scale`: assert exact basis/level/two-component shape,
   `ReadyForRS2`, degree/factor, context/divisor/tag/slots/format, and separately
   preserved paper high/recombined scales.
@@ -293,25 +302,33 @@ At minimum, the independent runtime cases are:
 - `relin2_missing_eval_key`: a valid Tensor result without `EvalMultKeyGen`
   must fail with the project-owned missing-key diagnostic, not a downstream
   OpenFHE exception.
-- `relin2_eval_key_prearithmetic_compatibility`: place a public-map key with a
-  wrong context, actual tag, internal basis, or A/B vector length under the
-  expected map key; require project-owned rejection before raising/key
-  switching.
+- `relin2_eval_key_prearithmetic_compatibility`: independently place a null
+  first entry, wrong-context key, wrong actual key tag, wrong key subtype,
+  malformed A/B vector length, wrong internal basis, or non-Evaluation-format
+  A/B entry under the expected map key; require project-owned rejection before
+  raising/key switching. Exercise the HYBRID- and BV-specific shapes separately.
+  Any test that mutates the static key map must restore the prior map with a
+  test-owned RAII guard; it must not rely on `EvalMultKeyGen` overwriting an
+  existing entry.
 
 For exact recombination, the test-owned reference restricts the full-basis
 `Relin(q_div * high3)` result to `Q_l` by deleting only the appended `q_div`
 residue before comparison with level-one `Relin(low3)`. It must not call
 `ModReduce` or `Rescale`, which would divide, rescale, and change metadata.
 
-The arithmetic fixture must contain a nonzero third RLWE component and
-centered quotient/remainder boundary values. The permanent green assertion is
-the complete coefficient equality against the test-owned full-basis
-reference. A correct-versus-naive inequality may remain in the executable
-suite only if its fixed construction algebraically guarantees a difference;
-otherwise preserve the naïve-path failure as retained red evidence rather
-than a probabilistic test over a randomly generated key. Tests may use
-OpenFHE `Relinearize` as the primitive under the composition test, but must not
-share production tower-raising or DCP helpers.
+The arithmetic fixture must contain a nonzero third RLWE component. Centered
+quotient/remainder boundary values must be identified on the actual
+full-basis `Relin(q_div * high3)` result after the trusted reference
+relinearization and immediately before the test-owned DCP; record the named
+component and coefficient for each boundary/carry witness. The permanent green
+assertion is the complete per-residue coefficient equality modulo `Q_l`
+against the test-owned full-basis reference. A correct-versus-naive inequality
+may remain in the executable suite only if its fixed construction
+algebraically guarantees a difference; otherwise preserve the naïve-path
+failure as retained red evidence rather than a probabilistic test over a
+randomly generated key. Tests may use OpenFHE `Relinearize` as the primitive
+under the composition test, but must not share production tower-raising or DCP
+helpers.
 
 Existing DCP/RCB and Tensor2 assertions and diagnostics must remain green and
 byte-for-byte stable where promised. Tests must be extended to cover the new
