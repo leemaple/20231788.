@@ -38,12 +38,18 @@ endif()
 add_executable(dcp_rcb_test tests/dcp_rcb_test.cpp)
 target_link_libraries(dcp_rcb_test PRIVATE openfhe_2023_1788)
 
+# Compile-only public API contract. It is intentionally not a CTest entry.
+add_executable(tensor2_api_contract_test tests/tensor2_api_contract_test.cpp)
+target_link_libraries(tensor2_api_contract_test PRIVATE openfhe_2023_1788)
+
 if(MSVC)
     target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
     target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
+    target_compile_options(tensor2_api_contract_test PRIVATE /W4 /WX)
 else()
     target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(tensor2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
 enable_testing()
