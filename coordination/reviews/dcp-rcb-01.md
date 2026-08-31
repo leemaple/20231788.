@@ -5,13 +5,13 @@ Recorded: 2026-08-31 Asia/Shanghai
 ## Scope and identities
 
 - Reviewed pre-hardening checkpoint: `e1153122be529ef21e9e5bce1ace877015410304`.
-- Current production checkpoint: `b0cd3adba690b71b6446ade8c038002efea4b6ec`.
+- Current production checkpoint: `4971d2292b5af0ddbbe0c7dbe5a2e87f45102ff1`.
 - Cross-platform build-portability checkpoint: `e236a6ef3361169363fd17a74ab1a8dafc539d57`.
 - Current cross-platform evidence checkpoint before this update: `e361f1e3a75ad860ef8a34998d8c29be2d5379ae`.
 - Branch: `agent/codex-dcp-rcb-01`; it remains isolated from the default integration branch.
 - OpenFHE: official 1.5.0 commit `df495ba2e91739a6dc8f1de254fc5a41155ce504`.
-- Latest Linux strict-build/CTest result: [GitHub Actions 33399245184](https://github.com/leemaple/20231788./actions/runs/33399245184), success.
-- Windows/MinGW64: strict build and 1/1 CTest passed in [GitHub Actions 33399245184](https://github.com/leemaple/20231788./actions/runs/33399245184). This is OpenFHE 1.5.0's officially supported Windows path; VC++/MSVC is explicitly unsupported upstream and is not claimed.
+- Latest Linux strict-build/CTest result: [GitHub Actions 33404816846](https://github.com/leemaple/20231788./actions/runs/33404816846), success.
+- Windows/MinGW64: strict build and 1/1 CTest passed in [GitHub Actions 33404816846](https://github.com/leemaple/20231788./actions/runs/33404816846). This is OpenFHE 1.5.0's officially supported Windows path; VC++/MSVC is explicitly unsupported upstream and is not claimed.
 
 The Standards and Spec reviews below are intentionally reported as separate axes.
 Judgment-only design observations are also kept separate from documented
@@ -66,7 +66,7 @@ branch itself. They are therefore not classified as implementation-spec defects.
 | --- | --- | --- |
 | OpenFHE precomputation row zero was obtained through unchecked outer-vector access before the code could inspect row lengths. | Accepted, independently reproduced as a behavioral segfault, and fixed without changing OpenFHE. The implementation locally derives `q_div^-1 mod q_i` and its negative before calling the same upstream arithmetic primitive. | Valid red `9a81c3cf78f0d7125a1a251f9f4632e7b4711034`, [run 33388548297](https://github.com/leemaple/20231788./actions/runs/33388548297); production `59bba42d386dd043bdcb4371014c42bb965befd9`; green [run 33388778949](https://github.com/leemaple/20231788./actions/runs/33388778949). |
 | Generic exception acceptance weakened fail-fast attribution. | Accepted and fixed as recorded in the Standards section. | Commit `2b546641fdbda916bc91a4c9ce50f53c64d81dbd`. |
-| Source immutability execution evidence covered elements and level but not all observable metadata; RCB pair-member immutability was also incomplete. | Accepted and fixed. Tests now snapshot all checked input metadata and both pair members. | Commit `6a954c6847ec4ca252257e26a9f116936c6feb97`; [run 33393525763](https://github.com/leemaple/20231788./actions/runs/33393525763). |
+| Source immutability execution evidence covered elements and level but not all then-checked metadata; RCB pair-member immutability was also incomplete. | Accepted and fixed for the fields that were in the pair contract at that checkpoint. Later slot-count hardening below closes a distinct observable field that this statement had described too broadly. | Commit `6a954c6847ec4ca252257e26a9f116936c6feb97`; [run 33393525763](https://github.com/leemaple/20231788./actions/runs/33393525763). |
 | README state and DCP scale terminology were stale/ambiguous. | Accepted and fixed. Documentation now distinguishes the recombined pair scale from the high quotient component descriptor. | Commit `f82c0cecae20873cb931642affc249533a7fe819`. |
 
 ChatGPT Pro could not locally compile its supplied OpenFHE archive because cereal
@@ -94,11 +94,23 @@ extensions. Commit `e236a6ef3361169363fd17a74ab1a8dafc539d57` passed the strict
 Linux and Windows builds and 1/1 CTest in
 [run 33399245184](https://github.com/leemaple/20231788./actions/runs/33399245184).
 
+A later audit found that the pair manifest did not bind OpenFHE's CKKS slot
+count, even though that field controls the decoded output length. Test-only
+commit `d0cbc97190c9cc5be2164c7bcbff82109fd2ca55` built strictly and then failed
+with the intended `tampered pair slot metadata did not fail fast` diagnostic in
+[run 33404277096](https://github.com/leemaple/20231788./actions/runs/33404277096).
+Production commit `4971d2292b5af0ddbbe0c7dbe5a2e87f45102ff1` records the slot count in the
+private pair manifest and cross-validates both stored ciphertexts before raw RCB
+arithmetic. The strict Linux and Windows/MinGW64 builds and 1/1 CTest passed in
+[run 33404816846](https://github.com/leemaple/20231788./actions/runs/33404816846).
+
 ## Current integration decision
 
 The DCP/RCB source now has strict Linux/GCC and Windows/MinGW64 build/test
-evidence against the same exact production commit. It is not yet ready to merge
-into the default branch because the preserved Windows Z code/Zima session and
-ChatGPT Pro have not performed the required final review of that same green
-commit. Later operations remain separate TDD slices and are not implied by this
-decision.
+evidence against the same exact slot-hardened production commit. It is not yet
+ready to merge into the default branch because the preserved Windows Z
+code/Zima session and ChatGPT Pro have not performed the required final review
+of that same green commit. The currently running ChatGPT Pro review is bound to
+the earlier `a3df1c5` checkpoint, so even a favorable verdict there requires a
+bounded remediation review. Later operations remain separate TDD slices and are
+not implied by this decision.
