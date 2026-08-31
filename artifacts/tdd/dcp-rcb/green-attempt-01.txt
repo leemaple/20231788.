@@ -1,0 +1,29 @@
+DCP/RCB green attempt 01 — third-party warning boundary failure
+
+Observed: 2026-08-31 18:23 CST (Asia/Shanghai)
+Project commit: de5995160fc9687531c9b47c25f8aca7f2eaaa70
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
+Run: https://github.com/leemaple/20231788./actions/runs/33381905656
+Failed command: cmake --build build --parallel 2
+Exit code: 2
+
+Classification: green-attempt build-boundary failure. Pristine OpenFHE built and installed, and the project configured. The project target then applied `-Wpedantic -Werror` to upstream OpenFHE headers, so compilation stopped on upstream GNU extensions and unused virtual placeholder parameters before evaluating project behavior. The independent test has not passed, and no green claim is made.
+
+Representative output:
+
+[ 25%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+.../include/openfhe/core/math/hal/basicint.h:50:42: error: ISO C++ does not support ‘__int128’ for ‘type name’ [-Werror=pedantic]
+.../include/openfhe/core/math/discretegaussiangeneratorgeneric.h:275:51: error: unused parameter ‘s2’ [-Werror=unused-parameter]
+.../include/openfhe/core/utils/parallel.h:112:28: error: unused parameter ‘n’ [-Werror=unused-parameter]
+.../include/openfhe/pke/encoding/plaintext.h:218:32: error: unused parameter ‘depth’ [-Werror=unused-parameter]
+.../include/openfhe/pke/metadata.h:60:30: error: unused parameter ‘mdata’ [-Werror=unused-parameter]
+cc1plus: all warnings being treated as errors
+gmake[2]: *** [CMakeFiles/openfhe_2023_1788.dir/build.make:79: CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/openfhe_2023_1788.dir/all] Error 2
+gmake: *** [Makefile:101: all] Error 2
+Process completed with exit code 2.
+
+Resolution under test:
+
+Mark only the pristine OpenFHE include roots as CMake `SYSTEM` includes. Keep `-Wall -Wextra -Wpedantic -Werror` on both project-owned production and test targets. This preserves a strict warning gate for code in scope without silently requiring changes to the pinned upstream release.

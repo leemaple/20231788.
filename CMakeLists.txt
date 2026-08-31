@@ -18,8 +18,8 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenFHE_CXX_FLAGS}")
 
-include_directories(
-    ${OPENMP_INCLUDES}
+include_directories(${OPENMP_INCLUDES})
+include_directories(SYSTEM
     ${OpenFHE_INCLUDE}
     ${OpenFHE_INCLUDE}/third-party/include
     ${OpenFHE_INCLUDE}/core
