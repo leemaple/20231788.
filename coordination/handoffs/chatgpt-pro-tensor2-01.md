@@ -159,3 +159,28 @@ its own final hash. The internal handoff explicitly names that mechanism and
 records every non-self-referential result. Resumption must occur once in this
 same conversation, from the input gate, with both attachments and no reuse of
 the blocked attempt.
+
+## Corrected continuation submission
+
+At approximately 2026-09-01 01:49 CST, Codex attached the r2 ZIP and its
+post-construction binding file to the same saved ChatGPT Pro conversation. The
+continuation brief restated every binding value, the exact base/OpenFHE/task/CI
+identities, all verification results, the no-reuse boundary, the complete-task
+location inside the corrected ZIP, the independent scale-proof gate, ordered
+TDD requirements, frozen DCP API, and prohibited claims.
+
+Before submission, browser readback confirmed both attachment chips, all exact
+hashes, exact base/OpenFHE identities, and the final end marker. The send control
+was enabled. The corrected continuation was submitted exactly once. Post-send
+readback confirmed:
+
+- exactly two user messages total in the conversation;
+- both r2 attachment names in the latest message;
+- the exact r2 ZIP hash and final end marker in the latest message;
+- an empty composer;
+- active `Thinking` and `Stop answering` state;
+- no send control.
+
+Do not refresh, stop, prod, edit, resend, retry, or duplicate this corrected
+continuation. The response must complete naturally before any output is
+collected or applied.
