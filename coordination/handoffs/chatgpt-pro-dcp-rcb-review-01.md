@@ -45,3 +45,13 @@ The scans are retained as evidence, not treated as an absolute guarantee. Upload
 ## Response boundary
 
 The review requests prioritized source/spec findings, a paper/OpenFHE contract map, test gaps, exact execution claims, and a minimal patch only if a concrete defect is found. It explicitly forbids later multiplication seams, old-code reuse, upstream modification, pushes, CI dispatch, and unsupported pass claims.
+
+## Submission
+
+- Submitted: 2026-08-31 19:08 CST
+- Conversation: `https://chatgpt.com/c/6a95607d-31ec-83ec-b35b-eedc17c5bf38`
+- Ego Lite task space: `chatgpt-pro-dcp-rcb-review-01` (observed numeric ID 67; reuse by name)
+- Attachment: exact 3,694,670-byte archive with SHA-256 `e32ba8a4b59ef7e377a01e6dfcd426bd3dab8e6db5ecad01c0510fefdc4c6fcc`
+- Prompt: complete 7,259-character review task; browser readback showed its first and last text, the exact attachment, and an enabled send action before submission
+- Browser verification after submission: the new conversation URL was assigned, the attachment and complete task were visible in the sent message, and `Thinking` plus `Stop answering` were present
+- Handling: generation is active; do not interrupt, refresh, retry, resend, or ask for status while it is thinking
