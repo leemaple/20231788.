@@ -48,6 +48,61 @@ void Check(bool condition, const std::string& message) {
     }
 }
 
+class ImmutabilityProbeMetadata final : public lbcrypto::Metadata {
+public:
+    explicit ImmutabilityProbeMetadata(std::string value) : value_(std::move(value)) {}
+
+    std::shared_ptr<lbcrypto::Metadata> Clone() const override {
+        return std::make_shared<ImmutabilityProbeMetadata>(value_);
+    }
+
+    bool operator==(const lbcrypto::Metadata& metadata) const override {
+        const auto* other = dynamic_cast<const ImmutabilityProbeMetadata*>(&metadata);
+        return other != nullptr && value_ == other->value_;
+    }
+
+private:
+    std::string value_;
+};
+
+struct MetadataSnapshotEntry {
+    std::string key;
+    std::shared_ptr<lbcrypto::Metadata> value;
+};
+
+using MetadataSnapshot = std::vector<MetadataSnapshotEntry>;
+
+MetadataSnapshot SnapshotMetadata(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext, const std::string& label) {
+    const auto metadata = ciphertext->GetMetadataMap();
+    Check(metadata != nullptr, label + " metadata map is null");
+
+    MetadataSnapshot snapshot;
+    snapshot.reserve(metadata->size());
+    for (const auto& [key, value] : *metadata) {
+        Check(value != nullptr, label + " metadata value is null");
+        auto cloned = value->Clone();
+        Check(cloned != nullptr, label + " metadata clone is null");
+        snapshot.push_back({key, std::move(cloned)});
+    }
+    return snapshot;
+}
+
+void CheckMetadataUnchanged(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext, const MetadataSnapshot& before,
+                            const std::string& label) {
+    const auto metadata = ciphertext->GetMetadataMap();
+    Check(metadata != nullptr, label + " metadata map is null");
+    Check(metadata->size() == before.size(), label + " metadata map size changed");
+
+    auto current = metadata->begin();
+    for (const auto& expected : before) {
+        Check(current != metadata->end(), label + " metadata entry disappeared");
+        Check(current->first == expected.key, label + " metadata key changed");
+        Check(current->second != nullptr, label + " metadata value became null");
+        Check(*(current->second) == *(expected.value), label + " metadata value changed");
+        ++current;
+    }
+}
+
 template <class Function>
 void CheckThrowsInvalidArgument(Function&& function, const std::string& expectedMessage,
                                 const std::string& label) {
@@ -380,6 +435,9 @@ void TestDcpAndRcbExactOracle() {
     auto fixture = MakeFixture();
     DoubleCKKS module(fixture.context);
 
+    fixture.input->SetMetadataByKey("immutability-probe",
+                                    std::make_shared<ImmutabilityProbeMetadata>("unchanged"));
+    const auto inputMetadataBefore = SnapshotMetadata(fixture.input, "DCP input");
     const auto inputBefore = fixture.input->Clone();
     const auto fullModuli  = GetNativeModuli(fixture.input->GetElements().front());
     const auto divisor     = fullModuli.back();
@@ -431,7 +489,10 @@ void TestDcpAndRcbExactOracle() {
           "DCP mutated input component count");
     Check(fixture.input->GetElements() == inputBefore->GetElements(), "DCP mutated input elements");
     Check(*fixture.input == *inputBefore, "DCP mutated input observable ciphertext state");
+    CheckMetadataUnchanged(fixture.input, inputMetadataBefore, "DCP input");
 
+    const auto highMetadataBefore = SnapshotMetadata(pair.GetHigh(), "RCB pair high");
+    const auto lowMetadataBefore  = SnapshotMetadata(pair.GetLow(), "RCB pair low");
     const auto highBefore = pair.GetHigh()->Clone();
     const auto lowBefore  = pair.GetLow()->Clone();
     const auto recombined = module.RCB(pair);
@@ -441,6 +502,8 @@ void TestDcpAndRcbExactOracle() {
     Check(pair.GetLow()->GetElements() == lowBefore->GetElements(), "RCB mutated pair low elements");
     Check(*pair.GetHigh() == *highBefore, "RCB mutated pair high observable ciphertext state");
     Check(*pair.GetLow() == *lowBefore, "RCB mutated pair low observable ciphertext state");
+    CheckMetadataUnchanged(pair.GetHigh(), highMetadataBefore, "RCB pair high");
+    CheckMetadataUnchanged(pair.GetLow(), lowMetadataBefore, "RCB pair low");
     CheckCiphertextMetadata(pair.GetHigh(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
                             "DCP high after RCB");
     CheckCiphertextMetadata(pair.GetLow(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
