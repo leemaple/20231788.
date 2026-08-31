@@ -168,6 +168,9 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
     if (ciphertext->GetCryptoContext().get() != context_.get()) {
         Invalid(std::string(label) + " belongs to a different context");
     }
+    if (ciphertext->GetEncodingType() != lbcrypto::CKKS_PACKED_ENCODING) {
+        Invalid(std::string(label) + " must use CKKS packed encoding metadata");
+    }
     if (ciphertext->GetLevel() != level) {
         Invalid(std::string(label) + " level does not match its pair state");
     }
