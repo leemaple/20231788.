@@ -1,0 +1,18 @@
+DCP/RCB Windows/MinGW64 infrastructure attempt 03
+
+Observed: 2026-08-31 21:35 CST (Asia/Shanghai)
+Project commit: 3f9f33457dd04116596cc8d502fdf84490cfbeff
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions windows-2022 / MSYS2 MINGW64
+Run: https://github.com/leemaple/20231788./actions/runs/33397557776
+Conclusion: generator-selection infrastructure failure; no Windows compile or test claim
+
+The run-unique build directory still acquired the MSYS2 CMake default `Unix
+Makefiles` generator before the workflow's explicit Ninja selection was applied,
+so the same generator-mismatch guard stopped configuration. This rules out reuse
+of the prior run's dependency build directory.
+
+The exact project/OpenFHE checkouts and source-cleanliness gate passed, the
+MinGW64 toolchain installed, and Linux remained green. The next attempt will
+follow OpenFHE 1.5.0's official Windows instructions by using CMake's default
+Makefiles generator instead of forcing Ninja.
