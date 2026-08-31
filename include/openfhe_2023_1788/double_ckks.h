@@ -143,6 +143,16 @@ public:
 private:
     void ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const;
     void ValidatePair(const CiphertextPair& pair) const;
+    void ValidateTensorCompatibility(const CiphertextPair& left, const CiphertextPair& right) const;
+    void ValidateTensorResult(const TensorCiphertextPair& pair) const;
+    void ValidateTensorCiphertext(const ReadOnlyCiphertext& ciphertext,
+                                  const std::vector<lbcrypto::NativeInteger>& orderedModuli,
+                                  std::size_t level,
+                                  std::size_t noiseScaleDegree,
+                                  double recordedScalingFactor,
+                                  const std::string& keyTag,
+                                  std::uint32_t slots,
+                                  const char* label) const;
     void ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
                             const std::vector<lbcrypto::NativeInteger>& orderedModuli,
                             std::size_t level,

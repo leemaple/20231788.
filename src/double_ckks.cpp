@@ -418,11 +418,193 @@ void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
                        pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "pair low");
 }
 
+void DoubleCKKS::ValidateTensorCompatibility(const CiphertextPair& left, const CiphertextPair& right) const {
+    if (left.contextIdentity_ != right.contextIdentity_) {
+        Invalid("Tensor2 input contexts do not match");
+    }
+    if (left.divisor_ != right.divisor_) {
+        Invalid("Tensor2 input divisors do not match");
+    }
+    if (!SameOrderedModuli(left.orderedModuli_, right.orderedModuli_)) {
+        Invalid("Tensor2 input ordered RNS bases do not match");
+    }
+    if (left.level_ != right.level_) {
+        Invalid("Tensor2 input levels do not match");
+    }
+    if (left.recordedScalingFactor_ != right.recordedScalingFactor_) {
+        Invalid("Tensor2 input recorded scaling factors do not match");
+    }
+    if (left.noiseScaleDegree_ != right.noiseScaleDegree_) {
+        Invalid("Tensor2 input noise-scale degrees do not match");
+    }
+    if (left.lifecycle_ != right.lifecycle_) {
+        Invalid("Tensor2 input lifecycles do not match");
+    }
+    if (left.keyTag_ != right.keyTag_) {
+        Invalid("Tensor2 input key tags do not match");
+    }
+    if (left.slots_ != right.slots_) {
+        Invalid("Tensor2 input slots do not match");
+    }
+    if (left.format_ != right.format_) {
+        Invalid("Tensor2 input formats do not match");
+    }
+    if (left.componentCount_ != right.componentCount_) {
+        Invalid("Tensor2 input component counts do not match");
+    }
+}
+
+void DoubleCKKS::ValidateTensorCiphertext(const ReadOnlyCiphertext& ciphertext,
+                                          const std::vector<lbcrypto::NativeInteger>& orderedModuli,
+                                          std::size_t level,
+                                          std::size_t noiseScaleDegree,
+                                          double recordedScalingFactor,
+                                          const std::string& keyTag,
+                                          std::uint32_t slots,
+                                          const char* label) const {
+    if (!ciphertext) {
+        Invalid(std::string(label) + " is null");
+    }
+    if (ciphertext->GetCryptoContext().get() != context_.get()) {
+        Invalid(std::string(label) + " belongs to a different context");
+    }
+    if (ciphertext->GetEncodingType() != lbcrypto::CKKS_PACKED_ENCODING) {
+        Invalid(std::string(label) + " must use CKKS packed encoding metadata");
+    }
+    if (ciphertext->GetLevel() != level) {
+        Invalid(std::string(label) + " level does not match its Tensor2 state");
+    }
+    if (ciphertext->NumberCiphertextElements() != 3) {
+        Invalid(std::string(label) + " must contain exactly three RLWE components");
+    }
+    if (ciphertext->GetNoiseScaleDeg() != noiseScaleDegree) {
+        Invalid(std::string(label) + " noise-scale degree does not match its Tensor2 state");
+    }
+    if (!std::isfinite(ciphertext->GetScalingFactor()) || ciphertext->GetScalingFactor() <= 0.0 ||
+        ciphertext->GetScalingFactor() != recordedScalingFactor) {
+        Invalid(std::string(label) + " recorded scaling factor does not match its Tensor2 state");
+    }
+    if (ciphertext->GetKeyTag().empty() || ciphertext->GetKeyTag() != keyTag) {
+        Invalid(std::string(label) + " key tag does not match its Tensor2 state");
+    }
+    if (ciphertext->GetSlots() != slots) {
+        Invalid(std::string(label) + " slots do not match its Tensor2 state");
+    }
+
+    const auto& expectedTowerParameters = parameters_->GetElementParams()->GetParams();
+    if (level > fullModuli_.size() || orderedModuli.size() != fullModuli_.size() - level) {
+        Invalid(std::string(label) + " level and active-basis size disagree");
+    }
+
+    for (const auto& element : ciphertext->GetElements()) {
+        if (element.GetFormat() != Format::EVALUATION) {
+            Invalid(std::string(label) + " must be in evaluation format");
+        }
+        if (!SameOrderedModuli(OrderedModuli(element), orderedModuli)) {
+            Invalid(std::string(label) + " ordered RNS basis mismatch");
+        }
+        const auto& towers = element.GetAllElements();
+        for (std::size_t index = 0; index < towers.size(); ++index) {
+            if (towers[index].GetRootOfUnity() != expectedTowerParameters[index]->GetRootOfUnity() ||
+                towers[index].GetCyclotomicOrder() != expectedTowerParameters[index]->GetCyclotomicOrder()) {
+                Invalid(std::string(label) + " tower parameters do not match the bound context");
+            }
+        }
+    }
+}
+
+void DoubleCKKS::ValidateTensorResult(const TensorCiphertextPair& pair) const {
+    if (pair.contextIdentity_ != context_.get()) {
+        Invalid("Tensor2 result belongs to a different context");
+    }
+    if (pair.divisor_ != divisor_) {
+        Invalid("Tensor2 result divisor does not match the bound context");
+    }
+    if (pair.componentCount_ != 3 || pair.format_ != Format::EVALUATION) {
+        Invalid("Tensor2 result shape or format is invalid");
+    }
+    if (pair.level_ != 1 || !SameOrderedModuli(pair.orderedModuli_, firstPairModuli_)) {
+        Invalid("Tensor2 result basis or level is invalid");
+    }
+
+    const double baseScalingFactor = parameters_->GetScalingFactorReal(0);
+    const double expectedRecordedScalingFactor =
+        expectedInputScalingFactor_ * expectedInputScalingFactor_ / baseScalingFactor;
+    if (!std::isfinite(pair.recordedScalingFactor_) || pair.recordedScalingFactor_ <= 0.0 ||
+        pair.recordedScalingFactor_ != expectedRecordedScalingFactor) {
+        Invalid("Tensor2 result scale metadata is invalid");
+    }
+    if (pair.noiseScaleDegree_ != 3) {
+        Invalid("Tensor2 result noise-scale degree is invalid");
+    }
+    if (pair.keyTag_.empty()) {
+        Invalid("Tensor2 result key tag is empty");
+    }
+
+    const long double divisor = static_cast<long double>(divisor_.ConvertToInt());
+    const long double inputHighScale = static_cast<long double>(expectedInputScalingFactor_) / divisor;
+    const long double expectedHighScale = inputHighScale * inputHighScale;
+    const long double expectedRecombinedScale =
+        static_cast<long double>(expectedInputScalingFactor_) *
+        static_cast<long double>(expectedInputScalingFactor_) / divisor;
+    if (!std::isfinite(pair.tensorScale_.approximateHighLogicalScalingFactor) ||
+        !std::isfinite(pair.tensorScale_.approximateRecombinedLogicalScalingFactor) ||
+        pair.tensorScale_.approximateHighLogicalScalingFactor != expectedHighScale ||
+        pair.tensorScale_.approximateRecombinedLogicalScalingFactor != expectedRecombinedScale) {
+        Invalid("Tensor2 result paper-scale descriptor is inconsistent");
+    }
+
+    ValidateTensorCiphertext(pair.high_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
+                             pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "Tensor2 high");
+    ValidateTensorCiphertext(pair.low_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
+                             pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "Tensor2 low");
+}
+
 TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const CiphertextPair& right) const {
-    // TDD scaffold only: explicitly non-mergeable; 04-green-tensor2.patch must replace it.
-    (void)left;
-    (void)right;
-    throw std::logic_error("DoubleCKKS: Tensor2 is not implemented");
+    ValidatePair(left);
+    ValidatePair(right);
+    ValidateTensorCompatibility(left, right);
+
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> leftHigh = left.high_;
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> leftLow = left.low_;
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> rightHigh = right.high_;
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> rightLow = right.low_;
+
+    auto high3 = context_->EvalMultNoRelin(leftHigh, rightHigh);
+    auto cross12 = context_->EvalMultNoRelin(leftHigh, rightLow);
+    auto cross21 = context_->EvalMultNoRelin(leftLow, rightHigh);
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> cross12Const = cross12;
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> cross21Const = cross21;
+    auto low3 = context_->EvalAdd(cross12Const, cross21Const);
+
+    const double baseScalingFactor = parameters_->GetScalingFactorReal(0);
+    const double rawRecordedScalingFactor = left.recordedScalingFactor_ * right.recordedScalingFactor_;
+    const double normalizedRecordedScalingFactor = rawRecordedScalingFactor / baseScalingFactor;
+    const std::size_t rawNoiseScaleDegree = left.noiseScaleDegree_ + right.noiseScaleDegree_;
+    const std::size_t normalizedNoiseScaleDegree = rawNoiseScaleDegree - 1;
+
+    if (high3->GetNoiseScaleDeg() != rawNoiseScaleDegree || low3->GetNoiseScaleDeg() != rawNoiseScaleDegree ||
+        high3->GetScalingFactor() != rawRecordedScalingFactor || low3->GetScalingFactor() != rawRecordedScalingFactor) {
+        Invalid("Tensor2 OpenFHE raw multiplication metadata is unexpected");
+    }
+
+    high3->SetNoiseScaleDeg(normalizedNoiseScaleDegree);
+    high3->SetScalingFactor(normalizedRecordedScalingFactor);
+    low3->SetNoiseScaleDeg(normalizedNoiseScaleDegree);
+    low3->SetScalingFactor(normalizedRecordedScalingFactor);
+
+    TensorScaleDescriptor tensorScale{
+        left.paperScale_.approximateLogicalScalingFactor * right.paperScale_.approximateLogicalScalingFactor,
+        static_cast<long double>(left.paperScale_.inputRecordedScalingFactor) *
+            static_cast<long double>(right.paperScale_.inputRecordedScalingFactor) /
+            static_cast<long double>(divisor_.ConvertToInt()),
+    };
+
+    TensorCiphertextPair result(std::move(high3), std::move(low3), context_.get(), divisor_, left.orderedModuli_,
+                                left.level_, tensorScale, normalizedRecordedScalingFactor,
+                                normalizedNoiseScaleDegree, left.keyTag_, left.slots_, Format::EVALUATION, 3);
+    ValidateTensorResult(result);
+    return result;
 }
 
 lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {
