@@ -179,9 +179,10 @@ DCRTPoly MakePolynomial(const std::shared_ptr<DCRTPoly::Params>& params, const s
 }
 
 CryptoContext<DCRTPoly> MakeContext(lbcrypto::ScalingTechnique scalingTechnique = lbcrypto::FIXEDMANUAL,
-                                    std::uint32_t firstModSize = 35) {
+                                    std::uint32_t firstModSize = 35,
+                                    std::uint32_t multiplicativeDepth = 3) {
     lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
-    parameters.SetMultiplicativeDepth(3);
+    parameters.SetMultiplicativeDepth(multiplicativeDepth);
     parameters.SetScalingModSize(30);
     parameters.SetFirstModSize(firstModSize);
     parameters.SetScalingTechnique(scalingTechnique);
@@ -237,9 +238,9 @@ struct Fixture {
     std::vector<BigInt> secondCoefficients;
 };
 
-Fixture MakeFixture(std::uint32_t firstModSize = 35) {
+Fixture MakeFixture(std::uint32_t firstModSize = 35, std::uint32_t multiplicativeDepth = 3) {
     Fixture fixture;
-    fixture.context = MakeContext(lbcrypto::FIXEDMANUAL, firstModSize);
+    fixture.context = MakeContext(lbcrypto::FIXEDMANUAL, firstModSize, multiplicativeDepth);
     fixture.keys    = fixture.context->KeyGen();
 
     auto plaintext = fixture.context->MakeCKKSPackedPlaintext(std::vector<double>{0.0}, 2, 0);
@@ -460,6 +461,26 @@ void TestValidationBeforeRawAccess() {
     CheckThrows([&] { DoubleCKKS invalidModule(automaticContext); }, "non-FIXEDMANUAL context");
 }
 
+void TestMinimumFirstMultBasis() {
+    auto fixture = MakeFixture(35, 2);
+    const auto fullModuli = GetNativeModuli(fixture.input->GetElements().front());
+    Check(fullModuli.size() == 3, "minimum first-Mult2 fixture must have exactly three towers");
+
+    DoubleCKKS module(fixture.context);
+    const auto pair       = module.DCP(fixture.input);
+    const auto recombined = module.RCB(pair);
+    const BigInt divisor(fullModuli.back().ConvertToInt());
+
+    Check(pair.GetOrderedModuli().size() == 2,
+          "minimum first-Mult2 DCP must retain q0 and q_l before RS2");
+    for (std::size_t component = 0; component < fixture.input->GetElements().size(); ++component) {
+        CheckDcpCoefficients(fixture.input->GetElements()[component], pair.GetHigh()->GetElements()[component],
+                             pair.GetLow()->GetElements()[component], divisor);
+        CheckRcbCoefficients(fixture.input->GetElements()[component], pair.GetHigh()->GetElements()[component],
+                             pair.GetLow()->GetElements()[component], recombined->GetElements()[component], divisor);
+    }
+}
+
 void TestRcbRejectsTamperedPairStorage() {
     auto fixture = MakeFixture();
     DoubleCKKS module(fixture.context);
@@ -535,6 +556,7 @@ int main() {
     try {
         TestDcpAndRcbExactOracle();
         TestValidationBeforeRawAccess();
+        TestMinimumFirstMultBasis();
         TestRcbRejectsTamperedPairStorage();
         lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
         std::cout << "DCP/RCB independent-oracle tests passed\n";
