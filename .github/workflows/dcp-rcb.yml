@@ -79,3 +79,85 @@ jobs:
 
       - name: Run DCP and RCB tests
         run: ctest --test-dir build --output-on-failure
+
+  windows-mingw64:
+    runs-on: windows-2022
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out clean-room source
+        uses: actions/checkout@v4
+
+      - name: Check out pristine OpenFHE 1.5.0
+        uses: actions/checkout@v4
+        with:
+          repository: openfheorg/openfhe-development
+          ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+          path: .ci/openfhe-src
+          submodules: recursive
+
+      - name: Install official Windows toolchain
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            mingw-w64-x86_64-boost
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-ninja
+
+      - name: Verify OpenFHE provenance
+        shell: msys2 {0}
+        run: |
+          actual="$(git -C .ci/openfhe-src rev-parse HEAD)"
+          test "$actual" = "$OPENFHE_COMMIT"
+          git -C .ci/openfhe-src status --short
+
+      - name: Cache pristine OpenFHE install
+        id: cache-openfhe-windows
+        uses: actions/cache@v4
+        with:
+          path: .ci/openfhe-install
+          key: openfhe-1.5.0-${{ runner.os }}-mingw64-${{ env.OPENFHE_COMMIT }}
+
+      - name: Configure OpenFHE
+        if: steps.cache-openfhe-windows.outputs.cache-hit != 'true'
+        shell: msys2 {0}
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          cmake -S .ci/openfhe-src -B .ci/openfhe-build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$prefix" \
+            -DBUILD_UNITTESTS=OFF \
+            -DBUILD_EXAMPLES=OFF \
+            -DBUILD_BENCHMARKS=OFF \
+            -DBUILD_EXTRAS=OFF \
+            -DWITH_OPENMP=ON
+
+      - name: Build and install OpenFHE
+        if: steps.cache-openfhe-windows.outputs.cache-hit != 'true'
+        shell: msys2 {0}
+        run: |
+          cmake --build .ci/openfhe-build --parallel 2
+          cmake --install .ci/openfhe-build
+
+      - name: Configure clean-room project
+        shell: msys2 {0}
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_PREFIX_PATH="$prefix"
+
+      - name: Build warning-clean project
+        shell: msys2 {0}
+        run: cmake --build build --parallel 2
+
+      - name: Run DCP and RCB tests
+        shell: msys2 {0}
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir build --output-on-failure
