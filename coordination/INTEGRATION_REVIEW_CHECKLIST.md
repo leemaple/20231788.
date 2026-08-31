@@ -30,6 +30,13 @@ implementation and not evidence that any test has passed.
   `q_div`; an initial decomposition consumes `q_div`. The intended scale
   relation is approximately `Delta = q_div * q_l`, subject to the concrete
   prime schedule and error bound.
+- Theorem 4.8 requires
+  `N * (M_high * q_div + M_low)^2 + E_relin + h < Q_l / 2` and bounds the
+  recombined multiplication error by
+  `(N * M_low^2 / q_div + E_relin + h) / q_l + (h + 1) / 2` in the paper's
+  polynomial norm. A claimed paper-derived end-to-end threshold must state how
+  these quantities are instantiated or conservatively related to the decoded
+  slot error; the phrase "paper-derived" alone is not evidence.
 
 ## OpenFHE 1.5.0 facts to verify in every candidate
 
@@ -41,6 +48,13 @@ implementation and not evidence that any test has passed.
   its evaluation keys, element parameters, active RNS basis, component format,
   and key tag must all match. A successful API call alone does not prove the
   `Relin2` modulus semantics.
+- In HYBRID key switching, OpenFHE 1.5.0 selects precomputed `PartQ` and
+  complement tables from the current tower **count**, and indexes evaluation
+  key towers using `delta = full_Q_size - current_Q_size`. Therefore an
+  arbitrary basis with the same number of towers as a valid prefix can run
+  while using the wrong tables/key residues. A lifted `Q_l * q_div` basis must
+  prove ordered-prime identity with the evaluation-key context, not merely
+  matching ring dimension or tower count.
 - CKKS `ModReduceInternalInPlace` calls `DropLastElementAndScale`, assumes the
   crypto-parameter tower ordering, and mutates level, noise-scale degree, and
   scaling factor. It is valid only when the exact required prime is the next
