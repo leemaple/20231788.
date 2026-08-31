@@ -83,18 +83,33 @@ jobs:
   windows-mingw64:
     runs-on: windows-2022
     timeout-minutes: 60
+    env:
+      WINDOWS_ROOT: C:\openfhe-2023-1788
+      PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+      OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+      OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
 
     steps:
-      - name: Check out clean-room source
-        uses: actions/checkout@v4
+      - name: Check out exact public source commits outside the dotted workspace
+        shell: pwsh
+        working-directory: C:/
+        run: |
+          New-Item -ItemType Directory -Path $env:WINDOWS_ROOT | Out-Null
 
-      - name: Check out pristine OpenFHE 1.5.0
-        uses: actions/checkout@v4
-        with:
-          repository: openfheorg/openfhe-development
-          ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
-          path: .ci/openfhe-src
-          submodules: recursive
+          git init $env:PROJECT_SOURCE
+          git -C $env:PROJECT_SOURCE remote add origin https://github.com/leemaple/20231788..git
+          git -C $env:PROJECT_SOURCE fetch --depth 1 origin $env:GITHUB_SHA
+          git -C $env:PROJECT_SOURCE checkout --detach FETCH_HEAD
+          $projectActual = git -C $env:PROJECT_SOURCE rev-parse HEAD
+          if ($projectActual -ne $env:GITHUB_SHA) {
+            throw "Project checkout mismatch: $projectActual"
+          }
+
+          git init $env:OPENFHE_SOURCE
+          git -C $env:OPENFHE_SOURCE remote add origin https://github.com/openfheorg/openfhe-development.git
+          git -C $env:OPENFHE_SOURCE fetch --depth 1 origin $env:OPENFHE_COMMIT
+          git -C $env:OPENFHE_SOURCE checkout --detach FETCH_HEAD
+          git -C $env:OPENFHE_SOURCE submodule update --init --recursive --depth 1
 
       - name: Install official Windows toolchain
         uses: msys2/setup-msys2@v2
@@ -110,10 +125,12 @@ jobs:
 
       - name: Verify OpenFHE provenance
         shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
-          actual="$(git -C .ci/openfhe-src rev-parse HEAD)"
+          source="$(cygpath -u "$OPENFHE_SOURCE")"
+          actual="$(git -C "$source" rev-parse HEAD)"
           test "$actual" = "$OPENFHE_COMMIT"
-          git -C .ci/openfhe-src status --short
+          git -C "$source" status --short
 
       - name: Cache pristine OpenFHE install
         id: cache-openfhe-windows
@@ -125,9 +142,12 @@ jobs:
       - name: Configure OpenFHE
         if: steps.cache-openfhe-windows.outputs.cache-hit != 'true'
         shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
-          cmake -S .ci/openfhe-src -B .ci/openfhe-build -G Ninja \
+          source="$(cygpath -u "$OPENFHE_SOURCE")"
+          build="$(cygpath -u "$WINDOWS_ROOT")/openfhe-build"
+          cmake -S "$source" -B "$build" -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$prefix" \
             -DBUILD_UNITTESTS=OFF \
@@ -139,12 +159,15 @@ jobs:
       - name: Build and install OpenFHE
         if: steps.cache-openfhe-windows.outputs.cache-hit != 'true'
         shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
-          cmake --build .ci/openfhe-build --parallel 2
-          cmake --install .ci/openfhe-build
+          build="$(cygpath -u "$WINDOWS_ROOT")/openfhe-build"
+          cmake --build "$build" --parallel 2
+          cmake --install "$build"
 
       - name: Configure clean-room project
         shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           cmake -S . -B build -G Ninja \
@@ -153,10 +176,12 @@ jobs:
 
       - name: Build warning-clean project
         shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
         run: cmake --build build --parallel 2
 
       - name: Run DCP and RCB tests
         shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
