@@ -139,10 +139,17 @@ clone/equality limitation. The returned patch was not applied blindly. Codex
 manually implemented its equivalent test-only deep-snapshot coverage on the
 latest implementation branch and pushed commit
 `87c84b879c13b55cf15d6559d3317853228fdc05`. Exact GitHub Actions run
-`https://github.com/leemaple/20231788./actions/runs/33411494861` is the required
-Linux/Windows gate and was still running when this record was written. No green
-result is claimed yet.
+`https://github.com/leemaple/20231788./actions/runs/33411494861` completed
+successfully at 2026-09-01 00:04 CST:
 
-The Ego Lite task space remains open without interaction until exact-current-
-commit CI finishes. A final same-conversation closure may be supplied with full
-current context if required; no premature `MERGEABLE` claim is made.
+- Linux/GCC built the project warning-clean and passed 1/1 `dcp_rcb` CTest in
+  0.02 seconds against pristine OpenFHE commit
+  `df495ba2e91739a6dc8f1de254fc5a41155ce504`.
+- Windows 2022/MSYS2 MinGW64 rebuilt and installed that exact OpenFHE commit,
+  built and linked the project, and passed 1/1 `dcp_rcb` CTest in 0.31 seconds.
+- The Actions run's `headSha` is the exact test-remediation commit
+  `87c84b879c13b55cf15d6559d3317853228fdc05`.
+
+The Ego Lite task space remains open solely for a final same-conversation
+closure package carrying the complete exact-current-commit context and CI
+evidence; no premature `MERGEABLE` claim is made.
