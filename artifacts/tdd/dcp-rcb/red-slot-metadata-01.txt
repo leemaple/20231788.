@@ -24,5 +24,6 @@ alter the CKKS slot-count metadata of stored pair ciphertext state and the
 module reaches RCB arithmetic instead of rejecting the inconsistent pair.
 
 The Windows job was still installing/building its toolchain when this red was
-captured. It is not needed to establish the missing behavior; the corresponding
+captured. After the Linux log established the intended missing behavior, the
+run was cancelled to avoid a redundant Windows OpenFHE build. The corresponding
 green commit must run the complete Linux and Windows/MinGW64 workflow.
