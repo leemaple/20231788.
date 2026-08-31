@@ -231,11 +231,14 @@ void DoubleCKKS::ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const {
 CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
     ValidateDcpInput(ciphertext);
 
-    const auto& quotientFactors = parameters_->GetQlQlInvModqlDivqlModq(0);
-    const auto& divisorInverses = parameters_->GetqlInvModq(0);
-    if (quotientFactors.size() != firstPairModuli_.size() ||
-        divisorInverses.size() != firstPairModuli_.size()) {
-        Invalid("OpenFHE q_div rescale precomputation does not match the retained basis");
+    std::vector<lbcrypto::NativeInteger> quotientFactors;
+    std::vector<lbcrypto::NativeInteger> divisorInverses;
+    quotientFactors.reserve(firstPairModuli_.size());
+    divisorInverses.reserve(firstPairModuli_.size());
+    for (const auto& modulus : firstPairModuli_) {
+        const auto divisorInverse = divisor_.ModInverse(modulus);
+        divisorInverses.push_back(divisorInverse);
+        quotientFactors.push_back(modulus - divisorInverse);
     }
 
     std::vector<lbcrypto::DCRTPoly> highElements;
