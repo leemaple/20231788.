@@ -88,12 +88,16 @@ jobs:
       PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
       OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
       OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+      OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-${{ github.run_id }}-${{ github.run_attempt }}
+      PROJECT_BUILD: C:\openfhe-2023-1788\project-build-${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:
       - name: Check out exact public source commits outside the dotted workspace
         shell: pwsh
         working-directory: C:/
         run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
           New-Item -ItemType Directory -Path $env:WINDOWS_ROOT | Out-Null
 
           git init $env:PROJECT_SOURCE
@@ -111,11 +115,21 @@ jobs:
           git -C $env:OPENFHE_SOURCE checkout --detach FETCH_HEAD
           git -C $env:OPENFHE_SOURCE submodule update --init --recursive --depth 1
 
+          $projectStatus = @(git -C $env:PROJECT_SOURCE status --porcelain)
+          if ($projectStatus.Count -ne 0) {
+            throw "Project checkout is dirty: $($projectStatus -join '; ')"
+          }
+          $openfheStatus = @(git -C $env:OPENFHE_SOURCE status --porcelain)
+          if ($openfheStatus.Count -ne 0) {
+            throw "OpenFHE checkout is dirty: $($openfheStatus -join '; ')"
+          }
+
       - name: Install official Windows toolchain
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
+          cache: false
           install: >-
             git
             mingw-w64-x86_64-boost
@@ -130,23 +144,16 @@ jobs:
           source="$(cygpath -u "$OPENFHE_SOURCE")"
           actual="$(git -C "$source" rev-parse HEAD)"
           test "$actual" = "$OPENFHE_COMMIT"
-          git -C "$source" status --short
-
-      - name: Cache pristine OpenFHE install
-        id: cache-openfhe-windows
-        uses: actions/cache@v4
-        with:
-          path: .ci/openfhe-install
-          key: openfhe-1.5.0-${{ runner.os }}-mingw64-${{ env.OPENFHE_COMMIT }}
+          test -z "$(git -C "$source" status --porcelain)"
+          git -C "$source" submodule status --recursive
 
       - name: Configure OpenFHE
-        if: steps.cache-openfhe-windows.outputs.cache-hit != 'true'
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           source="$(cygpath -u "$OPENFHE_SOURCE")"
-          build="$(cygpath -u "$WINDOWS_ROOT")/openfhe-build"
+          build="$(cygpath -u "$OPENFHE_BUILD")"
           cmake -S "$source" -B "$build" -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$prefix" \
@@ -157,11 +164,10 @@ jobs:
             -DWITH_OPENMP=ON
 
       - name: Build and install OpenFHE
-        if: steps.cache-openfhe-windows.outputs.cache-hit != 'true'
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
-          build="$(cygpath -u "$WINDOWS_ROOT")/openfhe-build"
+          build="$(cygpath -u "$OPENFHE_BUILD")"
           cmake --build "$build" --parallel 2
           cmake --install "$build"
 
@@ -170,19 +176,23 @@ jobs:
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
-          cmake -S . -B build -G Ninja \
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake -S . -B "$build" -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_PREFIX_PATH="$prefix"
 
       - name: Build warning-clean project
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
-        run: cmake --build build --parallel 2
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --parallel 2
 
       - name: Run DCP and RCB tests
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
-          ctest --test-dir build --output-on-failure
+          ctest --test-dir "$build" --output-on-failure
