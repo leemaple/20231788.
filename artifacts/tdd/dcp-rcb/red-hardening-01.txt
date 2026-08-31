@@ -1,0 +1,22 @@
+DCP/RCB contract-hardening red evidence
+
+Observed: 2026-08-31 18:51 CST (Asia/Shanghai)
+Project commit: dbcacbbe31c95532012d3d854554f9ba64828e87
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
+Run: https://github.com/leemaple/20231788./actions/runs/33384276076
+Conclusion: expected failure after tests changed, before production implementation changed
+
+The previously green production library still compiled and linked warning-clean. The unchanged build then reached the newly hardened test interface and failed because production did not yet expose the required structured paper-scale transition descriptor.
+
+Representative output:
+
+  [ 50%] Built target openfhe_2023_1788
+  [ 75%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+  tests/dcp_rcb_test.cpp:27:26:
+  error: 'PaperScaleDescriptor' has not been declared in 'openfhe_2023_1788'
+  tests/dcp_rcb_test.cpp:374:22:
+  error: request for member 'inputRecordedScalingFactor' in 'paperScale',
+  which is of non-class type 'const long double'
+
+The same test-only commit also adds assertions for the exact fresh degree-two FIXEDMANUAL recorded scale and adversarial mutation of RCB pair storage. Those runtime assertions could not execute until the required public descriptor compiled. This is retained as the red state; no pass claim is made.
