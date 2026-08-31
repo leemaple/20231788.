@@ -34,9 +34,12 @@ implementation and not evidence that any test has passed.
   inputs have logical scales `S1` and `S2`, then `DCP` preserves that logical
   scale, `Tensor2` produces `S1 * S2 / q_div`, `Relin2` preserves it, and
   `RS2` produces `S1 * S2 / (q_div * q_l)`. For equal input scale `Delta`, the
-  last expression returns approximately `Delta`. Standard OpenFHE tensor or
-  modulus-reduction metadata does not account for Tensor2's implicit
-  `/ q_div`; a candidate must set or separately track this value explicitly.
+  last expression returns approximately `Delta`. Separately, FIXEDMANUAL
+  OpenFHE metadata tracks powers of the approximate factor `2^p`, so the
+  corresponding recorded transitions are `SF1*SF2/2^p` after Tensor2 and
+  `SF1*SF2/2^(2p)` after RS2. A candidate must track/assert both views; it must
+  not conceal their prime-versus-power-of-two ratio with a metadata-only
+  correction.
 - Theorem 4.8 requires
   `N * (M_high * q_div + M_low)^2 + E_relin + h < Q_l / 2` and bounds the
   recombined multiplication error by

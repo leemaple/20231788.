@@ -54,17 +54,17 @@ This schedule must be rejected if the supplied basis, tower order, evaluation ke
 
 ## Candidate logical metadata schedule
 
-**Inferred.** Individual high and low ciphertexts are not independently meaningful CKKS encodings: only `RCB(high, low)` has the pair's CKKS scale. The pair module should therefore own the logical scale state and mirror it consistently into its component ciphertext metadata only so that cloning and the final RCB output remain well formed. The first supported multiplication has this state transition:
+**Inferred.** Individual high and low ciphertexts are not independently meaningful CKKS encodings: only `RCB(high, low)` has the pair's CKKS scale. The pair module should therefore own the paper/logical scale state. Separately, it must keep both component ciphertexts on the same OpenFHE recorded scale so cloning and final RCB output remain well formed. These quantities are close but not identical under `FIXEDMANUAL`:
 
-| Operation | Ordered basis | OpenFHE level | logical scale | noise-scale degree |
-| --- | --- | ---: | --- | ---: |
-| fresh input | `[q0, ..., q_l, q_div]` | 0 | `Delta approximately 2^(2p)` | 2 |
-| DCP | `[q0, ..., q_l]` | 1 | `Delta` (of the recombination) | 2 |
-| Tensor2 | `[q0, ..., q_l]` | 1 | `S1 * S2 / q_div` | 3 |
-| Relin2 | `[q0, ..., q_l]` | 1 | unchanged | 3 |
-| RS2 / Mult2 | `[q0, ..., q_(l-1)]` | 2 | `S1 * S2 / (q_div * q_l)` | 2 |
+| Operation | Ordered basis | level | paper/logical scale | OpenFHE recorded scale | degree |
+| --- | --- | ---: | --- | --- | ---: |
+| fresh input | `[q0, ..., q_l, q_div]` | 0 | `Delta approximately 2^(2p)` | `2^(2p)` | 2 |
+| DCP | `[q0, ..., q_l]` | 1 | `Delta` (of the recombination) | `2^(2p)` | 2 |
+| Tensor2 | `[q0, ..., q_l]` | 1 | `S1 * S2 / q_div` | `SF1 * SF2 / 2^p` | 3 |
+| Relin2 | `[q0, ..., q_l]` | 1 | unchanged | unchanged | 3 |
+| RS2 / Mult2 | `[q0, ..., q_(l-1)]` | 2 | `S1 * S2 / (q_div * q_l)` | `SF1 * SF2 / 2^(2p)` | 2 |
 
-The integer division uses the actual RNS primes, while `FIXEDMANUAL` decoding tracks powers of the approximate factor `2^p`. The difference is intentional CKKS approximation and must be measured, not erased with a metadata-only correction.
+Here `S` denotes the mathematical scale of a recombined pair and `SF` denotes OpenFHE's recorded approximate scale. The integer division uses the actual RNS primes, while `FIXEDMANUAL` decoding tracks powers of `2^p`. The difference is intentional CKKS approximation and must be measured, not erased by writing the actual prime quotient into only a metadata field. Tests must assert both the symbolic prime transition and the OpenFHE metadata transition.
 
 **Observed risk.** In the default single-prime generator, the last scaling prime is the initial `p`-bit prime and the immediately preceding one is its previous admissible prime. If those two towers are used without reordering, then `q_l < q_div`, whereas the paper's modulus-consumption discussion recommends `q_l` slightly larger than `q_div`. Theorem 4.8 does not require that ordering, but the selected parameter vector must either justify the near-unity reversed ratio under its executable error bound or construct a supported ordering with `q_l >= q_div`; tests may not silently assume the recommendation is met.
 
