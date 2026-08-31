@@ -10,10 +10,10 @@ Review the exact supplied project commit
 `a3df1c5843e8bb843f8d9becc3c8a135ffba63cd`. Its last production/build change is
 `e236a6ef3361169363fd17a74ab1a8dafc539d57`; later commits only retain evidence
 and reconcile project documentation. GitHub Actions run
-`https://github.com/leemaple/20231788./actions/runs/33399245184` built the pinned
-OpenFHE dependency and passed the complete DCP/RCB test executable on both
-Linux/GCC and Windows/MSYS2 MinGW64. Treat the supplied logs as retained evidence,
-not as a substitute for source review.
+`https://github.com/leemaple/20231788./actions/runs/33400450367` built this exact
+packaged commit with the pinned OpenFHE dependency and passed the complete DCP/RCB
+test executable on both Linux/GCC and Windows/MSYS2 MinGW64. Treat the supplied
+logs as retained evidence, not as a substitute for source review.
 
 The repository's prior implementation and every related local code tree are
 known wrong and excluded. Review only the supplied paper, pristine OpenFHE source,
