@@ -11,6 +11,8 @@ Fable5 is terminal-only and reserved for a concrete unresolved disagreement afte
 
 At 2026-08-31 17:10 CST, Codex had independently completed and pushed the public seam record, paper/OpenFHE API review, dual paper-versus-OpenFHE scale lifecycle, centered-DCP source proof, and independent oracle/red-green evidence plan. No implementation, build, or passing-test claim has been made. Remote default branch and local HEAD were verified after each coherent commit.
 
+At 2026-08-31 17:17 CST, the logged-in official BigModel Coding Plan page showed the shared ZCode five-hour quota 100% used (reset 18:31), weekly quota 94% used (reset 2026-09-02 10:00), and MCP monthly quota 9% used (reset 2026-09-25 10:00). New ZCode dispatches and quota retries are paused; the existing Windows task is preserved. After 18:31 Codex must re-read the page before resuming at most one critical-path ZCode task while weekly usage remains above 90%. Evidence and policy: `coordination/ZCODE_QUOTA.md`.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
