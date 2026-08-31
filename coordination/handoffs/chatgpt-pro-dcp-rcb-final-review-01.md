@@ -80,3 +80,42 @@ network-security scope.
   implementation.
 - The prompt was submitted only once. It has not been resent, refreshed,
   interrupted, or otherwise prodded while ChatGPT Pro is working.
+
+## Completion and returned artifact
+
+- ChatGPT Pro completed naturally after 42 minutes 50 seconds at approximately
+  2026-08-31 23:02 CST. The generation was never stopped, retried, refreshed,
+  or prompted again.
+- Verdict for exact reviewed commit `a3df1c5843e8bb843f8d9becc3c8a135ffba63cd`:
+  `NEEDS NAMED FIXES` with P0 = 0 and P1 = 1.
+- It found no DCP/RCB formula, centered quotient/remainder, RCB recombination,
+  or OpenFHE mapping defect. The sole P1 is a test-coverage gap: the existing
+  immutability assertions did not compare all observable OpenFHE ciphertext
+  state.
+- The returned remediation is test-only: retain the focused diagnostics and add
+  whole-object equality for the DCP source snapshot and both RCB pair-member
+  snapshots. No production patch was requested.
+- ChatGPT Pro did not complete its local OpenFHE build within its execution
+  limits and made no local build/CTest or Windows pass claim. It inspected the
+  exact public CI evidence separately.
+- Downloaded ZIP:
+  `artifacts/handoffs/chatgpt-pro-dcp-rcb-final-review-01/output/FINAL-DCP-RCB-REVIEW-a3df1c5.zip`.
+- Size: 17,537 bytes.
+- SHA-256:
+  `72a6e89b0a88540b59093607ce5149bc3f5f809985be24d38662d7aa9cd9dc8f`;
+  this exactly matches the hash stated in the response.
+- `unzip -t` passed. The archive contains the four required review records and
+  `0001-test-full-observable-immutability.patch`.
+- Gitleaks 8.30.1 scanned the extracted 38.83 KB and found no leaks. Targeted
+  credential-content and sensitive-filename checks found no matches.
+
+The patch is review input, not trusted code. Codex independently checked
+OpenFHE 1.5.0 `CiphertextImpl::operator==` and confirmed that it covers context,
+key tag, slots, level, hop level, noise-scale degree, floating and integer scale,
+encoding type, metadata contents, and elements. Equivalent assertions will be
+applied to the current slot-hardened branch and rerun on both platforms.
+
+While this exact review was running, Codex independently found and fixed a
+separate slot-manifest validation gap. Therefore even after the returned
+test-only remediation is green, this review does not certify the current branch
+head; a bounded same-commit remediation review remains required.
