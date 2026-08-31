@@ -17,3 +17,9 @@ Latest read-only browser task space: `zcode-quota-monitor-20260901`, numeric ID
 may create a fresh short-lived monitor space because numeric IDs are not stable.
 
 The existing daily 07:00 project-report heartbeat was updated at 2026-08-31 17:24 CST to include a read-only quota snapshot and allocation recommendation. The app permits only one heartbeat on this task, so the active continuous project Goal—not a duplicate automation—owns later rechecks. The latest reading above came from the freshly refreshed official page.
+
+At approximately 2026-09-01 07:15 CST, the user authorized direct Windows
+experiments or one terminal-only Fable5 review as a substitute for the pending
+ZCode review. The bounded allocation and consumption rule are recorded in
+`coordination/REVIEW_ALLOCATION.md`. This does not create or resume a ZCode
+task and does not change the quota values above.
