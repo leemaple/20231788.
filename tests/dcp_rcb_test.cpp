@@ -290,10 +290,13 @@ void CheckOrderedModuli(const std::vector<NativeInteger>& actual, const std::vec
 }
 
 void CheckCiphertextMetadata(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext,
+                             const CryptoContext<DCRTPoly>& expectedContext,
                              const std::vector<NativeInteger>& expectedModuli, std::size_t expectedLevel,
                              std::size_t expectedNoiseScaleDegree, double expectedScalingFactor,
                              const std::string& expectedKeyTag, const std::string& label) {
     Check(ciphertext != nullptr, label + " is null");
+    Check(ciphertext->GetCryptoContext().get() == expectedContext.get(), label + " context identity mismatch");
+    Check(ciphertext->GetEncodingType() == lbcrypto::CKKS_PACKED_ENCODING, label + " encoding metadata mismatch");
     Check(ciphertext->NumberCiphertextElements() == 2, label + " component count mismatch");
     Check(ciphertext->GetLevel() == expectedLevel, label + " level mismatch");
     Check(ciphertext->GetNoiseScaleDeg() == expectedNoiseScaleDegree, label + " noise-scale degree mismatch");
@@ -402,8 +405,8 @@ void TestDcpAndRcbExactOracle() {
 
     std::vector<NativeInteger> prefixModuli(fullModuli.begin(), fullModuli.end() - 1);
     CheckOrderedModuli(pair.GetOrderedModuli(), prefixModuli, "DCP pair");
-    CheckCiphertextMetadata(pair.GetHigh(), prefixModuli, 1, 2, recordedScale, keyTag, "DCP high");
-    CheckCiphertextMetadata(pair.GetLow(), prefixModuli, 1, 2, recordedScale, keyTag, "DCP low");
+    CheckCiphertextMetadata(pair.GetHigh(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, "DCP high");
+    CheckCiphertextMetadata(pair.GetLow(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, "DCP low");
 
     for (std::size_t component = 0; component < fixture.input->GetElements().size(); ++component) {
         CheckDcpCoefficients(fixture.input->GetElements()[component], pair.GetHigh()->GetElements()[component],
@@ -411,10 +414,26 @@ void TestDcpAndRcbExactOracle() {
     }
 
     Check(fixture.input->GetLevel() == inputBefore->GetLevel(), "DCP mutated input level");
+    Check(fixture.input->GetNoiseScaleDeg() == inputBefore->GetNoiseScaleDeg(),
+          "DCP mutated input noise-scale degree");
+    Check(fixture.input->GetScalingFactor() == inputBefore->GetScalingFactor(),
+          "DCP mutated input scaling factor");
+    Check(fixture.input->GetKeyTag() == inputBefore->GetKeyTag(), "DCP mutated input key tag");
+    Check(fixture.input->GetEncodingType() == inputBefore->GetEncodingType(), "DCP mutated input encoding metadata");
+    Check(fixture.input->NumberCiphertextElements() == inputBefore->NumberCiphertextElements(),
+          "DCP mutated input component count");
     Check(fixture.input->GetElements() == inputBefore->GetElements(), "DCP mutated input elements");
 
+    const auto highBefore = pair.GetHigh()->Clone();
+    const auto lowBefore  = pair.GetLow()->Clone();
     const auto recombined = module.RCB(pair);
-    CheckCiphertextMetadata(recombined, prefixModuli, 1, 2, recordedScale, keyTag, "RCB result");
+    CheckCiphertextMetadata(recombined, fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, "RCB result");
+    Check(pair.GetHigh()->GetElements() == highBefore->GetElements(), "RCB mutated pair high elements");
+    Check(pair.GetLow()->GetElements() == lowBefore->GetElements(), "RCB mutated pair low elements");
+    CheckCiphertextMetadata(pair.GetHigh(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag,
+                            "DCP high after RCB");
+    CheckCiphertextMetadata(pair.GetLow(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag,
+                            "DCP low after RCB");
     for (std::size_t component = 0; component < fixture.input->GetElements().size(); ++component) {
         CheckRcbCoefficients(fixture.input->GetElements()[component], pair.GetHigh()->GetElements()[component],
                              pair.GetLow()->GetElements()[component], recombined->GetElements()[component],
@@ -459,12 +478,10 @@ void TestValidationBeforeRawAccess() {
 
     auto coefficientFormat = fixture.input->Clone();
     auto coefficientElements = coefficientFormat->GetElements();
-    for (auto& element : coefficientElements) {
-        element.SetFormat(Format::COEFFICIENT);
-    }
+    coefficientElements.front().SetFormat(Format::COEFFICIENT);
     coefficientFormat->SetElements(std::move(coefficientElements));
     CheckThrowsInvalidArgument([&] { module.DCP(coefficientFormat); }, "evaluation format",
-                               "coefficient-format input");
+                               "mixed-format input");
 
     auto reorderedBasis = fixture.input->Clone();
     auto reorderedElements = reorderedBasis->GetElements();
@@ -543,6 +560,29 @@ void TestDcpDoesNotIndexUncheckedPrecomputationRows() {
 void TestRcbRejectsTamperedPairStorage() {
     auto fixture = MakeFixture();
     DoubleCKKS module(fixture.context);
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto& divisor = const_cast<NativeInteger&>(pair.GetDivisor());
+        divisor += NativeInteger(2);
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "pair divisor does not match",
+                                   "tampered pair divisor manifest");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto& orderedModuli = const_cast<std::vector<NativeInteger>&>(pair.GetOrderedModuli());
+        orderedModuli.front() += NativeInteger(2);
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "pair ordered RNS basis",
+                                   "tampered pair basis manifest");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto& keyTag = const_cast<std::string&>(pair.GetKeyTag());
+        keyTag = "tampered-manifest-key-tag";
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "key tag", "tampered pair key-tag manifest");
+    }
 
     {
         auto pair = module.DCP(fixture.input);
