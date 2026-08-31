@@ -36,7 +36,7 @@ public:
     std::size_t GetNoiseScaleDegree() const noexcept;
     PairLifecycle GetLifecycle() const noexcept;
     const std::string& GetKeyTag() const noexcept;
-    lbcrypto::Format GetFormat() const noexcept;
+    Format GetFormat() const noexcept;
     std::size_t GetComponentCount() const noexcept;
 
 private:
@@ -53,7 +53,7 @@ private:
                    std::size_t noiseScaleDegree,
                    PairLifecycle lifecycle,
                    std::string keyTag,
-                   lbcrypto::Format format,
+                   Format format,
                    std::size_t componentCount);
 
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high_;
@@ -67,7 +67,7 @@ private:
     std::size_t noiseScaleDegree_;
     PairLifecycle lifecycle_;
     std::string keyTag_;
-    lbcrypto::Format format_;
+    Format format_;
     std::size_t componentCount_;
 };
 

@@ -47,7 +47,7 @@ CiphertextPair::CiphertextPair(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high,
                                std::size_t noiseScaleDegree,
                                PairLifecycle lifecycle,
                                std::string keyTag,
-                               lbcrypto::Format format,
+                               Format format,
                                std::size_t componentCount)
     : high_(std::move(high)),
       low_(std::move(low)),
@@ -107,7 +107,7 @@ const std::string& CiphertextPair::GetKeyTag() const noexcept {
     return keyTag_;
 }
 
-lbcrypto::Format CiphertextPair::GetFormat() const noexcept {
+Format CiphertextPair::GetFormat() const noexcept {
     return format_;
 }
 
@@ -180,7 +180,7 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
     }
 
     for (const auto& element : ciphertext->GetElements()) {
-        if (element.GetFormat() != lbcrypto::Format::EVALUATION) {
+        if (element.GetFormat() != Format::EVALUATION) {
             Invalid(std::string(label) + " must be in evaluation format");
         }
         if (!SameOrderedModuli(OrderedModuli(element), orderedModuli)) {
@@ -252,7 +252,7 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
 
     CiphertextPair pair(std::move(highCiphertext), std::move(lowCiphertext), context_.get(), divisor_,
                         firstPairModuli_, 1, paperScale, recordedScalingFactor, 2,
-                        PairLifecycle::ReadyForFirstMult, ciphertext->GetKeyTag(), lbcrypto::Format::EVALUATION, 2);
+                        PairLifecycle::ReadyForFirstMult, ciphertext->GetKeyTag(), Format::EVALUATION, 2);
     ValidatePair(pair);
     return pair;
 }
@@ -264,7 +264,7 @@ void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
     if (pair.divisor_ != divisor_) {
         Invalid("pair divisor does not match the bound context");
     }
-    if (pair.componentCount_ != 2 || pair.format_ != lbcrypto::Format::EVALUATION) {
+    if (pair.componentCount_ != 2 || pair.format_ != Format::EVALUATION) {
         Invalid("pair shape or format is invalid");
     }
     if (pair.level_ == 0 || pair.level_ >= fullModuli_.size()) {

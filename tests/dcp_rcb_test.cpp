@@ -22,7 +22,6 @@ using BigInt = boost::multiprecision::cpp_int;
 using lbcrypto::Ciphertext;
 using lbcrypto::CryptoContext;
 using lbcrypto::DCRTPoly;
-using lbcrypto::Format;
 using lbcrypto::NativeInteger;
 using openfhe_2023_1788::DoubleCKKS;
 using openfhe_2023_1788::PairLifecycle;

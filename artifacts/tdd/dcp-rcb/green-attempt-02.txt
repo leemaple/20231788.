@@ -1,0 +1,19 @@
+DCP/RCB green attempt 02 (not a green claim)
+
+GitHub Actions run: https://github.com/leemaple/20231788./actions/runs/33382229833
+Commit: 97353df601e49f3f4fe2eb5ef38f16880a5152aa
+Result: failure during project compilation; CTest did not run.
+
+Classification:
+- The prior upstream-header warning failure was resolved: compilation reached project-owned source.
+- OpenFHE 1.5.0 declares `Format` as a global enum in `utils/inttypes.h`.
+- The project incorrectly referred to `lbcrypto::Format`, so the compiler rejected the public API and implementation.
+- This is an API namespace adaptation failure, not evidence for or against DCP/RCB arithmetic correctness.
+
+Representative diagnostic:
+  include/openfhe_2023_1788/double_ckks.h:39:15:
+  error: 'Format' in namespace 'lbcrypto' does not name a type
+
+Next action:
+- Use OpenFHE 1.5.0's global `Format` enum without weakening warning policy or tests.
+- Re-run the warning-clean build and independent-oracle CTest before any green claim.
