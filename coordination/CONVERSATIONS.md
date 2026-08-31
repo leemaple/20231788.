@@ -70,6 +70,24 @@ paper facts remain separately recorded as `H_out=H1*H2` and
 `R_out/S_out=baseSF/q_div`. No implementation or execution claim is attached
 to that analysis.
 
+The corrected Tensor2 response then completed naturally with verdict `ready to
+apply`. Codex verified its 33,877-byte output ZIP, SHA-256
+`d869a8c27e650e20dbd5f56ea7c99f492c5f6aa6219e8f84fade24ab4e4c1808`,
+read every file, and replay-checked all five ordered patches. The real branch
+preserves compile red at `f3db12e...` / run `33425868973`, complete runtime red
+at `482d27d...` / run `33426712752`, first Linux green at `1408d46...` / run
+`33427271692`, and final source/test/workflow head
+`55f3b43c47b5b2464625afcc6a1f244724336d5b`.
+
+Exact run `33428194982` passed at that final head. Linux used CMake 3.31.6 and
+GCC 13.3.0; Windows 2022/MSYS2 MinGW64 used CMake 4.4.2 and GCC 16.2.0. Both
+strict builds passed all 6/6 CTest entries. The final parallel Standards and
+Spec reviews each returned PASS with zero actionable findings; their separate
+reports and the resolved temporal CI gate are retained in
+`coordination/reviews/tensor2-final-two-axis-review.md`. ChatGPT Pro still has
+not reviewed the exact post-hardening head, and Windows ZCode/Zima remains
+quota-deferred, so no final multi-agent merge claim is made yet.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
