@@ -46,6 +46,22 @@ This schedule must be rejected if the supplied basis, tower order, evaluation ke
 - **Observed:** the non-first `FIXEDMANUAL` RNS primes are generated around a common `p`-bit prime, while the first modulus is handled separately (`src/pke/lib/scheme/ckksrns/ckksrns-parametergeneration.cpp:415-517`). Hence adjacent `p`-bit towers chosen as `q_l` and `q_div` satisfy `q_l * q_div approximately 2^(2p)`, but neither factor nor their product is exactly `2^p` or `2^(2p)`.
 - **Inferred:** the initial paper-scale requirement can be represented without mutating ciphertext metadata: encode and encrypt at `noiseScaleDeg == 2`, then assert that the measured ratio `2^(2p) / (q_l * q_div)` is within the test parameter's explicit tolerance. The implementation and tests must say “approximately,” not claim exact scale equality.
 
+## Candidate logical metadata schedule
+
+**Inferred.** Individual high and low ciphertexts are not independently meaningful CKKS encodings: only `RCB(high, low)` has the pair's CKKS scale. The pair module should therefore own the logical scale state and mirror it consistently into its component ciphertext metadata only so that cloning and the final RCB output remain well formed. The first supported multiplication has this state transition:
+
+| Operation | Ordered basis | OpenFHE level | logical scale | noise-scale degree |
+| --- | --- | ---: | --- | ---: |
+| fresh input | `[q0, ..., q_l, q_div]` | 0 | `Delta approximately 2^(2p)` | 2 |
+| DCP | `[q0, ..., q_l]` | 1 | `Delta` (of the recombination) | 2 |
+| Tensor2 | `[q0, ..., q_l]` | 1 | `S1 * S2 / q_div` | 3 |
+| Relin2 | `[q0, ..., q_l]` | 1 | unchanged | 3 |
+| RS2 / Mult2 | `[q0, ..., q_(l-1)]` | 2 | `S1 * S2 / (q_div * q_l)` | 2 |
+
+The integer division uses the actual RNS primes, while `FIXEDMANUAL` decoding tracks powers of the approximate factor `2^p`. The difference is intentional CKKS approximation and must be measured, not erased with a metadata-only correction.
+
+**Observed risk.** In the default single-prime generator, the last scaling prime is the initial `p`-bit prime and the immediately preceding one is its previous admissible prime. If those two towers are used without reordering, then `q_l < q_div`, whereas the paper's modulus-consumption discussion recommends `q_l` slightly larger than `q_div`. Theorem 4.8 does not require that ordering, but the selected parameter vector must either justify the near-unity reversed ratio under its executable error bound or construct a supported ordering with `q_l >= q_div`; tests may not silently assume the recommendation is met.
+
 ## Explicit next-multiplication boundary
 
 **Inferred.** After the first RS2, the pair basis is `[q0, ..., q_(l-1)]`. A second Relin2 would need `[q0, ..., q_(l-1), q_div]`. That is not an ordered prefix of the original full basis `[q0, ..., q_l, q_div]`. Existing HYBRID/BV key-switch table selection can therefore address the wrong prime residues even when the tower count looks plausible.
