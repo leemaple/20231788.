@@ -593,6 +593,14 @@ void TestRcbRejectsTamperedPairStorage() {
 
     {
         auto pair = module.DCP(fixture.input);
+        auto low  = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetLow());
+        low->SetEncodingType(lbcrypto::PACKED_ENCODING);
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "CKKS packed encoding metadata",
+                                   "tampered pair encoding metadata");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
         auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetHigh());
         high->GetElements().push_back(high->GetElements().front());
         CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "exactly two RLWE components",
