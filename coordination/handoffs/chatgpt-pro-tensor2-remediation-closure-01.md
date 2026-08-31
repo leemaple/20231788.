@@ -71,11 +71,17 @@ expansion, and network-security assessment.
 - The clean package explicitly marks Git object ancestry/history-rewrite state
   unverified because `.git` is excluded.
 
-## Requested result
+## Collected result
 
-The reviewer must return one ZIP with a bounded exact-current verdict, explicit
-P2/P3 disposition, raw-evidence audit, final frozen-contract map, and execution
-record, plus a patch only if a concrete current-head finding requires one. It
-must state the returned ZIP byte size and full SHA-256 in the same response.
-Until that natural response is collected and independently verified, no
-ChatGPT-Pro `MERGEABLE` claim is made.
+The response completed naturally and was collected at 2026-09-01 06:08 CST.
+Verdict: `MERGEABLE`, P0/P1/P2/P3 = 0. The preceding P2 and P3 findings are
+closed, no patch was returned, and the verdict remains conditional on the
+separate Windows ZCode/Zima same-commit review.
+
+The returned 18,269-byte ZIP has SHA-256
+`40e1211eb8437189bf25e85ef2c7b5633a4d55bbfd217c3002d4ba44c443771d`.
+Archive integrity, safe flat paths, all four file hashes, full readback, and a
+fresh Gitleaks 8.30.1 scan passed. Complete evidence:
+`coordination/handoffs/chatgpt-pro-tensor2-remediation-closure-01-output.md`.
+Ego Lite task space 77 was closed after verified collection; the saved
+conversation URL above remains available for recovery.
