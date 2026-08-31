@@ -1,0 +1,47 @@
+DCP/RCB independent-review hardening green evidence
+
+Observed: 2026-08-31 20:50 CST (Asia/Shanghai)
+Project commit: d7412b8d42299fd07225c23e10c9c11c867895a7
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
+Final run: https://github.com/leemaple/20231788./actions/runs/33393658006
+Conclusion: success
+
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
+This final review-hardening state additionally verifies:
+
+- every negative case throws module-owned `std::invalid_argument`, carries the
+  `DoubleCKKS: ` prefix, and contains its case-specific diagnostic;
+- DCP preserves all checked source elements and metadata;
+- RCB preserves both pair members;
+- high, low, and recombined ciphertexts retain exact context and CKKS encoding;
+- a genuinely mixed-format input is rejected;
+- adversarial divisor, ordered-basis, and key-tag manifest mutations are rejected;
+- only the currently constructed `ReadyForFirstMult` lifecycle enum value exists.
+
+The exact-exception and ownership-contract intermediate runs also passed:
+
+- https://github.com/leemaple/20231788./actions/runs/33393282342
+- https://github.com/leemaple/20231788./actions/runs/33393525763
+
+Final strict build output:
+
+  [ 25%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+  [ 50%] Built target openfhe_2023_1788
+  [ 75%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+  [100%] Built target dcp_rcb_test
+
+Final CTest output:
+
+  Start 1: dcp_rcb
+  1/1 Test #1: dcp_rcb ..........................   Passed    0.02 sec
+  100% tests passed, 0 tests failed out of 1
+  Total Test time (real) =   0.07 sec
+
+The GitHub Node.js action annotation is external metadata, not a project compiler
+warning. Windows/MSVC remains a separate unverified gate.
