@@ -16,12 +16,15 @@ if(UNIX AND NOT APPLE)
     add_link_options(-Wl,--no-as-needed)
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenFHE_CXX_FLAGS}")
+
 include_directories(
     ${OPENMP_INCLUDES}
     ${OpenFHE_INCLUDE}
     ${OpenFHE_INCLUDE}/third-party/include
     ${OpenFHE_INCLUDE}/core
     ${OpenFHE_INCLUDE}/pke
+    ${OpenFHE_INCLUDE}/binfhe
 )
 link_directories(${OpenFHE_LIBDIR} ${OPENMP_LIBRARIES})
 

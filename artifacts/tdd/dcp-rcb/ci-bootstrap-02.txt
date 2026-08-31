@@ -1,0 +1,34 @@
+DCP/RCB CI bootstrap failure 02 — not TDD red evidence
+
+Observed: 2026-08-31 18:08 CST (Asia/Shanghai)
+Project commit: 22a9b11c4dcf3246158522659291060a83a62bc9
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GCC
+Run: https://github.com/leemaple/20231788./actions/runs/33380774306
+Failed command: cmake --build build --parallel 2
+Exit code: 2
+
+Classification: consumer-build plumbing failure. Pristine OpenFHE built and installed successfully, but the clean-room CMake target did not yet consume two requirements exported by OpenFHE's official downstream sample: its C++ flags (including OpenMP) and the installed `binfhe` include directory. The compiler therefore stopped in upstream headers before reaching the intentionally absent project header. This is not the first TDD red test.
+
+Relevant failed-step output:
+
+[ 50%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+.../include/openfhe/core/math/hal/bigintdyn/transformdyn-impl.h:714: error: ignoring ‘#pragma omp critical’ [-Werror=unknown-pragmas]
+.../include/openfhe/core/math/hal/bigintdyn/transformdyn-impl.h:1108: error: ignoring ‘#pragma omp critical’ [-Werror=unknown-pragmas]
+.../include/openfhe/core/math/hal/intnat/transformnat-impl.h:719: error: ignoring ‘#pragma omp critical’ [-Werror=unknown-pragmas]
+.../include/openfhe/core/math/distributiongenerator.h:78: error: ignoring ‘#pragma omp threadprivate’ [-Werror=unknown-pragmas]
+.../include/openfhe/core/lattice/hal/default/dcrtpoly.h:133: error: ignoring ‘#pragma omp parallel’ [-Werror=unknown-pragmas]
+In file included from .../include/openfhe/pke/openfhe.h:54:
+.../include/openfhe/pke/cryptocontext.h:39:10: fatal error: binfhecontext.h: No such file or directory
+   39 | #include "binfhecontext.h"
+      |          ^~~~~~~~~~~~~~~~~
+cc1plus: all warnings being treated as errors
+compilation terminated.
+gmake[2]: *** [CMakeFiles/dcp_rcb_test.dir/build.make:79: CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:87: CMakeFiles/dcp_rcb_test.dir/all] Error 2
+gmake: *** [Makefile:101: all] Error 2
+Process completed with exit code 2.
+
+Resolution under test:
+
+Apply `OpenFHE_CXX_FLAGS` and add `${OpenFHE_INCLUDE}/binfhe`, matching pristine OpenFHE 1.5.0's supplied `CMakeLists.User.txt`. Do not modify upstream or suppress warnings. The next valid red point remains the absent project-owned header `openfhe_2023_1788/double_ckks.h`.
