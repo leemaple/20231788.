@@ -4,7 +4,7 @@
 
 In a new dedicated empty folder on the Windows computer, independently implement the `t=2` Double-CKKS multiplication method from paper 2023/1788 for official pristine OpenFHE 1.5.0.
 
-The destination is `https://github.com/leemaple/20231788`, but its existing implementation is wrong and excluded. Do not clone it as a starting point. Do not open, search, copy, read, adapt, build, or test any pre-existing 2023/1788 code or locally modified OpenFHE checkout on either computer. Do not read ChatGPT Pro output while implementing.
+The destination is `https://github.com/leemaple/20231788.` (the trailing period is part of the repository name), but any existing implementation is wrong and excluded. Do not clone it as an implementation starting point; only the clean-room branch may be fetched after creation. Do not open, search, copy, read, adapt, build, or test any pre-existing 2023/1788 code or locally modified OpenFHE checkout on either computer. Do not read ChatGPT Pro output while implementing.
 
 ## Inputs
 
@@ -30,4 +30,3 @@ Cover tower/prime roles; signed big-integer DCP/RCB reconstruction; encrypted re
 ## Deliverables
 
 Create greenfield headers/source/CMake/tests plus `DESIGN.md` and `REVIEW.md`. Record exact commands and observed red/green outputs, OpenFHE identity, and findings as observed/inferred/pending. Commit in the new local clean-room Git repository or return a patch. Do not push, merge, open a PR, or claim unrun tests.
-

@@ -4,7 +4,7 @@
 
 Design and write from scratch a minimal C++17 implementation of the `t=2` Double-CKKS multiplication construction in Cheon–Cho–Kim–Stehle, *Homomorphic Multiple Precision Multiplication for CKKS and Reduced Modulus Consumption* (CCS 2023 / IACR ePrint 2023/1788), for official pristine OpenFHE 1.5.0.
 
-The destination is `https://github.com/leemaple/20231788`, but its prior implementation is wrong and deliberately excluded. Do not inspect, request, reproduce, or adapt it or any related local code. Use only the supplied paper, official pristine OpenFHE 1.5.0 source/documentation, this brief, and greenfield files in the package. This is the paper's higher-precision CKKS method, not IEEE-754 binary64 arithmetic.
+The destination is `https://github.com/leemaple/20231788.` (the trailing period is part of the repository name), but any prior implementation is wrong and deliberately excluded. Do not inspect, request, reproduce, or adapt it or any related local code. Use only the supplied paper, official pristine OpenFHE 1.5.0 source/documentation, this brief, and greenfield files in the package. This is the paper's higher-precision CKKS method, not IEEE-754 binary64 arithmetic.
 
 ## Boundaries
 
@@ -52,4 +52,3 @@ Do not access old/local implementation code; assume no filesystem/private-reposi
 ## Acceptance
 
 All code is greenfield; every nontrivial operation has a retained red-first independent-oracle test; design tracks all modulus/scale/level/domain/component transitions; an actual runner builds against pristine OpenFHE 1.5.0 and passes the accepted slice without hidden precision warnings or invalid metadata; the next-level lifecycle is executable or explicitly tested as a boundary; uncertainty is explicit and testable.
-
