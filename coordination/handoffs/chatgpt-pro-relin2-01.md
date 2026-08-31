@@ -121,3 +121,21 @@ same-conversation continuation may request only those missing packaging steps.
 It must repeat the full source ZIP, binding file, and authoritative task as
 attachments, forbid code or patch regeneration, and require the existing
 files to be checksummed and returned once.
+
+At 07:54 CST, Codex sent that one bounded continuation in the same conversation.
+It attached the exact source ZIP, binding, and complete task again; because the
+same filenames already existed in the conversation, the composer displayed the
+new copies with `(1)` suffixes. The continuation repeated all three byte sizes
+and SHA-256 values, exact base commit/tree and pristine OpenFHE identity, the
+nine existing-deliverable names, and the prior terminal state. It authorizes
+only creation and verification of the nine-line `PATCHES.sha256` plus a
+ten-entry root-level `chatgpt-pro-relin2-01-delivery.zip`. It forbids patch,
+code, test, or document regeneration; if the prior sandbox files are absent,
+the required result is `blocked`.
+
+Pre-send readback found all three hashes exactly once, all three attachment
+removal chips, and the complete begin/end markers. Post-send readback found an
+empty composer, exactly one continuation marker, active `Thinking` and
+`Stop answering`, and no Retry control. Do not interrupt, refresh, edit,
+resend, retry, or open another conversation while this packaging-only response
+is active.
