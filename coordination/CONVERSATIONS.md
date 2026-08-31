@@ -149,6 +149,18 @@ prompt, attachment, user message, refresh, or duplicate conversation was
 created. Readback showed `Stop answering` active. No second retry or other
 interruption is allowed while this recovery response runs.
 
+At 2026-09-01 07:51 CST, that one recovery response finished naturally after a
+page-reported `Worked for 25m 36s` with verdict `changes needed`. It claimed a
+complete seven-patch Relin2 implementation and local TDD sequence ending at
+35/35, but returned no downloadable artifact because `PATCHES.sha256` and the
+single delivery ZIP were not created before its tool limit. Windows and final
+same-commit hosted CI were explicitly left pending. These remain untrusted
+claims: no returned patch has been inspected, replayed, applied, committed, or
+tested by Codex. One same-conversation continuation is permitted solely to
+checksum and package the already-created files, with the full source archive,
+binding, and authoritative task attached again; it may not regenerate code or
+broaden the task.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`

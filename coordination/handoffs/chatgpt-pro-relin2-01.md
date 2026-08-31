@@ -96,3 +96,28 @@ refresh, stop, prod, edit, resend, retry again, or duplicate the conversation
 while this recovery response is active. Keep task space 85 open solely for
 verified collection. No Relin2 patch, build, CTest, Linux, Windows,
 warning-clean, witness, precision, performance, or security result is claimed.
+
+## Recovery-response terminal state
+
+At 07:51 CST, read-only browser inspection showed that the one built-in retry
+had finished naturally after a page-reported `Worked for 25m 36s`. It returned
+the bounded verdict `changes needed`, not `ready to apply` or `blocked`.
+
+The response claims that its sandbox now contains all seven named patches plus
+`REVIEW.md` and `TESTS.md`; that it replayed the seven patches in order on the
+exact clean base; and that its local sequence reached the required API red,
+6/6 scaffold green, 28 independent contract reds, 34/34 core green, directed
+Tensor2 lifecycle red, and 35/35 final green. It names deterministic witness
+coordinates and states that Windows and final hosted same-commit CI remain
+pending. These are untrusted external claims until Codex receives and inspects
+the files and replays the evidence.
+
+The response produced no downloadable delivery. It explicitly says the two
+unfinished steps are creation of `PATCHES.sha256` and packaging the seven
+patches, `REVIEW.md`, `TESTS.md`, and checksum file into the required single
+ZIP. No patch, source, checksum, or ZIP has therefore been received or applied.
+Because the response is complete rather than active or timed out, one bounded
+same-conversation continuation may request only those missing packaging steps.
+It must repeat the full source ZIP, binding file, and authoritative task as
+attachments, forbid code or patch regeneration, and require the existing
+files to be checksummed and returned once.
