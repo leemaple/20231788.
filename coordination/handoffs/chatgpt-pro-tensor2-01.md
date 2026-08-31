@@ -184,3 +184,17 @@ readback confirmed:
 Do not refresh, stop, prod, edit, resend, retry, or duplicate this corrected
 continuation. The response must complete naturally before any output is
 collected or applied.
+
+## Corrected response completion and collection
+
+The corrected response completed naturally at approximately 2026-09-01 02:18
+CST with verdict `ready to apply`. It was not refreshed, stopped, prodded,
+resent, retried, or duplicated. The 33,877-byte output ZIP was downloaded once;
+its SHA-256 is
+`d869a8c27e650e20dbd5f56ea7c99f492c5f6aa6219e8f84fade24ab4e4c1808`.
+
+Integrity, Gitleaks 8.30.1, targeted exclusion, and all five patch-hash checks
+passed. Codex then read every output file, replay-checked all patches on the
+exact base, and began the real downstream TDD history. Full evidence and the
+independent-review caveat are recorded in
+`coordination/handoffs/chatgpt-pro-tensor2-01-output.md`.
