@@ -1,0 +1,27 @@
+DCP precomputation-access red attempt 01
+
+Observed: 2026-08-31 19:44 CST (Asia/Shanghai)
+Project commit: 0f08445eda4f641de014f2a265306b3f34d67fc8
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
+Run: https://github.com/leemaple/20231788./actions/runs/33388313221
+Conclusion: invalid red attempt; the test did not reach the targeted unchecked row access
+
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
+The project and new test compiled warning-clean. CTest failed before DCP row access:
+
+  terminate called after throwing an instance of 'std::invalid_argument'
+    what():  DoubleCKKS: the FIXEDMANUAL scaling factor is invalid
+  0% tests passed, 1 tests failed out of 1
+  Process completed with exit code 8.
+
+Source inspection after this run showed that official OpenFHE 1.5.0's protected
+`CryptoParametersRNS` copy constructor copies its core technique fields but does
+not copy `m_approxSF` or its precomputation tables. The next test-only change must
+restore the source context's valid FIXEDMANUAL scale explicitly while keeping the
+DCP precomputation rows absent. No production change follows from this attempt.
