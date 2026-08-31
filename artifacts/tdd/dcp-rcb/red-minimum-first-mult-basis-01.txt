@@ -1,0 +1,32 @@
+DCP/RCB minimum first-Mult2 basis red evidence
+
+Observed: 2026-08-31 19:31 CST (Asia/Shanghai)
+Project commit: 61325ee41b94f0be355a357392cfae2c5bf5d0c7
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
+Run: https://github.com/leemaple/20231788./actions/runs/33387083987
+Conclusion: expected behavioral failure before changing the production tower-count contract
+
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
+The pinned official OpenFHE 1.5.0 dependency built and installed. The clean-room
+project then configured and compiled warning-clean. CTest reached the newly added
+three-tower public DCP/RCB case and failed because the unchanged constructor still
+required four towers:
+
+  Start 1: dcp_rcb
+  1/1 Test #1: dcp_rcb ..........................Subprocess aborted***Exception:   0.18 sec
+  terminate called after throwing an instance of 'std::invalid_argument'
+    what():  DoubleCKKS: the first Mult2 lifecycle requires at least four ordered Q towers
+
+  0% tests passed, 1 tests failed out of 1
+  Process completed with exit code 8.
+
+This is the intended red: a first Mult2 lifecycle needs two retained towers
+(`q0`, `q_l`) plus `q_div`, not a fourth tower. Production was not changed in this
+commit. The GitHub annotation about actions/checkout and actions/cache Node.js 20
+deprecation is external action metadata, not a project compiler warning.
