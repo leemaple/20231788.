@@ -59,10 +59,25 @@ contains no old/local 2023/1788 implementation.
 - Targeted directory checks found no `.git`, `node_modules`, build tree, CMake
   object directory, cache, or runtime-state directory.
 
-## Submission state
+## Submission evidence
 
-The package is prepared but has not yet been submitted. It must be attached to
-the same saved conversation and the complete task must be sent exactly once.
-After submission, do not refresh, stop, prod, edit, resend, retry, or open a
-duplicate review while ChatGPT Pro is thinking.
+At approximately 2026-09-01 00:21 CST, Codex reused Ego Lite task space 72 and
+the exact saved conversation. The package was attached first; the composer then
+displayed the exact filename. The complete 9,418-character task file was entered
+and read back. The browser editor inserted additional presentation newlines,
+but readback confirmed the task title, exact 40-character commit, and final
+acceptance sentence. The attachment remained visible and the send control was
+enabled.
 
+The request was submitted exactly once. Post-send readback confirmed:
+
+- the same conversation URL;
+- the exact attachment filename;
+- the task title, exact commit, and final acceptance sentence;
+- an empty composer;
+- `Thinking` and `Stop answering`, with no send control.
+
+Do not refresh, stop, prod, edit, resend, retry, or open a duplicate review
+while ChatGPT Pro is thinking. The task space remains open solely to collect the
+natural result in this same conversation. No closure verdict or returned ZIP is
+claimed yet.
