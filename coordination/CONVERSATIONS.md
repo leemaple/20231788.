@@ -118,6 +118,15 @@ attachments, the full repeated task, an empty composer, and active `Thinking`.
 The response must not be refreshed, stopped, prodded, resent, retried, or
 duplicated; task space 85 remains open only for verified natural collection.
 
+At 2026-09-01 06:39 CST, the logged-in official BigModel usage page showed the
+shared five-hour quota at 1% used with reset at 10:59, weekly quota at 96% used
+with reset at 2026-09-02 10:00, and MCP monthly quota at 9% used with reset at
+2026-09-25 10:00. The short-window recovery does not override the critical
+weekly constraint: no new or duplicate ZCode task will be created. Preserve at
+most the existing Windows session for a critical same-commit review, and keep
+GitHub Actions as the Windows build/test runner until the weekly reset is
+confirmed on the official page.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
