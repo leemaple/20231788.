@@ -22,3 +22,12 @@ These are source-agent statements, not accepted project conclusions. They must b
 ## Recovery rule
 
 Do not claim completion and do not repeatedly click retry. Resume in the saved conversation only after recording this failure, supplying the same verified source package and complete task context, and explicitly requesting continuation from the last completed technical point. Preserve the next response before integration.
+
+## Recovery execution
+
+- Submitted: 2026-08-31 16:24 CST
+- Conversation: the same saved URL listed above
+- Attachment: the same 3,677,536-byte ZIP; its SHA-256 was rechecked locally before upload and matched the recorded value
+- Prompt: 5,480 characters containing the observed timeout, every preserved partial conclusion, exact package provenance, the complete engineering task, and an instruction to continue from the unresolved OpenFHE basis-lift/relinearization question
+- Browser verification: the recovery message and attachment were visible, the composer cleared after submission, and `Stop answering` appeared
+- Current handling: generation is active; do not interrupt, refresh, retry, or resend
