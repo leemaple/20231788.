@@ -1,0 +1,30 @@
+DCP/RCB Windows/MinGW64 infrastructure attempt 02
+
+Observed: 2026-08-31 21:29 CST (Asia/Shanghai)
+Project commit: 85122f9f2eee71914789b4ed8beb94f2207abdfa
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions windows-2022 / MSYS2 MINGW64
+Run: https://github.com/leemaple/20231788./actions/runs/33396985956
+Conclusion: infrastructure failure during OpenFHE configure; no Windows compile or test claim
+
+This attempt successfully:
+
+- checked out the exact project commit outside the invalid dotted workspace;
+- checked out the exact OpenFHE commit and recursive submodules;
+- installed the official MinGW64 GCC/CMake/Ninja/Boost toolchain;
+- reached the OpenFHE configuration step;
+- kept the parallel Linux strict build and 1/1 CTest green.
+
+OpenFHE configuration then found a pre-existing CMake cache using `Unix
+Makefiles` in the selected dependency build path and rejected the requested
+Ninja generator:
+
+  CMake Error: Error: generator : Ninja
+  Does not match the generator used previously: Unix Makefiles
+
+No OpenFHE or project compile was reached. The pre-configuration provenance
+output also showed four dirty third-party submodule worktrees, consistent with
+Git for Windows automatic line-ending conversion. The next attempt will disable
+`core.autocrlf` before all checkouts, fail on any dirty pristine dependency, and
+use run-unique Ninja build directories rather than deleting or reusing an
+unidentified cache.
