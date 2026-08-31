@@ -78,9 +78,12 @@ implementation and not evidence that any test has passed.
   not implement quotient rounding or a centered remainder.
 - Public scalar `EvalMult` may encode a CKKS scalar, alter scale metadata, and
   automatically reduce a level depending on scaling mode. It must not be used
-  as a silent substitute for exact ring multiplication by the integer
-  `q_div` unless an independent test proves the exact coefficient/RNS action
-  and unchanged metadata required at that point.
+  as a silent substitute for exact ring multiplication by `q_div`.
+  `CryptoContextImpl::EvalMultNoCheck(ciphertext, NativeInteger)` instead
+  clones the ciphertext, multiplies every DCRT component by the exact ring
+  integer, and leaves metadata unchanged; it is acceptable only after the
+  project module has performed all context/basis/shape checks that the upstream
+  `NoCheck` entry point deliberately omits.
 - Every manual `DCRTPoly` operation must state whether its input and output are
   in coefficient or evaluation format. NTT conversion cannot be inferred from
   a decrypted end result.
