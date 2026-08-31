@@ -42,3 +42,13 @@ The scan is retained as evidence, not treated as an absolute guarantee. Upload i
 ## Response boundary
 
 The recovery asks for one downloadable ZIP containing ordered red-test and implementation patches plus DCP/RCB design/review files. It explicitly excludes the rest of Mult2 so a third response-delivery timeout cannot erase an entire monolithic implementation.
+
+## Submission
+
+- Submitted: 2026-08-31 17:43 CST
+- Conversation: `https://chatgpt.com/c/6a952b95-0ed0-83ec-a38b-e415758ef2a5`
+- Browser task space: Ego Lite task space 53
+- Attachment: the exact 3,706,713-byte archive and SHA-256 recorded above
+- Prompt: complete 9,108-character bounded task, including provenance, architecture boundaries, equations to verify, exact deliverable format, independent-oracle tests, mandatory downstream verification, prohibited claims, and acceptance criteria
+- Browser verification: the new archive and packaged commit were visible in the submitted message, the composer cleared, and `Stop answering` appeared
+- Handling: generation is active; do not interrupt, refresh, retry, resend, or ask for status while it is thinking
