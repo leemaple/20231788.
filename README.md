@@ -6,9 +6,11 @@ The destination repository's previous implementation and every related local cod
 
 ## Live project state
 
-- Active/default branch: [`cleanroom/reimplement-mult2-20260831`](https://github.com/leemaple/20231788./tree/cleanroom/reimplement-mult2-20260831)
-- Current phase: clean-room specification, agent handoff, and integration gates are recorded; no implementation code has been accepted yet.
-- External work: ChatGPT Pro and Windows Z code/Zima are working independently. Their output is accepted only after provenance capture, TDD evidence, and review.
+- Default integration branch: [`cleanroom/reimplement-mult2-20260831`](https://github.com/leemaple/20231788./tree/cleanroom/reimplement-mult2-20260831)
+- Current implementation slice: [`agent/codex-dcp-rcb-01`](https://github.com/leemaple/20231788./tree/agent/codex-dcp-rcb-01) contains the isolated DCP/RCB implementation and independent-oracle tests. It is not merged into the default branch.
+- Verified on Linux: the strict GCC build and complete DCP/RCB test executable pass against pinned pristine OpenFHE 1.5.0; the latest green run is [GitHub Actions 33394619792](https://github.com/leemaple/20231788./actions/runs/33394619792).
+- Still pending: independent Windows/MSVC execution and implementation of Tensor2, Relin2, RS2, Mult2, and pair addition/subtraction.
+- External review: ChatGPT Pro completed its independent DCP/RCB review and the accepted findings have been addressed test-first. The existing Windows Z code/Zima task remains active; no Windows result is claimed yet.
 - Continuity: an active long-running Codex Goal advances the project across turns; the daily 07:00 Asia/Shanghai automation independently produces and delivers the PDF status report.
 - Progress evidence: [`coordination/CONVERSATIONS.md`](coordination/CONVERSATIONS.md)
 - Paper/OpenFHE API review: [`coordination/CODEX_API_REVIEW.md`](coordination/CODEX_API_REVIEW.md)
@@ -18,4 +20,4 @@ The destination repository's previous implementation and every related local cod
 - Integration gates: [`coordination/INTEGRATION_REVIEW_CHECKLIST.md`](coordination/INTEGRATION_REVIEW_CHECKLIST.md)
 - Git checkpoint policy: [`coordination/GIT_CHECKPOINT_POLICY.md`](coordination/GIT_CHECKPOINT_POLICY.md)
 
-All coherent project changes are committed in small checkpoints and pushed immediately. Agent work stays on isolated branches until reviewed; shared history is never force-pushed.
+All coherent project changes are committed in small checkpoints and pushed immediately. Agent work stays on isolated branches until reviewed; shared history is never force-pushed. Red/green records for the current slice are retained under [`artifacts/tdd/dcp-rcb`](artifacts/tdd/dcp-rcb).
