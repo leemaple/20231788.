@@ -28,13 +28,18 @@ include_directories(
 )
 link_directories(${OpenFHE_LIBDIR} ${OPENMP_LIBRARIES})
 
+add_library(openfhe_2023_1788 src/double_ckks.cpp)
+target_include_directories(openfhe_2023_1788 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(openfhe_2023_1788 PUBLIC ${OpenFHE_SHARED_LIBRARIES})
+
 add_executable(dcp_rcb_test tests/dcp_rcb_test.cpp)
-target_include_directories(dcp_rcb_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(dcp_rcb_test PRIVATE ${OpenFHE_SHARED_LIBRARIES})
+target_link_libraries(dcp_rcb_test PRIVATE openfhe_2023_1788)
 
 if(MSVC)
+    target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
     target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
 else()
+    target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 

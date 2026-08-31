@@ -1,0 +1,101 @@
+#ifndef OPENFHE_2023_1788_DOUBLE_CKKS_H
+#define OPENFHE_2023_1788_DOUBLE_CKKS_H
+
+#include "openfhe.h"
+#include "scheme/ckksrns/ckksrns-cryptoparameters.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
+namespace openfhe_2023_1788 {
+
+using ReadOnlyCiphertext = std::shared_ptr<const lbcrypto::CiphertextImpl<lbcrypto::DCRTPoly>>;
+
+enum class PairLifecycle : std::uint8_t {
+    ReadyForFirstMult,
+    ReadyForRS2,
+    RefreshRequired,
+};
+
+class DoubleCKKS;
+
+class CiphertextPair final {
+public:
+    ReadOnlyCiphertext GetHigh() const noexcept;
+    ReadOnlyCiphertext GetLow() const noexcept;
+
+    const lbcrypto::CryptoContextImpl<lbcrypto::DCRTPoly>* GetContextIdentity() const noexcept;
+    const lbcrypto::NativeInteger& GetDivisor() const noexcept;
+    const std::vector<lbcrypto::NativeInteger>& GetOrderedModuli() const noexcept;
+    std::size_t GetLevel() const noexcept;
+    long double GetPaperScale() const noexcept;
+    double GetRecordedScalingFactor() const noexcept;
+    std::size_t GetNoiseScaleDegree() const noexcept;
+    PairLifecycle GetLifecycle() const noexcept;
+    const std::string& GetKeyTag() const noexcept;
+    lbcrypto::Format GetFormat() const noexcept;
+    std::size_t GetComponentCount() const noexcept;
+
+private:
+    friend class DoubleCKKS;
+
+    CiphertextPair(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high,
+                   lbcrypto::Ciphertext<lbcrypto::DCRTPoly> low,
+                   const lbcrypto::CryptoContextImpl<lbcrypto::DCRTPoly>* contextIdentity,
+                   lbcrypto::NativeInteger divisor,
+                   std::vector<lbcrypto::NativeInteger> orderedModuli,
+                   std::size_t level,
+                   long double paperScale,
+                   double recordedScalingFactor,
+                   std::size_t noiseScaleDegree,
+                   PairLifecycle lifecycle,
+                   std::string keyTag,
+                   lbcrypto::Format format,
+                   std::size_t componentCount);
+
+    lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high_;
+    lbcrypto::Ciphertext<lbcrypto::DCRTPoly> low_;
+    const lbcrypto::CryptoContextImpl<lbcrypto::DCRTPoly>* contextIdentity_;
+    lbcrypto::NativeInteger divisor_;
+    std::vector<lbcrypto::NativeInteger> orderedModuli_;
+    std::size_t level_;
+    long double paperScale_;
+    double recordedScalingFactor_;
+    std::size_t noiseScaleDegree_;
+    PairLifecycle lifecycle_;
+    std::string keyTag_;
+    lbcrypto::Format format_;
+    std::size_t componentCount_;
+};
+
+class DoubleCKKS final {
+public:
+    explicit DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context);
+
+    CiphertextPair DCP(const ReadOnlyCiphertext& ciphertext) const;
+    lbcrypto::Ciphertext<lbcrypto::DCRTPoly> RCB(const CiphertextPair& pair) const;
+
+private:
+    void ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const;
+    void ValidatePair(const CiphertextPair& pair) const;
+    void ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
+                            const std::vector<lbcrypto::NativeInteger>& orderedModuli,
+                            std::size_t level,
+                            std::size_t noiseScaleDegree,
+                            double recordedScalingFactor,
+                            const std::string& keyTag,
+                            const char* label) const;
+
+    lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context_;
+    std::shared_ptr<lbcrypto::CryptoParametersCKKSRNS> parameters_;
+    std::vector<lbcrypto::NativeInteger> fullModuli_;
+    std::vector<lbcrypto::NativeInteger> firstPairModuli_;
+    lbcrypto::NativeInteger divisor_;
+};
+
+}  // namespace openfhe_2023_1788
+
+#endif  // OPENFHE_2023_1788_DOUBLE_CKKS_H
