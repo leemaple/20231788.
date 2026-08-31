@@ -157,6 +157,18 @@ interruption is allowed while this recovery response runs.
 - Output: visually verified Markdown/PDF under `reports/daily/YYYY-MM-DD/`, followed by Telegram Saved Messages delivery and `reports/delivery-log.md` evidence
 - Guardrails: reporting-only writes, no Mac compilation, no source changes, no CI dispatch/rerun, and no interruption or duplicate submission to external agents
 
+At 2026-09-01 07:31 CST, read-only inspection of the app's automation state
+showed zero recorded runs for this automation and a repeatedly deferred
+`next_run_at` while the same target task remained active. The first report had
+already been produced manually, visually verified, sent once to Telegram Saved
+Messages at 07:21, and recorded in `reports/delivery-log.md`. At 07:32 the
+existing automation—not a duplicate—was updated in place with a first-step
+idempotency gate: when the current Asia/Shanghai report date already has a
+`Confirmed` Saved Messages delivery, the heartbeat must no-op without
+rebuilding, rewriting, rendering, resending, or appending a duplicate row. Its
+ID, heartbeat kind, 07:00 schedule, ACTIVE status, and target task are
+unchanged.
+
 ## Continuous execution
 
 - Activated: 2026-08-31 16:20 CST
