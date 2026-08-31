@@ -1,0 +1,37 @@
+DCP/RCB first accepted green evidence
+
+Observed: 2026-08-31 18:47 CST (Asia/Shanghai)
+Project commit: 2ccdecd07ec409f94bf6a848f705fe9d4fb1a9df
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
+Run: https://github.com/leemaple/20231788./actions/runs/33383722189
+Conclusion: success
+
+Accepted scope:
+- official OpenFHE 1.5.0 checkout and exact-commit provenance check passed;
+- project-owned production and independent-oracle test targets compiled under C++17 with `-Wall -Wextra -Wpedantic -Werror`;
+- DCP and RCB coefficient/tower arithmetic was checked against a test-only Boost cpp_int CRT/centered-division oracle;
+- pair metadata, source immutability, and initial invalid-input checks passed;
+- CTest passed without changing the red test's arithmetic oracle or weakening assertions.
+
+Relevant warning-clean build output:
+
+  [ 25%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+  [ 50%] Linking CXX static library libopenfhe_2023_1788.a
+  [ 50%] Built target openfhe_2023_1788
+  [ 75%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+  [100%] Linking CXX executable dcp_rcb_test
+  [100%] Built target dcp_rcb_test
+
+Exact retained CTest output:
+
+  Internal ctest changing into directory: /home/runner/work/20231788./20231788./build
+  Test project /home/runner/work/20231788./20231788./build
+      Start 1: dcp_rcb
+  1/1 Test #1: dcp_rcb ..........................   Passed    0.01 sec
+
+  100% tests passed, 0 tests failed out of 1
+
+  Total Test time (real) =   0.06 sec
+
+This evidence establishes the initial DCP/RCB vertical slice only. It does not claim Windows/MSVC portability, decrypted CKKS precision, performance/security properties, or any later Tensor2/Relin2/RS2/Mult2 operation. Later validation hardening must retain its own red/green evidence.
