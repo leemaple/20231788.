@@ -1,0 +1,1133 @@
+﻿2026-08-31T18:50:49.2192812Z Current runner version: '2.337.0'
+2026-08-31T18:50:49.2216907Z ##[group]Runner Image Provisioner
+2026-08-31T18:50:49.2217788Z Hosted Compute Agent
+2026-08-31T18:50:49.2218466Z Version: 20260819.586
+2026-08-31T18:50:49.2219117Z Commit: 3cc4a88dfa507ef76119ad1bb3eccc6378bb2b76
+2026-08-31T18:50:49.2220060Z Build Date: 2026-08-18T23:20:18Z
+2026-08-31T18:50:49.2221059Z Worker ID: {405868e2-5cd8-4ac8-9732-628201ed5e64}
+2026-08-31T18:50:49.2221764Z Azure Region: westus3
+2026-08-31T18:50:49.2222419Z ##[endgroup]
+2026-08-31T18:50:49.2223894Z ##[group]Operating System
+2026-08-31T18:50:49.2224538Z Ubuntu
+2026-08-31T18:50:49.2225084Z 24.04.4
+2026-08-31T18:50:49.2225622Z LTS
+2026-08-31T18:50:49.2226527Z ##[endgroup]
+2026-08-31T18:50:49.2227118Z ##[group]Runner Image
+2026-08-31T18:50:49.2227766Z Image: ubuntu-24.04
+2026-08-31T18:50:49.2228353Z Version: 20260823.283.1
+2026-08-31T18:50:49.2229610Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260823.283/images/ubuntu/Ubuntu2404-Readme.md
+2026-08-31T18:50:49.2231445Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260823.283
+2026-08-31T18:50:49.2232407Z ##[endgroup]
+2026-08-31T18:50:49.2233503Z ##[group]GITHUB_TOKEN Permissions
+2026-08-31T18:50:49.2235815Z Contents: read
+2026-08-31T18:50:49.2236435Z Metadata: read
+2026-08-31T18:50:49.2237004Z ##[endgroup]
+2026-08-31T18:50:49.2239048Z Secret source: Actions
+2026-08-31T18:50:49.2240096Z Prepare workflow directory
+2026-08-31T18:50:49.2752942Z Prepare all required actions
+2026-08-31T18:50:49.2803059Z Getting action download info
+2026-08-31T18:50:49.5828022Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-08-31T18:50:49.6980377Z Download action repository 'actions/cache@v4' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+2026-08-31T18:50:49.8890527Z Complete job name: linux-gcc
+2026-08-31T18:50:49.9523073Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-31T18:50:49.9531640Z ##[group]Run actions/checkout@v4
+2026-08-31T18:50:49.9532353Z with:
+2026-08-31T18:50:49.9532905Z   repository: leemaple/20231788.
+2026-08-31T18:50:49.9536746Z   token: ***
+2026-08-31T18:50:49.9537216Z   ssh-strict: true
+2026-08-31T18:50:49.9537734Z   ssh-user: git
+2026-08-31T18:50:49.9538257Z   persist-credentials: true
+2026-08-31T18:50:49.9538939Z   clean: true
+2026-08-31T18:50:49.9539437Z   sparse-checkout-cone-mode: true
+2026-08-31T18:50:49.9539991Z   fetch-depth: 1
+2026-08-31T18:50:49.9540633Z   fetch-tags: false
+2026-08-31T18:50:49.9541135Z   show-progress: true
+2026-08-31T18:50:49.9541627Z   lfs: false
+2026-08-31T18:50:49.9542237Z   submodules: false
+2026-08-31T18:50:49.9542709Z   set-safe-directory: true
+2026-08-31T18:50:49.9543280Z   allow-unsafe-pr-checkout: false
+2026-08-31T18:50:49.9544020Z env:
+2026-08-31T18:50:49.9544595Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:50:49.9545468Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:50:49.9546200Z ##[endgroup]
+2026-08-31T18:50:50.0555801Z Syncing repository: leemaple/20231788.
+2026-08-31T18:50:50.0557738Z ##[group]Getting Git version info
+2026-08-31T18:50:50.0558488Z Working directory is '/home/runner/work/20231788./20231788.'
+2026-08-31T18:50:50.0559576Z [command]/usr/bin/git version
+2026-08-31T18:50:50.0616746Z git version 2.55.0
+2026-08-31T18:50:50.0643414Z ##[endgroup]
+2026-08-31T18:50:50.0649842Z Temporarily overriding HOME='/home/runner/work/_temp/f5ba2c5c-6a47-446d-bbfb-39bbef3d4abe' before making global git config changes
+2026-08-31T18:50:50.0651925Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-31T18:50:50.0653778Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788.
+2026-08-31T18:50:50.0701265Z Deleting the contents of '/home/runner/work/20231788./20231788.'
+2026-08-31T18:50:50.0707707Z ##[group]Initializing the repository
+2026-08-31T18:50:50.0711536Z [command]/usr/bin/git init /home/runner/work/20231788./20231788.
+2026-08-31T18:50:50.0784052Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-08-31T18:50:50.0785843Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-08-31T18:50:50.0787701Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-08-31T18:50:50.0788992Z hint: call:
+2026-08-31T18:50:50.0789828Z hint:
+2026-08-31T18:50:50.0791074Z hint: 	git config --global init.defaultBranch <name>
+2026-08-31T18:50:50.0792150Z hint:
+2026-08-31T18:50:50.0793294Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-08-31T18:50:50.0794910Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-08-31T18:50:50.0796140Z hint:
+2026-08-31T18:50:50.0796946Z hint: 	git branch -m <name>
+2026-08-31T18:50:50.0797841Z hint:
+2026-08-31T18:50:50.0798927Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-08-31T18:50:50.0800753Z Initialized empty Git repository in /home/runner/work/20231788./20231788./.git/
+2026-08-31T18:50:50.0803817Z [command]/usr/bin/git remote add origin https://github.com/leemaple/20231788.
+2026-08-31T18:50:50.0843056Z ##[endgroup]
+2026-08-31T18:50:50.0844291Z ##[group]Disabling automatic garbage collection
+2026-08-31T18:50:50.0845646Z [command]/usr/bin/git config --local gc.auto 0
+2026-08-31T18:50:50.0874597Z ##[endgroup]
+2026-08-31T18:50:50.0875901Z ##[group]Setting up auth
+2026-08-31T18:50:50.0881232Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-31T18:50:50.0912831Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-31T18:50:50.1242801Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-31T18:50:50.1274931Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-31T18:50:50.1472489Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-31T18:50:50.1505676Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-31T18:50:50.1695099Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-08-31T18:50:50.1727690Z ##[endgroup]
+2026-08-31T18:50:50.1728807Z ##[group]Fetching the repository
+2026-08-31T18:50:50.1737484Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +1408d46217e97a1c14d43d49b64791da22f652da:refs/remotes/origin/agent/codex-tensor2-01
+2026-08-31T18:50:50.7248112Z From https://github.com/leemaple/20231788.
+2026-08-31T18:50:50.7250478Z  * [new ref]         1408d46217e97a1c14d43d49b64791da22f652da -> origin/agent/codex-tensor2-01
+2026-08-31T18:50:50.7254070Z ##[endgroup]
+2026-08-31T18:50:50.7255586Z ##[group]Determining the checkout info
+2026-08-31T18:50:50.7258216Z ##[endgroup]
+2026-08-31T18:50:50.7263765Z [command]/usr/bin/git sparse-checkout disable
+2026-08-31T18:50:50.7310826Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-08-31T18:50:50.7340449Z ##[group]Checking out the ref
+2026-08-31T18:50:50.7345802Z [command]/usr/bin/git checkout --progress --force -B agent/codex-tensor2-01 refs/remotes/origin/agent/codex-tensor2-01
+2026-08-31T18:50:50.7431627Z Switched to a new branch 'agent/codex-tensor2-01'
+2026-08-31T18:50:50.7435847Z branch 'agent/codex-tensor2-01' set up to track 'origin/agent/codex-tensor2-01'.
+2026-08-31T18:50:50.7440828Z ##[endgroup]
+2026-08-31T18:50:50.7476087Z [command]/usr/bin/git log -1 --format=%H
+2026-08-31T18:50:50.7499188Z 1408d46217e97a1c14d43d49b64791da22f652da
+2026-08-31T18:50:50.7853696Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-31T18:50:50.7858591Z ##[group]Run actions/checkout@v4
+2026-08-31T18:50:50.7859350Z with:
+2026-08-31T18:50:50.7860022Z   repository: openfheorg/openfhe-development
+2026-08-31T18:50:50.7861246Z   ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:50:50.7862197Z   path: .ci/openfhe-src
+2026-08-31T18:50:50.7862860Z   submodules: recursive
+2026-08-31T18:50:50.7872187Z   token: ***
+2026-08-31T18:50:50.7872806Z   ssh-strict: true
+2026-08-31T18:50:50.7873434Z   ssh-user: git
+2026-08-31T18:50:50.7874090Z   persist-credentials: true
+2026-08-31T18:50:50.7874786Z   clean: true
+2026-08-31T18:50:50.7875444Z   sparse-checkout-cone-mode: true
+2026-08-31T18:50:50.7876345Z   fetch-depth: 1
+2026-08-31T18:50:50.7876978Z   fetch-tags: false
+2026-08-31T18:50:50.7877652Z   show-progress: true
+2026-08-31T18:50:50.7878322Z   lfs: false
+2026-08-31T18:50:50.7878929Z   set-safe-directory: true
+2026-08-31T18:50:50.7879671Z   allow-unsafe-pr-checkout: false
+2026-08-31T18:50:50.7880664Z env:
+2026-08-31T18:50:50.7881412Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:50:50.7882841Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:50:50.7884065Z ##[endgroup]
+2026-08-31T18:50:50.8746506Z Syncing repository: openfheorg/openfhe-development
+2026-08-31T18:50:50.8754728Z ##[group]Getting Git version info
+2026-08-31T18:50:50.8756766Z Working directory is '/home/runner/work/20231788./20231788./.ci/openfhe-src'
+2026-08-31T18:50:50.8790514Z [command]/usr/bin/git version
+2026-08-31T18:50:50.8829716Z git version 2.55.0
+2026-08-31T18:50:50.8849102Z ##[endgroup]
+2026-08-31T18:50:50.8863784Z Temporarily overriding HOME='/home/runner/work/_temp/4e208307-996d-4973-be65-fee1c8062155' before making global git config changes
+2026-08-31T18:50:50.8867639Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-31T18:50:50.8871203Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788./.ci/openfhe-src
+2026-08-31T18:50:50.8903758Z ##[group]Initializing the repository
+2026-08-31T18:50:50.8916333Z [command]/usr/bin/git init /home/runner/work/20231788./20231788./.ci/openfhe-src
+2026-08-31T18:50:50.8942810Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-08-31T18:50:50.8944878Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-08-31T18:50:50.8946698Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-08-31T18:50:50.8948194Z hint: call:
+2026-08-31T18:50:50.8948807Z hint:
+2026-08-31T18:50:50.8949616Z hint: 	git config --global init.defaultBranch <name>
+2026-08-31T18:50:50.8951149Z hint:
+2026-08-31T18:50:50.8952273Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-08-31T18:50:50.8954093Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-08-31T18:50:50.8955392Z hint:
+2026-08-31T18:50:50.8956156Z hint: 	git branch -m <name>
+2026-08-31T18:50:50.8956999Z hint:
+2026-08-31T18:50:50.8958044Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-08-31T18:50:50.8960138Z Initialized empty Git repository in /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/
+2026-08-31T18:50:50.8963566Z [command]/usr/bin/git remote add origin https://github.com/openfheorg/openfhe-development
+2026-08-31T18:50:50.8990589Z ##[endgroup]
+2026-08-31T18:50:50.8991987Z ##[group]Disabling automatic garbage collection
+2026-08-31T18:50:50.8996084Z [command]/usr/bin/git config --local gc.auto 0
+2026-08-31T18:50:50.9026287Z ##[endgroup]
+2026-08-31T18:50:50.9027410Z ##[group]Setting up auth
+2026-08-31T18:50:50.9034652Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-31T18:50:50.9065842Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-31T18:50:50.9285040Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-31T18:50:50.9312101Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-31T18:50:50.9514715Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-31T18:50:50.9550963Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-31T18:50:50.9765310Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-08-31T18:50:50.9799862Z ##[endgroup]
+2026-08-31T18:50:50.9802360Z ##[group]Fetching the repository
+2026-08-31T18:50:50.9812091Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:50:52.3494279Z From https://github.com/openfheorg/openfhe-development
+2026-08-31T18:50:52.3495208Z  * branch            df495ba2e91739a6dc8f1de254fc5a41155ce504 -> FETCH_HEAD
+2026-08-31T18:50:52.3498007Z ##[endgroup]
+2026-08-31T18:50:52.3498755Z ##[group]Determining the checkout info
+2026-08-31T18:50:52.3500143Z ##[endgroup]
+2026-08-31T18:50:52.3506365Z [command]/usr/bin/git sparse-checkout disable
+2026-08-31T18:50:52.3547787Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-08-31T18:50:52.3577593Z ##[group]Checking out the ref
+2026-08-31T18:50:52.3581781Z [command]/usr/bin/git checkout --progress --force df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:50:52.4074877Z Note: switching to 'df495ba2e91739a6dc8f1de254fc5a41155ce504'.
+2026-08-31T18:50:52.4075519Z 
+2026-08-31T18:50:52.4075946Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-08-31T18:50:52.4076867Z changes and commit them, and you can discard any commits you make in this
+2026-08-31T18:50:52.4077521Z state without impacting any branches by switching back to a branch.
+2026-08-31T18:50:52.4077902Z 
+2026-08-31T18:50:52.4078205Z If you want to create a new branch to retain commits you create, you may
+2026-08-31T18:50:52.4078832Z do so (now or later) by using -c with the switch command. Example:
+2026-08-31T18:50:52.4079207Z 
+2026-08-31T18:50:52.4079392Z   git switch -c <new-branch-name>
+2026-08-31T18:50:52.4079760Z 
+2026-08-31T18:50:52.4080049Z Or undo this operation with:
+2026-08-31T18:50:52.4080658Z 
+2026-08-31T18:50:52.4080934Z   git switch -
+2026-08-31T18:50:52.4081177Z 
+2026-08-31T18:50:52.4081503Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-08-31T18:50:52.4081869Z 
+2026-08-31T18:50:52.4082165Z HEAD is now at df495ba Merge pull request #1130 from openfheorg/dev
+2026-08-31T18:50:52.4083619Z ##[endgroup]
+2026-08-31T18:50:52.4084216Z ##[group]Setting up auth for fetching submodules
+2026-08-31T18:50:52.4088422Z [command]/usr/bin/git config --global http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-08-31T18:50:52.4124606Z [command]/usr/bin/git config --global --unset-all url.https://github.com/.insteadOf
+2026-08-31T18:50:52.4152494Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf git@github.com:
+2026-08-31T18:50:52.4179494Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf org-26023695@github.com:
+2026-08-31T18:50:52.4206892Z ##[endgroup]
+2026-08-31T18:50:52.4207875Z ##[group]Fetching submodules
+2026-08-31T18:50:52.4212145Z [command]/usr/bin/git submodule sync --recursive
+2026-08-31T18:50:52.4408153Z [command]/usr/bin/git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
+2026-08-31T18:50:52.4590391Z Submodule 'third-party/cereal' (https://github.com/openfheorg/cereal.git) registered for path 'third-party/cereal'
+2026-08-31T18:50:52.4592224Z Submodule 'third-party/google-benchmark' (https://github.com/google/benchmark.git) registered for path 'third-party/google-benchmark'
+2026-08-31T18:50:52.4593857Z Submodule 'third-party/google-test' (https://github.com/google/googletest.git) registered for path 'third-party/google-test'
+2026-08-31T18:50:52.4596916Z Submodule 'third-party/gperftools' (https://github.com/gperftools/gperftools.git) registered for path 'third-party/gperftools'
+2026-08-31T18:50:52.4622942Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/cereal'...
+2026-08-31T18:50:53.4286814Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/google-benchmark'...
+2026-08-31T18:50:54.5955924Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/google-test'...
+2026-08-31T18:50:55.6737408Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/gperftools'...
+2026-08-31T18:50:57.1555373Z Submodule path 'third-party/cereal': checked out '984e3f194862b17916536b5fade40cba6e47a6fe'
+2026-08-31T18:50:59.1649702Z From https://github.com/google/benchmark
+2026-08-31T18:50:59.1650560Z  * branch            eddb0241389718a23a42db6af5f0164b6e0139af -> FETCH_HEAD
+2026-08-31T18:50:59.1802112Z Submodule path 'third-party/google-benchmark': checked out 'eddb0241389718a23a42db6af5f0164b6e0139af'
+2026-08-31T18:51:00.6986130Z From https://github.com/google/googletest
+2026-08-31T18:51:00.6986983Z  * branch            52eb8108c5bdec04579160ae17225d66034bd723 -> FETCH_HEAD
+2026-08-31T18:51:00.7371906Z Submodule path 'third-party/google-test': checked out '52eb8108c5bdec04579160ae17225d66034bd723'
+2026-08-31T18:51:02.5615049Z From https://github.com/gperftools/gperftools
+2026-08-31T18:51:02.5615885Z  * branch            83edb60836d87cf1b406e8846b9059c03031e8f5 -> FETCH_HEAD
+2026-08-31T18:51:02.7032163Z Submodule path 'third-party/gperftools': checked out '83edb60836d87cf1b406e8846b9059c03031e8f5'
+2026-08-31T18:51:02.7080112Z [command]/usr/bin/git submodule foreach --recursive git config --local gc.auto 0
+2026-08-31T18:51:02.7324314Z Entering 'third-party/cereal'
+2026-08-31T18:51:02.7362063Z Entering 'third-party/google-benchmark'
+2026-08-31T18:51:02.7395590Z Entering 'third-party/google-test'
+2026-08-31T18:51:02.7428655Z Entering 'third-party/gperftools'
+2026-08-31T18:51:02.7471831Z ##[endgroup]
+2026-08-31T18:51:02.7472776Z ##[group]Persisting credentials for submodules
+2026-08-31T18:51:02.7478245Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'url\.https\:\/\/github\.com\/\.insteadOf' && git config --local --unset-all 'url.https://github.com/.insteadOf' || :"
+2026-08-31T18:51:02.7674070Z Entering 'third-party/cereal'
+2026-08-31T18:51:02.7716661Z Entering 'third-party/google-benchmark'
+2026-08-31T18:51:02.7755692Z Entering 'third-party/google-test'
+2026-08-31T18:51:02.7793703Z Entering 'third-party/gperftools'
+2026-08-31T18:51:02.7845093Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local 'http.https://github.com/.extraheader' 'AUTHORIZATION: basic ***' && git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-08-31T18:51:02.8034568Z Entering 'third-party/cereal'
+2026-08-31T18:51:02.8867051Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/cereal/config	remote.origin.url
+2026-08-31T18:51:02.8886333Z Entering 'third-party/google-benchmark'
+2026-08-31T18:51:02.8922421Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-benchmark/config	remote.origin.url
+2026-08-31T18:51:02.8938560Z Entering 'third-party/google-test'
+2026-08-31T18:51:02.8974575Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-test/config	remote.origin.url
+2026-08-31T18:51:02.8990762Z Entering 'third-party/gperftools'
+2026-08-31T18:51:02.9025038Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/gperftools/config	remote.origin.url
+2026-08-31T18:51:02.9136267Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'git@github.com:'
+2026-08-31T18:51:02.9329341Z Entering 'third-party/cereal'
+2026-08-31T18:51:02.9364712Z Entering 'third-party/google-benchmark'
+2026-08-31T18:51:02.9396218Z Entering 'third-party/google-test'
+2026-08-31T18:51:02.9428095Z Entering 'third-party/gperftools'
+2026-08-31T18:51:02.9471617Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'org-26023695@github.com:'
+2026-08-31T18:51:02.9652979Z Entering 'third-party/cereal'
+2026-08-31T18:51:02.9686088Z Entering 'third-party/google-benchmark'
+2026-08-31T18:51:02.9718697Z Entering 'third-party/google-test'
+2026-08-31T18:51:02.9749877Z Entering 'third-party/gperftools'
+2026-08-31T18:51:02.9789053Z ##[endgroup]
+2026-08-31T18:51:02.9826821Z [command]/usr/bin/git log -1 --format=%H
+2026-08-31T18:51:02.9848683Z df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:51:02.9975709Z ##[group]Run actual="$(git -C .ci/openfhe-src rev-parse HEAD)"
+2026-08-31T18:51:02.9976281Z [36;1mactual="$(git -C .ci/openfhe-src rev-parse HEAD)"[0m
+2026-08-31T18:51:02.9976769Z [36;1mtest "$actual" = "$OPENFHE_COMMIT"[0m
+2026-08-31T18:51:02.9977265Z [36;1mgit -C .ci/openfhe-src status --short[0m
+2026-08-31T18:51:03.0007302Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-08-31T18:51:03.0007730Z env:
+2026-08-31T18:51:03.0008175Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:51:03.0008676Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:51:03.0009108Z ##[endgroup]
+2026-08-31T18:51:03.1256529Z ##[group]Run sudo apt-get update
+2026-08-31T18:51:03.1256992Z [36;1msudo apt-get update[0m
+2026-08-31T18:51:03.1257428Z [36;1msudo apt-get install --yes --no-install-recommends libboost-dev[0m
+2026-08-31T18:51:03.1282311Z shell: /usr/bin/bash -e {0}
+2026-08-31T18:51:03.1282642Z env:
+2026-08-31T18:51:03.1283114Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:51:03.1283621Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:51:03.1284109Z ##[endgroup]
+2026-08-31T18:51:03.3226427Z Get:1 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
+2026-08-31T18:51:03.3437296Z Get:2 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-08-31T18:51:03.3526901Z Get:4 https://packages.microsoft.com/repos/azure-cli noble InRelease [3564 B]
+2026-08-31T18:51:03.3563285Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-08-31T18:51:03.3768306Z Hit:3 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-08-31T18:51:03.3780752Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-08-31T18:51:03.3805335Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-08-31T18:51:03.5270944Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-08-31T18:51:03.5281722Z Get:9 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1404 B]
+2026-08-31T18:51:03.6078517Z Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [429 kB]
+2026-08-31T18:51:03.6154673Z Get:11 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.5 kB]
+2026-08-31T18:51:03.6183314Z Get:12 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [382 kB]
+2026-08-31T18:51:03.7163313Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1230 kB]
+2026-08-31T18:51:03.7228677Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [287 kB]
+2026-08-31T18:51:03.7247552Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [180 kB]
+2026-08-31T18:51:03.7271102Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1689 kB]
+2026-08-31T18:51:03.7352737Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [338 kB]
+2026-08-31T18:51:03.7448683Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+2026-08-31T18:51:03.7472840Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1486 kB]
+2026-08-31T18:51:03.7551594Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [339 kB]
+2026-08-31T18:51:03.7571315Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+2026-08-31T18:51:03.7671030Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5760 B]
+2026-08-31T18:51:03.8113426Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.7 kB]
+2026-08-31T18:51:03.8122702Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [979 kB]
+2026-08-31T18:51:03.8173312Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [209 kB]
+2026-08-31T18:51:03.8186384Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.3 kB]
+2026-08-31T18:51:03.8196354Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1205 kB]
+2026-08-31T18:51:03.8253588Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [241 kB]
+2026-08-31T18:51:03.8268866Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.3 kB]
+2026-08-31T18:51:03.8279072Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1392 kB]
+2026-08-31T18:51:03.8346816Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [321 kB]
+2026-08-31T18:51:03.8364382Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [11.1 kB]
+2026-08-31T18:51:13.3016979Z Fetched 11.7 MB in 2s (6951 kB/s)
+2026-08-31T18:51:14.1723142Z Reading package lists...
+2026-08-31T18:51:14.2069093Z Reading package lists...
+2026-08-31T18:51:14.3977966Z Building dependency tree...
+2026-08-31T18:51:14.3983710Z Reading state information...
+2026-08-31T18:51:14.5642369Z The following additional packages will be installed:
+2026-08-31T18:51:14.5649251Z   libboost1.83-dev
+2026-08-31T18:51:14.5656724Z Suggested packages:
+2026-08-31T18:51:14.5657082Z   libboost-doc libboost1.83-doc libboost-atomic1.83-dev
+2026-08-31T18:51:14.5657603Z   libboost-chrono1.83-dev libboost-container1.83-dev libboost-context1.83-dev
+2026-08-31T18:51:14.5658131Z   libboost-contract1.83-dev libboost-coroutine1.83-dev
+2026-08-31T18:51:14.5658684Z   libboost-date-time1.83-dev libboost-exception1.83-dev libboost-fiber1.83-dev
+2026-08-31T18:51:14.5659231Z   libboost-filesystem1.83-dev libboost-graph-parallel1.83-dev
+2026-08-31T18:51:14.5659736Z   libboost-graph1.83-dev libboost-iostreams1.83-dev libboost-json1.83-dev
+2026-08-31T18:51:14.5661021Z   libboost-locale1.83-dev libboost-log1.83-dev libboost-math1.83-dev
+2026-08-31T18:51:14.5661581Z   libboost-mpi-python1.83-dev libboost-mpi1.83-dev libboost-nowide1.83-dev
+2026-08-31T18:51:14.5662072Z   libboost-numpy1.83-dev libboost-program-options1.83-dev
+2026-08-31T18:51:14.5662577Z   libboost-python1.83-dev libboost-random1.83-dev libboost-regex1.83-dev
+2026-08-31T18:51:14.5663098Z   libboost-serialization1.83-dev libboost-stacktrace1.83-dev
+2026-08-31T18:51:14.5663598Z   libboost-system1.83-dev libboost-test1.83-dev libboost-thread1.83-dev
+2026-08-31T18:51:14.5664141Z   libboost-timer1.83-dev libboost-type-erasure1.83-dev libboost-url1.83-dev
+2026-08-31T18:51:14.5664655Z   libboost-wave1.83-dev libboost1.83-tools-dev libmpfrc++-dev libntl-dev
+2026-08-31T18:51:14.5866847Z The following NEW packages will be installed:
+2026-08-31T18:51:14.5875014Z   libboost-dev libboost1.83-dev
+2026-08-31T18:51:14.6041028Z 0 upgraded, 2 newly installed, 0 to remove and 73 not upgraded.
+2026-08-31T18:51:14.6041491Z Need to get 10.7 MB of archives.
+2026-08-31T18:51:14.6041999Z After this operation, 161 MB of additional disk space will be used.
+2026-08-31T18:51:14.6042450Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-08-31T18:51:14.8011555Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libboost1.83-dev amd64 1.83.0-2.1ubuntu3.2 [10.7 MB]
+2026-08-31T18:51:14.9968664Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libboost-dev amd64 1.83.0.1ubuntu2 [4308 B]
+2026-08-31T18:51:15.3568542Z Fetched 10.7 MB in 0s (26.8 MB/s)
+2026-08-31T18:51:15.4127566Z Selecting previously unselected package libboost1.83-dev:amd64.
+2026-08-31T18:51:15.4299525Z (Reading database ... 
+2026-08-31T18:51:15.4300330Z (Reading database ... 5%
+2026-08-31T18:51:15.4301387Z (Reading database ... 10%
+2026-08-31T18:51:15.4302128Z (Reading database ... 15%
+2026-08-31T18:51:15.4302652Z (Reading database ... 20%
+2026-08-31T18:51:15.4303186Z (Reading database ... 25%
+2026-08-31T18:51:15.4303507Z (Reading database ... 30%
+2026-08-31T18:51:15.4303848Z (Reading database ... 35%
+2026-08-31T18:51:15.4304140Z (Reading database ... 40%
+2026-08-31T18:51:15.4304424Z (Reading database ... 45%
+2026-08-31T18:51:15.4304775Z (Reading database ... 50%
+2026-08-31T18:51:15.4305076Z (Reading database ... 55%
+2026-08-31T18:51:15.8899987Z (Reading database ... 60%
+2026-08-31T18:51:16.1901256Z (Reading database ... 65%
+2026-08-31T18:51:16.3909267Z (Reading database ... 70%
+2026-08-31T18:51:16.5829149Z (Reading database ... 75%
+2026-08-31T18:51:17.0213516Z (Reading database ... 80%
+2026-08-31T18:51:17.2980065Z (Reading database ... 85%
+2026-08-31T18:51:17.5595745Z (Reading database ... 90%
+2026-08-31T18:51:17.8454384Z (Reading database ... 95%
+2026-08-31T18:51:17.8455608Z (Reading database ... 100%
+2026-08-31T18:51:17.8456296Z (Reading database ... 203385 files and directories currently installed.)
+2026-08-31T18:51:17.8503297Z Preparing to unpack .../libboost1.83-dev_1.83.0-2.1ubuntu3.2_amd64.deb ...
+2026-08-31T18:51:17.8582167Z Unpacking libboost1.83-dev:amd64 (1.83.0-2.1ubuntu3.2) ...
+2026-08-31T18:51:23.1082129Z Selecting previously unselected package libboost-dev:amd64.
+2026-08-31T18:51:23.1297967Z Preparing to unpack .../libboost-dev_1.83.0.1ubuntu2_amd64.deb ...
+2026-08-31T18:51:23.1311967Z Unpacking libboost-dev:amd64 (1.83.0.1ubuntu2) ...
+2026-08-31T18:51:23.1712832Z Setting up libboost1.83-dev:amd64 (1.83.0-2.1ubuntu3.2) ...
+2026-08-31T18:51:23.1742230Z Setting up libboost-dev:amd64 (1.83.0.1ubuntu2) ...
+2026-08-31T18:51:23.7084010Z 
+2026-08-31T18:51:23.7084898Z Running kernel seems to be up-to-date.
+2026-08-31T18:51:23.7085334Z 
+2026-08-31T18:51:23.7085511Z No services need to be restarted.
+2026-08-31T18:51:23.7085777Z 
+2026-08-31T18:51:23.7086162Z No containers need to be restarted.
+2026-08-31T18:51:23.7086533Z 
+2026-08-31T18:51:23.7086788Z No user sessions are running outdated binaries.
+2026-08-31T18:51:23.7087104Z 
+2026-08-31T18:51:23.7087460Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-08-31T18:51:24.6676354Z ##[group]Run cmake --version
+2026-08-31T18:51:24.6676752Z [36;1mcmake --version[0m
+2026-08-31T18:51:24.6677064Z [36;1mc++ --version[0m
+2026-08-31T18:51:24.6703523Z shell: /usr/bin/bash -e {0}
+2026-08-31T18:51:24.6703949Z env:
+2026-08-31T18:51:24.6704320Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:51:24.6704840Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:51:24.6705369Z ##[endgroup]
+2026-08-31T18:51:25.1259386Z cmake version 3.31.6
+2026-08-31T18:51:25.1259886Z 
+2026-08-31T18:51:25.1260161Z CMake suite maintained and supported by Kitware (kitware.com/cmake).
+2026-08-31T18:51:25.1308589Z c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+2026-08-31T18:51:25.1309544Z Copyright (C) 2023 Free Software Foundation, Inc.
+2026-08-31T18:51:25.1310048Z This is free software; see the source for copying conditions.  There is NO
+2026-08-31T18:51:25.1311429Z warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+2026-08-31T18:51:25.1311842Z 
+2026-08-31T18:51:25.1388236Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-31T18:51:25.1389523Z ##[group]Run actions/cache@v4
+2026-08-31T18:51:25.1389878Z with:
+2026-08-31T18:51:25.1390373Z   path: .ci/openfhe-install
+2026-08-31T18:51:25.1390860Z   key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:51:25.1391335Z   enableCrossOsArchive: false
+2026-08-31T18:51:25.1391696Z   fail-on-cache-miss: false
+2026-08-31T18:51:25.1392061Z   lookup-only: false
+2026-08-31T18:51:25.1392354Z   save-always: false
+2026-08-31T18:51:25.1392677Z env:
+2026-08-31T18:51:25.1393046Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:51:25.1393632Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:51:25.1394130Z ##[endgroup]
+2026-08-31T18:51:25.2505652Z (node:3117) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-31T18:51:25.2506437Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-31T18:51:25.4617705Z Cache not found for input keys: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:51:25.4726750Z ##[group]Run cmake -S .ci/openfhe-src -B .ci/openfhe-build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${OPENFHE_PREFIX} -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF -DBUILD_EXTRAS=OFF -DWITH_OPENMP=ON
+2026-08-31T18:51:25.4728528Z [36;1mcmake -S .ci/openfhe-src -B .ci/openfhe-build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${OPENFHE_PREFIX} -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF -DBUILD_EXTRAS=OFF -DWITH_OPENMP=ON[0m
+2026-08-31T18:51:25.4752889Z shell: /usr/bin/bash -e {0}
+2026-08-31T18:51:25.4753225Z env:
+2026-08-31T18:51:25.4753553Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:51:25.4754074Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:51:25.4754489Z ##[endgroup]
+2026-08-31T18:51:25.7964979Z -- The C compiler identification is GNU 13.3.0
+2026-08-31T18:51:25.9277015Z -- The CXX compiler identification is GNU 13.3.0
+2026-08-31T18:51:26.0166326Z -- Detecting C compiler ABI info
+2026-08-31T18:51:26.1976254Z -- Detecting C compiler ABI info - done
+2026-08-31T18:51:26.2130552Z -- Check for working C compiler: /usr/bin/cc - skipped
+2026-08-31T18:51:26.2172138Z -- Detecting C compile features
+2026-08-31T18:51:26.2178123Z -- Detecting C compile features - done
+2026-08-31T18:51:26.2392133Z -- Detecting CXX compiler ABI info
+2026-08-31T18:51:26.3382727Z -- Detecting CXX compiler ABI info - done
+2026-08-31T18:51:26.3536679Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2026-08-31T18:51:26.3540743Z -- Detecting CXX compile features
+2026-08-31T18:51:26.3546556Z -- Detecting CXX compile features - done
+2026-08-31T18:51:26.3674078Z -- Building in Release mode
+2026-08-31T18:51:26.3674705Z -- BUILD_UNITTESTS:    OFF
+2026-08-31T18:51:26.3675205Z -- BUILD_EXAMPLES:     OFF
+2026-08-31T18:51:26.3675677Z -- BUILD_BENCHMARKS:   OFF
+2026-08-31T18:51:26.3676124Z -- BUILD_EXTRAS:       OFF
+2026-08-31T18:51:26.3676628Z -- BUILD_STATIC:       OFF
+2026-08-31T18:51:26.3677084Z -- BUILD_SHARED:       ON
+2026-08-31T18:51:26.3677516Z -- GIT_SUBMOD_AUTO:    ON
+2026-08-31T18:51:26.3677952Z -- WITH_BE2:           OFF
+2026-08-31T18:51:26.3678362Z -- WITH_BE4:           OFF
+2026-08-31T18:51:26.3678818Z -- WITH_NTL:           OFF
+2026-08-31T18:51:26.3679495Z -- WITH_TCM:           OFF
+2026-08-31T18:51:26.3679836Z -- WITH_OPENMP:        ON
+2026-08-31T18:51:26.3680174Z -- NATIVE_SIZE:        64
+2026-08-31T18:51:26.3680805Z -- CKKS_M_FACTOR:      1
+2026-08-31T18:51:26.3681218Z -- WITH_NATIVEOPT:     OFF
+2026-08-31T18:51:26.3681525Z -- WITH_COVTEST:       OFF
+2026-08-31T18:51:26.3681816Z -- WITH_NOISE_DEBUG:   OFF
+2026-08-31T18:51:26.3682146Z -- WITH_REDUCED_NOISE: OFF
+2026-08-31T18:51:26.3682450Z -- USE_MACPORTS:       OFF
+2026-08-31T18:51:26.3683160Z ***** INSTALL IS AT /home/runner/work/20231788./20231788./.ci/openfhe-install; to change, run cmake with -DCMAKE_INSTALL_PREFIX=/your/path
+2026-08-31T18:51:26.3684065Z -- BUILTIN_INFO_AVAILABLE is defined
+2026-08-31T18:51:26.3697194Z -- Architecture is x86_64
+2026-08-31T18:51:26.3861419Z -- Looking for sys/types.h
+2026-08-31T18:51:26.4646284Z -- Looking for sys/types.h - found
+2026-08-31T18:51:26.4647018Z -- Looking for stdint.h
+2026-08-31T18:51:26.5134918Z -- Looking for stdint.h - found
+2026-08-31T18:51:26.5136416Z -- Looking for stddef.h
+2026-08-31T18:51:26.5629251Z -- Looking for stddef.h - found
+2026-08-31T18:51:26.5630911Z -- Check size of __int128
+2026-08-31T18:51:26.6157374Z -- Check size of __int128 - done
+2026-08-31T18:51:26.6159826Z -- Check size of uint64_t
+2026-08-31T18:51:26.6681665Z -- Check size of uint64_t - done
+2026-08-31T18:51:26.6682403Z -- NATIVEINT is set to 64
+2026-08-31T18:51:26.6682907Z -- MATHBACKEND is set to 4
+2026-08-31T18:51:26.6683428Z -- MATHBACKEND set to 4. Setting WITH_BE4 to ON
+2026-08-31T18:51:26.9505850Z -- Found OpenMP_C: -fopenmp (found version "4.5")
+2026-08-31T18:51:27.0178984Z -- Found OpenMP_CXX: -fopenmp (found version "4.5")
+2026-08-31T18:51:27.0181909Z -- Found OpenMP: TRUE (found version "4.5")
+2026-08-31T18:51:27.0259986Z -- Found Git: /usr/bin/git (found version "2.55.0")
+2026-08-31T18:51:27.0260766Z -- Submodule update
+2026-08-31T18:51:27.0435646Z Synchronizing submodule url for 'third-party/cereal'
+2026-08-31T18:51:27.0449830Z Synchronizing submodule url for 'third-party/google-benchmark'
+2026-08-31T18:51:27.0467314Z Synchronizing submodule url for 'third-party/google-test'
+2026-08-31T18:51:27.0484017Z Synchronizing submodule url for 'third-party/gperftools'
+2026-08-31T18:51:27.1200727Z -- Configuring done (1.6s)
+2026-08-31T18:51:27.1536941Z -- Generating done (0.0s)
+2026-08-31T18:51:27.1539793Z -- Build files have been written to: /home/runner/work/20231788./20231788./.ci/openfhe-build
+2026-08-31T18:51:27.1621153Z ##[group]Run cmake --build .ci/openfhe-build --parallel 2
+2026-08-31T18:51:27.1621763Z [36;1mcmake --build .ci/openfhe-build --parallel 2[0m
+2026-08-31T18:51:27.1622161Z [36;1mcmake --install .ci/openfhe-build[0m
+2026-08-31T18:51:27.1645321Z shell: /usr/bin/bash -e {0}
+2026-08-31T18:51:27.1645706Z env:
+2026-08-31T18:51:27.1646061Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:51:27.1646559Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:51:27.1647047Z ##[endgroup]
+2026-08-31T18:51:27.1860733Z -- Copied demoData files
+2026-08-31T18:51:27.1878773Z [  0%] Built target third-party
+2026-08-31T18:51:27.1954773Z [  1%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/constants-lattice-impl.cpp.o
+2026-08-31T18:51:27.1955932Z [  2%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/lattice.cpp.o
+2026-08-31T18:51:27.6374953Z [  3%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/stdlatticeparms.cpp.o
+2026-08-31T18:51:28.2781658Z [  4%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/trapdoor-dcrtpoly.cpp.o
+2026-08-31T18:51:34.6956801Z [  5%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/trapdoor-poly.cpp.o
+2026-08-31T18:51:41.6186944Z [  6%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/chebyshev.cpp.o
+2026-08-31T18:51:42.1355103Z [  6%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/dftransform.cpp.o
+2026-08-31T18:51:42.4437273Z [  7%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/discretegaussiangeneratorgeneric.cpp.o
+2026-08-31T18:51:43.1340980Z [  8%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/distributiongenerator.cpp.o
+2026-08-31T18:51:43.3297416Z [  9%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintdyn/be4-math-impl.cpp.o
+2026-08-31T18:51:43.5992879Z [ 10%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintdyn/mubintvecdyn.cpp.o
+2026-08-31T18:51:45.5956020Z [ 11%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintdyn/ubintdyn.cpp.o
+2026-08-31T18:51:46.9495708Z [ 12%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintfxd/be2-math-impl.cpp.o
+2026-08-31T18:51:46.9604961Z [ 13%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintfxd/mubintvecfxd.cpp.o
+2026-08-31T18:51:46.9710559Z [ 14%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintfxd/ubintfxd.cpp.o
+2026-08-31T18:51:46.9817272Z [ 15%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintntl/be6-math-impl.cpp.o
+2026-08-31T18:51:46.9917900Z [ 15%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintntl/mubintvecntl.cpp.o
+2026-08-31T18:51:47.0020579Z [ 16%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintntl/ubintntl.cpp.o
+2026-08-31T18:51:47.0122374Z [ 17%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/intnat/benative-math-impl.cpp.o
+2026-08-31T18:51:47.7511592Z [ 18%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/intnat/mubintvecnat.cpp.o
+2026-08-31T18:51:49.3358471Z [ 19%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hermite.cpp.o
+2026-08-31T18:51:50.0938248Z [ 20%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/matrix.cpp.o
+2026-08-31T18:51:50.6973166Z [ 21%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/nbtheory2.cpp.o
+2026-08-31T18:51:51.7333790Z [ 22%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/blockAllocator/blockAllocator.cpp.o
+2026-08-31T18:51:52.0815861Z [ 23%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/blockAllocator/xallocator.cpp.o
+2026-08-31T18:51:52.6022647Z [ 24%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/debug.cpp.o
+2026-08-31T18:51:52.9149425Z [ 24%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/demangle.cpp.o
+2026-08-31T18:51:53.0979738Z [ 25%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/get-call-stack.cpp.o
+2026-08-31T18:51:53.2729126Z [ 26%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/hashutil.cpp.o
+2026-08-31T18:51:53.3675492Z [ 27%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/inttypes.cpp.o
+2026-08-31T18:51:53.5604458Z [ 28%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/memory.cpp.o
+2026-08-31T18:51:53.7453166Z [ 29%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/openfhebase64.cpp.o
+2026-08-31T18:51:53.7501460Z [ 30%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/parallel.cpp.o
+2026-08-31T18:51:53.7690673Z [ 31%] Building C object src/core/CMakeFiles/coreobj.dir/lib/utils/prng/blake2b-ref.c.o
+2026-08-31T18:51:53.9476081Z [ 32%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/prng/blake2engine.cpp.o
+2026-08-31T18:51:54.1069566Z [ 34%] Building C object src/core/CMakeFiles/coreobj.dir/lib/utils/prng/blake2xb-ref.c.o
+2026-08-31T18:51:54.1559813Z [ 34%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/utilities.cpp.o
+2026-08-31T18:51:54.4635460Z [ 34%] Built target coreobj
+2026-08-31T18:51:54.4704009Z [ 35%] Linking CXX shared library ../../lib/libOPENFHEcore.so
+2026-08-31T18:51:54.5767059Z [ 35%] Built target OPENFHEcore
+2026-08-31T18:51:54.5831690Z [ 36%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/binfhe-base-scheme.cpp.o
+2026-08-31T18:51:54.5833831Z [ 37%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/binfhe-constants-impl.cpp.o
+2026-08-31T18:51:55.1010387Z [ 38%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/binfhecontext.cpp.o
+2026-08-31T18:51:57.8903625Z [ 39%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/lwe-pke.cpp.o
+2026-08-31T18:51:58.2144627Z [ 40%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc-cggi.cpp.o
+2026-08-31T18:51:59.5072430Z [ 41%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc-dm.cpp.o
+2026-08-31T18:52:00.1817452Z [ 41%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc-lmkcdey.cpp.o
+2026-08-31T18:52:01.4717528Z [ 42%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc.cpp.o
+2026-08-31T18:52:02.4313983Z [ 43%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-cryptoparameters.cpp.o
+2026-08-31T18:52:04.0940818Z [ 43%] Built target binfheobj
+2026-08-31T18:52:04.1003839Z [ 43%] Linking CXX shared library ../../lib/libOPENFHEbinfhe.so
+2026-08-31T18:52:04.1712709Z [ 43%] Built target OPENFHEbinfhe
+2026-08-31T18:52:04.1799646Z [ 44%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/ciphertext-impl.cpp.o
+2026-08-31T18:52:04.1802078Z [ 45%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/constants-impl.cpp.o
+2026-08-31T18:52:04.7653914Z [ 46%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/cryptocontext.cpp.o
+2026-08-31T18:52:08.4994383Z [ 47%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/cryptocontextfactory.cpp.o
+2026-08-31T18:52:12.3869005Z [ 48%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/cryptoobject-impl.cpp.o
+2026-08-31T18:52:14.1304907Z [ 49%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/ckkspackedencoding.cpp.o
+2026-08-31T18:52:15.2021312Z [ 50%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/coefpackedencoding.cpp.o
+2026-08-31T18:52:17.1812566Z [ 51%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/encodingparams.cpp.o
+2026-08-31T18:52:17.9522680Z [ 51%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/packedencoding.cpp.o
+2026-08-31T18:52:18.0255810Z [ 52%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/stringencoding.cpp.o
+2026-08-31T18:52:20.8000023Z [ 53%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/globals-impl.cpp.o
+2026-08-31T18:52:20.8167767Z [ 54%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/evalkey.cpp.o
+2026-08-31T18:52:22.2682010Z [ 55%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/evalkeyrelin.cpp.o
+2026-08-31T18:52:22.6209400Z [ 56%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/privatekey.cpp.o
+2026-08-31T18:52:25.5335826Z [ 57%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/publickey.cpp.o
+2026-08-31T18:52:25.7555194Z [ 58%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/keyswitch/keyswitch-base.cpp.o
+2026-08-31T18:52:27.5819959Z [ 59%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/keyswitch/keyswitch-bv.cpp.o
+2026-08-31T18:52:28.7431043Z [ 60%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/keyswitch/keyswitch-hybrid.cpp.o
+2026-08-31T18:52:31.3995029Z [ 60%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-cryptoparameters.cpp.o
+2026-08-31T18:52:32.9262642Z [ 61%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-leveledshe.cpp.o
+2026-08-31T18:52:35.6868415Z [ 62%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-multiparty.cpp.o
+2026-08-31T18:52:38.0899049Z [ 63%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-parametergeneration.cpp.o
+2026-08-31T18:52:39.5471267Z [ 64%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-pke.cpp.o
+2026-08-31T18:52:41.0639571Z [ 65%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-scheme.cpp.o
+2026-08-31T18:52:43.5605971Z [ 67%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-cryptoparameters.cpp.o
+2026-08-31T18:52:45.5762201Z [ 68%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-leveledshe.cpp.o
+2026-08-31T18:52:45.8145583Z [ 69%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-multiparty.cpp.o
+2026-08-31T18:52:47.5265331Z [ 70%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-parametergeneration.cpp.o
+2026-08-31T18:52:49.2052211Z [ 70%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-pke.cpp.o
+2026-08-31T18:52:50.6072114Z [ 71%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-scheme.cpp.o
+2026-08-31T18:52:52.6026791Z [ 72%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-advancedshe.cpp.o
+2026-08-31T18:52:55.4177553Z [ 73%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-cryptoparameters.cpp.o
+2026-08-31T18:52:57.4205258Z [ 74%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-fhe.cpp.o
+2026-08-31T18:52:57.5185823Z [ 75%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-leveledshe.cpp.o
+2026-08-31T18:53:01.7206285Z [ 76%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-multiparty.cpp.o
+2026-08-31T18:53:06.3166716Z [ 77%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-parametergeneration.cpp.o
+2026-08-31T18:53:07.9769306Z [ 78%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-pke.cpp.o
+2026-08-31T18:53:08.7980858Z [ 79%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-scheme.cpp.o
+2026-08-31T18:53:11.3822373Z [ 79%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-schemeswitching.cpp.o
+2026-08-31T18:53:13.4748476Z [ 80%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-utils.cpp.o
+2026-08-31T18:53:15.9710543Z [ 81%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/gen-cryptocontext-params-impl.cpp.o
+2026-08-31T18:53:16.5662329Z [ 82%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/gen-cryptocontext-params-validation.cpp.o
+2026-08-31T18:53:17.2289457Z [ 83%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/scheme-id-impl.cpp.o
+2026-08-31T18:53:17.6672902Z [ 84%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/scheme-swch-params.cpp.o
+2026-08-31T18:53:18.3270718Z [ 85%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-advancedshe.cpp.o
+2026-08-31T18:53:20.4407657Z [ 86%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-cryptoparameters.cpp.o
+2026-08-31T18:53:21.5987798Z [ 87%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-fhe.cpp.o
+2026-08-31T18:53:23.3406166Z [ 88%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-leveledshe.cpp.o
+2026-08-31T18:53:23.6943247Z [ 88%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-multiparty.cpp.o
+2026-08-31T18:53:28.1699002Z [ 89%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-parametergeneration.cpp.o
+2026-08-31T18:53:28.2429108Z [ 90%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-pke.cpp.o
+2026-08-31T18:53:29.1885818Z [ 91%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-pre.cpp.o
+2026-08-31T18:53:32.1605031Z [ 92%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-scheme.cpp.o
+2026-08-31T18:53:32.7192667Z [ 93%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/rlwe-cryptoparameters-impl.cpp.o
+2026-08-31T18:53:33.9490440Z [ 94%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemelet/rlwe-mp.cpp.o
+2026-08-31T18:53:37.0915740Z [ 95%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-cryptoparameters.cpp.o
+2026-08-31T18:53:38.0172735Z [ 96%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-leveledshe.cpp.o
+2026-08-31T18:53:40.4358693Z [ 97%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-multiparty.cpp.o
+2026-08-31T18:53:42.3646135Z [ 98%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-pke.cpp.o
+2026-08-31T18:53:46.0051626Z [ 98%] Built target pkeobj
+2026-08-31T18:53:46.0120661Z [100%] Linking CXX shared library ../../lib/libOPENFHEpke.so
+2026-08-31T18:53:46.2021217Z [100%] Built target OPENFHEpke
+2026-08-31T18:53:46.2075106Z -- Install configuration: "Release"
+2026-08-31T18:53:46.2185392Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/config_core.h
+2026-08-31T18:53:46.2186976Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal
+2026-08-31T18:53:46.2188161Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/cereal.hpp
+2026-08-31T18:53:46.2189346Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/archives
+2026-08-31T18:53:46.2190753Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/archives/json.hpp
+2026-08-31T18:53:46.2192072Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/archives/adapters.hpp
+2026-08-31T18:53:46.2193365Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/archives/portable_binary.hpp
+2026-08-31T18:53:46.2194671Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/archives/xml.hpp
+2026-08-31T18:53:46.2195920Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/archives/binary.hpp
+2026-08-31T18:53:46.2197065Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external
+2026-08-31T18:53:46.2198275Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson
+2026-08-31T18:53:46.2199480Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/fwd.h
+2026-08-31T18:53:46.2201041Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/memorybuffer.h
+2026-08-31T18:53:46.2202368Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/error
+2026-08-31T18:53:46.2203639Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/error/error.h
+2026-08-31T18:53:46.2205219Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/error/en.h
+2026-08-31T18:53:46.2206543Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/stream.h
+2026-08-31T18:53:46.2207917Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/stringbuffer.h
+2026-08-31T18:53:46.2209314Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/document.h
+2026-08-31T18:53:46.2210792Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/filereadstream.h
+2026-08-31T18:53:46.2212177Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal
+2026-08-31T18:53:46.2213493Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/meta.h
+2026-08-31T18:53:46.2214925Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/itoa.h
+2026-08-31T18:53:46.2216347Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/stack.h
+2026-08-31T18:53:46.2217751Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/swap.h
+2026-08-31T18:53:46.2219123Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/regex.h
+2026-08-31T18:53:46.2220780Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/ieee754.h
+2026-08-31T18:53:46.2222277Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/strtod.h
+2026-08-31T18:53:46.2223703Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/strfunc.h
+2026-08-31T18:53:46.2225124Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/dtoa.h
+2026-08-31T18:53:46.2226502Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/diyfp.h
+2026-08-31T18:53:46.2227912Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/pow10.h
+2026-08-31T18:53:46.2229362Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/biginteger.h
+2026-08-31T18:53:46.2230949Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/prettywriter.h
+2026-08-31T18:53:46.2232328Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes
+2026-08-31T18:53:46.2233671Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes/stdint.h
+2026-08-31T18:53:46.2235084Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes/LICENSE
+2026-08-31T18:53:46.2237307Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes/inttypes.h
+2026-08-31T18:53:46.2238729Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/cursorstreamwrapper.h
+2026-08-31T18:53:46.2240155Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/reader.h
+2026-08-31T18:53:46.2241735Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/istreamwrapper.h
+2026-08-31T18:53:46.2243058Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/memorystream.h
+2026-08-31T18:53:46.2244430Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/encodedstream.h
+2026-08-31T18:53:46.2245701Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/writer.h
+2026-08-31T18:53:46.2246996Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/filewritestream.h
+2026-08-31T18:53:46.2248402Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/pointer.h
+2026-08-31T18:53:46.2249655Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/LICENSE
+2026-08-31T18:53:46.2251161Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/ostreamwrapper.h
+2026-08-31T18:53:46.2252474Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/encodings.h
+2026-08-31T18:53:46.2253752Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/rapidjson.h
+2026-08-31T18:53:46.2255108Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/schema.h
+2026-08-31T18:53:46.2256487Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidjson/allocators.h
+2026-08-31T18:53:46.2257772Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/LICENSE
+2026-08-31T18:53:46.2258928Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidxml
+2026-08-31T18:53:46.2260320Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml_utils.hpp
+2026-08-31T18:53:46.2261719Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidxml/license.txt
+2026-08-31T18:53:46.2263091Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml_print.hpp
+2026-08-31T18:53:46.2264458Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml.hpp
+2026-08-31T18:53:46.2265776Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidxml/manual.html
+2026-08-31T18:53:46.2267155Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml_iterators.hpp
+2026-08-31T18:53:46.2268531Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/external/base64.hpp
+2026-08-31T18:53:46.2269676Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/details
+2026-08-31T18:53:46.2270898Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/details/traits.hpp
+2026-08-31T18:53:46.2272355Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/details/helpers.hpp
+2026-08-31T18:53:46.2273633Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/details/polymorphic_impl_fwd.hpp
+2026-08-31T18:53:46.2274897Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/details/util.hpp
+2026-08-31T18:53:46.2276147Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/details/polymorphic_impl.hpp
+2026-08-31T18:53:46.2277625Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/details/static_object.hpp
+2026-08-31T18:53:46.2278931Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/access.hpp
+2026-08-31T18:53:46.2280015Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/version.hpp
+2026-08-31T18:53:46.2281189Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types
+2026-08-31T18:53:46.2282546Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/forward_list.hpp
+2026-08-31T18:53:46.2283796Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/boost_variant.hpp
+2026-08-31T18:53:46.2285002Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/unordered_set.hpp
+2026-08-31T18:53:46.2286253Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/utility.hpp
+2026-08-31T18:53:46.2287425Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/complex.hpp
+2026-08-31T18:53:46.2288541Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/optional.hpp
+2026-08-31T18:53:46.2289954Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/atomic.hpp
+2026-08-31T18:53:46.2293311Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/stack.hpp
+2026-08-31T18:53:46.2294717Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/common.hpp
+2026-08-31T18:53:46.2295839Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/array.hpp
+2026-08-31T18:53:46.2296981Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/bitset.hpp
+2026-08-31T18:53:46.2298146Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/set.hpp
+2026-08-31T18:53:46.2299316Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/unordered_map.hpp
+2026-08-31T18:53:46.2300834Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/valarray.hpp
+2026-08-31T18:53:46.2301975Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/chrono.hpp
+2026-08-31T18:53:46.2303101Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/deque.hpp
+2026-08-31T18:53:46.2304118Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/map.hpp
+2026-08-31T18:53:46.2305290Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/string.hpp
+2026-08-31T18:53:46.2306430Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/base_class.hpp
+2026-08-31T18:53:46.2307620Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/functional.hpp
+2026-08-31T18:53:46.2308792Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/variant.hpp
+2026-08-31T18:53:46.2309953Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/vector.hpp
+2026-08-31T18:53:46.2311257Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/list.hpp
+2026-08-31T18:53:46.2312457Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/polymorphic.hpp
+2026-08-31T18:53:46.2313641Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/concepts
+2026-08-31T18:53:46.2315431Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/concepts/pair_associative_container.hpp
+2026-08-31T18:53:46.2316797Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/memory.hpp
+2026-08-31T18:53:46.2317982Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/tuple.hpp
+2026-08-31T18:53:46.2319123Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/types/queue.hpp
+2026-08-31T18:53:46.2320366Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/specialize.hpp
+2026-08-31T18:53:46.2321181Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/cereal/macros.hpp
+2026-08-31T18:53:46.2321994Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEcore.so.1.5.0
+2026-08-31T18:53:46.2322776Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEcore.so.1
+2026-08-31T18:53:46.2323434Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEcore.so
+2026-08-31T18:53:46.2324065Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/testdefs.h
+2026-08-31T18:53:46.2324701Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/version.h
+2026-08-31T18:53:46.2325438Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/openfhecore.h
+2026-08-31T18:53:46.2326179Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils
+2026-08-31T18:53:46.2326863Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/openfhebase64.h
+2026-08-31T18:53:46.2327540Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/prng
+2026-08-31T18:53:46.2328227Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/prng/blake2engine.h
+2026-08-31T18:53:46.2329019Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/prng/CPPLINT.cfg
+2026-08-31T18:53:46.2329707Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/prng/prng.h
+2026-08-31T18:53:46.2330605Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/prng/blake2.h
+2026-08-31T18:53:46.2331350Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/prng/blake2-impl.h
+2026-08-31T18:53:46.2332078Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/prng/README.md
+2026-08-31T18:53:46.2332862Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/caller_info.h
+2026-08-31T18:53:46.2333562Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/sertype.h
+2026-08-31T18:53:46.2334259Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/hashutil.h
+2026-08-31T18:53:46.2335013Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/utilities-int.h
+2026-08-31T18:53:46.2335715Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/utilities.h
+2026-08-31T18:53:46.2336469Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/serial.h
+2026-08-31T18:53:46.2337165Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator
+2026-08-31T18:53:46.2338261Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/xlist.h
+2026-08-31T18:53:46.2339396Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/xstring.h
+2026-08-31T18:53:46.2340494Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/xqueue.h
+2026-08-31T18:53:46.2341598Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/xallocator.h
+2026-08-31T18:53:46.2342581Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/xsstream.h
+2026-08-31T18:53:46.2343573Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/README.md
+2026-08-31T18:53:46.2344558Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/xvector.h
+2026-08-31T18:53:46.2345550Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/blockAllocator.h
+2026-08-31T18:53:46.2346561Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/xmap.h
+2026-08-31T18:53:46.2347536Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/stl_allocator.h
+2026-08-31T18:53:46.2348566Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/blockAllocator/xset.h
+2026-08-31T18:53:46.2350104Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/memory.h
+2026-08-31T18:53:46.2351277Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/parallel.h
+2026-08-31T18:53:46.2352043Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/debug.h
+2026-08-31T18:53:46.2353051Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/README.md
+2026-08-31T18:53:46.2353763Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/type_name.h
+2026-08-31T18:53:46.2354615Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/get-call-stack.h
+2026-08-31T18:53:46.2355454Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/exception.h
+2026-08-31T18:53:46.2356229Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/serializable.h
+2026-08-31T18:53:46.2357056Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/inttypes.h
+2026-08-31T18:53:46.2357834Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/utils/demangle.h
+2026-08-31T18:53:46.2358581Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/README.md
+2026-08-31T18:53:46.2359451Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math
+2026-08-31T18:53:46.2360148Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/nbtheory-impl.h
+2026-08-31T18:53:46.2361311Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/matrixstrassen-impl.h
+2026-08-31T18:53:46.2362183Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/SAMPLING_README.md
+2026-08-31T18:53:46.2363122Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/ternaryuniformgenerator-impl.h
+2026-08-31T18:53:46.2364180Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/math_backends.md
+2026-08-31T18:53:46.2365222Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/discreteuniformgenerator-impl.h
+2026-08-31T18:53:46.2366140Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/ternaryuniformgenerator.h
+2026-08-31T18:53:46.2366855Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/distrgen.h
+2026-08-31T18:53:46.2367520Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/matrix.h
+2026-08-31T18:53:46.2368226Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/matrixstrassen.h
+2026-08-31T18:53:46.2368940Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal
+2026-08-31T18:53:46.2369609Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/integer.h
+2026-08-31T18:53:46.2370415Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/vector.h
+2026-08-31T18:53:46.2371390Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintntl
+2026-08-31T18:53:46.2372153Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintntl/transformntl-impl.h
+2026-08-31T18:53:46.2372939Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintntl/ubintntl.h
+2026-08-31T18:53:46.2373745Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintntl/mubintvecntl.h
+2026-08-31T18:53:46.2374622Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintntl/backendntl.h
+2026-08-31T18:53:46.2375395Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintntl/transformntl.h
+2026-08-31T18:53:46.2376128Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/basicint.h
+2026-08-31T18:53:46.2376819Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintdyn
+2026-08-31T18:53:46.2377559Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintdyn/transformdyn.h
+2026-08-31T18:53:46.2378408Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintdyn/transformdyn-impl.h
+2026-08-31T18:53:46.2379190Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintdyn/ubintdyn.h
+2026-08-31T18:53:46.2379959Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintdyn/mubintvecdyn.h
+2026-08-31T18:53:46.2381094Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintdyn/backenddyn.h
+2026-08-31T18:53:46.2381982Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/transform.h
+2026-08-31T18:53:46.2382972Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/nativeintbackend.h
+2026-08-31T18:53:46.2384020Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintbackend.h
+2026-08-31T18:53:46.2385081Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/intnat
+2026-08-31T18:53:46.2386024Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/intnat/ubintnat.h
+2026-08-31T18:53:46.2387158Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/intnat/mubintvecnat.h
+2026-08-31T18:53:46.2388288Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/intnat/transformnat.h
+2026-08-31T18:53:46.2389407Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/intnat/transformnat-impl.h
+2026-08-31T18:53:46.2390299Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintfxd
+2026-08-31T18:53:46.2391015Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintfxd/ubintfxd.h
+2026-08-31T18:53:46.2391841Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintfxd/transformfxd.h
+2026-08-31T18:53:46.2392618Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintfxd/mubintvecfxd.h
+2026-08-31T18:53:46.2393678Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintfxd/transformfxd-impl.h
+2026-08-31T18:53:46.2394495Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hal/bigintfxd/backendfxd.h
+2026-08-31T18:53:46.2395257Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/nbtheory.h
+2026-08-31T18:53:46.2396086Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/discretegaussiangenerator-impl.h
+2026-08-31T18:53:46.2396903Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/discretegaussiangenerator.h
+2026-08-31T18:53:46.2397740Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/binaryuniformgenerator-impl.h
+2026-08-31T18:53:46.2398685Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/README.md
+2026-08-31T18:53:46.2399362Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/chebyshev.h
+2026-08-31T18:53:46.2400157Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/distributiongenerator.h
+2026-08-31T18:53:46.2401099Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/dftransform.h
+2026-08-31T18:53:46.2401822Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/matrix-impl.h
+2026-08-31T18:53:46.2402513Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/hermite.h
+2026-08-31T18:53:46.2403221Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/binaryuniformgenerator.h
+2026-08-31T18:53:46.2404089Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/discretegaussiangeneratorgeneric.h
+2026-08-31T18:53:46.2404853Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/math-hal.h
+2026-08-31T18:53:46.2405637Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/math/discreteuniformgenerator.h
+2026-08-31T18:53:46.2406362Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice
+2026-08-31T18:53:46.2407047Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/constants-lattice.h
+2026-08-31T18:53:46.2407880Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/trapdoorparameters.h
+2026-08-31T18:53:46.2408620Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/field2n.h
+2026-08-31T18:53:46.2409320Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/trapdoor.h
+2026-08-31T18:53:46.2410079Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/dgsampling.h
+2026-08-31T18:53:46.2410944Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal
+2026-08-31T18:53:46.2411813Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/dcrtpoly-interface.h
+2026-08-31T18:53:46.2412581Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/lat-backend.h
+2026-08-31T18:53:46.2413312Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/README.md
+2026-08-31T18:53:46.2414043Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/default
+2026-08-31T18:53:46.2414814Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/default/dcrtpoly.h
+2026-08-31T18:53:46.2416848Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/default/poly.h
+2026-08-31T18:53:46.2417637Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/default/dcrtpoly-impl.h
+2026-08-31T18:53:46.2418673Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/default/ilparams.h
+2026-08-31T18:53:46.2419497Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/default/poly-impl.h
+2026-08-31T18:53:46.2420480Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/default/ildcrtparams.h
+2026-08-31T18:53:46.2421579Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/poly-interface.h
+2026-08-31T18:53:46.2422818Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/hal/elemparams.h
+2026-08-31T18:53:46.2423893Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/matrix-lattice-impl.h
+2026-08-31T18:53:46.2424731Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/lat-hal.h
+2026-08-31T18:53:46.2425465Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/trapdoor-impl.h
+2026-08-31T18:53:46.2426611Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/ilelement.h
+2026-08-31T18:53:46.2427644Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/stdlatticeparms.h
+2026-08-31T18:53:46.2428555Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/README.md
+2026-08-31T18:53:46.2429521Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/field2n-impl.h
+2026-08-31T18:53:46.2430840Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/core/lattice/dgsampling-impl.h
+2026-08-31T18:53:46.2431689Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEpke.so.1.5.0
+2026-08-31T18:53:46.2432570Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEpke.so.1
+2026-08-31T18:53:46.2433828Z -- Set non-toolchain portion of runtime path of "/home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEpke.so.1.5.0" to ""
+2026-08-31T18:53:46.2434907Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEpke.so
+2026-08-31T18:53:46.2435800Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke
+2026-08-31T18:53:46.2436784Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/cryptocontext.h
+2026-08-31T18:53:46.2437814Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase
+2026-08-31T18:53:46.2438767Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/base-multiparty.h
+2026-08-31T18:53:46.2440098Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/base-leveledshe.h
+2026-08-31T18:53:46.2441243Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/base-advancedshe.h
+2026-08-31T18:53:46.2442410Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/base-pke.h
+2026-08-31T18:53:46.2443451Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/base-scheme.h
+2026-08-31T18:53:46.2444546Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/rlwe-cryptoparameters.h
+2026-08-31T18:53:46.2445772Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/base-fhe.h
+2026-08-31T18:53:46.2446784Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/base-cryptoparameters.h
+2026-08-31T18:53:46.2448050Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/base-parametergeneration.h
+2026-08-31T18:53:46.2449076Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/base-ser.h
+2026-08-31T18:53:46.2450049Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/decrypt-result.h
+2026-08-31T18:53:46.2451224Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemebase/base-pre.h
+2026-08-31T18:53:46.2452263Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/ciphertext.h
+2026-08-31T18:53:46.2453320Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/constants-defs.h
+2026-08-31T18:53:46.2454309Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/cryptocontextfactory.h
+2026-08-31T18:53:46.2455245Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/keyswitch
+2026-08-31T18:53:46.2456328Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-base.h
+2026-08-31T18:53:46.2457312Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-hybrid.h
+2026-08-31T18:53:46.2458403Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-bv.h
+2026-08-31T18:53:46.2459410Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/keyswitch/README.md
+2026-08-31T18:53:46.2460568Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-rns.h
+2026-08-31T18:53:46.2461531Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns
+2026-08-31T18:53:46.2462494Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns/rns-cryptoparameters.h
+2026-08-31T18:53:46.2463512Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns/rns-scheme.h
+2026-08-31T18:53:46.2464532Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns/rns-leveledshe.h
+2026-08-31T18:53:46.2465653Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns/rns-ser.h
+2026-08-31T18:53:46.2466637Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns/rns-pre.h
+2026-08-31T18:53:46.2467699Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns/rns-parametergeneration.h
+2026-08-31T18:53:46.2468772Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns/rns-pke.h
+2026-08-31T18:53:46.2469827Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns/rns-fhe.h
+2026-08-31T18:53:46.2471027Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns/rns-advancedshe.h
+2026-08-31T18:53:46.2472173Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemerns/rns-multiparty.h
+2026-08-31T18:53:46.2473159Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/cryptoobject.h
+2026-08-31T18:53:46.2474114Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding
+2026-08-31T18:53:46.2475109Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding/plaintext-fwd.h
+2026-08-31T18:53:46.2476306Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding/plaintextfactory.h
+2026-08-31T18:53:46.2477409Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding/stringencoding.h
+2026-08-31T18:53:46.2478523Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding/coefpackedencoding.h
+2026-08-31T18:53:46.2479618Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding/README.md
+2026-08-31T18:53:46.2480720Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding/encodings.h
+2026-08-31T18:53:46.2481708Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding/plaintext.h
+2026-08-31T18:53:46.2482888Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding/ckkspackedencoding.h
+2026-08-31T18:53:46.2483978Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding/packedencoding.h
+2026-08-31T18:53:46.2485122Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/encoding/encodingparams.h
+2026-08-31T18:53:46.2486091Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/globals.h
+2026-08-31T18:53:46.2487046Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/ciphertext-fwd.h
+2026-08-31T18:53:46.2487942Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme
+2026-08-31T18:53:46.2488904Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/scheme-utils.h
+2026-08-31T18:53:46.2490049Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/scheme-swch-params.h
+2026-08-31T18:53:46.2491293Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/gen-cryptocontext-params-defaults.h
+2026-08-31T18:53:46.2492433Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/scheme-id.h
+2026-08-31T18:53:46.2493396Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/README.md
+2026-08-31T18:53:46.2494247Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns
+2026-08-31T18:53:46.2495402Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-parametergeneration.h
+2026-08-31T18:53:46.2496644Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-leveledshe.h
+2026-08-31T18:53:46.2497827Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-scheme.h
+2026-08-31T18:53:46.2498896Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-advancedshe.h
+2026-08-31T18:53:46.2500096Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns.h
+2026-08-31T18:53:46.2501418Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-ser.h
+2026-08-31T18:53:46.2502473Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-pke.h
+2026-08-31T18:53:46.2503592Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-fhe.h
+2026-08-31T18:53:46.2504647Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-pre.h
+2026-08-31T18:53:46.2505778Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-cryptoparameters.h
+2026-08-31T18:53:46.2507056Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-multiparty.h
+2026-08-31T18:53:46.2508300Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-internal.h
+2026-08-31T18:53:46.2509656Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-params.h
+2026-08-31T18:53:46.2511109Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/gen-cryptocontext-params.h
+2026-08-31T18:53:46.2512339Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/gen-cryptocontext-params-validation.h
+2026-08-31T18:53:46.2513637Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns
+2026-08-31T18:53:46.2514688Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-cryptoparameters.h
+2026-08-31T18:53:46.2516016Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-utils.h
+2026-08-31T18:53:46.2516910Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-multiparty.h
+2026-08-31T18:53:46.2517780Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns.h
+2026-08-31T18:53:46.2518585Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-leveledshe.h
+2026-08-31T18:53:46.2519409Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-internal.h
+2026-08-31T18:53:46.2520527Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-parametergeneration.h
+2026-08-31T18:53:46.2521631Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-pke.h
+2026-08-31T18:53:46.2522770Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-fhe.h
+2026-08-31T18:53:46.2523777Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-pre.h
+2026-08-31T18:53:46.2524792Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/README.md
+2026-08-31T18:53:46.2525867Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-scheme.h
+2026-08-31T18:53:46.2526978Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-params.h
+2026-08-31T18:53:46.2528215Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-advancedshe.h
+2026-08-31T18:53:46.2529463Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-ser.h
+2026-08-31T18:53:46.2530534Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-schemeswitching.h
+2026-08-31T18:53:46.2531324Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns
+2026-08-31T18:53:46.2532288Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-pre.h
+2026-08-31T18:53:46.2533272Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-ser.h
+2026-08-31T18:53:46.2534355Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-cryptoparameters.h
+2026-08-31T18:53:46.2535554Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-internal.h
+2026-08-31T18:53:46.2536749Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-advancedshe.h
+2026-08-31T18:53:46.2537874Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-multiparty.h
+2026-08-31T18:53:46.2538900Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-scheme.h
+2026-08-31T18:53:46.2539961Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-fhe.h
+2026-08-31T18:53:46.2541220Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-params.h
+2026-08-31T18:53:46.2542256Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-leveledshe.h
+2026-08-31T18:53:46.2543037Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-pke.h
+2026-08-31T18:53:46.2543825Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns.h
+2026-08-31T18:53:46.2544645Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-parametergeneration.h
+2026-08-31T18:53:46.2545741Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/cryptocontext-fwd.h
+2026-08-31T18:53:46.2546421Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/README.md
+2026-08-31T18:53:46.2547115Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/cryptocontext-ser.h
+2026-08-31T18:53:46.2547807Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/constants.h
+2026-08-31T18:53:46.2548438Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key
+2026-08-31T18:53:46.2549228Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/privatekey.h
+2026-08-31T18:53:46.2550458Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/privatekey-fwd.h
+2026-08-31T18:53:46.2551564Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/keypair.h
+2026-08-31T18:53:46.2552637Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/publickey-fwd.h
+2026-08-31T18:53:46.2553708Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/publickey.h
+2026-08-31T18:53:46.2554716Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/key-ser.h
+2026-08-31T18:53:46.2555900Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/evalkey.h
+2026-08-31T18:53:46.2556949Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/key.h
+2026-08-31T18:53:46.2557962Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/README.md
+2026-08-31T18:53:46.2559012Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/evalkey-fwd.h
+2026-08-31T18:53:46.2560043Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/evalkeyrelin.h
+2026-08-31T18:53:46.2561299Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/key/evalkeyrelin-fwd.h
+2026-08-31T18:53:46.2562412Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/gen-cryptocontext.h
+2026-08-31T18:53:46.2563523Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/ciphertext-ser.h
+2026-08-31T18:53:46.2564544Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/metadata.h
+2026-08-31T18:53:46.2565546Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/openfhe.h
+2026-08-31T18:53:46.2566616Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/metadata-ser.h
+2026-08-31T18:53:46.2567624Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemelet
+2026-08-31T18:53:46.2568675Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/schemelet/rlwe-mp.h
+2026-08-31T18:53:46.2569866Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils
+2026-08-31T18:53:46.2571141Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestMetadataTestSer.h
+2026-08-31T18:53:46.2572493Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestMetadataTest.h
+2026-08-31T18:53:46.2573835Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils/schemeswitching-data-serializer.h
+2026-08-31T18:53:46.2575183Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestException.h
+2026-08-31T18:53:46.2576453Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestCryptoContext.h
+2026-08-31T18:53:46.2577639Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils/BaseTestCase.h
+2026-08-31T18:53:46.2578442Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestCCParams.h
+2026-08-31T18:53:46.2579211Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestUtils.h
+2026-08-31T18:53:46.2579976Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestSer.h
+2026-08-31T18:53:46.2581203Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestReadCSVData.h
+2026-08-31T18:53:46.2581993Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEbinfhe.so.1.5.0
+2026-08-31T18:53:46.2582654Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEbinfhe.so.1
+2026-08-31T18:53:46.2583408Z -- Set non-toolchain portion of runtime path of "/home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEbinfhe.so.1.5.0" to ""
+2026-08-31T18:53:46.2584279Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/libOPENFHEbinfhe.so
+2026-08-31T18:53:46.2585197Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe
+2026-08-31T18:53:46.2586171Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/rgsw-acc.h
+2026-08-31T18:53:46.2586872Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/binfhecontext.h
+2026-08-31T18:53:46.2587587Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-publickey.h
+2026-08-31T18:53:46.2588275Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-ciphertext.h
+2026-08-31T18:53:46.2588964Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/rlwe-ciphertext.h
+2026-08-31T18:53:46.2589687Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/rgsw-acckey.h
+2026-08-31T18:53:46.2590544Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-cryptoparameters.h
+2026-08-31T18:53:46.2591428Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-privatekey-fwd.h
+2026-08-31T18:53:46.2592133Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-keypair-fwd.h
+2026-08-31T18:53:46.2592847Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-publickey-fwd.h
+2026-08-31T18:53:46.2593590Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/binfhecontext-ser.h
+2026-08-31T18:53:46.2594284Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/rgsw-acc-cggi.h
+2026-08-31T18:53:46.2595065Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-ciphertext-fwd.h
+2026-08-31T18:53:46.2595780Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/rgsw-acc-dm.h
+2026-08-31T18:53:46.2596577Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/README.md
+2026-08-31T18:53:46.2597285Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-keyswitchkey-fwd.h
+2026-08-31T18:53:46.2598002Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-keyswitchkey.h
+2026-08-31T18:53:46.2598718Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-privatekey.h
+2026-08-31T18:53:46.2599389Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-pke.h
+2026-08-31T18:53:46.2600146Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/binfhe-base-params.h
+2026-08-31T18:53:46.2601156Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/rgsw-acc-lmkcdey.h
+2026-08-31T18:53:46.2601869Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/binfhe-base-scheme.h
+2026-08-31T18:53:46.2602609Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/rgsw-cryptoparameters.h
+2026-08-31T18:53:46.2603321Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/rgsw-evalkey.h
+2026-08-31T18:53:46.2604020Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/binfhe-constants.h
+2026-08-31T18:53:46.2604771Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/include/openfhe/binfhe/lwe-keypair.h
+2026-08-31T18:53:46.2605445Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/OpenFHE/OpenFHEConfig.cmake
+2026-08-31T18:53:46.2606132Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/OpenFHE/OpenFHEConfigVersion.cmake
+2026-08-31T18:53:46.2606799Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/OpenFHE/OpenFHETargets.cmake
+2026-08-31T18:53:46.2607571Z -- Installing: /home/runner/work/20231788./20231788./.ci/openfhe-install/lib/OpenFHE/OpenFHETargets-release.cmake
+2026-08-31T18:53:46.2636466Z ##[group]Run cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+2026-08-31T18:53:46.2637121Z [36;1mcmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}[0m
+2026-08-31T18:53:46.2659404Z shell: /usr/bin/bash -e {0}
+2026-08-31T18:53:46.2659726Z env:
+2026-08-31T18:53:46.2660104Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:53:46.2660887Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:53:46.2661299Z ##[endgroup]
+2026-08-31T18:53:46.3200402Z -- The CXX compiler identification is GNU 13.3.0
+2026-08-31T18:53:46.3276616Z -- Detecting CXX compiler ABI info
+2026-08-31T18:53:46.3823815Z -- Detecting CXX compiler ABI info - done
+2026-08-31T18:53:46.3981780Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2026-08-31T18:53:46.3984536Z -- Detecting CXX compile features
+2026-08-31T18:53:46.3990339Z -- Detecting CXX compile features - done
+2026-08-31T18:53:46.4069357Z -- Configuring done (0.1s)
+2026-08-31T18:53:46.4121853Z -- Generating done (0.0s)
+2026-08-31T18:53:46.4124167Z -- Build files have been written to: /home/runner/work/20231788./20231788./build
+2026-08-31T18:53:46.4171705Z ##[group]Run cmake --build build --parallel 2
+2026-08-31T18:53:46.4172153Z [36;1mcmake --build build --parallel 2[0m
+2026-08-31T18:53:46.4195693Z shell: /usr/bin/bash -e {0}
+2026-08-31T18:53:46.4196182Z env:
+2026-08-31T18:53:46.4196619Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:53:46.4197137Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:53:46.4197601Z ##[endgroup]
+2026-08-31T18:53:46.4374603Z [ 12%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+2026-08-31T18:53:52.8715166Z [ 25%] Linking CXX static library libopenfhe_2023_1788.a
+2026-08-31T18:53:53.7486176Z [ 25%] Built target openfhe_2023_1788
+2026-08-31T18:53:53.7552775Z [ 37%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+2026-08-31T18:53:53.7554495Z [ 50%] Building CXX object CMakeFiles/tensor2_api_contract_test.dir/tests/tensor2_api_contract_test.cpp.o
+2026-08-31T18:53:56.1574384Z [ 62%] Linking CXX executable tensor2_api_contract_test
+2026-08-31T18:53:56.2235043Z [ 62%] Built target tensor2_api_contract_test
+2026-08-31T18:53:56.2300783Z [ 75%] Building CXX object CMakeFiles/tensor2_test.dir/tests/tensor2_test.cpp.o
+2026-08-31T18:54:08.6543173Z [ 87%] Linking CXX executable tensor2_test
+2026-08-31T18:54:08.7691924Z [ 87%] Built target tensor2_test
+2026-08-31T18:54:08.8901359Z [100%] Linking CXX executable dcp_rcb_test
+2026-08-31T18:54:09.0130532Z [100%] Built target dcp_rcb_test
+2026-08-31T18:54:09.0186990Z ##[group]Run ctest --test-dir build --output-on-failure
+2026-08-31T18:54:09.0187540Z [36;1mctest --test-dir build --output-on-failure[0m
+2026-08-31T18:54:09.0212475Z shell: /usr/bin/bash -e {0}
+2026-08-31T18:54:09.0212888Z env:
+2026-08-31T18:54:09.0213229Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:54:09.0213831Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-08-31T18:54:09.0214279Z ##[endgroup]
+2026-08-31T18:54:09.3878615Z Internal ctest changing into directory: /home/runner/work/20231788./20231788./build
+2026-08-31T18:54:09.4423405Z Test project /home/runner/work/20231788./20231788./build
+2026-08-31T18:54:09.4789488Z     Start 1: dcp_rcb
+2026-08-31T18:54:09.5103284Z 1/6 Test #1: dcp_rcb ...................................   Passed    0.03 sec
+2026-08-31T18:54:09.5225108Z     Start 2: tensor2_valid_arithmetic_immutability
+2026-08-31T18:54:09.5299816Z 2/6 Test #2: tensor2_valid_arithmetic_immutability .....   Passed    0.01 sec
+2026-08-31T18:54:09.5300839Z     Start 3: tensor2_result_scale_contract
+2026-08-31T18:54:09.5348363Z 3/6 Test #3: tensor2_result_scale_contract .............   Passed    0.00 sec
+2026-08-31T18:54:09.5349211Z     Start 4: tensor2_right_input_validation
+2026-08-31T18:54:09.5393890Z 4/6 Test #4: tensor2_right_input_validation ............   Passed    0.00 sec
+2026-08-31T18:54:09.5394681Z     Start 5: tensor2_mutual_compatibility
+2026-08-31T18:54:09.5437066Z 5/6 Test #5: tensor2_mutual_compatibility ..............   Passed    0.00 sec
+2026-08-31T18:54:09.5437960Z     Start 6: tensor2_prearithmetic_key_compatibility
+2026-08-31T18:54:09.5480315Z 6/6 Test #6: tensor2_prearithmetic_key_compatibility ...   Passed    0.00 sec
+2026-08-31T18:54:09.5482437Z 
+2026-08-31T18:54:09.5483176Z 100% tests passed, 0 tests failed out of 6
+2026-08-31T18:54:09.5483453Z 
+2026-08-31T18:54:09.5483654Z Total Test time (real) =   0.11 sec
+2026-08-31T18:54:09.5994534Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-31T18:54:09.5995572Z Post job cleanup.
+2026-08-31T18:54:09.7031923Z (node:4277) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-31T18:54:09.7032880Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-31T18:54:09.7168886Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/20231788./20231788. --files-from manifest.txt --use-compress-program zstdmt
+2026-08-31T18:54:10.0272311Z (node:4277) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-08-31T18:54:10.7172117Z Sent 2476534 of 2476534 (100.0%), 3.4 MBs/sec
+2026-08-31T18:54:10.8454260Z Cache saved with key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-08-31T18:54:10.8558716Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-31T18:54:10.8559860Z Post job cleanup.
+2026-08-31T18:54:10.9402503Z [command]/usr/bin/git version
+2026-08-31T18:54:10.9438305Z git version 2.55.0
+2026-08-31T18:54:10.9471717Z Temporarily overriding HOME='/home/runner/work/_temp/bfdc2bfe-f6d0-4452-8504-7b0c821c2371' before making global git config changes
+2026-08-31T18:54:10.9472988Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-31T18:54:10.9477461Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788./.ci/openfhe-src
+2026-08-31T18:54:10.9515049Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-31T18:54:10.9547193Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-31T18:54:10.9744402Z Entering 'third-party/cereal'
+2026-08-31T18:54:10.9785853Z Entering 'third-party/google-benchmark'
+2026-08-31T18:54:10.9827847Z Entering 'third-party/google-test'
+2026-08-31T18:54:10.9867887Z Entering 'third-party/gperftools'
+2026-08-31T18:54:10.9933509Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-31T18:54:10.9963702Z http.https://github.com/.extraheader
+2026-08-31T18:54:10.9976546Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-08-31T18:54:11.0011494Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-31T18:54:11.0205449Z Entering 'third-party/cereal'
+2026-08-31T18:54:11.0226940Z http.https://github.com/.extraheader
+2026-08-31T18:54:11.0257778Z Entering 'third-party/google-benchmark'
+2026-08-31T18:54:11.0278817Z http.https://github.com/.extraheader
+2026-08-31T18:54:11.0306316Z Entering 'third-party/google-test'
+2026-08-31T18:54:11.0332747Z http.https://github.com/.extraheader
+2026-08-31T18:54:11.0380950Z Entering 'third-party/gperftools'
+2026-08-31T18:54:11.0405204Z http.https://github.com/.extraheader
+2026-08-31T18:54:11.0472938Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-31T18:54:11.0515747Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-31T18:54:11.0713139Z Entering 'third-party/cereal'
+2026-08-31T18:54:11.0729795Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/cereal/config	remote.origin.url
+2026-08-31T18:54:11.0745369Z Entering 'third-party/google-benchmark'
+2026-08-31T18:54:11.0763164Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-benchmark/config	remote.origin.url
+2026-08-31T18:54:11.0778876Z Entering 'third-party/google-test'
+2026-08-31T18:54:11.0796569Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-test/config	remote.origin.url
+2026-08-31T18:54:11.0812727Z Entering 'third-party/gperftools'
+2026-08-31T18:54:11.0829396Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/gperftools/config	remote.origin.url
+2026-08-31T18:54:11.0862998Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/cereal/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-31T18:54:11.0900967Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-benchmark/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-31T18:54:11.0934276Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-test/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-31T18:54:11.0967064Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/gperftools/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-31T18:54:11.1141118Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-31T18:54:11.1142286Z Post job cleanup.
+2026-08-31T18:54:11.2031864Z [command]/usr/bin/git version
+2026-08-31T18:54:11.2056747Z git version 2.55.0
+2026-08-31T18:54:11.2090767Z Temporarily overriding HOME='/home/runner/work/_temp/f6b40fbb-ca0d-4ed6-87d9-76c3c195e17f' before making global git config changes
+2026-08-31T18:54:11.2091914Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-31T18:54:11.2096795Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788.
+2026-08-31T18:54:11.2133285Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-31T18:54:11.2167081Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-31T18:54:11.2381301Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-31T18:54:11.2401097Z http.https://github.com/.extraheader
+2026-08-31T18:54:11.2409603Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-08-31T18:54:11.2442082Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-31T18:54:11.2668526Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-31T18:54:11.2693269Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-31T18:54:11.3054246Z Cleaning up orphan processes
+2026-08-31T18:54:11.3314100Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
