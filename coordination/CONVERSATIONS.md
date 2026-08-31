@@ -23,6 +23,8 @@ At 2026-08-31 18:31 CST, Codex manually refreshed the official BigModel usage pa
 
 At 2026-08-31 19:31 CST, the independent ChatGPT Pro review completed without interruption. Its 20,528-byte review ZIP passed integrity and Gitleaks checks. It found no DCP/RCB arithmetic defect but identified an unchecked OpenFHE precomputation-row access and a negative-test exception-attribution weakness. Codex independently confirmed the source-level access order and is addressing it through a new behavioral red-green slice; the returned patch is not being applied blindly.
 
+At 2026-08-31 22:55 CST, while the final same-commit ChatGPT Pro review remained active and unprodded, Codex independently reproduced a remaining observable-metadata gap at the public RCB seam. Test-only commit `d0cbc97190c9cc5be2164c7bcbff82109fd2ca55` built strictly on Linux and failed only because tampered slot-count metadata was accepted; Actions run `33404277096` preserves that red, and its redundant Windows job was cancelled after the Linux failure was captured. The minimal manifest/validation fix is production commit `4971d2292b5af0ddbbe0c7dbe5a2e87f45102ff1`. Exact run `33404816846` passed the strict project build and 1/1 CTest on Linux and Windows/MSYS2 MinGW64. Implementation-branch head `3521d6bbf6a7b773f57a25644c65e77c2e18f1fd` adds only the retained red/green records. Because the open ChatGPT Pro review remains bound to `a3df1c5`, a later exact-remediation review is still required before any final mergeable claim.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
