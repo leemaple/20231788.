@@ -127,6 +127,16 @@ most the existing Windows session for a critical same-commit review, and keep
 GitHub Actions as the Windows build/test runner until the weekly reset is
 confirmed on the official page.
 
+At 2026-09-01 07:10 CST, a bounded read-only RS2 preflight passed independent
+paper, pristine OpenFHE/API, and TDD/boundary gates after two exact wording
+corrections. It records Definition 4.5's two-rescale formula and exact RCB
+identity, the separate `/q_l` paper-logical versus `/baseSF` OpenFHE-recorded
+scale transitions, the required FIXEDMANUAL `compositeDegree==1` gate, a
+provisional `RefreshRequired` boundary, coefficient-domain independent oracle,
+and deferred exact-Relin2 prerequisites. It is not an implementation task or a
+source/build/test claim. The record is
+`coordination/reviews/rs2-preflight.md`.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
