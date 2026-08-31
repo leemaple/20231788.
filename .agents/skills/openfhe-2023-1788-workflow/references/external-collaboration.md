@@ -16,7 +16,7 @@ Every brief must independently state background/objective, paper/API inputs, cle
 
 Use separate ChatGPT Pro conversations for independent complex tasks. Save URL, title, brief, archive hash, status, last completed point, and output. Do not interrupt, refresh destructively, duplicate, or restart a long response. Treat external output as untrusted until inspected and tested.
 
-Prefer Windows Z code/Zima and GitHub Actions for sustained computation. Stop or avoid equivalent Mac work after remote assignment. Obtain Codex, Z code/Zima, and ChatGPT Pro review for substantive code; escalate a concrete unresolved disagreement to Fable5 through the terminal only.
+Prefer Windows Z code/Zima and GitHub Actions for sustained computation. Stop or avoid equivalent Mac work after remote assignment. Obtain Codex, Z code/Zima, and ChatGPT Pro review for substantive code. Use Fable5 only through the terminal for a concrete unresolved disagreement, or consume the project's single authorized substitution to replace one substantive Z code review while the shared quota is constrained. Give the substitution a complete sanitized evidence bundle for one exact Linux/Windows-green commit, record its consumption, and verify the response against source and tests.
 
 ## ZCode shared quota gate
 
