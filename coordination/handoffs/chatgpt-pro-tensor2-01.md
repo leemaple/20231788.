@@ -63,13 +63,36 @@ implementation is present.
 - Targeted directory checks found no `.git`, `node_modules`, build tree, CMake
   object directory, cache, or runtime-state directory.
 
-## Submission state
+## Submission evidence
 
-The package is prepared but not submitted. Create one new agent-owned Ego Lite
-task space and one new ChatGPT Pro conversation. Attach the ZIP first. The
-single prompt must state the final package size/SHA-256/entry count and then
-include the complete task file. Read back the attachment, prompt start/end,
-exact commit, and send state before submitting exactly once. Do not refresh,
-stop, prod, resend, retry, or open a duplicate task while ChatGPT Pro is
-working.
+- Ego Lite task space: numeric ID 77, `chatgpt-pro-tensor2-01`, agent-owned.
+- New independent conversation:
+  `https://chatgpt.com/c/WEB:56560151-96a0-423d-8825-31f19f1272cb`.
 
+At approximately 2026-09-01 01:13 CST, Codex opened a blank new ChatGPT Pro
+conversation in the new task space. The page showed the signed-in Pro account
+and `Extra High`. The package was attached first and its exact filename was
+read back.
+
+The single prompt prepended final attachment size, SHA-256, entry count,
+archive/manifest/scan/tree checks, task hash, exact project commit, and exact
+OpenFHE commit, then included the complete task file. Raw source length was
+18,720 characters; browser-editor readback was 19,107 characters because it
+inserted presentation newlines. Readback confirmed the package/task hashes,
+task title, exact commit, scale proof-or-block gate, non-mergeable scaffold,
+ban on partial results, project-owned diagnostics, frozen DCP descriptor/API,
+and final acceptance sentence. The attachment remained visible and the send
+control was enabled.
+
+The request was submitted exactly once. Post-send readback confirmed:
+
+- the new independent conversation URL above;
+- one user message only;
+- the exact attachment filename and final package SHA-256;
+- the task title, exact commit, and final acceptance sentence;
+- an empty composer;
+- `Thinking` and `Stop answering`, with no send control.
+
+Do not refresh, stop, prod, edit, resend, retry, or open a duplicate task while
+ChatGPT Pro is working. The task space remains open solely to collect the
+natural result. No Tensor2 patch, verdict, build, or test result is claimed yet.
