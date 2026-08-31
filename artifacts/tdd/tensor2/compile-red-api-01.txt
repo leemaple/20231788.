@@ -1,0 +1,44 @@
+Tensor2 public-API compile red
+==============================
+
+Test-only commit:
+f3db12ef9fb0d13df0f779157eed168b8d582ea4
+
+External patch SHA-256:
+758dfdbc1c28099749d65be3438ea245d24e66d0b90793443137b8997f4b7723
+
+GitHub Actions run:
+https://github.com/leemaple/20231788./actions/runs/33425868973
+
+Linux job:
+https://github.com/leemaple/20231788./actions/runs/33425868973/job/99599155126
+
+The run was bound to exact project SHA
+f3db12ef9fb0d13df0f779157eed168b8d582ea4 and pristine OpenFHE SHA
+df495ba2e91739a6dc8f1de254fc5a41155ce504 on `ubuntu-24.04` runner
+image `20260823.283.1`. The job log identified GNU C/C++ 13.3.0. The exact
+runner-image manifest records system CMake 3.31.6; this red workflow did not
+separately print `cmake --version`.
+
+The command authority was:
+
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+    cmake --build build --parallel 2
+
+Configure completed. The strict project build compiled and linked the existing
+production library, then failed only in the new compile-only API contract with
+exit code 2. The first intended diagnostics were:
+
+    error: ‘TensorCiphertextPair’ has not been declared in ‘openfhe_2023_1788’
+    error: ‘TensorScaleDescriptor’ has not been declared in ‘openfhe_2023_1788’
+    error: ‘Tensor2’ is not a member of ‘openfhe_2023_1788::DoubleCKKS’
+
+CTest was not run because this boundary is intentionally build-red. The patch
+contains only workflow/build registration and the compile-only public seam
+test; it changes no production header or source.
+
+After the Linux job retained the intended red, the whole run was cancelled.
+The concurrently running Windows job was cancelled while building OpenFHE to
+avoid spending resources on a redundant red-platform build. No Windows result
+is claimed for this boundary.
