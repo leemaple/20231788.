@@ -1,0 +1,62 @@
+Tensor2 complete runtime contract red
+=====================================
+
+Exact test head:
+482d27d0c43c22779aa548e00955ed90175dee97
+
+External contract-test patch commit:
+6f17c55df7c94edbe390eff42d891522a0c86e17
+
+External patch SHA-256:
+38d5857430504527d9a8fe3441938364c3d12c36f0eb65dc6427ca0512e37416
+
+Codex order-sensitive test hardening:
+482d27d0c43c22779aa548e00955ed90175dee97
+
+GitHub Actions run:
+https://github.com/leemaple/20231788./actions/runs/33426712752
+
+Linux job:
+https://github.com/leemaple/20231788./actions/runs/33426712752/job/99601946465
+
+The run was bound to exact project SHA
+482d27d0c43c22779aa548e00955ed90175dee97 and pristine OpenFHE SHA
+df495ba2e91739a6dc8f1de254fc5a41155ce504 on `ubuntu-24.04`.
+The job printed CMake 3.31.6 and
+`c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0`.
+
+The exact project commands were:
+
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+    cmake --build build --parallel 2
+    ctest --test-dir build --output-on-failure
+
+Configure and the strict warning-clean build succeeded, including the existing
+library/test, the compile-only API contract, and the Tensor2 behavioral runner.
+CTest then executed all six entries. The existing DCP/RCB regression passed,
+and every Tensor2 case independently failed on the intentionally non-mergeable
+scaffold:
+
+    1/6 dcp_rcb                                    Passed
+    2/6 tensor2_valid_arithmetic_immutability      Failed
+        Tensor2 unexpected exception: DoubleCKKS: Tensor2 is not implemented
+    3/6 tensor2_result_scale_contract              Failed
+        Tensor2 unexpected exception: DoubleCKKS: Tensor2 is not implemented
+    4/6 tensor2_right_input_validation             Failed
+        ...threw the wrong exception type: DoubleCKKS: Tensor2 is not implemented
+    5/6 tensor2_mutual_compatibility                Failed
+        ...threw the wrong exception type: DoubleCKKS: Tensor2 is not implemented
+    6/6 tensor2_prearithmetic_key_compatibility     Failed
+        ...threw the wrong exception type: DoubleCKKS: Tensor2 is not implemented
+
+CTest reported 17% passed, five failures out of six, and exit code 8. Thus no
+first failure masked another case. The fifth Tensor2 case is Codex review
+hardening: two individually valid same-context/same-slot DCP pairs have
+different key tags. Because OpenFHE `TypeCheck` itself rejects different key
+tags, requiring the project-owned field-specific `std::invalid_argument`
+diagnostic makes multiply-before-mutual-validation implementations fail.
+
+After this complete Linux red was retained, the run was cancelled while the
+Windows job was building OpenFHE. No Windows red result is claimed; the final
+exact green commit must run on both platforms.
