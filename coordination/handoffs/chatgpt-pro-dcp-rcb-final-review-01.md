@@ -64,5 +64,19 @@ network-security scope.
 
 ## Submission
 
-Pending. Record the new conversation URL, exact attachment readback, submission
-time, and no-interruption handling after Ego Lite verifies and sends the task.
+- Submitted once through Ego Lite at 2026-08-31 22:19 CST in task space 72
+  (`chatgpt-pro-dcp-rcb-final-review-01`).
+- Conversation:
+  `https://chatgpt.com/c/6a958caa-7648-83ec-9bf6-d00d41109ff2`.
+- Before submission, the rich-editor readback contained all required task
+  sections, the exact packaged commit, the exact Actions run, and the final
+  instruction. The editor reported 7,583 rendered characters; the source task
+  file contains 7,420 bytes.
+- The attached filename read back exactly as
+  `20231788-cleanroom-dcp-rcb-final-review-a3df1c5-ci334004.zip`.
+- After submission, read-only DOM verification confirmed the new conversation
+  URL, attachment filename, exact commit, and exact Actions run. The page showed
+  `Stop answering`, and the reviewer had begun inspecting the archive and
+  implementation.
+- The prompt was submitted only once. It has not been resent, refreshed,
+  interrupted, or otherwise prodded while ChatGPT Pro is working.
