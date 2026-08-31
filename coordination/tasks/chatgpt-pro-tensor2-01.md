@@ -13,12 +13,15 @@ the supplied greenfield project, the user-supplied IACR ePrint 2023/1788 paper,
 and the supplied official OpenFHE 1.5.0 source. Do not seek, inspect, infer, or
 reuse any previous 2023/1788 implementation.
 
-The exact project base is branch `agent/codex-dcp-rcb-01`, commit
-`a3df1c5843e8bb843f8d9becc3c8a135ffba63cd`. That commit's DCP/RCB slice passed
-the exact-commit GitHub Actions run
-`https://github.com/leemaple/20231788./actions/runs/33400450367` on Linux/GCC and
+The exact project base is branch `agent/codex-tensor2-01`, commit
+`a9507d1031e1bbed38bdb3d856539c29d9539772`. Its last production/test change is
+slot-metadata hardening commit
+`4971d2292b5af0ddbbe0c7dbe5a2e87f45102ff1`; the later commits retain its
+red/green evidence and current documentation. That production commit passed
+GitHub Actions run
+`https://github.com/leemaple/20231788./actions/runs/33404816846` on Linux/GCC and
 Windows 2022/MSYS2 MinGW64, with a strict build and 1/1 CTest on both jobs. The
-source package contains no `.git`, so treat the supplied commit and run as a
+source package contains no `.git`, so treat these commit/run identities as a
 binding manifest and independently report any inconsistency you observe.
 
 ## Authoritative algorithm and source anchors
@@ -116,7 +119,7 @@ Return one ZIP with these independently usable artifacts:
 1. `REVIEW.md`: equation-to-code mapping, observed OpenFHE behavior, metadata
    contract, assumptions, and unresolved questions.
 2. `01-red-tests.patch`: tests/build registration only, applicable to exact base
-   commit `a3df1c5843e8bb843f8d9becc3c8a135ffba63cd` and expected to fail because
+   commit `a9507d1031e1bbed38bdb3d856539c29d9539772` and expected to fail because
    Tensor2 is missing. State the expected failure precisely.
 3. `02-implementation.patch`: the minimum header/source/documentation changes
    that make those tests pass when applied after patch 01.
