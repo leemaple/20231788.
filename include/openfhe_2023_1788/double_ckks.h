@@ -40,6 +40,7 @@ public:
     std::size_t GetNoiseScaleDegree() const noexcept;
     PairLifecycle GetLifecycle() const noexcept;
     const std::string& GetKeyTag() const noexcept;
+    std::uint32_t GetSlots() const noexcept;
     Format GetFormat() const noexcept;
     std::size_t GetComponentCount() const noexcept;
 
@@ -57,6 +58,7 @@ private:
                    std::size_t noiseScaleDegree,
                    PairLifecycle lifecycle,
                    std::string keyTag,
+                   std::uint32_t slots,
                    Format format,
                    std::size_t componentCount);
 
@@ -71,6 +73,7 @@ private:
     std::size_t noiseScaleDegree_;
     PairLifecycle lifecycle_;
     std::string keyTag_;
+    std::uint32_t slots_;
     Format format_;
     std::size_t componentCount_;
 };
@@ -91,6 +94,7 @@ private:
                             std::size_t noiseScaleDegree,
                             double recordedScalingFactor,
                             const std::string& keyTag,
+                            std::uint32_t slots,
                             const char* label) const;
 
     lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context_;

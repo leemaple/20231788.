@@ -47,6 +47,7 @@ CiphertextPair::CiphertextPair(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high,
                                std::size_t noiseScaleDegree,
                                PairLifecycle lifecycle,
                                std::string keyTag,
+                               std::uint32_t slots,
                                Format format,
                                std::size_t componentCount)
     : high_(std::move(high)),
@@ -60,6 +61,7 @@ CiphertextPair::CiphertextPair(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high,
       noiseScaleDegree_(noiseScaleDegree),
       lifecycle_(lifecycle),
       keyTag_(std::move(keyTag)),
+      slots_(slots),
       format_(format),
       componentCount_(componentCount) {}
 
@@ -105,6 +107,10 @@ PairLifecycle CiphertextPair::GetLifecycle() const noexcept {
 
 const std::string& CiphertextPair::GetKeyTag() const noexcept {
     return keyTag_;
+}
+
+std::uint32_t CiphertextPair::GetSlots() const noexcept {
+    return slots_;
 }
 
 Format CiphertextPair::GetFormat() const noexcept {
@@ -161,6 +167,7 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
                                     std::size_t noiseScaleDegree,
                                     double recordedScalingFactor,
                                     const std::string& keyTag,
+                                    std::uint32_t slots,
                                     const char* label) const {
     if (!ciphertext) {
         Invalid(std::string(label) + " is null");
@@ -186,6 +193,9 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
     }
     if (ciphertext->GetKeyTag().empty() || ciphertext->GetKeyTag() != keyTag) {
         Invalid(std::string(label) + " key tag does not match its pair state");
+    }
+    if (ciphertext->GetSlots() != slots) {
+        Invalid(std::string(label) + " slots do not match its pair state");
     }
 
     const auto& expectedTowerParameters = parameters_->GetElementParams()->GetParams();
@@ -228,7 +238,7 @@ void DoubleCKKS::ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const {
         Invalid("DCP input must have the exact fresh degree-two FIXEDMANUAL scaling factor");
     }
     ValidateCiphertext(ciphertext, fullModuli_, 0, 2, expectedInputScalingFactor_, ciphertext->GetKeyTag(),
-                       "DCP input");
+                       ciphertext->GetSlots(), "DCP input");
 }
 
 CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
@@ -281,7 +291,8 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
 
     CiphertextPair pair(std::move(highCiphertext), std::move(lowCiphertext), context_.get(), divisor_,
                         firstPairModuli_, 1, paperScale, recordedScalingFactor, 2,
-                        PairLifecycle::ReadyForFirstMult, ciphertext->GetKeyTag(), Format::EVALUATION, 2);
+                        PairLifecycle::ReadyForFirstMult, ciphertext->GetKeyTag(), ciphertext->GetSlots(),
+                        Format::EVALUATION, 2);
     ValidatePair(pair);
     return pair;
 }
@@ -322,9 +333,9 @@ void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
     }
 
     ValidateCiphertext(pair.high_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
-                       pair.recordedScalingFactor_, pair.keyTag_, "pair high");
+                       pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "pair high");
     ValidateCiphertext(pair.low_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
-                       pair.recordedScalingFactor_, pair.keyTag_, "pair low");
+                       pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "pair low");
 }
 
 lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {

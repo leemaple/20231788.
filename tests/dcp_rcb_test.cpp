@@ -293,7 +293,8 @@ void CheckCiphertextMetadata(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext,
                              const CryptoContext<DCRTPoly>& expectedContext,
                              const std::vector<NativeInteger>& expectedModuli, std::size_t expectedLevel,
                              std::size_t expectedNoiseScaleDegree, double expectedScalingFactor,
-                             const std::string& expectedKeyTag, const std::string& label) {
+                             const std::string& expectedKeyTag, std::uint32_t expectedSlots,
+                             const std::string& label) {
     Check(ciphertext != nullptr, label + " is null");
     Check(ciphertext->GetCryptoContext().get() == expectedContext.get(), label + " context identity mismatch");
     Check(ciphertext->GetEncodingType() == lbcrypto::CKKS_PACKED_ENCODING, label + " encoding metadata mismatch");
@@ -302,6 +303,7 @@ void CheckCiphertextMetadata(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext,
     Check(ciphertext->GetNoiseScaleDeg() == expectedNoiseScaleDegree, label + " noise-scale degree mismatch");
     Check(ciphertext->GetScalingFactor() == expectedScalingFactor, label + " recorded scaling factor mismatch");
     Check(ciphertext->GetKeyTag() == expectedKeyTag, label + " key tag mismatch");
+    Check(ciphertext->GetSlots() == expectedSlots, label + " slot-count metadata mismatch");
     for (const auto& element : ciphertext->GetElements()) {
         Check(element.GetFormat() == Format::EVALUATION, label + " is not in evaluation format");
         CheckOrderedModuli(GetNativeModuli(element), expectedModuli, label);
@@ -384,6 +386,7 @@ void TestDcpAndRcbExactOracle() {
     const BigInt divisorBig(divisor.ConvertToInt());
     const double recordedScale = fixture.input->GetScalingFactor();
     const std::string keyTag   = fixture.input->GetKeyTag();
+    const std::uint32_t slots  = fixture.input->GetSlots();
 
     const auto pair = module.DCP(fixture.input);
     Check(pair.GetLifecycle() == PairLifecycle::ReadyForFirstMult, "DCP lifecycle mismatch");
@@ -400,13 +403,16 @@ void TestDcpAndRcbExactOracle() {
           "DCP paper logical scale mismatch");
     Check(divisor.Mod(NativeInteger(2)) == NativeInteger(1), "DCP divisor must be odd");
     Check(pair.GetKeyTag() == keyTag, "DCP pair key tag mismatch");
+    Check(pair.GetSlots() == slots, "DCP pair slot-count metadata mismatch");
     Check(pair.GetFormat() == Format::EVALUATION, "DCP pair format mismatch");
     Check(pair.GetComponentCount() == 2, "DCP pair component count mismatch");
 
     std::vector<NativeInteger> prefixModuli(fullModuli.begin(), fullModuli.end() - 1);
     CheckOrderedModuli(pair.GetOrderedModuli(), prefixModuli, "DCP pair");
-    CheckCiphertextMetadata(pair.GetHigh(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, "DCP high");
-    CheckCiphertextMetadata(pair.GetLow(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, "DCP low");
+    CheckCiphertextMetadata(pair.GetHigh(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
+                            "DCP high");
+    CheckCiphertextMetadata(pair.GetLow(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
+                            "DCP low");
 
     for (std::size_t component = 0; component < fixture.input->GetElements().size(); ++component) {
         CheckDcpCoefficients(fixture.input->GetElements()[component], pair.GetHigh()->GetElements()[component],
@@ -419,6 +425,7 @@ void TestDcpAndRcbExactOracle() {
     Check(fixture.input->GetScalingFactor() == inputBefore->GetScalingFactor(),
           "DCP mutated input scaling factor");
     Check(fixture.input->GetKeyTag() == inputBefore->GetKeyTag(), "DCP mutated input key tag");
+    Check(fixture.input->GetSlots() == inputBefore->GetSlots(), "DCP mutated input slot-count metadata");
     Check(fixture.input->GetEncodingType() == inputBefore->GetEncodingType(), "DCP mutated input encoding metadata");
     Check(fixture.input->NumberCiphertextElements() == inputBefore->NumberCiphertextElements(),
           "DCP mutated input component count");
@@ -427,12 +434,13 @@ void TestDcpAndRcbExactOracle() {
     const auto highBefore = pair.GetHigh()->Clone();
     const auto lowBefore  = pair.GetLow()->Clone();
     const auto recombined = module.RCB(pair);
-    CheckCiphertextMetadata(recombined, fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, "RCB result");
+    CheckCiphertextMetadata(recombined, fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
+                            "RCB result");
     Check(pair.GetHigh()->GetElements() == highBefore->GetElements(), "RCB mutated pair high elements");
     Check(pair.GetLow()->GetElements() == lowBefore->GetElements(), "RCB mutated pair low elements");
-    CheckCiphertextMetadata(pair.GetHigh(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag,
+    CheckCiphertextMetadata(pair.GetHigh(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
                             "DCP high after RCB");
-    CheckCiphertextMetadata(pair.GetLow(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag,
+    CheckCiphertextMetadata(pair.GetLow(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
                             "DCP low after RCB");
     for (std::size_t component = 0; component < fixture.input->GetElements().size(); ++component) {
         CheckRcbCoefficients(fixture.input->GetElements()[component], pair.GetHigh()->GetElements()[component],
