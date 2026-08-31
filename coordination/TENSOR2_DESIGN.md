@@ -61,13 +61,19 @@ This normalization changes only ciphertext metadata. It does not assume `q_div =
 
 ## Test contract
 
-`tensor2_test` is split into four CTest entries so failures are independently reported:
+`tensor2_test` is split into five CTest entries so failures are independently reported:
 
 - `tensor2_valid_arithmetic_immutability`;
 - `tensor2_result_scale_contract`;
 - `tensor2_right_input_validation`;
-- `tensor2_mutual_compatibility`.
+- `tensor2_mutual_compatibility`;
+- `tensor2_prearithmetic_key_compatibility`.
 
 Arithmetic expectations come from a test-owned Boost `cpp_int` schoolbook negacyclic-convolution oracle over every active RNS tower and coefficient, not from OpenFHE multiplication. Fixtures include an `X^(N-1)*X=-1` wrap witness, a signed product crossing an active modulus, and an independently nonzero low-low witness proving omission rather than merely matching the cross term.
+
+The key-compatibility case uses two individually valid same-context, same-slot
+DCP pairs with different key tags. OpenFHE `TypeCheck` also rejects that input,
+so requiring the project-owned field-specific diagnostic makes a
+multiply-before-mutual-validation implementation observably fail.
 
 The compile-only `tensor2_api_contract_test` is intentionally not a CTest entry; it pins the public result types/getters and `DoubleCKKS::Tensor2` signature at build time.

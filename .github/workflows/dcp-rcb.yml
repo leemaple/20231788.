@@ -1,4 +1,4 @@
-name: DCP RCB TDD
+name: OpenFHE 2023/1788 TDD
 
 on:
   push:
@@ -83,7 +83,7 @@ jobs:
       - name: Build warning-clean project
         run: cmake --build build --parallel 2
 
-      - name: Run DCP and RCB tests
+      - name: Run clean-room project tests
         run: ctest --test-dir build --output-on-failure
 
   windows-mingw64:
@@ -201,7 +201,7 @@ jobs:
           build="$(cygpath -u "$PROJECT_BUILD")"
           cmake --build "$build" --parallel 2
 
-      - name: Run DCP and RCB tests
+      - name: Run clean-room project tests
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
