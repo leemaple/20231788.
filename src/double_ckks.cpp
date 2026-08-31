@@ -121,6 +121,86 @@ std::size_t CiphertextPair::GetComponentCount() const noexcept {
     return componentCount_;
 }
 
+TensorCiphertextPair::TensorCiphertextPair(
+    lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high,
+    lbcrypto::Ciphertext<lbcrypto::DCRTPoly> low,
+    const lbcrypto::CryptoContextImpl<lbcrypto::DCRTPoly>* contextIdentity,
+    lbcrypto::NativeInteger divisor,
+    std::vector<lbcrypto::NativeInteger> orderedModuli,
+    std::size_t level,
+    TensorScaleDescriptor tensorScale,
+    double recordedScalingFactor,
+    std::size_t noiseScaleDegree,
+    std::string keyTag,
+    std::uint32_t slots,
+    Format format,
+    std::size_t componentCount)
+    : high_(std::move(high)),
+      low_(std::move(low)),
+      contextIdentity_(contextIdentity),
+      divisor_(std::move(divisor)),
+      orderedModuli_(std::move(orderedModuli)),
+      level_(level),
+      tensorScale_(tensorScale),
+      recordedScalingFactor_(recordedScalingFactor),
+      noiseScaleDegree_(noiseScaleDegree),
+      keyTag_(std::move(keyTag)),
+      slots_(slots),
+      format_(format),
+      componentCount_(componentCount) {}
+
+ReadOnlyCiphertext TensorCiphertextPair::GetHigh() const noexcept {
+    return high_;
+}
+
+ReadOnlyCiphertext TensorCiphertextPair::GetLow() const noexcept {
+    return low_;
+}
+
+const lbcrypto::CryptoContextImpl<lbcrypto::DCRTPoly>* TensorCiphertextPair::GetContextIdentity() const noexcept {
+    return contextIdentity_;
+}
+
+const lbcrypto::NativeInteger& TensorCiphertextPair::GetDivisor() const noexcept {
+    return divisor_;
+}
+
+const std::vector<lbcrypto::NativeInteger>& TensorCiphertextPair::GetOrderedModuli() const noexcept {
+    return orderedModuli_;
+}
+
+std::size_t TensorCiphertextPair::GetLevel() const noexcept {
+    return level_;
+}
+
+const TensorScaleDescriptor& TensorCiphertextPair::GetTensorScale() const noexcept {
+    return tensorScale_;
+}
+
+double TensorCiphertextPair::GetRecordedScalingFactor() const noexcept {
+    return recordedScalingFactor_;
+}
+
+std::size_t TensorCiphertextPair::GetNoiseScaleDegree() const noexcept {
+    return noiseScaleDegree_;
+}
+
+const std::string& TensorCiphertextPair::GetKeyTag() const noexcept {
+    return keyTag_;
+}
+
+std::uint32_t TensorCiphertextPair::GetSlots() const noexcept {
+    return slots_;
+}
+
+Format TensorCiphertextPair::GetFormat() const noexcept {
+    return format_;
+}
+
+std::size_t TensorCiphertextPair::GetComponentCount() const noexcept {
+    return componentCount_;
+}
+
 DoubleCKKS::DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context)
     : context_(std::move(context)), expectedInputScalingFactor_(0.0) {
     if (!context_) {
@@ -336,6 +416,13 @@ void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
                        pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "pair high");
     ValidateCiphertext(pair.low_, pair.orderedModuli_, pair.level_, pair.noiseScaleDegree_,
                        pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, "pair low");
+}
+
+TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const CiphertextPair& right) const {
+    // TDD scaffold only: explicitly non-mergeable; 04-green-tensor2.patch must replace it.
+    (void)left;
+    (void)right;
+    throw std::logic_error("DoubleCKKS: Tensor2 is not implemented");
 }
 
 lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {
