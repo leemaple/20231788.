@@ -602,6 +602,13 @@ void TestRcbRejectsTamperedPairStorage() {
     {
         auto pair = module.DCP(fixture.input);
         auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetHigh());
+        high->SetSlots(high->GetSlots() + 1);
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "slots", "tampered pair slot metadata");
+    }
+
+    {
+        auto pair = module.DCP(fixture.input);
+        auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetHigh());
         high->GetElements().push_back(high->GetElements().front());
         CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "exactly two RLWE components",
                                    "tampered pair component count");
