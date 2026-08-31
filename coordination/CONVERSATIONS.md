@@ -14,3 +14,11 @@ Fable5 is terminal-only and reserved for a concrete unresolved disagreement afte
 - Schedule: daily at 07:00 Asia/Shanghai
 - Output: visually verified Markdown/PDF under `reports/daily/YYYY-MM-DD/`, followed by Telegram Saved Messages delivery and `reports/delivery-log.md` evidence
 - Guardrails: reporting-only writes, no Mac compilation, no source changes, no CI dispatch/rerun, and no interruption or duplicate submission to external agents
+
+## Continuous execution
+
+- Activated: 2026-08-31 16:20 CST
+- Mechanism: active long-running Codex Goal in the same project task, separate from the daily reporting heartbeat
+- Stopping condition: greenfield implementation, retained red/green oracle evidence, Windows or GitHub Actions verification, tri-party review resolution, and complete pushed provenance/report evidence
+- Persistence rule: continue choosing the next safe in-scope action without waiting for a user message; pause only for a decision or authority that would materially change scope or risk
+- Checkpoint rule: every coherent change is committed, pushed, and verified against the remote object ID according to `coordination/GIT_CHECKPOINT_POLICY.md`

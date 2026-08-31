@@ -9,6 +9,7 @@ The destination repository's previous implementation and every related local cod
 - Active/default branch: [`cleanroom/reimplement-mult2-20260831`](https://github.com/leemaple/20231788./tree/cleanroom/reimplement-mult2-20260831)
 - Current phase: clean-room specification, agent handoff, and integration gates are recorded; no implementation code has been accepted yet.
 - External work: ChatGPT Pro and Windows Z code/Zima are working independently. Their output is accepted only after provenance capture, TDD evidence, and review.
+- Continuity: an active long-running Codex Goal advances the project across turns; the daily 07:00 Asia/Shanghai automation independently produces and delivers the PDF status report.
 - Progress evidence: [`coordination/CONVERSATIONS.md`](coordination/CONVERSATIONS.md)
 - Integration gates: [`coordination/INTEGRATION_REVIEW_CHECKLIST.md`](coordination/INTEGRATION_REVIEW_CHECKLIST.md)
 - Git checkpoint policy: [`coordination/GIT_CHECKPOINT_POLICY.md`](coordination/GIT_CHECKPOINT_POLICY.md)
