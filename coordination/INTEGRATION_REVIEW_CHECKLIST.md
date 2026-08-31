@@ -47,10 +47,14 @@ implementation and not evidence that any test has passed.
 
 ## OpenFHE 1.5.0 facts to verify in every candidate
 
-- `LeveledSHEBase::EvalMultCore` forms the raw tensor and updates scale/noise
-  metadata, but it is protected. A project-side implementation must either
-  construct the three `DCRTPoly` components explicitly or present a minimal,
-  separately reviewed upstream hook/patch.
+- `LeveledSHEBase::EvalMultCore` is protected, but public
+  `CryptoContextImpl::EvalMultNoRelin` type-checks and delegates to the same
+  raw tensor path. Under `FIXEDMANUAL` it only aligns operand levels before
+  tensoring. A project-side Tensor2 may compose that public operation after
+  strict pair validation, or construct the three `DCRTPoly` components
+  explicitly; in either case it must replace ordinary product metadata with
+  the paper-derived pair logical scale rather than inheriting the default
+  `S1*S2` metadata.
 - Public `Relinearize` can consume a crafted multi-component ciphertext, but
   its evaluation keys, element parameters, active RNS basis, component format,
   and key tag must all match. A successful API call alone does not prove the
