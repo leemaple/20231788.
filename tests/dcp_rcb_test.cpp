@@ -31,6 +31,7 @@ class StrippedDcpPrecomputationParameters final : public lbcrypto::CryptoParamet
 public:
     explicit StrippedDcpPrecomputationParameters(const lbcrypto::CryptoParametersCKKSRNS& source)
         : lbcrypto::CryptoParametersCKKSRNS(source) {
+        m_approxSF = source.GetScalingFactorReal(0);
         m_QlQlInvModqlDivqlModq.clear();
         m_qlInvModq.clear();
     }
