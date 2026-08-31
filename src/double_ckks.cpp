@@ -42,7 +42,7 @@ CiphertextPair::CiphertextPair(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high,
                                lbcrypto::NativeInteger divisor,
                                std::vector<lbcrypto::NativeInteger> orderedModuli,
                                std::size_t level,
-                               long double paperScale,
+                               PaperScaleDescriptor paperScale,
                                double recordedScalingFactor,
                                std::size_t noiseScaleDegree,
                                PairLifecycle lifecycle,
@@ -87,7 +87,7 @@ std::size_t CiphertextPair::GetLevel() const noexcept {
     return level_;
 }
 
-long double CiphertextPair::GetPaperScale() const noexcept {
+const PaperScaleDescriptor& CiphertextPair::GetPaperScale() const noexcept {
     return paperScale_;
 }
 
@@ -115,7 +115,8 @@ std::size_t CiphertextPair::GetComponentCount() const noexcept {
     return componentCount_;
 }
 
-DoubleCKKS::DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context) : context_(std::move(context)) {
+DoubleCKKS::DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context)
+    : context_(std::move(context)), expectedInputScalingFactor_(0.0) {
     if (!context_) {
         Invalid("context is null");
     }
@@ -141,7 +142,17 @@ DoubleCKKS::DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context) : co
         fullModuli_.push_back(towerParameters->GetModulus());
     }
     divisor_ = fullModuli_.back();
+    if (divisor_.Mod(lbcrypto::NativeInteger(2)) != lbcrypto::NativeInteger(1)) {
+        Invalid("the last Q tower used as q_div must be odd");
+    }
     firstPairModuli_.assign(fullModuli_.begin(), fullModuli_.end() - 1);
+
+    const double baseScalingFactor = parameters_->GetScalingFactorReal(0);
+    expectedInputScalingFactor_    = baseScalingFactor * baseScalingFactor;
+    if (!std::isfinite(baseScalingFactor) || baseScalingFactor <= 0.0 ||
+        !std::isfinite(expectedInputScalingFactor_) || expectedInputScalingFactor_ <= 0.0) {
+        Invalid("the FIXEDMANUAL scaling factor is invalid");
+    }
 }
 
 void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
@@ -209,15 +220,23 @@ void DoubleCKKS::ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const {
     if (ciphertext->GetNoiseScaleDeg() != 2) {
         Invalid("DCP input must have noise-scale degree two");
     }
-    if (!std::isfinite(ciphertext->GetScalingFactor()) || ciphertext->GetScalingFactor() <= 0.0) {
-        Invalid("DCP input must have a finite positive recorded scaling factor");
+    if (!std::isfinite(ciphertext->GetScalingFactor()) ||
+        ciphertext->GetScalingFactor() != expectedInputScalingFactor_) {
+        Invalid("DCP input must have the exact fresh degree-two FIXEDMANUAL scaling factor");
     }
-    ValidateCiphertext(ciphertext, fullModuli_, 0, 2, ciphertext->GetScalingFactor(), ciphertext->GetKeyTag(),
+    ValidateCiphertext(ciphertext, fullModuli_, 0, 2, expectedInputScalingFactor_, ciphertext->GetKeyTag(),
                        "DCP input");
 }
 
 CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
     ValidateDcpInput(ciphertext);
+
+    const auto& quotientFactors = parameters_->GetQlQlInvModqlDivqlModq(0);
+    const auto& divisorInverses = parameters_->GetqlInvModq(0);
+    if (quotientFactors.size() != firstPairModuli_.size() ||
+        divisorInverses.size() != firstPairModuli_.size()) {
+        Invalid("OpenFHE q_div rescale precomputation does not match the retained basis");
+    }
 
     std::vector<lbcrypto::DCRTPoly> highElements;
     std::vector<lbcrypto::DCRTPoly> lowElements;
@@ -226,7 +245,7 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
 
     for (const auto& source : ciphertext->GetElements()) {
         auto high = source;
-        high.DropLastElementAndScale(parameters_->GetQlQlInvModqlDivqlModq(0), parameters_->GetqlInvModq(0));
+        high.DropLastElementAndScale(quotientFactors, divisorInverses);
 
         auto sourcePrefix = source;
         sourcePrefix.DropLastElement();
@@ -247,8 +266,12 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
     lowCiphertext->SetLevel(1);
 
     const double recordedScalingFactor = ciphertext->GetScalingFactor();
-    const long double paperScale = static_cast<long double>(recordedScalingFactor) /
-                                   static_cast<long double>(divisor_.ConvertToInt());
+    PaperScaleDescriptor paperScale{
+        recordedScalingFactor,
+        divisor_,
+        static_cast<long double>(recordedScalingFactor) /
+            static_cast<long double>(divisor_.ConvertToInt()),
+    };
 
     CiphertextPair pair(std::move(highCiphertext), std::move(lowCiphertext), context_.get(), divisor_,
                         firstPairModuli_, 1, paperScale, recordedScalingFactor, 2,
@@ -275,9 +298,18 @@ void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
     if (!SameOrderedModuli(pair.orderedModuli_, expectedModuli)) {
         Invalid("pair ordered RNS basis does not match its level");
     }
-    if (!std::isfinite(pair.recordedScalingFactor_) || pair.recordedScalingFactor_ <= 0.0 ||
-        !std::isfinite(pair.paperScale_) || pair.paperScale_ <= 0.0L) {
+    if (!std::isfinite(pair.recordedScalingFactor_) ||
+        pair.recordedScalingFactor_ != expectedInputScalingFactor_) {
         Invalid("pair scale metadata is invalid");
+    }
+    const long double expectedLogicalScalingFactor =
+        static_cast<long double>(pair.recordedScalingFactor_) /
+        static_cast<long double>(divisor_.ConvertToInt());
+    if (pair.paperScale_.inputRecordedScalingFactor != pair.recordedScalingFactor_ ||
+        pair.paperScale_.divisor != divisor_ ||
+        !std::isfinite(pair.paperScale_.approximateLogicalScalingFactor) ||
+        pair.paperScale_.approximateLogicalScalingFactor != expectedLogicalScalingFactor) {
+        Invalid("pair paper-scale descriptor is inconsistent");
     }
     if (pair.keyTag_.empty()) {
         Invalid("pair key tag is empty");

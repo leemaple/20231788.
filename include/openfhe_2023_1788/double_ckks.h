@@ -20,6 +20,12 @@ enum class PairLifecycle : std::uint8_t {
     RefreshRequired,
 };
 
+struct PaperScaleDescriptor final {
+    double inputRecordedScalingFactor;
+    lbcrypto::NativeInteger divisor;
+    long double approximateLogicalScalingFactor;
+};
+
 class DoubleCKKS;
 
 class CiphertextPair final {
@@ -31,7 +37,7 @@ public:
     const lbcrypto::NativeInteger& GetDivisor() const noexcept;
     const std::vector<lbcrypto::NativeInteger>& GetOrderedModuli() const noexcept;
     std::size_t GetLevel() const noexcept;
-    long double GetPaperScale() const noexcept;
+    const PaperScaleDescriptor& GetPaperScale() const noexcept;
     double GetRecordedScalingFactor() const noexcept;
     std::size_t GetNoiseScaleDegree() const noexcept;
     PairLifecycle GetLifecycle() const noexcept;
@@ -48,7 +54,7 @@ private:
                    lbcrypto::NativeInteger divisor,
                    std::vector<lbcrypto::NativeInteger> orderedModuli,
                    std::size_t level,
-                   long double paperScale,
+                   PaperScaleDescriptor paperScale,
                    double recordedScalingFactor,
                    std::size_t noiseScaleDegree,
                    PairLifecycle lifecycle,
@@ -62,7 +68,7 @@ private:
     lbcrypto::NativeInteger divisor_;
     std::vector<lbcrypto::NativeInteger> orderedModuli_;
     std::size_t level_;
-    long double paperScale_;
+    PaperScaleDescriptor paperScale_;
     double recordedScalingFactor_;
     std::size_t noiseScaleDegree_;
     PairLifecycle lifecycle_;
@@ -94,6 +100,7 @@ private:
     std::vector<lbcrypto::NativeInteger> fullModuli_;
     std::vector<lbcrypto::NativeInteger> firstPairModuli_;
     lbcrypto::NativeInteger divisor_;
+    double expectedInputScalingFactor_;
 };
 
 }  // namespace openfhe_2023_1788
