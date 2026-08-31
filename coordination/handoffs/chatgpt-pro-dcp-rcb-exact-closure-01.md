@@ -81,3 +81,62 @@ Do not refresh, stop, prod, edit, resend, retry, or open a duplicate review
 while ChatGPT Pro is thinking. The task space remains open solely to collect the
 natural result in this same conversation. No closure verdict or returned ZIP is
 claimed yet.
+
+## Returned closure review
+
+ChatGPT Pro completed naturally and reported 8 minutes 11 seconds of work. It
+was not refreshed, stopped, prodded, edited, or resubmitted.
+
+- Exact verdict for
+  `87c84b879c13b55cf15d6559d3317853228fdc05`: `MERGEABLE`.
+- P0: 0; P1: 0; P2: 0.
+- P3: one transparent process note only. The early hardening red's compile
+  failure prevented other assertions in that same historical commit from
+  reaching runtime red. This is not a current code blocker and requires no
+  additional merge artifact.
+- The prior metadata immutability P1 is closed for the DCP input and independent
+  RCB high/low members through exact key and non-aliased polymorphic value
+  snapshots.
+- The reviewer reverse-applied the exact delta, reconstructed the prior test
+  blob, applied its own preceding remediation patch, and obtained a file
+  byte-identical to the current test.
+- No production header/source/CMake/workflow byte changed from the preceding
+  reviewed commit; no algorithm, oracle, lifetime, OpenFHE integration, or
+  portability P0/P1 was found.
+- The verdict remains bounded to DCP/RCB and conditional on the separately
+  required Windows ZCode/Zima same-commit review.
+- Local execution remained incomplete: OpenFHE reached approximately 48%
+  before the review environment's 240-second limit, so no local project build,
+  CTest, or Windows pass is claimed. Retained exact-current Linux/Windows CI is
+  reported separately from local execution.
+
+Returned ZIP:
+
+- Downloaded exactly once as
+  `/Users/lifeng/Downloads/EXACT-CLOSURE-DCP-RCB-REVIEW-87c84b.zip`.
+- Retained ignored copy:
+  `artifacts/handoffs/chatgpt-pro-dcp-rcb-exact-closure-01/output/EXACT-CLOSURE-DCP-RCB-REVIEW-87c84b.zip`.
+- Size: 14,606 bytes.
+- SHA-256:
+  `dfe82d67d64e008f8a6ae3b140617b0f1edee899d12786575e7b4fb9a6591cd5`.
+- The local hash exactly matches the value ChatGPT Pro stated.
+- `unzip -t` passed.
+- Members: `EXACT-CLOSURE-REVIEW.md`,
+  `EXACT-CLOSURE-CONTRACT-MAP.md`,
+  `INTERNAL-FINDINGS-DISPOSITION.md`, and `EXECUTION.md`; no fix patch was
+  returned.
+- Gitleaks 8.30.1 scanned approximately 32.83 KB and found no leaks; targeted
+  sensitive-filename checks found no match.
+- Per-file SHA-256 values:
+  - review:
+    `308638b5983a60b933e62d8578dfe37320aa3b37545c6d2645ab5b5b03fa472c`;
+  - contract map:
+    `3cdb14e209cb1e3dfe618b9a0a804c3e05770c7e71fddf94498657db552be357`;
+  - internal disposition:
+    `ed061829c28d8cafffac35047196904364edb51493916ecbe05a210eaaeb4bc3`;
+  - execution:
+    `0760007bc564aa186a04bfd07b1c5b67e89d44f4665d82a860bc557250912c9a`.
+
+Codex read all four returned files in full and independently retained the
+review's execution boundary. Ego Lite task space 72 was then completed and
+closed successfully; the saved conversation URL and local evidence remain.
