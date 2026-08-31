@@ -91,3 +91,58 @@ Do not refresh, stop, prod, edit, resend, retry, or open a duplicate review whil
 ChatGPT Pro is working. The task space remains open solely so the natural result
 can be collected in this same conversation. No remediation verdict or output
 ZIP is claimed yet.
+
+## Returned review
+
+ChatGPT Pro completed naturally after 19 minutes 16 seconds at approximately
+2026-08-31 23:53 CST. It was not refreshed, stopped, prodded, edited, or
+resubmitted.
+
+- Verdict for exact reviewed commit `02b34bac...`: `NEEDS NAMED FIXES`.
+- P0: 0.
+- P1: 1, test/acceptance evidence only.
+- Slot decision: keep the slot manifest and validation; the reviewer found it
+  necessary, correctly placed, non-restrictive for valid DCP output, and KISS-
+  sized.
+- Production decision: no DCP/RCB arithmetic, paper mapping, scale, basis,
+  validation-order, API, or portability defect was found.
+- Remaining P1: OpenFHE `CiphertextImpl::Clone()` shallow-copies the
+  metadata-map `shared_ptr<Metadata>` values, while `operator==` compares map
+  sizes/values but omits keys. The current whole-object equality assertions can
+  therefore false-pass a key rename or aliased in-place metadata-value change.
+- Minimal remediation: a non-empty polymorphic metadata probe plus an
+  independently deep-cloned key/value snapshot before and after DCP/RCB. The
+  returned patch changes tests only.
+- Local execution boundary: Ninja stopped before compilation because supplied
+  future timestamps kept its manifest dirty; Unix Makefiles compiled OpenFHE to
+  approximately 34% before a 240-second hard timeout. No local OpenFHE build,
+  project build, CTest, or Windows pass is claimed.
+
+Returned ZIP:
+
+- Downloaded once as `REMEDIATION-DCP-RCB-REVIEW-02b34ba.zip`.
+- Retained ignored path:
+  `artifacts/handoffs/chatgpt-pro-dcp-rcb-remediation-review-01/output/REMEDIATION-DCP-RCB-REVIEW-02b34ba.zip`.
+- Size: 16,697 bytes.
+- SHA-256:
+  `cd644f14902ce1cbce907379979c28712b224d1b93666471a7fc327394d3cdbd`.
+- The local hash exactly matches the value ChatGPT Pro stated.
+- `unzip -t` passed.
+- Members: `REMEDIATION-REVIEW.md`, `REMEDIATION-CONTRACT-MAP.md`,
+  `REMEDIATION-TEST-GAPS.md`, `EXECUTION.md`, and
+  `0001-remediation-fixes.patch`.
+- Gitleaks 8.30.1 scanned the extracted approximately 39.40 KB and reported no
+  leaks; targeted sensitive-filename checks found no match.
+
+Codex read every returned file and independently confirmed the OpenFHE metadata
+clone/equality limitation. The returned patch was not applied blindly. Codex
+manually implemented its equivalent test-only deep-snapshot coverage on the
+latest implementation branch and pushed commit
+`87c84b879c13b55cf15d6559d3317853228fdc05`. Exact GitHub Actions run
+`https://github.com/leemaple/20231788./actions/runs/33411494861` is the required
+Linux/Windows gate and was still running when this record was written. No green
+result is claimed yet.
+
+The Ego Lite task space remains open without interaction until exact-current-
+commit CI finishes. A final same-conversation closure may be supplied with full
+current context if required; no premature `MERGEABLE` claim is made.
