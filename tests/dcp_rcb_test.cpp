@@ -27,6 +27,15 @@ using openfhe_2023_1788::DoubleCKKS;
 using openfhe_2023_1788::PaperScaleDescriptor;
 using openfhe_2023_1788::PairLifecycle;
 
+class StrippedDcpPrecomputationParameters final : public lbcrypto::CryptoParametersCKKSRNS {
+public:
+    explicit StrippedDcpPrecomputationParameters(const lbcrypto::CryptoParametersCKKSRNS& source)
+        : lbcrypto::CryptoParametersCKKSRNS(source) {
+        m_QlQlInvModqlDivqlModq.clear();
+        m_qlInvModq.clear();
+    }
+};
+
 class TestFailure final : public std::runtime_error {
 public:
     using std::runtime_error::runtime_error;
@@ -481,6 +490,36 @@ void TestMinimumFirstMultBasis() {
     }
 }
 
+void TestDcpDoesNotIndexUncheckedPrecomputationRows() {
+    auto fixture = MakeFixture();
+    const auto generatedParameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(fixture.context->GetCryptoParameters());
+    Check(generatedParameters != nullptr, "fixture must expose CKKS-RNS parameters");
+
+    auto strippedParameters = std::make_shared<StrippedDcpPrecomputationParameters>(*generatedParameters);
+    CryptoContext<DCRTPoly> strippedContext = std::make_shared<lbcrypto::CryptoContextImpl<DCRTPoly>>(
+        strippedParameters, fixture.context->GetScheme(), fixture.context->getSchemeId());
+    auto strippedInput = std::make_shared<lbcrypto::CiphertextImpl<DCRTPoly>>(
+        strippedContext, fixture.input->GetKeyTag(), fixture.input->GetEncodingType());
+    strippedInput->SetElements(fixture.input->GetElements());
+    strippedInput->SetLevel(fixture.input->GetLevel());
+    strippedInput->SetNoiseScaleDeg(fixture.input->GetNoiseScaleDeg());
+    strippedInput->SetScalingFactor(fixture.input->GetScalingFactor());
+
+    DoubleCKKS module(strippedContext);
+    const auto pair       = module.DCP(strippedInput);
+    const auto recombined = module.RCB(pair);
+    const auto fullModuli = GetNativeModuli(strippedInput->GetElements().front());
+    const BigInt divisor(fullModuli.back().ConvertToInt());
+
+    for (std::size_t component = 0; component < strippedInput->GetElements().size(); ++component) {
+        CheckDcpCoefficients(strippedInput->GetElements()[component], pair.GetHigh()->GetElements()[component],
+                             pair.GetLow()->GetElements()[component], divisor);
+        CheckRcbCoefficients(strippedInput->GetElements()[component], pair.GetHigh()->GetElements()[component],
+                             pair.GetLow()->GetElements()[component], recombined->GetElements()[component], divisor);
+    }
+}
+
 void TestRcbRejectsTamperedPairStorage() {
     auto fixture = MakeFixture();
     DoubleCKKS module(fixture.context);
@@ -557,6 +596,7 @@ int main() {
         TestDcpAndRcbExactOracle();
         TestValidationBeforeRawAccess();
         TestMinimumFirstMultBasis();
+        TestDcpDoesNotIndexUncheckedPrecomputationRows();
         TestRcbRejectsTamperedPairStorage();
         lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
         std::cout << "DCP/RCB independent-oracle tests passed\n";
