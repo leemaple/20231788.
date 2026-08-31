@@ -49,13 +49,21 @@ void Check(bool condition, const std::string& message) {
 }
 
 template <class Function>
-void CheckThrows(Function&& function, const std::string& label) {
+void CheckThrowsInvalidArgument(Function&& function, const std::string& expectedMessage,
+                                const std::string& label) {
     bool threw = false;
     try {
         std::invoke(std::forward<Function>(function));
     }
-    catch (const std::exception&) {
+    catch (const std::invalid_argument& exception) {
+        const std::string message(exception.what());
+        Check(message.rfind("DoubleCKKS: ", 0) == 0, label + " did not fail in the DoubleCKKS module");
+        Check(message.find(expectedMessage) != std::string::npos,
+              label + " reported an unexpected diagnostic: " + message);
         threw = true;
+    }
+    catch (const std::exception& exception) {
+        throw TestFailure(label + " threw the wrong exception type: " + exception.what());
     }
     Check(threw, label + " did not fail fast");
 }
@@ -419,29 +427,35 @@ void TestValidationBeforeRawAccess() {
     DoubleCKKS module(fixture.context);
 
     lbcrypto::ConstCiphertext<DCRTPoly> nullCiphertext{};
-    CheckThrows([&] { module.DCP(nullCiphertext); }, "null ciphertext");
+    CheckThrowsInvalidArgument([&] { module.DCP(nullCiphertext); }, "DCP input is null", "null ciphertext");
 
     auto wrongLevel = fixture.input->Clone();
     wrongLevel->SetLevel(1);
-    CheckThrows([&] { module.DCP(wrongLevel); }, "wrong level");
+    CheckThrowsInvalidArgument([&] { module.DCP(wrongLevel); }, "DCP input must be at level zero", "wrong level");
 
     auto wrongDegree = fixture.input->Clone();
     wrongDegree->SetNoiseScaleDeg(1);
-    CheckThrows([&] { module.DCP(wrongDegree); }, "wrong noise-scale degree");
+    CheckThrowsInvalidArgument([&] { module.DCP(wrongDegree); }, "noise-scale degree",
+                               "wrong noise-scale degree");
 
     auto nonFiniteScale = fixture.input->Clone();
     nonFiniteScale->SetScalingFactor(std::numeric_limits<double>::quiet_NaN());
-    CheckThrows([&] { module.DCP(nonFiniteScale); }, "non-finite scaling factor");
+    CheckThrowsInvalidArgument([&] { module.DCP(nonFiniteScale); },
+                               "exact fresh degree-two FIXEDMANUAL scaling factor",
+                               "non-finite scaling factor");
 
     auto wrongFiniteScale = fixture.input->Clone();
     wrongFiniteScale->SetScalingFactor(fixture.input->GetScalingFactor() * 2.0);
-    CheckThrows([&] { module.DCP(wrongFiniteScale); }, "wrong finite scaling factor");
+    CheckThrowsInvalidArgument([&] { module.DCP(wrongFiniteScale); },
+                               "exact fresh degree-two FIXEDMANUAL scaling factor",
+                               "wrong finite scaling factor");
 
     auto wrongComponents = fixture.input->Clone();
     auto componentVector = wrongComponents->GetElements();
     componentVector.push_back(componentVector.front());
     wrongComponents->SetElements(std::move(componentVector));
-    CheckThrows([&] { module.DCP(wrongComponents); }, "wrong component count");
+    CheckThrowsInvalidArgument([&] { module.DCP(wrongComponents); }, "exactly two RLWE components",
+                               "wrong component count");
 
     auto coefficientFormat = fixture.input->Clone();
     auto coefficientElements = coefficientFormat->GetElements();
@@ -449,7 +463,8 @@ void TestValidationBeforeRawAccess() {
         element.SetFormat(Format::COEFFICIENT);
     }
     coefficientFormat->SetElements(std::move(coefficientElements));
-    CheckThrows([&] { module.DCP(coefficientFormat); }, "coefficient-format input");
+    CheckThrowsInvalidArgument([&] { module.DCP(coefficientFormat); }, "evaluation format",
+                               "coefficient-format input");
 
     auto reorderedBasis = fixture.input->Clone();
     auto reorderedElements = reorderedBasis->GetElements();
@@ -459,16 +474,20 @@ void TestValidationBeforeRawAccess() {
         element = DCRTPoly(towers);
     }
     reorderedBasis->SetElements(std::move(reorderedElements));
-    CheckThrows([&] { module.DCP(reorderedBasis); }, "reordered basis");
+    CheckThrowsInvalidArgument([&] { module.DCP(reorderedBasis); }, "ordered RNS basis mismatch",
+                               "reordered basis");
 
     auto otherFixture = MakeFixture(36);
     DoubleCKKS otherModule(otherFixture.context);
-    CheckThrows([&] { module.DCP(otherFixture.input); }, "mismatched context");
+    CheckThrowsInvalidArgument([&] { module.DCP(otherFixture.input); }, "belongs to a different context",
+                               "mismatched context");
     const auto otherPair = otherModule.DCP(otherFixture.input);
-    CheckThrows([&] { module.RCB(otherPair); }, "mismatched pair context");
+    CheckThrowsInvalidArgument([&] { module.RCB(otherPair); }, "pair belongs to a different context",
+                               "mismatched pair context");
 
     auto automaticContext = MakeContext(lbcrypto::FIXEDAUTO, 35);
-    CheckThrows([&] { DoubleCKKS invalidModule(automaticContext); }, "non-FIXEDMANUAL context");
+    CheckThrowsInvalidArgument([&] { DoubleCKKS invalidModule(automaticContext); },
+                               "only FIXEDMANUAL scaling is supported", "non-FIXEDMANUAL context");
 }
 
 void TestMinimumFirstMultBasis() {
@@ -529,14 +548,15 @@ void TestRcbRejectsTamperedPairStorage() {
         auto pair = module.DCP(fixture.input);
         auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetHigh());
         high->SetKeyTag("tampered-key-tag");
-        CheckThrows([&] { module.RCB(pair); }, "tampered pair key tag");
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "key tag", "tampered pair key tag");
     }
 
     {
         auto pair = module.DCP(fixture.input);
         auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetHigh());
         high->GetElements().push_back(high->GetElements().front());
-        CheckThrows([&] { module.RCB(pair); }, "tampered pair component count");
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "exactly two RLWE components",
+                                   "tampered pair component count");
     }
 
     {
@@ -549,7 +569,8 @@ void TestRcbRejectsTamperedPairStorage() {
             element = DCRTPoly(towers);
         }
         low->SetElements(std::move(elements));
-        CheckThrows([&] { module.RCB(pair); }, "tampered pair basis order");
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "ordered RNS basis mismatch",
+                                   "tampered pair basis order");
     }
 
     {
@@ -558,35 +579,38 @@ void TestRcbRejectsTamperedPairStorage() {
         for (auto& element : low->GetElements()) {
             element.SetFormat(Format::COEFFICIENT);
         }
-        CheckThrows([&] { module.RCB(pair); }, "tampered pair format");
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "evaluation format", "tampered pair format");
     }
 
     {
         auto pair = module.DCP(fixture.input);
         auto low  = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetLow());
         low->SetScalingFactor(low->GetScalingFactor() * 2.0);
-        CheckThrows([&] { module.RCB(pair); }, "tampered pair scaling factor");
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "recorded scaling factor",
+                                   "tampered pair scaling factor");
     }
 
     {
         auto pair = module.DCP(fixture.input);
         auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetHigh());
         high->SetLevel(0);
-        CheckThrows([&] { module.RCB(pair); }, "tampered pair level");
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "level", "tampered pair level");
     }
 
     {
         auto pair = module.DCP(fixture.input);
         auto low  = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetLow());
         low->SetNoiseScaleDeg(1);
-        CheckThrows([&] { module.RCB(pair); }, "tampered pair noise-scale degree");
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "noise-scale degree",
+                                   "tampered pair noise-scale degree");
     }
 
     {
         auto pair = module.DCP(fixture.input);
         auto& paperScale = const_cast<PaperScaleDescriptor&>(pair.GetPaperScale());
         paperScale.approximateLogicalScalingFactor *= 2.0L;
-        CheckThrows([&] { module.RCB(pair); }, "tampered pair paper scale");
+        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "paper-scale descriptor",
+                                   "tampered pair paper scale");
     }
 }
 
