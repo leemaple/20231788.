@@ -7,6 +7,15 @@ Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
 Run: https://github.com/leemaple/20231788./actions/runs/33384276076
 Conclusion: expected failure after tests changed, before production implementation changed
 
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
+The build command failed while compiling the new test interface, so the listed
+CTest command was not executed.
+
 The previously green production library still compiled and linked warning-clean. The unchanged build then reached the newly hardened test interface and failed because production did not yet expose the required structured paper-scale transition descriptor.
 
 Representative output:

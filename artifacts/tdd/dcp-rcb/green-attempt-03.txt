@@ -4,6 +4,14 @@ GitHub Actions run: https://github.com/leemaple/20231788./actions/runs/333827676
 Commit: 7c858e3312de3b508d2124bd826d7c8d8c5cb06f
 Result: failure during independent-oracle test compilation; CTest did not run.
 
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
+The build command failed, so the listed CTest command was not executed.
+
 Classification:
 - The project-owned DCP/RCB production source compiled warning-clean and linked successfully against pinned OpenFHE 1.5.0.
 - The independent test then failed because the ubuntu-24.04 runner did not contain `boost/multiprecision/cpp_int.hpp`.

@@ -7,6 +7,12 @@ Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
 Run: https://github.com/leemaple/20231788./actions/runs/33384694828
 Conclusion: success
 
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
 This green follows `red-hardening-01.txt`. It keeps the independent arithmetic oracle unchanged and additionally verifies:
 
 - a structured paper-scale transition descriptor;

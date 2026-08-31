@@ -7,6 +7,12 @@ Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
 Run: https://github.com/leemaple/20231788./actions/runs/33383722189
 Conclusion: success
 
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
 Accepted scope:
 - official OpenFHE 1.5.0 checkout and exact-commit provenance check passed;
 - project-owned production and independent-oracle test targets compiled under C++17 with `-Wall -Wextra -Wpedantic -Werror`;
