@@ -14,13 +14,14 @@ and the supplied official OpenFHE 1.5.0 source. Do not seek, inspect, infer, or
 reuse any previous 2023/1788 implementation.
 
 The exact project base is branch `agent/codex-tensor2-01`, commit
-`02b34bac9cb87afc8acb9df275d5c0e137b554e7`. Its last production-code change is
+`87c84b879c13b55cf15d6559d3317853228fdc05`. Its last production-code change is
 slot-metadata hardening commit
 `4971d2292b5af0ddbbe0c7dbe5a2e87f45102ff1`; the exact base additionally closes
 the final DCP/RCB review's immutability-test gap with whole-observable-state
-comparisons and changes no production source. The exact base passed
+comparisons plus independent deep metadata-map snapshots and changes no
+production source. The exact base passed
 GitHub Actions run
-`https://github.com/leemaple/20231788./actions/runs/33406650125` on Linux/GCC and
+`https://github.com/leemaple/20231788./actions/runs/33411494861` on Linux/GCC and
 Windows 2022/MSYS2 MinGW64, with a strict build and 1/1 CTest on both jobs. The
 source package contains no `.git`, so treat these commit/run identities as a
 binding manifest and independently report any inconsistency you observe.
@@ -120,7 +121,7 @@ Return one ZIP with these independently usable artifacts:
 1. `REVIEW.md`: equation-to-code mapping, observed OpenFHE behavior, metadata
    contract, assumptions, and unresolved questions.
 2. `01-red-tests.patch`: tests/build registration only, applicable to exact base
-   commit `02b34bac9cb87afc8acb9df275d5c0e137b554e7` and expected to fail because
+   commit `87c84b879c13b55cf15d6559d3317853228fdc05` and expected to fail because
    Tensor2 is missing. State the expected failure precisely.
 3. `02-implementation.patch`: the minimum header/source/documentation changes
    that make those tests pass when applied after patch 01.

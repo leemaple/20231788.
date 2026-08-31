@@ -8,7 +8,7 @@ This is a targeted source/design preflight for the next clean-room vertical
 slice. It is not an implementation, build, CTest, precision, Windows, or
 performance result. The implementation base remains exact branch
 `agent/codex-tensor2-01`, commit
-`02b34bac9cb87afc8acb9df275d5c0e137b554e7`. Sustained execution remains on
+`87c84b879c13b55cf15d6559d3317853228fdc05`. Sustained execution remains on
 GitHub Actions/Windows rather than the Mac.
 
 Sources inspected:
