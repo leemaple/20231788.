@@ -6,11 +6,12 @@ Recorded: 2026-08-31 Asia/Shanghai
 
 - Reviewed pre-hardening checkpoint: `e1153122be529ef21e9e5bce1ace877015410304`.
 - Current production checkpoint: `b0cd3adba690b71b6446ade8c038002efea4b6ec`.
-- Current evidence/documentation checkpoint before this record: `f82c0cecae20873cb931642affc249533a7fe819`.
+- Cross-platform build-portability checkpoint: `e236a6ef3361169363fd17a74ab1a8dafc539d57`.
+- Current cross-platform evidence checkpoint before this update: `e361f1e3a75ad860ef8a34998d8c29be2d5379ae`.
 - Branch: `agent/codex-dcp-rcb-01`; it remains isolated from the default integration branch.
 - OpenFHE: official 1.5.0 commit `df495ba2e91739a6dc8f1de254fc5a41155ce504`.
-- Latest Linux strict-build/CTest result: [GitHub Actions 33394619792](https://github.com/leemaple/20231788./actions/runs/33394619792), success.
-- Windows/MSVC: pending; this record makes no Windows result claim.
+- Latest Linux strict-build/CTest result: [GitHub Actions 33399245184](https://github.com/leemaple/20231788./actions/runs/33399245184), success.
+- Windows/MinGW64: strict build and 1/1 CTest passed in [GitHub Actions 33399245184](https://github.com/leemaple/20231788./actions/runs/33399245184). This is OpenFHE 1.5.0's officially supported Windows path; VC++/MSVC is explicitly unsupported upstream and is not claimed.
 
 The Standards and Spec reviews below are intentionally reported as separate axes.
 Judgment-only design observations are also kept separate from documented
@@ -70,8 +71,8 @@ branch itself. They are therefore not classified as implementation-spec defects.
 
 ChatGPT Pro could not locally compile its supplied OpenFHE archive because cereal
 submodule content was absent, so its response made no build, CTest, precision,
-performance, or Windows claim. The Linux results above are independent GitHub
-Actions results produced after Codex reproduced and fixed the findings.
+performance, or Windows claim. The Linux and Windows results above are independent
+GitHub Actions results produced after Codex reproduced and fixed the findings.
 
 ## Additional Codex hardening after review
 
@@ -83,9 +84,21 @@ The shared ciphertext validator was fixed at
 `b0cd3adba690b71b6446ade8c038002efea4b6ec`; the strict build and full test then
 passed in [run 33394619792](https://github.com/leemaple/20231788./actions/runs/33394619792).
 
+The first strict Windows consumer compile then exposed OpenFHE's public use of
+the non-standard `M_E` macro under MinGW's strict C++17 mode at commit
+`91fd77bd263799ce5b1cd2c4e8f203b92e8c8a78` in
+[run 33398384157](https://github.com/leemaple/20231788./actions/runs/33398384157).
+A MinGW-only public `_USE_MATH_DEFINES` consumer definition fixed that upstream
+header portability boundary without modifying OpenFHE or enabling GNU language
+extensions. Commit `e236a6ef3361169363fd17a74ab1a8dafc539d57` passed the strict
+Linux and Windows builds and 1/1 CTest in
+[run 33399245184](https://github.com/leemaple/20231788./actions/runs/33399245184).
+
 ## Current integration decision
 
-The DCP/RCB source and Linux evidence are ready for Windows/MSVC validation. They
-are not yet ready to merge into the default branch because the user-required
-Windows gate and Windows Z code/Zima review have not completed. Later operations
-remain separate TDD slices and are not implied by this decision.
+The DCP/RCB source now has strict Linux/GCC and Windows/MinGW64 build/test
+evidence against the same exact production commit. It is not yet ready to merge
+into the default branch because the preserved Windows Z code/Zima session and
+ChatGPT Pro have not performed the required final review of that same green
+commit. Later operations remain separate TDD slices and are not implied by this
+decision.

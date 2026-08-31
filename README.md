@@ -8,9 +8,9 @@ The destination repository's previous implementation and every related local cod
 
 - Default integration branch: [`cleanroom/reimplement-mult2-20260831`](https://github.com/leemaple/20231788./tree/cleanroom/reimplement-mult2-20260831)
 - Current implementation slice: [`agent/codex-dcp-rcb-01`](https://github.com/leemaple/20231788./tree/agent/codex-dcp-rcb-01) contains the isolated DCP/RCB implementation and independent-oracle tests. It is not merged into the default branch.
-- Verified on Linux: the strict GCC build and complete DCP/RCB test executable pass against pinned pristine OpenFHE 1.5.0; the latest green run is [GitHub Actions 33394619792](https://github.com/leemaple/20231788./actions/runs/33394619792).
-- Still pending: independent Windows/MSVC execution and implementation of Tensor2, Relin2, RS2, Mult2, and pair addition/subtraction.
-- External review: ChatGPT Pro completed its independent DCP/RCB review and the accepted findings have been addressed test-first. The existing Windows Z code/Zima task remains active; no Windows result is claimed yet.
+- Verified on Linux and Windows: [GitHub Actions 33399245184](https://github.com/leemaple/20231788./actions/runs/33399245184) builds pinned pristine OpenFHE 1.5.0 and then compiles/runs the complete DCP/RCB test executable with strict GCC warnings on both Linux and the officially supported Windows/MinGW64 path.
+- Still pending: final same-commit Windows Z code/Zima and ChatGPT Pro review, plus implementation of Tensor2, Relin2, RS2, Mult2, and pair addition/subtraction.
+- External review: ChatGPT Pro completed its independent pre-hardening DCP/RCB review and the accepted findings have been addressed test-first. The preserved Windows Z code/Zima task has not yet reviewed the final green commit; no ZCode acceptance is claimed.
 - Continuity: an active long-running Codex Goal advances the project across turns; the daily 07:00 Asia/Shanghai automation independently produces and delivers the PDF status report.
 - Progress evidence: [`coordination/CONVERSATIONS.md`](coordination/CONVERSATIONS.md)
 - Paper/OpenFHE API review: [`coordination/CODEX_API_REVIEW.md`](coordination/CODEX_API_REVIEW.md)
