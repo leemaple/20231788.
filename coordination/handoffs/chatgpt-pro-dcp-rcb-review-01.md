@@ -54,4 +54,24 @@ The review requests prioritized source/spec findings, a paper/OpenFHE contract m
 - Attachment: exact 3,694,670-byte archive with SHA-256 `e32ba8a4b59ef7e377a01e6dfcd426bd3dab8e6db5ecad01c0510fefdc4c6fcc`
 - Prompt: complete 7,259-character review task; browser readback showed its first and last text, the exact attachment, and an enabled send action before submission
 - Browser verification after submission: the new conversation URL was assigned, the attachment and complete task were visible in the sent message, and `Thinking` plus `Stop answering` were present
-- Handling: generation is active; do not interrupt, refresh, retry, resend, or ask for status while it is thinking
+- Handling: the response completed naturally after 19m39s; it was not interrupted, refreshed, retried, or resent
+
+## Returned review archive
+
+- Completed/downloaded: 2026-08-31 19:29-19:31 CST
+- Local ignored path: `artifacts/handoffs/chatgpt-pro-dcp-rcb-review-01/output/20231788-dcp-rcb-independent-review-e115312.zip`
+- Size: 20,528 bytes
+- SHA-256: `b559db7f1a1e5feecad065f467f71d420d49a4995a77782fab26c5024c884293`
+- ZIP integrity: `unzip -t` passed with all five members OK
+- Extracted-content scan: Gitleaks 8.30.1 scanned approximately 50.42 KB and found no leaks
+- Members: `REVIEW-DCP-RCB-CURRENT.md`, `SPEC-CHECK.md`, `TEST-GAPS.md`, `0001-review-fixes.patch`, `EXECUTION.md`
+- Top verdict: `ACCEPTABLE ONLY AFTER NAMED FIXES`
+- Arithmetic verdict: no DCP/RCB centered-division, low-construction, scale, or recombination algorithm defect found
+- Blocking finding: production obtains OpenFHE precomputation row zero through unchecked outer-vector access before it can inspect the returned row lengths
+- Test finding: `CheckThrows` accepts any `std::exception`, so an unintended upstream or allocation exception can satisfy a negative test
+- Execution boundary: the reviewer could not build the project because the supplied official tag archive had empty third-party submodule directories; it made no local build/CTest or Windows claim
+
+The returned patch is untrusted review input. Codex independently confirmed the
+unchecked OpenFHE accessor in pristine 1.5.0 source and will create a behavioral
+regression red before writing a production fix. The Ego Lite task space was closed
+after the archive and conversation URL were retained.
