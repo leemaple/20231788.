@@ -32,7 +32,12 @@ Only `ready to apply` may include a replacement archive.
 ## Exact attachment inventory
 
 The submission must attach every file in this table with the exact local name,
-size, and SHA-256 shown. Do not rely on an earlier conversation copy.
+size, and SHA-256 shown. Do not rely on an earlier conversation copy. The
+ChatGPT UI may append exactly one browser-generated collision suffix of the
+form ` (digits)` immediately before the extension. Print both the mounted name
+and its normalized original basename; remove only that one final suffix for the
+name comparison. No other rename or normalization is allowed, and byte size
+plus SHA-256 remain controlling.
 
 | # | Attachment | Bytes | SHA-256 |
 |---:|---|---:|---|
