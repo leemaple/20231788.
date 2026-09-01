@@ -235,10 +235,16 @@ tool calls.
   and again immediately after the provider exits, before the parent clears its
   in-memory copies;
 - the launcher is the sole preflight-and-capture wrapper. It creates a unique
-  attempt receipt, opens `00-preflight.txt`, and prints that safe receipt path
-  before checking canonical CWD, a prior provider guard, or the atomic entry
-  lock. The entry lock is acquired before any shared HOME/TMP/auth activity.
-  Before a distinct
+  attempt receipt, opens `00-preflight.txt` plus a dedicated wrapper-error
+  record, and prints that safe receipt path before checking canonical CWD, a
+  prior provider guard, or the atomic entry lock. Explicit failures and a
+  phase/step-aware exit trap append their reason, phase, step, and exact exit
+  before the wrapper terminates. Git remote checks retain safe stdout, stderr,
+  and exact exits; sandbox probing retains its observed matrix, stderr, and
+  exit before comparison; Keychain stdout is never persisted, while its
+  stderr/exit and every credential-JSON parse stderr/exit are retained and
+  exact-token-scanned. The entry lock is acquired before any shared
+  HOME/TMP/auth activity. Before a distinct
   one-use provider-start guard it fail-closes on exact
   task/CLI/profile/ZIP/manifest and source identities, Git cleanliness/remote
   equality, member inventory/modes, staging/extraction equality, Gitleaks,
@@ -264,7 +270,11 @@ tool calls.
   lexically confined to the extraction root. Every counted tool call must have
   exactly one successful same-session tool result, and vice versa. Every event
   carrying a session or model field must match the accepted identity, every
-  assistant must explicitly carry the exact model, and an explicit null
+  assistant must explicitly carry the exact model, and every present
+  `modelUsage` value must be a nonempty object keyed only by that model. The
+  unique init must report the exact extraction CWD, `plan` permission mode,
+  exactly Read/Glob/Grep, and an empty MCP-server list. Each matched tool result
+  must carry protocol content of string or array type; an explicit null
   tool-result error field is rejected rather than treated as success;
 - the parent receipt binds start/end time, CLI/task/packet identities, raw
   exits, output hashes, session/usage fields when present, and observed tool

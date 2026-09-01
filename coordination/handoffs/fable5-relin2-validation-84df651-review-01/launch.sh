@@ -7,6 +7,9 @@ exec 3>&2
 fail() {
   print -u2 -- "Fable5 launch preflight failed: $*"
   print -u3 -- "FAIL: $*"
+  if [[ -n "${FABLE_RECEIPT:-}" && -f "${FABLE_RECEIPT}/00a-wrapper-errors.txt" ]]; then
+    print -- "FAIL: $*" >>"${FABLE_RECEIPT}/00a-wrapper-errors.txt"
+  fi
   exit 70
 }
 
@@ -323,8 +326,8 @@ readonly FABLE_GITLEAKS="/opt/homebrew/bin/gitleaks"
 readonly FABLE_RG="/Applications/ChatGPT.app/Contents/Resources/rg"
 readonly FABLE_PYTHON="/usr/bin/python3"
 
-readonly EXPECTED_TASK_SHA256="e95db7704faffc51cfc70b3f4ca85b6182cc62bf6f077e334655bb70b158b99b"
-readonly EXPECTED_TASK_BYTES="16794"
+readonly EXPECTED_TASK_SHA256="33ab2cbfaeacb39c4e215b3bf32ff483d9ba2f92a35c9bf063ba185fa7ca5ad7"
+readonly EXPECTED_TASK_BYTES="17562"
 readonly EXPECTED_SANDBOX_SHA256="680fec15a149b95801cbc8dccf377661f5c756f28336e8565ce268359b8640b8"
 readonly EXPECTED_CLI_SHA256="2b4f7aafdaa65bcc2335f56a4b276317837203f2c5587b1f2a17ca78ad14e36f"
 readonly EXPECTED_GITLEAKS_SHA256="f414bc2fb952be6c9072b75cb411e3368614ef4b16d48dbd9ad238034afd2302"
@@ -338,6 +341,18 @@ readonly EXPECTED_IMPLEMENTATION_HEAD="84df6518df47fc7e50b8f465e5aa294fe5fdf84d"
 readonly EXPECTED_IMPLEMENTATION_TREE="028033ad13b90710eaa98e6f1436bdb2d8f49b86"
 readonly EXPECTED_IMPLEMENTATION_BRANCH="agent/codex-relin2-01"
 readonly EXPECTED_COORDINATION_BRANCH="cleanroom/reimplement-mult2-20260831"
+
+typeset fable_phase="entry"
+typeset fable_step="bootstrap"
+TRAPEXIT() {
+  local wrapper_exit=$?
+  if (( wrapper_exit != 0 )) && [[ "${fable_phase:-entry}" != "complete" ]]; then
+    print -u2 -- "Fable5 wrapper exit: phase=${fable_phase:-entry} step=${fable_step:-bootstrap} exit=${wrapper_exit}"
+    if [[ -n "${FABLE_RECEIPT:-}" && -d "${FABLE_RECEIPT}" ]]; then
+      print -- "wrapper_exit_phase=${fable_phase:-entry} wrapper_exit_step=${fable_step:-bootstrap} wrapper_exit=${wrapper_exit}" >>"${FABLE_RECEIPT}/00a-wrapper-errors.txt"
+    fi
+  fi
+}
 
 typeset -a expected_members
 expected_members=(
@@ -371,11 +386,14 @@ expected_members=(
   spec/relin2-preflight.md
 )
 
+fable_step="attempt_receipt"
 /bin/mkdir "${FABLE_RECEIPT}" || fail "unique receipt directory creation failed"
 exec 3>"${FABLE_RECEIPT}/00-preflight.txt"
+: >"${FABLE_RECEIPT}/00a-wrapper-errors.txt"
 print -u2 -- "Fable5 attempt receipt: ${FABLE_RECEIPT}"
 log "preflight_started_utc=$(/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 log "invocation_cwd=$(pwd -P)"
+fable_step="canonical_cwd_and_entry_lock"
 [[ "$(pwd -P)" == "${FABLE_EXTRACTION}" ]] || fail "canonical CWD is not ${FABLE_EXTRACTION}"
 [[ ! -e "${FABLE_STARTED_GUARD}" ]] || fail "one-use provider-start guard already exists"
 /bin/mkdir "${FABLE_ENTRY_LOCK}" || fail "exclusive launcher-entry lock creation failed"
@@ -385,7 +403,14 @@ print -- "entry_utc=$(/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')" >"${FABLE_ENTRY_LOCK}
 typeset -a receipt_outputs
 receipt_outputs=(
   00-preflight.txt
+  00a-wrapper-errors.txt
   00b-exact-pre-auth-secrets.txt
+  00c-coordination-remote-stdout.txt
+  00d-coordination-remote-stderr.txt
+  00e-coordination-remote-exit.txt
+  00f-implementation-remote-stdout.txt
+  00g-implementation-remote-stderr.txt
+  00h-implementation-remote-exit.txt
   01-auth-status.json
   01a-auth-stderr.txt
   01b-auth-exit.txt
@@ -393,7 +418,13 @@ receipt_outputs=(
   01d-flags-stderr.txt
   01e-flags-exit.txt
   01f-exact-post-auth-secrets.txt
+  01g-keychain-stderr.txt
+  01h-keychain-exit.txt
+  01i-credential-parse-stderr.txt
+  01j-credential-parse-exits.txt
   02-sandbox-probes.txt
+  02a-sandbox-stderr.txt
+  02b-sandbox-exit.txt
   03-staging-gitleaks.txt
   04-extraction-gitleaks.txt
   05-runtime-home-gitleaks.txt
@@ -412,6 +443,12 @@ receipt_outputs=(
   15-fable.stderr.txt
   16-exit.txt
   17-postflight.txt
+  17a-coordination-remote-stdout.txt
+  17b-coordination-remote-stderr.txt
+  17c-coordination-remote-exit.txt
+  17d-implementation-remote-stdout.txt
+  17e-implementation-remote-stderr.txt
+  17f-implementation-remote-exit.txt
   18-exact-post-provider-secrets.txt
   20-post-runtime-home-gitleaks.txt
   21-post-runtime-home-targeted.txt
@@ -430,12 +467,14 @@ receipt_outputs=(
 [[ "$(/usr/bin/printf '%s\n' "${receipt_outputs[@]}" | /usr/bin/sort -u | /usr/bin/wc -l | /usr/bin/tr -d ' ')" == "${#receipt_outputs[@]}" ]] ||
   fail "receipt output list contains duplicate names"
 for output_name in "${receipt_outputs[@]}"; do
-  [[ "${output_name}" == "00-preflight.txt" ]] && continue
+  [[ "${output_name}" == "00-preflight.txt" || "${output_name}" == "00a-wrapper-errors.txt" ]] && continue
   [[ ! -e "${FABLE_RECEIPT}/${output_name}" ]] || fail "receipt output already exists: ${output_name}"
 done
 
 log "canonical_cwd=$(pwd -P)"
 log "entry_lock=${FABLE_ENTRY_LOCK}"
+fable_phase="identity_preflight"
+fable_step="fixed_identity_checks"
 preflight_launcher_sha="$(sha256_of "${FABLE_LAUNCHER}")"
 log "launcher_sha256=${preflight_launcher_sha}"
 
@@ -463,17 +502,31 @@ require_sha256 "${FABLE_PACKET}" "${EXPECTED_PACKET_SHA256}"
 [[ "$("${FABLE_GITLEAKS}" version)" == "8.30.1" ]] || fail "Gitleaks version mismatch"
 [[ "$("${FABLE_PYTHON}" --version 2>&1)" == "Python 3.9.6" ]] || fail "credential transporter version mismatch"
 
+fable_phase="git_preflight"
+fable_step="repository_cleanliness"
 for repository in "${FABLE_COORDINATION}" "${FABLE_IMPLEMENTATION}"; do
   [[ -z "$(/usr/bin/git -C "${repository}" status --porcelain=v1)" ]] || fail "dirty repository: ${repository}"
   /usr/bin/git -C "${repository}" diff --check >&3
   /usr/bin/git -C "${repository}" diff --cached --check >&3
 done
 
+fable_step="coordination_local_identity"
 coordination_branch="$(/usr/bin/git -C "${FABLE_COORDINATION}" branch --show-current)"
 coordination_head="$(/usr/bin/git -C "${FABLE_COORDINATION}" rev-parse HEAD)"
 coordination_tree="$(/usr/bin/git -C "${FABLE_COORDINATION}" rev-parse HEAD^{tree})"
 coordination_upstream="$(/usr/bin/git -C "${FABLE_COORDINATION}" rev-parse '@{u}')"
-coordination_remote="$(/usr/bin/git -C "${FABLE_COORDINATION}" ls-remote --exit-code origin "refs/heads/${coordination_branch}" | /usr/bin/awk '{print $1}')"
+set +e
+fable_step="coordination_remote_identity"
+/usr/bin/git -C "${FABLE_COORDINATION}" ls-remote --exit-code origin "refs/heads/${coordination_branch}" \
+  >"${FABLE_RECEIPT}/00c-coordination-remote-stdout.txt" \
+  2>"${FABLE_RECEIPT}/00d-coordination-remote-stderr.txt"
+coordination_remote_exit=$?
+set -e
+print -- "coordination_remote_exit=${coordination_remote_exit}" >"${FABLE_RECEIPT}/00e-coordination-remote-exit.txt"
+[[ ${coordination_remote_exit} -eq 0 ]] || fail "coordination remote identity lookup failed"
+[[ "$(/usr/bin/wc -l <"${FABLE_RECEIPT}/00c-coordination-remote-stdout.txt" | /usr/bin/tr -d ' ')" == "1" ]] ||
+  fail "coordination remote identity lookup returned an unexpected line count"
+coordination_remote="$(/usr/bin/awk '{print $1}' "${FABLE_RECEIPT}/00c-coordination-remote-stdout.txt")"
 [[ "${coordination_branch}" == "${EXPECTED_COORDINATION_BRANCH}" ]] || fail "coordination branch mismatch"
 [[ "${coordination_head}" == "${coordination_upstream}" && "${coordination_head}" == "${coordination_remote}" ]] || fail "coordination local/upstream/remote mismatch"
 log "coordination_branch=${coordination_branch}"
@@ -482,11 +535,23 @@ log "coordination_tree=${coordination_tree}"
 log "coordination_upstream=${coordination_upstream}"
 log "coordination_remote=${coordination_remote}"
 
+fable_step="implementation_local_identity"
 implementation_branch="$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" branch --show-current)"
 implementation_head="$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" rev-parse HEAD)"
 implementation_tree="$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" rev-parse HEAD^{tree})"
 implementation_upstream="$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" rev-parse '@{u}')"
-implementation_remote="$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" ls-remote --exit-code origin "refs/heads/${implementation_branch}" | /usr/bin/awk '{print $1}')"
+set +e
+fable_step="implementation_remote_identity"
+/usr/bin/git -C "${FABLE_IMPLEMENTATION}" ls-remote --exit-code origin "refs/heads/${implementation_branch}" \
+  >"${FABLE_RECEIPT}/00f-implementation-remote-stdout.txt" \
+  2>"${FABLE_RECEIPT}/00g-implementation-remote-stderr.txt"
+implementation_remote_exit=$?
+set -e
+print -- "implementation_remote_exit=${implementation_remote_exit}" >"${FABLE_RECEIPT}/00h-implementation-remote-exit.txt"
+[[ ${implementation_remote_exit} -eq 0 ]] || fail "implementation remote identity lookup failed"
+[[ "$(/usr/bin/wc -l <"${FABLE_RECEIPT}/00f-implementation-remote-stdout.txt" | /usr/bin/tr -d ' ')" == "1" ]] ||
+  fail "implementation remote identity lookup returned an unexpected line count"
+implementation_remote="$(/usr/bin/awk '{print $1}' "${FABLE_RECEIPT}/00f-implementation-remote-stdout.txt")"
 [[ "${implementation_branch}" == "${EXPECTED_IMPLEMENTATION_BRANCH}" ]] || fail "implementation branch mismatch"
 [[ "${implementation_head}" == "${EXPECTED_IMPLEMENTATION_HEAD}" ]] || fail "implementation HEAD mismatch"
 [[ "${implementation_tree}" == "${EXPECTED_IMPLEMENTATION_TREE}" ]] || fail "implementation tree mismatch"
@@ -497,6 +562,8 @@ log "implementation_tree=${implementation_tree}"
 log "implementation_upstream=${implementation_upstream}"
 log "implementation_remote=${implementation_remote}"
 
+fable_phase="packet_preflight"
+fable_step="packet_inventory_and_manifest"
 typeset -a actual_members
 actual_members=("${(@f)$(/usr/bin/unzip -Z1 "${FABLE_PACKET}")}")
 [[ ${#actual_members[@]} -eq ${#expected_members[@]} ]] || fail "packet member count mismatch"
@@ -536,6 +603,8 @@ log "staging_extraction_identical=true extraction_writable_entries=0 symlinks=0"
 targeted_scan "${FABLE_STAGING}" "${FABLE_RECEIPT}/08-targeted-staging.txt"
 targeted_scan "${FABLE_EXTRACTION}" "${FABLE_RECEIPT}/09-targeted-extraction.txt"
 
+fable_phase="sandbox_preflight"
+fable_step="sandbox_positive_controls"
 typeset -a parent_read_probe_paths
 parent_read_probe_paths=(
   "/Users/lifeng/.claude.json"
@@ -557,6 +626,8 @@ done
 
 print -- "isolated HOME read-denial canary" >"${FABLE_HOME}/.fable-read-denial-canary"
 /bin/chmod 600 "${FABLE_HOME}/.fable-read-denial-canary"
+set +e
+fable_step="sandbox_probe_matrix"
 sandbox_probe_output="$(
   /usr/bin/env -i PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
     /usr/bin/sandbox-exec -f "${FABLE_SANDBOX}" /bin/zsh -c '
@@ -592,10 +663,12 @@ sandbox_probe_output="$(
       else
         printf "isolated_tmp_write=denied\n"
       fi
-    '
+    ' 2>"${FABLE_RECEIPT}/02a-sandbox-stderr.txt"
 )"
+sandbox_probe_exit=$?
+set -e
+print -- "sandbox_probe_exit=${sandbox_probe_exit}" >"${FABLE_RECEIPT}/02b-sandbox-exit.txt"
 readonly expected_sandbox_probe_output=$'packet_read=allowed\ntask_read=allowed\nreal_claude_config_read=denied\nchrome_cookie_read=denied\nsystem_keychain_read=denied\ndata_alias_claude_config_read=denied\ndata_alias_chrome_cookie_read=denied\ndata_alias_system_keychain_read=denied\nisolated_home_read=denied\nhosts_read=allowed\nkeychain_service=denied\npacket_write=denied\nisolated_tmp_write=allowed'
-[[ "${sandbox_probe_output}" == "${expected_sandbox_probe_output}" ]] || fail "sandbox probe matrix mismatch"
 {
   print -- "parent_sensitive_read_positive_controls=${#parent_read_probe_paths[@]}"
   print -- "parent_env_i_keychain_service_positive_control=passed"
@@ -605,14 +678,48 @@ readonly expected_sandbox_probe_output=$'packet_read=allowed\ntask_read=allowed\
 /bin/rm -f "${FABLE_HOME}/.fable-read-denial-canary"
 [[ ! -e "${FABLE_EXTRACTION}/.sandbox-write-probe" ]] || fail "packet write probe unexpectedly created a file"
 [[ ! -e "${FABLE_HOME}/.fable-read-denial-canary" ]] || fail "isolated HOME read-denial canary cleanup failed"
+[[ ${sandbox_probe_exit} -eq 0 ]] || fail "sandbox probe command failed with exit ${sandbox_probe_exit}"
+[[ "${sandbox_probe_output}" == "${expected_sandbox_probe_output}" ]] || fail "sandbox probe matrix mismatch"
 
+fable_phase="credential_load"
+fable_step="keychain_retrieval"
 typeset fable_oauth_token fable_refresh_token
-fable_credentials="$(/usr/bin/security find-generic-password -s 'Claude Code-credentials' -w)"
-fable_oauth_token="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er '.claudeAiOauth.accessToken | select(type == "string" and length > 0)')"
-fable_refresh_token="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er '.claudeAiOauth.refreshToken | select(type == "string" and length > 0)')"
-fable_access_expires_ms="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er '.claudeAiOauth.expiresAt | numbers')"
-fable_refresh_expires_ms="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er '.claudeAiOauth.refreshTokenExpiresAt | numbers')"
+set +e
+fable_credentials="$(/usr/bin/security find-generic-password -s 'Claude Code-credentials' -w \
+  2>"${FABLE_RECEIPT}/01g-keychain-stderr.txt")"
+keychain_exit=$?
+set -e
+print -- "keychain_exit=${keychain_exit}" >"${FABLE_RECEIPT}/01h-keychain-exit.txt"
+[[ ${keychain_exit} -eq 0 ]] || fail "Keychain credential retrieval failed with exit ${keychain_exit}"
+
+: >"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt"
+set +e
+fable_step="credential_json_parse"
+fable_oauth_token="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er \
+  '.claudeAiOauth.accessToken | select(type == "string" and length > 0)' \
+  2>>"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt")"
+access_parse_exit=$?
+fable_refresh_token="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er \
+  '.claudeAiOauth.refreshToken | select(type == "string" and length > 0)' \
+  2>>"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt")"
+refresh_parse_exit=$?
+fable_access_expires_ms="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er \
+  '.claudeAiOauth.expiresAt | numbers' 2>>"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt")"
+access_expiry_parse_exit=$?
+fable_refresh_expires_ms="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er \
+  '.claudeAiOauth.refreshTokenExpiresAt | numbers' 2>>"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt")"
+refresh_expiry_parse_exit=$?
+set -e
+{
+  print -- "access_parse_exit=${access_parse_exit}"
+  print -- "refresh_parse_exit=${refresh_parse_exit}"
+  print -- "access_expiry_parse_exit=${access_expiry_parse_exit}"
+  print -- "refresh_expiry_parse_exit=${refresh_expiry_parse_exit}"
+} >"${FABLE_RECEIPT}/01j-credential-parse-exits.txt"
 unset fable_credentials
+[[ ${access_parse_exit} -eq 0 && ${refresh_parse_exit} -eq 0 &&
+   ${access_expiry_parse_exit} -eq 0 && ${refresh_expiry_parse_exit} -eq 0 ]] ||
+  fail "Keychain credential JSON parsing failed"
 now_ms=$(( $(/bin/date +%s) * 1000 ))
 refresh_remaining_seconds=$(( (fable_refresh_expires_ms - now_ms) / 1000 ))
 access_remaining_seconds=$(( (fable_access_expires_ms - now_ms) / 1000 ))
@@ -621,6 +728,8 @@ log "oauth_access_remaining_seconds=${access_remaining_seconds}"
 log "oauth_refresh_remaining_seconds=${refresh_remaining_seconds}"
 
 exact_secret_scan "${FABLE_RECEIPT}/00b-exact-pre-auth-secrets.txt" "${FABLE_HOME}" "${FABLE_TMP}" "${FABLE_RECEIPT}"
+fable_phase="auth_probe"
+fable_step="isolated_auth_status"
 set +e
 run_fable_cli auth >"${FABLE_RECEIPT}/01-auth-status.json" 2>"${FABLE_RECEIPT}/01a-auth-stderr.txt"
 auth_exit=$?
@@ -630,6 +739,8 @@ exact_secret_scan "${FABLE_RECEIPT}/01f-exact-post-auth-secrets.txt" "${FABLE_HO
 [[ ${auth_exit} -eq 0 ]] || fail "isolated OAuth status command failed with exit ${auth_exit}"
 /usr/bin/jq -e '.loggedIn == true and .authMethod == "oauth_token" and .apiProvider == "firstParty"' "${FABLE_RECEIPT}/01-auth-status.json" >/dev/null || fail "isolated OAuth status mismatch"
 
+fable_phase="flag_probe"
+fable_step="provider_flag_parse"
 set +e
 run_fable_cli flags >"${FABLE_RECEIPT}/01c-flags-stdout.txt" 2>"${FABLE_RECEIPT}/01d-flags-stderr.txt"
 flags_exit=$?
@@ -648,6 +759,8 @@ log "preflight_completed_utc=$(/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 exec 3>&-
 exec 3>&2
 
+fable_phase="provider_start"
+fable_step="provider_guard"
 provider_start_utc="$(/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 /bin/mkdir "${FABLE_STARTED_GUARD}" || fail "atomic one-use provider-start guard creation failed"
 {
@@ -665,6 +778,8 @@ print -- "${provider_start_utc}" >"${FABLE_STARTED_GUARD}/started-utc.txt"
 print -- "${FABLE_RECEIPT}" >"${FABLE_STARTED_GUARD}/receipt-path.txt"
 
 exec 3>&-
+fable_phase="provider"
+fable_step="provider_process"
 set +e
 run_fable_cli provider >"${FABLE_RECEIPT}/14-fable.raw.jsonl" 2>"${FABLE_RECEIPT}/15-fable.stderr.txt"
 provider_exit=$?
@@ -683,6 +798,8 @@ exec 3>&2
 exact_secret_scan "${FABLE_RECEIPT}/18-exact-post-provider-secrets.txt" "${FABLE_HOME}" "${FABLE_TMP}" "${FABLE_RECEIPT}"
 unset fable_oauth_token fable_refresh_token
 
+fable_phase="postflight"
+fable_step="postflight_packet_and_local_identity"
 {
   print -- "postflight_utc=${provider_end_utc}"
   print -- "task_sha256=$(sha256_of "${FABLE_TASK}")"
@@ -736,6 +853,28 @@ require_readonly_regular_tree "${FABLE_EXTRACTION}" "post_run_extraction"
 log "post_packet_inventory_modes_encryption=passed post_extracted_manifest_check=passed"
 log "post_staging_extraction_identical=true post_extraction_writable_entries=0 post_symlinks=0"
 
+set +e
+fable_step="postflight_remote_identity"
+/usr/bin/git -C "${FABLE_COORDINATION}" ls-remote --exit-code origin "refs/heads/${coordination_branch}" \
+  >"${FABLE_RECEIPT}/17a-coordination-remote-stdout.txt" \
+  2>"${FABLE_RECEIPT}/17b-coordination-remote-stderr.txt"
+post_coordination_remote_exit=$?
+/usr/bin/git -C "${FABLE_IMPLEMENTATION}" ls-remote --exit-code origin "refs/heads/${implementation_branch}" \
+  >"${FABLE_RECEIPT}/17d-implementation-remote-stdout.txt" \
+  2>"${FABLE_RECEIPT}/17e-implementation-remote-stderr.txt"
+post_implementation_remote_exit=$?
+set -e
+print -- "post_coordination_remote_exit=${post_coordination_remote_exit}" >"${FABLE_RECEIPT}/17c-coordination-remote-exit.txt"
+print -- "post_implementation_remote_exit=${post_implementation_remote_exit}" >"${FABLE_RECEIPT}/17f-implementation-remote-exit.txt"
+[[ ${post_coordination_remote_exit} -eq 0 ]] || fail "post-run coordination remote identity lookup failed"
+[[ ${post_implementation_remote_exit} -eq 0 ]] || fail "post-run implementation remote identity lookup failed"
+[[ "$(/usr/bin/wc -l <"${FABLE_RECEIPT}/17a-coordination-remote-stdout.txt" | /usr/bin/tr -d ' ')" == "1" ]] ||
+  fail "post-run coordination remote identity lookup returned an unexpected line count"
+[[ "$(/usr/bin/wc -l <"${FABLE_RECEIPT}/17d-implementation-remote-stdout.txt" | /usr/bin/tr -d ' ')" == "1" ]] ||
+  fail "post-run implementation remote identity lookup returned an unexpected line count"
+post_coordination_remote="$(/usr/bin/awk '{print $1}' "${FABLE_RECEIPT}/17a-coordination-remote-stdout.txt")"
+post_implementation_remote="$(/usr/bin/awk '{print $1}' "${FABLE_RECEIPT}/17d-implementation-remote-stdout.txt")"
+
 require_sha256 "${FABLE_TASK}" "${EXPECTED_TASK_SHA256}"
 require_sha256 "${FABLE_SANDBOX}" "${EXPECTED_SANDBOX_SHA256}"
 require_sha256 "${FABLE_CLI}" "${EXPECTED_CLI_SHA256}"
@@ -748,12 +887,12 @@ require_sha256 "${FABLE_PACKET}" "${EXPECTED_PACKET_SHA256}"
 [[ "$(/usr/bin/git -C "${FABLE_COORDINATION}" rev-parse HEAD)" == "${coordination_head}" ]] || fail "coordination HEAD changed during provider run"
 [[ "$(/usr/bin/git -C "${FABLE_COORDINATION}" rev-parse HEAD^{tree})" == "${coordination_tree}" ]] || fail "coordination tree changed during provider run"
 [[ "$(/usr/bin/git -C "${FABLE_COORDINATION}" rev-parse '@{u}')" == "${coordination_upstream}" ]] || fail "coordination upstream changed during provider run"
-[[ "$(/usr/bin/git -C "${FABLE_COORDINATION}" ls-remote --exit-code origin "refs/heads/${coordination_branch}" | /usr/bin/awk '{print $1}')" == "${coordination_remote}" ]] || fail "coordination remote changed during provider run"
+[[ "${post_coordination_remote}" == "${coordination_remote}" ]] || fail "coordination remote changed during provider run"
 [[ "$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" branch --show-current)" == "${implementation_branch}" ]] || fail "implementation branch changed during provider run"
 [[ "$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" rev-parse HEAD)" == "${implementation_head}" ]] || fail "implementation HEAD changed during provider run"
 [[ "$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" rev-parse HEAD^{tree})" == "${implementation_tree}" ]] || fail "implementation tree changed during provider run"
 [[ "$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" rev-parse '@{u}')" == "${implementation_upstream}" ]] || fail "implementation upstream changed during provider run"
-[[ "$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" ls-remote --exit-code origin "refs/heads/${implementation_branch}" | /usr/bin/awk '{print $1}')" == "${implementation_remote}" ]] || fail "implementation remote changed during provider run"
+[[ "${post_implementation_remote}" == "${implementation_remote}" ]] || fail "implementation remote changed during provider run"
 [[ -z "$(/usr/bin/git -C "${FABLE_COORDINATION}" status --porcelain=v1)" ]] || fail "coordination repo changed during provider run"
 [[ -z "$(/usr/bin/git -C "${FABLE_IMPLEMENTATION}" status --porcelain=v1)" ]] || fail "implementation repo changed during provider run"
 
@@ -762,11 +901,13 @@ targeted_scan "${FABLE_HOME}" "${FABLE_RECEIPT}/21-post-runtime-home-targeted.tx
 "${FABLE_GITLEAKS}" dir --no-banner --redact --exit-code 1 "${FABLE_TMP}" >"${FABLE_RECEIPT}/21b-post-runtime-tmp-gitleaks.txt" 2>&1 || fail "post-run isolated TMP Gitleaks scan failed"
 targeted_scan "${FABLE_TMP}" "${FABLE_RECEIPT}/21c-post-runtime-tmp-targeted.txt"
 
+fable_phase="stream_validation"
+fable_step="stream_decode_and_contract"
 /usr/bin/jq -s '.' "${FABLE_RECEIPT}/14-fable.raw.jsonl" >"${FABLE_RECEIPT}/22-events.json" || fail "raw stream-json contains a non-JSON event"
 event_count="$(/usr/bin/jq -r 'length' "${FABLE_RECEIPT}/22-events.json")"
 result_count="$(/usr/bin/jq -r '[.[] | select(.type == "result" and (.result | type == "string"))] | length' "${FABLE_RECEIPT}/22-events.json")"
 if [[ ${provider_exit} -eq 0 ]]; then
-  /usr/bin/jq -e --arg model "claude-fable-5" '
+  /usr/bin/jq -e --arg model "claude-fable-5" --arg cwd "${FABLE_EXTRACTION}" '
     def nonblank:
       type == "string" and (gsub("\\s"; "") | length > 0);
     ([.[] | select(.type == "system" and .subtype == "init")]) as $inits |
@@ -777,6 +918,12 @@ if [[ ${provider_exit} -eq 0 ]]; then
     ($results[0].session_id) as $session |
     ($inits | length) == 1 and
     ($inits[0].model == $model) and
+    ($inits[0].cwd == $cwd) and
+    ($inits[0].permissionMode == "plan") and
+    (($inits[0].tools | type) == "array" and
+     ($inits[0].tools | length) == 3 and
+     ($inits[0].tools | sort) == ["Glob", "Grep", "Read"]) and
+    (($inits[0].mcp_servers | type) == "array" and ($inits[0].mcp_servers | length) == 0) and
     ($results | length) == 1 and
     ($results[0].subtype == "success") and
     ($results[0].is_error == false) and
@@ -804,6 +951,15 @@ if [[ ${provider_exit} -eq 0 ]]; then
     all(.[];
       if ((.message? | type) == "object" and (.message | has("model")))
       then .message.model == $model
+      else true
+      end) and
+    all(.[];
+      if has("modelUsage")
+      then (.modelUsage |
+        if type == "object"
+        then ((keys | length) > 0 and all(keys[]; . == $model))
+        else false
+        end)
       else true
       end) and
     ($assistants | length) > 0 and
@@ -835,7 +991,11 @@ fi
 /usr/bin/jq '[.[] as $event | $event.message.content[]? | select(.type == "tool_result") |
   {event_type: ($event.type // null), event_session_id: ($event.session_id // null),
    tool_use_id: (.tool_use_id // null), has_is_error: has("is_error"),
-   is_error: (if has("is_error") then .is_error else null end)}]' \
+   is_error: (if has("is_error") then .is_error else null end),
+   has_content: has("content"),
+   content_type: (if has("content") then (.content | type) else "missing" end),
+   content_length: (if has("content") and ((.content | type) == "string" or (.content | type) == "array")
+                    then (.content | length) else null end)}]' \
   "${FABLE_RECEIPT}/22-events.json" >"${FABLE_RECEIPT}/25b-tool-results.json"
 if [[ ${provider_exit} -eq 0 ]]; then
   /usr/bin/jq -e 'length > 0 and all(.[]; .name == "Read" or .name == "Glob" or .name == "Grep")' \
@@ -936,7 +1096,11 @@ if [[ ${provider_exit} -eq 0 ]]; then
         ((.tool_use_id | type) == "string" and (.tool_use_id | length) > 0) and
         ((.has_is_error | type) == "boolean") and
         ((.has_is_error == false and .is_error == null) or
-         (.has_is_error == true and (.is_error | type) == "boolean" and .is_error == false))) and
+         (.has_is_error == true and (.is_error | type) == "boolean" and .is_error == false)) and
+        (.has_content == true) and
+        (.content_type == "string" or .content_type == "array") and
+        ((.content_length | type) == "number" and .content_length >= 0 and
+         (.content_length | floor) == .content_length)) and
       all($uses[]; . as $use |
         ([$results[] | select(.tool_use_id == $use.id)] | length) == 1) and
       all($results[]; . as $result |
@@ -964,6 +1128,8 @@ models="$(/usr/bin/jq -r '[.[] | (.model? // .message.model? // empty)] | unique
   print -- "terminal_answer_sha256=$(sha256_of "${FABLE_RECEIPT}/23-terminal-answer.md")"
 } >"${FABLE_RECEIPT}/26-stream-summary.txt"
 
+fable_phase="receipt_finalize"
+fable_step="receipt_scan_and_manifest"
 /bin/mkdir "${FABLE_SCAN_TMP}" || fail "final receipt-scan staging directory creation failed"
 "${FABLE_GITLEAKS}" dir --no-banner --redact --exit-code 1 "${FABLE_RECEIPT}" >"${FABLE_SCAN_TMP}/gitleaks.txt" 2>&1 || fail "final receipt Gitleaks scan failed"
 targeted_scan "${FABLE_RECEIPT}" "${FABLE_SCAN_TMP}/targeted.txt"
@@ -984,6 +1150,7 @@ for output_name in "${receipt_outputs[@]}"; do
     /usr/bin/shasum -a 256 "${output_name}"
   ) >>"${FABLE_RECEIPT}/29-receipt-manifest.sha256"
 done
+fable_phase="complete"
 exec 3>&-
 
 exit "${provider_exit}"
