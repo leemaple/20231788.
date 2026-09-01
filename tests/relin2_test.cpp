@@ -9,6 +9,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <typeinfo>
 #include <utility>
 #include <vector>
 
@@ -65,6 +66,22 @@ void CheckThrowsExactInvalidArgument(Function&& function, const std::string& exp
         throw TestFailure(label + " threw the wrong exception type: " + exception.what());
     }
     Check(threw, label + " did not fail fast");
+}
+
+template <class Function>
+void CheckPassesCurrentScaffoldOrCompletes(Function&& function, const std::string& label) {
+    try {
+        std::invoke(std::forward<Function>(function));
+    }
+    catch (const std::logic_error& exception) {
+        Check(typeid(exception) == typeid(std::logic_error),
+              label + " threw a derived logic-error type: " + exception.what());
+        Check(exception.what() == "DoubleCKKS: Relin2 is not implemented",
+              label + " reported an unexpected diagnostic: " + exception.what());
+    }
+    catch (const std::exception& exception) {
+        throw TestFailure(label + " threw the wrong exception type: " + exception.what());
+    }
 }
 
 using EvalMultKeyMap = std::map<std::string, std::vector<lbcrypto::EvalKey<DCRTPoly>>>;
@@ -605,6 +622,137 @@ void TestWrongTagEvaluationKey() {
     Check(evaluationKeys.empty(), "Relin2 wrong-tag fixture failed to restore the evaluation-key cache");
 }
 
+void TestWrongEvaluationKeySubtype() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    leftInput->SetMetadataByKey("relin2-wrong-subtype-immutability-probe",
+                                std::make_shared<ImmutabilityProbeMetadata>("unchanged"));
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 4,
+          "Relin2 wrong-subtype fixture must have exactly four full-basis towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 3,
+          "Relin2 wrong-subtype fixture must have exactly three active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 wrong-subtype fixture must have noise-scale degree three");
+    Check(!tensor.GetKeyTag().empty(), "Relin2 wrong-subtype fixture must have a nonempty key tag");
+    Check(keys.secretKey->GetKeyTag() == tensor.GetKeyTag(),
+          "Relin2 wrong-subtype fixture secret key must match the Tensor tag");
+    const auto highMetadata = tensor.GetHigh()->GetMetadataMap();
+    const auto lowMetadata = tensor.GetLow()->GetMetadataMap();
+    Check(highMetadata != nullptr && highMetadata->size() == 1 &&
+              highMetadata->find("relin2-wrong-subtype-immutability-probe") != highMetadata->end(),
+          "Relin2 wrong-subtype fixture high ciphertext lost its metadata probe");
+    Check(lowMetadata != nullptr && lowMetadata->size() == 1 &&
+              lowMetadata->find("relin2-wrong-subtype-immutability-probe") != lowMetadata->end(),
+          "Relin2 wrong-subtype fixture low ciphertext lost its metadata probe");
+
+    auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(evaluationKeys.empty(),
+          "Relin2 wrong-subtype fixture must start with an empty evaluation-key cache");
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeys);
+        context->EvalMultKeyGen(keys.secretKey);
+
+        const auto generatedRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(evaluationKeys.size() == 1 && generatedRow != evaluationKeys.end() &&
+                  generatedRow->second.size() == 1 && generatedRow->second.front() != nullptr,
+              "Relin2 wrong-subtype positive control must generate exactly one evaluation key");
+        const auto correctSubtypeKey =
+            std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(generatedRow->second.front());
+        Check(correctSubtypeKey != nullptr,
+              "Relin2 wrong-subtype positive control must use the relinearization-key subtype");
+        Check(correctSubtypeKey->GetCryptoContext().get() == context.get(),
+              "Relin2 wrong-subtype positive control key must keep the bound context");
+        Check(correctSubtypeKey->GetKeyTag() == tensor.GetKeyTag(),
+              "Relin2 wrong-subtype positive control key must match the Tensor tag");
+        Check(!correctSubtypeKey->GetAVector().empty() && !correctSubtypeKey->GetBVector().empty(),
+              "Relin2 wrong-subtype positive control must contain generated key material");
+
+        const auto* cacheIdentityBefore = &evaluationKeys;
+        const auto* vectorIdentityBefore = &generatedRow->second;
+        const auto keyIdentityBefore = generatedRow->second.front();
+        const auto keyContextBefore = correctSubtypeKey->GetCryptoContext();
+        const auto keyTagBefore = correctSubtypeKey->GetKeyTag();
+        const auto keyABefore = correctSubtypeKey->GetAVector();
+        const auto keyBBefore = correctSubtypeKey->GetBVector();
+        const auto tensorBefore = SnapshotTensor(tensor);
+        CheckPassesCurrentScaffoldOrCompletes(
+            [&] { (void)module.Relin2(tensor); }, "Relin2 wrong-subtype positive control");
+        CheckTensorUnchanged(tensor, tensorBefore, "Relin2 wrong-subtype positive control");
+        const auto currentRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBefore && evaluationKeys.size() == 1 &&
+                  currentRow != evaluationKeys.end() && &currentRow->second == vectorIdentityBefore &&
+                  currentRow->second.size() == 1 &&
+                  currentRow->second.front().get() == keyIdentityBefore.get(),
+              "Relin2 wrong-subtype positive control mutated the cache shape or identity");
+        Check(correctSubtypeKey->GetCryptoContext().get() == keyContextBefore.get(),
+              "Relin2 wrong-subtype positive control mutated the key context");
+        Check(correctSubtypeKey->GetKeyTag() == keyTagBefore,
+              "Relin2 wrong-subtype positive control mutated the key tag");
+        Check(correctSubtypeKey->GetAVector() == keyABefore && correctSubtypeKey->GetBVector() == keyBBefore,
+              "Relin2 wrong-subtype positive control mutated the key A/B vectors");
+    }
+    Check(evaluationKeys.empty(),
+          "Relin2 wrong-subtype positive control failed to restore the evaluation-key cache");
+
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeys);
+        const auto wrongSubtypeKey = std::make_shared<lbcrypto::EvalKeyImpl<DCRTPoly>>(context);
+        wrongSubtypeKey->SetKeyTag(tensor.GetKeyTag());
+        const auto insertion = evaluationKeys.emplace(
+            tensor.GetKeyTag(), std::vector<lbcrypto::EvalKey<DCRTPoly>>{wrongSubtypeKey});
+
+        Check(insertion.second && evaluationKeys.size() == 1 && insertion.first->second.size() == 1 &&
+                  insertion.first->second.front().get() == wrongSubtypeKey.get(),
+              "Relin2 wrong-subtype negative control must insert exactly one evaluation key");
+        Check(wrongSubtypeKey->GetCryptoContext().get() == context.get(),
+              "Relin2 wrong-subtype negative-control key must keep the bound context");
+        Check(wrongSubtypeKey->GetKeyTag() == tensor.GetKeyTag(),
+              "Relin2 wrong-subtype negative-control key must match the Tensor tag");
+        Check(typeid(*wrongSubtypeKey) == typeid(lbcrypto::EvalKeyImpl<DCRTPoly>) &&
+                  std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(wrongSubtypeKey) == nullptr,
+              "Relin2 wrong-subtype negative control must use the exact base evaluation-key type");
+
+        const auto* cacheIdentityBefore = &evaluationKeys;
+        const auto* vectorIdentityBefore = &insertion.first->second;
+        const auto keyIdentityBefore = insertion.first->second.front();
+        const auto keyContextBefore = wrongSubtypeKey->GetCryptoContext();
+        const auto keyTagBefore = wrongSubtypeKey->GetKeyTag();
+        const auto tensorBefore = SnapshotTensor(tensor);
+        CheckThrowsExactInvalidArgument(
+            [&] { (void)module.Relin2(tensor); },
+            "DoubleCKKS: Relin2 first evaluation key has the wrong concrete subtype",
+            "Relin2 wrong-subtype first evaluation key");
+        CheckTensorUnchanged(tensor, tensorBefore, "Relin2 wrong-subtype rejection");
+        const auto currentRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBefore && evaluationKeys.size() == 1 &&
+                  currentRow != evaluationKeys.end() && &currentRow->second == vectorIdentityBefore &&
+                  currentRow->second.size() == 1 &&
+                  currentRow->second.front().get() == keyIdentityBefore.get(),
+              "Relin2 wrong-subtype rejection mutated the evaluation-key cache shape or identity");
+        Check(wrongSubtypeKey->GetCryptoContext().get() == keyContextBefore.get(),
+              "Relin2 wrong-subtype rejection mutated the evaluation-key context");
+        Check(wrongSubtypeKey->GetKeyTag() == keyTagBefore,
+              "Relin2 wrong-subtype rejection mutated the evaluation-key tag");
+        Check(typeid(*wrongSubtypeKey) == typeid(lbcrypto::EvalKeyImpl<DCRTPoly>) &&
+                  std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(wrongSubtypeKey) == nullptr,
+              "Relin2 wrong-subtype rejection changed the concrete evaluation-key type");
+    }
+    Check(evaluationKeys.empty(),
+          "Relin2 wrong-subtype fixture failed to restore the evaluation-key cache");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -628,6 +776,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "key_wrong_tag") {
         return &TestWrongTagEvaluationKey;
+    }
+    if (name == "key_wrong_subtype") {
+        return &TestWrongEvaluationKeySubtype;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }
