@@ -38,6 +38,26 @@ read any quarantined prior implementation.
    be frozen until accepted Relin2/RS2 establish the real pair state model.
    Cross-lifecycle arithmetic is prohibited regardless.
 
+### 1.1 Execution tracks are isolated and serialized
+
+Pair Add/Sub and Mult2 are two independent complex tasks. They must have
+different sanitized packets, engineering briefs, ChatGPT Pro conversations,
+Codex worktrees, branches, patch series, CI histories, reviews, and receipts.
+No external-agent conversation may carry hidden state from the other task.
+
+Let `R` be the future exact accepted RS2 commit. Create the Add/Sub branch and
+worktree from `R`; do not create the Mult2 branch yet. Let `A` be the final
+Add/Sub content-bearing commit only after its exact same-SHA Linux and Windows
+gate and all review findings close. Create the Mult2 branch and worktree from
+`A`, and bind the Mult2 packet to `A` as its sole source baseline. A rejected,
+dirty, local-only, merely pushed, or Linux-only Add/Sub state is not a valid
+Mult2 base.
+
+This serialization is a provenance rule, not an algorithmic claim that paper
+Mult2 calls public pair Add/Sub. It keeps each independent task recoverable and
+ensures the public API, lifecycle validator, workflow, and complete inherited
+test inventory are stable before Mult2 begins.
+
 ## 2. Paper facts
 
 ### 2.1 Pair and recombination
@@ -205,10 +225,17 @@ objects are not accepted by Add/Sub.
 Before any clone, public OpenFHE call, getter with unsafe raw assumptions, or
 arithmetic:
 
-1. fully validate `left`;
-2. fully validate `right`;
-3. validate mutual compatibility;
+1. call the complete project `ValidatePair(left)` closure;
+2. call the complete project `ValidatePair(right)` closure;
+3. validate mutual compatibility using only fields proven safe by those two
+   completed validations;
 4. only then call the public primitive.
+
+Neither a partial Add/Sub-specific validator nor pristine OpenFHE `TypeCheck`
+may substitute for either complete `ValidatePair` call. The two calls and their
+order are part of the source-order gate because an exception with the right
+text cannot prove that unsafe reads or discarded arithmetic did not happen
+first.
 
 Mutual compatibility must include exact:
 
@@ -246,7 +273,10 @@ use InPlace, Mutable, NoCheck, or a private DCRT component loop.
 Construct the result with the proven-compatible left descriptor, explicit
 left-member metadata semantics, and unchanged lifecycle, logical scales,
 current recorded factor, `inputRecordedScalingFactor`, and degree. Fully
-validate both current and historical factor fields before returning.
+validate both current and historical factor fields, then run the complete
+`ValidatePair(result)` closure on the exact returned pair before returning it.
+Do not validate a clone, temporary predecessor, or independently reconstructed
+pair instead.
 
 ### 5.3 Independent oracle and fixed witnesses
 
@@ -302,6 +332,15 @@ must prove both pairs, their distinct outer metadata maps, their map entries,
 and immediately observable metadata values are unchanged; this is not a claim
 that returned shallow-aliased metadata values are isolated from later mutation.
 
+Install four distinct metadata keys and four distinguishable deep values on
+`left.high`, `left.low`, `right.high`, and `right.low`. For both Add and Sub,
+prove `result.high` carries only the accepted `left.high` provenance and
+`result.low` only `left.low`; neither right sentinel propagates. Each returned
+outer map is distinct from all four input maps and from the other returned map,
+while value-pointer identity follows the verified shallow-clone behavior of
+the corresponding left member. This four-sentinel witness is mandatory; one
+shared key or only high-versus-low sentinels cannot distinguish all sources.
+
 Every mismatch class is an independent negative test with exact
 `std::invalid_argument`, `DoubleCKKS: `, and a stable field diagnostic:
 
@@ -332,15 +371,51 @@ OpenFHE call was not executed and discarded first, source-order review must
 also establish that complete left, right, and mutual validation precede both
 public Add/Sub calls.
 
+A compiler-token/AST call-and-def-use audit must fail closed on unknown call
+forms. For each of `Add` and `Sub` it proves: the exact public definition; both
+complete input validations and compatibility in order; exactly two matching
+output-returning `EvalAdd` or `EvalSub` calls; no InPlace, Mutable, NoCheck,
+manual DCRT arithmetic, auto-alignment, wrapper, macro, alias, indirect, or
+discarded route; construction from those exact two returns; and complete
+validation of the exact returned pair. Its retained mutation suite must
+independently delete, reorder, bypass, hide, duplicate, discard, or replace
+each required route. Count-only grep, source substrings, or one representative
+combined mutation is not evidence for this gate.
+
 ## 6. Mult2 contract
 
 ### 6.1 Minimal production path
 
-After its own full left, right, mutual, lifecycle, and composite-degree
-preflight, Mult2 uses named temporaries only. Whether it also shares Relin2's
-read-only evaluation-key preflight before Tensor arithmetic, and therefore the
-exact missing-key failure position, remains an explicit Section 8 exact-green
-decision rather than a fact in this preliminary gate:
+After its own full left, right, and mutual validation, Mult2 must enforce this
+fail-fast prefix before Tensor arithmetic:
+
+```text
+ValidatePair(left)
+-> ValidatePair(right)
+-> complete mutual compatibility
+-> both lifecycles exactly ReadyForFirstMult
+-> at least three active Q towers
+-> compositeDegree == 1
+-> deferred exact evaluation-key preflight position, if accepted
+-> Tensor2
+```
+
+The active-tower test is a reachable public Mult2 boundary, unlike RS2's
+static-only short-`ReadyForRS2` defense. In a valid full three-tower context,
+public DCP consumes the `q_div` tower and can produce a completely valid
+`ReadyForFirstMult` pair with only two active `Q` towers. Use two such public
+pairs and require exact `std::invalid_argument` with complete diagnostic
+`DoubleCKKS: Mult2 inputs must contain at least three active Q towers`. The
+test snapshots both pairs and the deep evaluation-key cache after fixture setup
+and proves them immediately unchanged after the exception. Source order must
+prove the failure precedes key-cache access, `Tensor2`, cloning, or arithmetic.
+
+Whether Mult2 also shares Relin2's read-only evaluation-key preflight before
+Tensor arithmetic, and therefore the exact missing-key failure position,
+remains an explicit Section 8 exact-green decision rather than a fact in this
+preliminary gate. It may be inserted only after the composite-degree guard and
+before `Tensor2` unless accepted Relin2/RS2 evidence proves a stricter order.
+After this preflight, Mult2 uses named temporaries only:
 
 ```text
 tensor       = Tensor2(left, right)
@@ -377,6 +452,15 @@ The RS2-relative metadata candidate is `final.high <- RS2 input.high` and
 value pointers shallow-alias that RS2 input member. Which original
 Tensor2/Relin2 sentinel this ultimately denotes remains pending the exact-green
 gate and must not be frozen here.
+
+The final task nevertheless requires four distinct input-member metadata
+sentinels: `left.high`, `left.low`, `right.high`, and `right.low`. After `R` and
+`A` are accepted, mechanically trace the verified Tensor2, Relin2, and RS2
+operand ordering and freeze the one exact original sentinel source for each
+Mult2 output member before authoring the oracle. Prove that the other three do
+not propagate, every output outer map has the required distinct identity, and
+the accepted shallow value-pointer relation holds. A two-sentinel fixture or a
+claim derived only from OpenFHE defaults is insufficient.
 
 ### 6.3 Independent composition oracle
 
@@ -468,33 +552,125 @@ pre-fixture cache, whose equality is checked again outside the scope. This
 distinguishes operation-under-test mutation from deliberate fixture state and
 RAII cleanup.
 
-## 7. Minimal TDD patch order
+A compiler-token/AST call-and-def-use audit must bind the exact Mult2
+definition and every executable call route, including macro-expanded,
+qualified, wrapper, alias, indirect, and `std::invoke` forms. It proves the
+complete fail-fast prefix above; exactly one result-bearing `Tensor2` call;
+exactly one `Relin2` whose input is that Tensor result; exactly one `RS2` whose
+input is that Relin2 result; and return of that exact RS2 result. It rejects
+direct `EvalMult`, `EvalMultAndRelinearize`, `Relinearize`, `Rescale`, manual
+coefficient arithmetic, dead trusted calls plus a manual substitute, duplicate
+or reordered stages, hidden routes, and post-hoc metadata repair. A frozen
+mutation/restore driver must independently exercise every required order,
+dataflow, call-form, and forbidden-route gate while proving all non-target
+gates retain their declared result; raw substring or call-count auditing is
+not accepted.
 
-### 7.1 Pair Add/Sub slice
+## 7. Vertical TDD, Git, and hosted-evidence order
 
-1. Separate Add and Sub compile-only tests; retain both missing-API reds. Each
-   binds the exact const member-function signature with a member-function
-   pointer `static_assert`:
+Every named behavior is one vertical cycle: add and run only that focused test
+or static gate, retain its authentic red unless the inherited-green rule below
+applies, make the smallest production change for that behavior, rerun the
+focused case plus the complete inherited suite, and retain green before adding
+the next behavior. Never add all tests first and then one complete
+implementation. Refactoring belongs only after the behavioral cycles and may
+not change an oracle or manufacture a missing red.
+
+For any new case, run it alone first. It may be recorded as inherited green
+only when production bytes are unchanged and an already accepted general
+behavior genuinely satisfies the new observation. It is not a causal red and
+does not authorize an audit-only production edit. If a test expected to expose
+missing behavior is unexpectedly green, stop that cycle, determine the actual
+cause, and reclassify the case; do not weaken the assertion or corrupt a
+fixture to force red. Here `B+n` counts runtime CTest tests only. A compile-only
+contract target or static/mutation audit never changes `B`; its command, target,
+expected diagnostic or failure code, and result are recorded in a separate
+inventory. At every runtime boundary, record the one newly introduced unique
+CTest name and command and the exact cumulative runtime count. The executable
+task replaces all symbolic values with exact values before work starts.
+
+### 7.1 Pair Add/Sub task
+
+1. From accepted RS2 base `R`, first establish workflow boundary `W0`. If the
+   accepted workflow does not trigger the exact Add/Sub branch, add only that
+   branch trigger, commit, push, and close its hosted Linux evidence before the
+   compile-contract boundary. If it already triggers the branch, record an
+   inherited no-change result, push only the new branch ref at exact `R` without
+   creating a commit, and do not manufacture a workflow patch; that branch
+   creation run is the `W0` observation.
+2. Then establish separate workflow boundary `W1`. If the accepted workflow
+   does not execute and retain the complete unfiltered
+   `ctest --show-only=json-v1` output on both Linux and Windows, add only those
+   commands/evidence captures, commit, push, and close its hosted evidence. If
+   both jobs already provide it, record inherited no-change and do not
+   manufacture a patch. Never combine `W0` and `W1`. Whether `W1` changes bytes
+   or is inherited no-change, do not proceed until one unchanged workflow SHA
+   has succeeded on both Linux and Windows and both complete JSON streams are
+   retained; this gate is not eligible for non-final Windows cancellation. If
+   `W1` is inherited no-change, the already pushed `W0` observation SHA is this
+   dual-platform gate: retain one SHA-scoped evidence bundle/receipt labelled
+   `W0 + inherited-W1`, not a second branch with the same name.
+3. Add only the Add compile-contract target and
+   retain the missing-API red. It alone binds:
 
    ```cpp
    using BinaryPairSignature = CiphertextPair (DoubleCKKS::*)(
        const CiphertextPair&, const CiphertextPair&) const;
    static_assert(std::is_same_v<decltype(&DoubleCKKS::Add), BinaryPairSignature>);
-   static_assert(std::is_same_v<decltype(&DoubleCKKS::Sub), BinaryPairSignature>);
    ```
 
-2. Add final declarations and unnamed-parameter immediate-throw scaffolds;
-   preserve the complete old suite.
-3. Add all named valid/oracle/negative/order CTests and retain independent
-   scaffold reds.
-4. Add the smallest full validation plus two-public-call implementation for
-   each method; retain first complete green.
-5. Only after green, make necessary local refactors/docs without changing the
-   oracle, then run the final exact same-SHA Linux/Windows gate.
+   Before building this target, prove the unchanged production and inherited
+   build targets are green. Then build only the compile-contract target and
+   retain its expected compiler diagnostic; this compile red is not a CTest red
+   and does not change `B`.
+4. Add only the final Add declaration and unnamed-parameter immediate-throw
+   scaffold; retain API green and the unchanged inherited suite.
+5. Introduce one Add behavior at a time. Start with complete input validation,
+   then each mutual-compatibility field, then the valid coefficient/RCB oracle,
+   four-sentinel provenance, and exact output-state/result-validation behavior.
+   For each authentic red, add only its missing check or the final two direct
+   `EvalAdd` calls needed to turn that one case green. Run the Add AST audit and
+   each of its independent mutation/restore modes at the boundary it protects.
+6. Only after Add is complete, add the separate Sub compile-contract target
+   and retain its independent missing-API red. It alone binds
+   `decltype(&DoubleCKKS::Sub)` to `BinaryPairSignature`; the Add assertion may
+   not share or mask this failure.
+   As with Add, first prove the inherited targets green, then build only this
+   contract target and retain its expected compiler diagnostic without changing
+   the runtime count.
+7. Add only the final Sub declaration/scaffold, then introduce Sub behaviors
+   one at a time in the same order. Preserve the independent subtraction
+   direction, borrow, cancellation, RCB, and four-sentinel witnesses. Implement
+   only two direct `EvalSub` calls after the already accepted shared validation
+   boundary. Reuse an accepted narrow compatibility helper when useful; do not
+   introduce a generic binary-operation framework or combine Add/Sub causal
+   commits.
+8. Add every remaining negative and lifecycle-matrix case individually,
+   recording authentic red or inherited green under the rule above. Complete
+   the Add and Sub AST mutation suites, then make review-stage local cleanup
+   only while every runtime and static gate stays green.
+9. Put all implementation-branch documentation and retained local evidence in
+   the final content-bearing Add/Sub commit. Run the strict full suite and the
+   exact same-SHA Linux/Windows gate before naming accepted commit `A`.
 
-### 7.2 Mult2 slice
+### 7.2 Mult2 task
 
-1. Retain an independent missing-API compile red that binds exactly:
+1. Create the separate Mult2 worktree/branch only from accepted Add/Sub commit
+   `A`, then establish workflow boundary `W0`. If `A`'s accepted workflow does
+   not trigger the exact Mult2 branch, add only that trigger, commit, push, and
+   close its hosted Linux evidence. If it already triggers the branch, record an
+   inherited no-change result, push only the new branch ref at exact `A` without
+   creating a commit, and do not manufacture a workflow patch; that branch
+   creation run is the `W0` observation.
+2. Then establish separate workflow boundary `W1` exactly as for Add/Sub: add
+   only the missing Linux/Windows unfiltered `ctest --show-only=json-v1`
+   commands/evidence capture, or record inherited no-change when both already
+   exist. Never combine `W0` and `W1`. Close it only after the same unchanged
+   workflow SHA succeeds on both platforms with both complete JSON streams; it
+   is not eligible for non-final Windows cancellation. If `W1` is inherited
+   no-change, use the already pushed `W0` observation SHA and one bundle/receipt
+   labelled `W0 + inherited-W1`, never a second same-name evidence branch.
+3. Add only the missing-API compile contract and retain its red:
 
    ```cpp
    using BinaryPairSignature = CiphertextPair (DoubleCKKS::*)(
@@ -502,42 +678,116 @@ RAII cleanup.
    static_assert(std::is_same_v<decltype(&DoubleCKKS::Mult2), BinaryPairSignature>);
    ```
 
-2. Add the final declaration and immediate-throw scaffold.
-3. Retain independent validation/lifecycle/composite reds. Add the exact
-   missing/malformed-key ordering reds only after accepted Relin2/RS2 close
-   Section 8's key-preflight placement decision; this preliminary gate does
-   not mandate a pre-Tensor missing-key order.
-4. Implement only public preflight while valid input still reaches scaffold.
-5. Add final exact HYBRID/BV composition-oracle reds.
-6. Implement only the named `Tensor2 -> Relin2 -> RS2` composition and retain
-   first complete green.
-7. Add the actual-first-output to second-Mult2 regression. If the existing
-   lifecycle guard already makes it green, record inherited green honestly;
-   never manufacture a red.
-8. Complete the implementation-branch documentation and retained local
-   evidence, then run full regression, strict warning build, and exact
-   same-commit Linux and Windows evidence on that last content-bearing SHA.
+   First prove the unchanged production and inherited build targets green; then
+   build only the contract target and retain its expected compiler diagnostic.
+   This compile red is not a CTest red and does not change `B`.
+4. Add only the final declaration and immediate-throw scaffold; retain compile
+   green and the exact inherited suite.
+5. Introduce one preflight behavior per cycle in the exact order in Section
+   6.1: complete left validation, complete right validation, mutual
+   compatibility, lifecycle, the publicly reachable three-full-tower to
+   two-active-tower negative, composite degree, and the finally accepted key
+   cases. For the short-basis guard, retain separate named mutations that (a)
+   delete it, (b) relax `<3` to accept two towers, (c) move it after the first
+   key-cache access, and (d) move it after `Tensor2`. Mode (c) is mandatory only
+   if the finally accepted path contains a key preflight or other key-cache
+   access; otherwise record it as mechanically not applicable. Each applicable
+   mode must red only its declared gate and restore to the byte-frozen green
+   source.
+6. Add one HYBRID valid composition/oracle case and retain scaffold red; then
+   implement only the named `Tensor2 -> Relin2 -> RS2` chain to make it green.
+   Add the BV case separately and record an authentic red or inherited green.
+   A technique-general implementation must not be changed solely to fabricate
+   a BV red.
+7. Add the four-sentinel provenance, public-RCB, state/cache immutability, and
+   fixed arithmetic witnesses one at a time. Add the real first-output to
+   second-Mult2 lifecycle regression last; if the accepted lifecycle guard
+   already satisfies it with unchanged production bytes, record inherited
+   green honestly.
+8. Run the Mult2 AST/call-surface mutation suite at every protected source
+   boundary and in full on the final bytes. Review-stage cleanup is allowed
+   only after all behavioral cycles and while every gate remains green.
+9. Put all implementation-branch documentation and retained local evidence in
+   the final content-bearing Mult2 commit, then run the strict full suite and
+   exact same-SHA Linux/Windows gate on that unchanged commit.
 
-The future external-agent task requests only a semantic patch series and local
-evidence; it must explicitly prohibit commit, push, CI dispatch, cancellation,
-merge, and PR operations. After an accepted delivery, Codex applies each
-API/test/source/workflow/doc boundary as a separate small commit and pushes it
-immediately, retaining the exact intermediate Linux boundary before proceeding.
-Red Windows jobs are unnecessary after the corresponding exact Linux red is
-retained. The final content-bearing patch must already contain all source,
-tests, workflow, implementation-branch documentation, and retained local
-evidence before its push; Linux and Windows must both succeed on that exact
-SHA. Any later implementation-branch documentation change invalidates the
-same-SHA gate and requires another full dual-platform run. Downstream review
-receipts may be recorded on the separate coordination branch without changing
-the verified implementation SHA.
+### 7.3 External delivery, Git, and CI fail-closed rules
+
+The Add/Sub and Mult2 external tasks request only semantic patch series and
+local evidence. They explicitly prohibit commit, push, CI dispatch or
+cancellation, merge, PR, browser, credential, and release operations. Codex
+applies accepted patches in the two isolated histories above.
+
+Before each task, read the exact accepted base's workflow blob and complete
+`ctest --show-only=json-v1` output. Freeze the base SHA/tree, workflow path and
+blob SHA, the CTest JSON bytes/SHA-256, old runtime test count `B`, every old
+test name/command, toolchains, workflow `concurrency`/`cancel-in-progress`
+semantics, and the minimal branch-trigger change. Re-read and rebind them if the
+accepted base changes. An executable task may not say “at least” or use an
+estimated test count. It must reject any workflow configuration under which a
+later push can automatically cancel the hosted evidence for the prior boundary.
+
+Except for an explicitly recorded inherited no-change `W0` or `W1`, every red,
+green, audit, workflow, or final-documentation boundary that changes tracked
+bytes is one content-bearing commit and one immediate non-force push. An
+inherited no-change workflow observation is not a commit boundary; an
+inherited-green runtime case that adds a test is. Do not batch multiple semantic
+boundaries in one commit or push; do not amend, rebase, force-push, move a tag,
+or reuse a later run as evidence for an earlier SHA. The exact parent of each
+pushed boundary must be the previously recorded boundary. After every push,
+mechanically require:
+
+```text
+local HEAD == local upstream == git ls-remote branch SHA == intended SHA
+```
+
+Select each hosted run by the exact workflow identity, branch, `event=push`,
+and `head_sha == intended SHA`; never use “latest run” or a visible green badge.
+Before pushing the next content boundary, wait for the required Linux job to
+reach a terminal state and retain the run/job API records, complete raw Linux
+log, log bytes/SHA-256, checkout/source SHA, workflow blob, commands, test
+registration, result, and expected red or green attribution. If the non-final
+run or its Windows job is still nonterminal after that evidence is retained,
+cancel that exact whole run, wait until the run and every job are terminal, and
+retain the cancellation request plus final run/jobs/checks/log records. Only
+then may the next SHA be pushed. A later final run cannot retroactively close an
+earlier boundary. No Windows-red claim is required; its actual result or
+cancelled state is recorded without converting it into a pass claim. Never
+cancel the final same-SHA run.
+
+For each slice's final unchanged content SHA, require both Linux and Windows
+jobs to succeed on that same SHA. Retain complete raw logs and independent
+CTest JSON from both jobs; prove the exact old plus new unique test
+names/commands and count, strict warning build, toolchain identity, pristine
+OpenFHE commit, and workflow command surface. Any later implementation-branch
+source, test, CMake, workflow, or documentation change invalidates the final
+same-SHA gate and requires a new dual-platform run. Downstream review receipts
+belong on the non-triggering coordination branch and do not alter `A` or the
+accepted Mult2 implementation SHA.
+
+Hosted raw evidence never enters either implementation branch. Before the next
+implementation SHA may be pushed, put the just-closed boundary's raw records
+and one immutable manifest on a unique, separately pushed, non-triggering
+evidence branch: `evidence/pair-add-sub-hosted-<boundary-sha>` or
+`evidence/mult2-hosted-<boundary-sha>`. The manifest binds the implementation
+SHA, workflow blob, and every retained raw file's bytes and SHA-256, explicitly
+excluding the manifest itself. After pushing, require evidence-branch local
+HEAD, upstream, and `ls-remote` equality. Then create and immediately push a
+coordination-side receipt that binds that evidence commit/remote SHA, the
+manifest bytes/SHA-256, the manifest-listed raw hashes, and the equality check.
+Only after both remote refs verify may the next implementation boundary be
+pushed. A final non-circular slice summary may index those receipts; local-only
+evidence is never an accepted receipt.
 
 ## 8. Deferred exact-green gates
 
 Do not draft an executable implementation task until accepted Relin2 and RS2
 provide all of:
 
-- exact source SHA/tree and complete old/new CTest count;
+- exact source SHA/tree, branch, parent chain, workflow path/blob, and verified
+  `local HEAD == upstream == git ls-remote` identity;
+- complete base `ctest --show-only=json-v1` bytes/SHA-256 plus exact
+  name/command/count inventory;
 - exact Linux/Windows successful run and toolchain identities;
 - accepted `ReadyForRS2` and `AfterFirstRS2` state fields, including the
   distinction between retained descriptor input factor `SF_T` and current
@@ -548,6 +798,20 @@ provide all of:
 - a decision on which same lifecycle values pair Add/Sub supports;
 - whether Mult2 shares a project-private read-only key preflight with Relin2,
   and therefore exactly where missing-key failure occurs.
+
+The Add/Sub task must then freeze its exact supported same-lifecycle matrix,
+four-sentinel output provenance, stable diagnostics, static-audit mutation
+matrix, symbolic-to-exact `B+n` transitions, branch/worktree names, and final
+Linux/Windows workflow commands. Do not draft or dispatch the Mult2 task until
+the resulting final Add/Sub commit `A` is independently accepted and its local,
+upstream, and remote SHA identities match.
+
+The Mult2 task must additionally bind `A` and its complete inherited CTest JSON,
+the public three-full-tower/two-active-tower fixture and exact diagnostic, final
+key-preflight order, HYBRID/BV fixtures, exact intermediate/final metadata
+sentinel provenance, full call-surface mutation matrix, and final dual-platform
+workflow evidence contract. Any unresolved field remains pending rather than
+being guessed from this preflight.
 
 Any mismatch, auto-alignment, generic algebra framework, production
 `try/catch`, mock/private test seam, refresh implementation, second
