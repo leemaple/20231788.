@@ -363,6 +363,63 @@ void TestEmptyEvaluationKeyVector() {
     Check(evaluationKeys.empty(), "Relin2 empty-key fixture failed to restore the evaluation-key cache");
 }
 
+void TestNullFirstEvaluationKey() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    leftInput->SetMetadataByKey("relin2-null-first-immutability-probe",
+                                std::make_shared<ImmutabilityProbeMetadata>("unchanged"));
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 4,
+          "Relin2 null-first-key fixture must have exactly four full-basis towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 3,
+          "Relin2 null-first-key fixture must have exactly three active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 null-first-key fixture must have noise-scale degree three");
+    Check(!tensor.GetKeyTag().empty(), "Relin2 null-first-key fixture must have a nonempty key tag");
+    const auto highMetadata = tensor.GetHigh()->GetMetadataMap();
+    const auto lowMetadata = tensor.GetLow()->GetMetadataMap();
+    Check(highMetadata != nullptr && highMetadata->size() == 1 &&
+              highMetadata->find("relin2-null-first-immutability-probe") != highMetadata->end(),
+          "Relin2 null-first-key fixture high ciphertext lost its metadata probe");
+    Check(lowMetadata != nullptr && lowMetadata->size() == 1 &&
+              lowMetadata->find("relin2-null-first-immutability-probe") != lowMetadata->end(),
+          "Relin2 null-first-key fixture low ciphertext lost its metadata probe");
+
+    auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(evaluationKeys.empty(), "Relin2 null-first-key fixture must start with an empty evaluation-key cache");
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeys);
+        const auto insertion = evaluationKeys.emplace(
+            tensor.GetKeyTag(), std::vector<lbcrypto::EvalKey<DCRTPoly>>{nullptr});
+        Check(insertion.second, "Relin2 null-first-key fixture failed to insert the expected cache row");
+        Check(evaluationKeys.size() == 1 && insertion.first->second.size() == 1 &&
+                  insertion.first->second.front() == nullptr,
+              "Relin2 null-first-key fixture must contain exactly one null evaluation key");
+
+        const auto cacheBefore = evaluationKeys;
+        const auto tensorBefore = SnapshotTensor(tensor);
+        CheckThrowsExactInvalidArgument(
+            [&] { (void)module.Relin2(tensor); },
+            "DoubleCKKS: Relin2 first evaluation key is null",
+            "Relin2 null first evaluation key");
+        CheckTensorUnchanged(tensor, tensorBefore, "Relin2 null-first-key rejection");
+        Check(evaluationKeys == cacheBefore,
+              "Relin2 null-first-key rejection mutated the evaluation-key cache");
+    }
+    Check(evaluationKeys.empty(), "Relin2 null-first-key fixture failed to restore the evaluation-key cache");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -377,6 +434,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "key_empty") {
         return &TestEmptyEvaluationKeyVector;
+    }
+    if (name == "key_null_first") {
+        return &TestNullFirstEvaluationKey;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }

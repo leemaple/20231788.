@@ -81,3 +81,4 @@ add_test(NAME relin2_tensor_validation_order COMMAND relin2_test tensor_validati
 add_test(NAME relin2_insufficient_active_basis COMMAND relin2_test insufficient_active_basis)
 add_test(NAME relin2_missing_eval_key COMMAND relin2_test missing_eval_key)
 add_test(NAME relin2_key_empty COMMAND relin2_test key_empty)
+add_test(NAME relin2_key_null_first COMMAND relin2_test key_null_first)
