@@ -424,3 +424,15 @@ and no further process is started for that task. The critical path continues
 through Codex TDD, existing independent reviewers, GitHub Actions, and direct
 Windows work; details are in
 `coordination/handoffs/fable5-relin2-validation-84df651-review-01/RECEIPT.md`.
+
+At 2026-09-02 04:36 CST, the nonblocking Codex TDD path closed the next Relin2
+validation boundary. Commit `8642a94` registered a public-API-only
+insufficient-active-basis test; hosted Linux built warning-clean and passed all
+seven inherited tests, while only that new eighth test failed against the exact
+old not-implemented exception. Commit `791f634` then added only the three-line
+fail-fast basis check after complete Tensor validation. Three independent
+read-only reviews returned PASS, and hosted Linux built warning-clean, compiled
+the public API contract, and passed exactly 8/8. Both red and green raw evidence
+sets were secret-scanned, manifested, isolated on dedicated evidence branches,
+and pushed. Intermediate Windows jobs were cancelled after Linux capture and
+make no Windows claim. ZCode and the failed Fable5 task did not block progress.
