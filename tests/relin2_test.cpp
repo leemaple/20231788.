@@ -753,6 +753,120 @@ void TestWrongEvaluationKeySubtype() {
           "Relin2 wrong-subtype fixture failed to restore the evaluation-key cache");
 }
 
+void TestHybridEvaluationKeyALength() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    leftInput->SetMetadataByKey("relin2-hybrid-a-length-immutability-probe",
+                                std::make_shared<ImmutabilityProbeMetadata>("unchanged"));
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 4,
+          "Relin2 HYBRID A-length fixture must have exactly four full-basis towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 3,
+          "Relin2 HYBRID A-length fixture must have exactly three active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 HYBRID A-length fixture must have noise-scale degree three");
+    Check(!tensor.GetKeyTag().empty(),
+          "Relin2 HYBRID A-length fixture must have a nonempty key tag");
+    Check(keys.secretKey->GetKeyTag() == tensor.GetKeyTag(),
+          "Relin2 HYBRID A-length fixture secret key must match the Tensor tag");
+    const auto highMetadata = tensor.GetHigh()->GetMetadataMap();
+    const auto lowMetadata = tensor.GetLow()->GetMetadataMap();
+    Check(highMetadata != nullptr && highMetadata->size() == 1 &&
+              highMetadata->find("relin2-hybrid-a-length-immutability-probe") != highMetadata->end(),
+          "Relin2 HYBRID A-length fixture high ciphertext lost its metadata probe");
+    Check(lowMetadata != nullptr && lowMetadata->size() == 1 &&
+              lowMetadata->find("relin2-hybrid-a-length-immutability-probe") != lowMetadata->end(),
+          "Relin2 HYBRID A-length fixture low ciphertext lost its metadata probe");
+
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
+    Check(parameters != nullptr,
+          "Relin2 HYBRID A-length fixture must expose CKKS-RNS parameters");
+    Check(parameters->GetKeySwitchTechnique() == lbcrypto::HYBRID,
+          "Relin2 HYBRID A-length fixture must use HYBRID key switching");
+    const auto expectedHybridKeyLength = static_cast<std::size_t>(parameters->GetNumPartQ());
+    Check(expectedHybridKeyLength == 2,
+          "Relin2 HYBRID A-length fixture must have exactly two Q partitions");
+
+    auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(evaluationKeys.empty(),
+          "Relin2 HYBRID A-length fixture must start with an empty evaluation-key cache");
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeys);
+        context->EvalMultKeyGen(keys.secretKey);
+
+        const auto generatedRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(evaluationKeys.size() == 1 && generatedRow != evaluationKeys.end() &&
+                  generatedRow->second.size() == 1 && generatedRow->second.front() != nullptr,
+              "Relin2 HYBRID A-length fixture must generate exactly one evaluation key");
+        const auto hybridKey =
+            std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(generatedRow->second.front());
+        Check(hybridKey != nullptr,
+              "Relin2 HYBRID A-length fixture must use the relinearization-key subtype");
+        Check(hybridKey->GetCryptoContext().get() == context.get(),
+              "Relin2 HYBRID A-length fixture key must keep the bound context");
+        Check(hybridKey->GetKeyTag() == tensor.GetKeyTag(),
+              "Relin2 HYBRID A-length fixture key must match the Tensor tag");
+
+        const auto originalA = hybridKey->GetAVector();
+        const auto originalB = hybridKey->GetBVector();
+        Check(originalA.size() == expectedHybridKeyLength &&
+                  originalB.size() == expectedHybridKeyLength,
+              "Relin2 HYBRID A-length fixture must start with exact generated A/B lengths");
+
+        auto malformedA = originalA;
+        malformedA.pop_back();
+        hybridKey->SetAVector(std::move(malformedA));
+        Check(hybridKey->GetAVector().size() == 1 &&
+                  hybridKey->GetAVector().front() == originalA.front() &&
+                  hybridKey->GetBVector() == originalB,
+              "Relin2 HYBRID A-length fixture must shorten only the A vector");
+
+        const auto* cacheIdentityBefore = &evaluationKeys;
+        const auto* vectorIdentityBefore = &generatedRow->second;
+        const auto keyIdentityBefore = generatedRow->second.front();
+        const auto keyContextBefore = hybridKey->GetCryptoContext();
+        const auto keyTagBefore = hybridKey->GetKeyTag();
+        const auto keyABefore = hybridKey->GetAVector();
+        const auto keyBBefore = hybridKey->GetBVector();
+        const auto tensorBefore = SnapshotTensor(tensor);
+        CheckThrowsExactInvalidArgument(
+            [&] { (void)module.Relin2(tensor); },
+            "DoubleCKKS: Relin2 evaluation key HYBRID A vector length mismatch",
+            "Relin2 HYBRID A-vector length");
+        CheckTensorUnchanged(tensor, tensorBefore, "Relin2 HYBRID A-length rejection");
+        const auto currentRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBefore && evaluationKeys.size() == 1 &&
+                  currentRow != evaluationKeys.end() && &currentRow->second == vectorIdentityBefore &&
+                  currentRow->second.size() == 1 &&
+                  currentRow->second.front().get() == keyIdentityBefore.get(),
+              "Relin2 HYBRID A-length rejection mutated the cache shape or identity");
+        const auto currentHybridKey =
+            std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(currentRow->second.front());
+        Check(currentHybridKey.get() == hybridKey.get(),
+              "Relin2 HYBRID A-length rejection changed the concrete key subtype or identity");
+        Check(hybridKey->GetCryptoContext().get() == keyContextBefore.get(),
+              "Relin2 HYBRID A-length rejection mutated the key context");
+        Check(hybridKey->GetKeyTag() == keyTagBefore,
+              "Relin2 HYBRID A-length rejection mutated the key tag");
+        Check(hybridKey->GetAVector() == keyABefore && hybridKey->GetBVector() == keyBBefore,
+              "Relin2 HYBRID A-length rejection mutated the malformed A or valid B vector");
+    }
+    Check(evaluationKeys.empty(),
+          "Relin2 HYBRID A-length fixture failed to restore the initially empty cache");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -779,6 +893,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "key_wrong_subtype") {
         return &TestWrongEvaluationKeySubtype;
+    }
+    if (name == "key_hybrid_a_length") {
+        return &TestHybridEvaluationKeyALength;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }
