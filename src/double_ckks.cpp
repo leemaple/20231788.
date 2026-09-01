@@ -558,6 +558,10 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
     if (tensor.GetOrderedModuli().size() < tensor.GetNoiseScaleDegree()) {
         Invalid("Relin2 requires at least as many active Q_l towers as the Tensor noise-scale degree");
     }
+    const auto& evaluationKeys = lbcrypto::CryptoContextImpl<lbcrypto::DCRTPoly>::GetAllEvalMultKeys();
+    if (evaluationKeys.find(tensor.GetKeyTag()) == evaluationKeys.end()) {
+        Invalid("Relin2 evaluation key is missing for the Tensor key tag");
+    }
     throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
 }
 
