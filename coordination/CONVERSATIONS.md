@@ -171,6 +171,27 @@ Browser readback confirmed one complete continuation, an empty composer,
 active `Thinking`/`Stop answering`, and no Retry. No further prompt, retry,
 refresh, or interruption is allowed while it runs.
 
+At 2026-09-01 09:12 CST, the revised downstream Mult2 and pair Add/Sub
+preflight passed its final independent read-only gate after it was aligned with
+the accepted RS2 contract. In particular it now separates the current OpenFHE
+recorded factor from `inputRecordedScalingFactor`, treats `AfterFirstRS2` as a
+neutral provisional state rather than a refresh claim, binds the actual public
+RCB return in both composition oracles, and records OpenFHE's outer-map copy
+with shallow metadata-value aliasing. The accepted record was pushed as exact
+coordination commit `d10f0568f1841ff2664e9c178ef389ca3d666613`; it is still a
+preflight, not source, build, test, or precision evidence.
+
+At 2026-09-01 09:25 CST, a spaced read-only Ego check of the full Relin2
+remediation response submitted at 08:37 showed it still naturally active with
+`Stop answering`, no Retry, and no remediation download. Its visible
+checkpoints report that all five outer attachments matched, the base archive
+contained 2,266 safe entries, the rejected delivery contained ten safe root
+files, and an independent Git reconstruction matched tree
+`759d5195739684748d5a9664edabe3fa719e1acf` after accounting for six tracked
+hosted logs that ordinary `git add` would omit under `.gitignore`. No new
+implementation, TDD, verdict, or archive checkpoint is visible yet, so none is
+claimed; Codex did not refresh, stop, retry, prod, resend, or duplicate it.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
