@@ -371,6 +371,7 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
         divisor_,
         static_cast<long double>(recordedScalingFactor) /
             static_cast<long double>(divisor_.ConvertToInt()),
+        static_cast<long double>(recordedScalingFactor),
     };
 
     CiphertextPair pair(std::move(highCiphertext), std::move(lowCiphertext), context_.get(), divisor_,
@@ -550,6 +551,10 @@ TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const Ciphe
                                 normalizedNoiseScaleDegree, left.keyTag_, left.slots_, Format::EVALUATION, 3);
     ValidateTensorResult(result);
     return result;
+}
+
+CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair&) const {
+    throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
 }
 
 lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {
