@@ -475,3 +475,18 @@ manifest, Gitleaks, targeted-scan, identity, and remote-ref gates and are pushed
 on dedicated evidence branches. Intermediate Windows jobs were cancelled after
 Linux capture and make no project-test claim. The next isolated red is a
 nonnull first key from the wrong CryptoContext.
+
+At 2026-09-02 06:30 CST, that wrong-context boundary closed without waiting on
+an external provider. Red `0a8f840` added the twelfth public test and generated
+a real nonnull relinearization key in a distinct context with identical element
+parameters and the expected actual tag. Hosted Linux built warning-clean,
+compiled the API contract, and produced the exact intended `11/12`, with only
+the new case reaching the old scaffold. Green `ba4ca7b` added only three
+production lines for the public context-identity guard; three read-only reviews
+returned PASS and hosted Linux passed exactly `12/12`, including immediate
+Tensor/cache/key-pointee invariance and RAII restoration checks. Both evidence
+sets passed ZIP, manifest, Gitleaks, targeted-scan, identity, and remote-ref
+gates and are pushed on dedicated evidence branches. Intermediate Windows jobs
+were cancelled after Linux capture and make no project-test claim. ZCode stayed
+off the critical path; the previously recorded Fable5 local-launch blocker was
+not retried, so neither provider delayed the next actual-key-tag boundary.
