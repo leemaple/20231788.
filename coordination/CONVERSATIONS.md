@@ -436,3 +436,14 @@ the public API contract, and passed exactly 8/8. Both red and green raw evidence
 sets were secret-scanned, manifested, isolated on dedicated evidence branches,
 and pushed. Intermediate Windows jobs were cancelled after Linux capture and
 make no Windows claim. ZCode and the failed Fable5 task did not block progress.
+
+At 2026-09-02 04:56 CST, the same nonblocking TDD path closed Relin2's missing
+evaluation-key boundary. Red commit `b0196dd` added a ninth public-only test and
+produced the exact intended hosted `8/9`: all inherited behavior green, with the
+new case alone reaching the old not-implemented exception. Green commit
+`7c0e94d` added only a const map lookup and stable missing-row diagnostic; three
+read-only reviews returned PASS and hosted Linux passed warning-clean build,
+public API compilation, and exactly 9/9. Red and green raw evidence passed ZIP,
+manifest, and secret-scan gates and is pushed on isolated evidence branches.
+Intermediate Windows work was cancelled after Linux capture without a Windows
+claim; ZCode/Fable5 remained outside the critical path.
