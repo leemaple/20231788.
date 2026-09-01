@@ -27,6 +27,67 @@ require_sha256() {
   log "sha256 ${actual}  ${candidate_file}"
 }
 
+require_readonly_regular_tree() {
+  local root="$1"
+  local label="$2"
+  local audit_output
+  local audit_exit
+  set +e
+  audit_output="$(
+    /usr/bin/env -i PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+      /usr/bin/python3 -I -S -E -c '
+import os
+import stat
+import sys
+
+root = sys.argv[1]
+errors = []
+entry_count = 0
+
+try:
+    root_status = os.lstat(root)
+except OSError as exception:
+    print(f"root_lstat_error={exception.__class__.__name__}")
+    sys.exit(1)
+
+if not stat.S_ISDIR(root_status.st_mode) or stat.S_ISLNK(root_status.st_mode):
+    print("root_type_error=true")
+    sys.exit(1)
+if root_status.st_mode & 0o222:
+    print("root_writable=true")
+    sys.exit(1)
+
+def walk_error(exception):
+    errors.append(exception)
+
+for directory, names, files in os.walk(root, topdown=True, followlinks=False, onerror=walk_error):
+    for name in names + files:
+        candidate = os.path.join(directory, name)
+        try:
+            candidate_status = os.lstat(candidate)
+        except OSError as exception:
+            errors.append(exception)
+            continue
+        entry_count += 1
+        if stat.S_ISLNK(candidate_status.st_mode):
+            errors.append(RuntimeError("symlink"))
+        elif not (stat.S_ISDIR(candidate_status.st_mode) or stat.S_ISREG(candidate_status.st_mode)):
+            errors.append(RuntimeError("non_regular_entry"))
+        elif candidate_status.st_mode & 0o222:
+            errors.append(RuntimeError("writable_entry"))
+
+if errors:
+    print(f"tree_error_count={len(errors)}")
+    sys.exit(1)
+print(f"readonly_entry_count={entry_count}")
+' "${root}"
+  )"
+  audit_exit=$?
+  set -e
+  [[ ${audit_exit} -eq 0 ]] || fail "${label} read-only regular-tree audit failed: ${audit_output}"
+  log "${label// /_}_${audit_output}"
+}
+
 targeted_scan() {
   local root="$1"
   local output="$2"
@@ -262,8 +323,8 @@ readonly FABLE_GITLEAKS="/opt/homebrew/bin/gitleaks"
 readonly FABLE_RG="/Applications/ChatGPT.app/Contents/Resources/rg"
 readonly FABLE_PYTHON="/usr/bin/python3"
 
-readonly EXPECTED_TASK_SHA256="f8c8232d7baba32d3ac0650c6eafabe6fc65270aa791a20e12f58099f17324e7"
-readonly EXPECTED_TASK_BYTES="15934"
+readonly EXPECTED_TASK_SHA256="e95db7704faffc51cfc70b3f4ca85b6182cc62bf6f077e334655bb70b158b99b"
+readonly EXPECTED_TASK_BYTES="16794"
 readonly EXPECTED_SANDBOX_SHA256="680fec15a149b95801cbc8dccf377661f5c756f28336e8565ce268359b8640b8"
 readonly EXPECTED_CLI_SHA256="2b4f7aafdaa65bcc2335f56a4b276317837203f2c5587b1f2a17ca78ad14e36f"
 readonly EXPECTED_GITLEAKS_SHA256="f414bc2fb952be6c9072b75cb411e3368614ef4b16d48dbd9ad238034afd2302"
@@ -310,12 +371,16 @@ expected_members=(
   spec/relin2-preflight.md
 )
 
+/bin/mkdir "${FABLE_RECEIPT}" || fail "unique receipt directory creation failed"
+exec 3>"${FABLE_RECEIPT}/00-preflight.txt"
+print -u2 -- "Fable5 attempt receipt: ${FABLE_RECEIPT}"
+log "preflight_started_utc=$(/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
+log "invocation_cwd=$(pwd -P)"
 [[ "$(pwd -P)" == "${FABLE_EXTRACTION}" ]] || fail "canonical CWD is not ${FABLE_EXTRACTION}"
 [[ ! -e "${FABLE_STARTED_GUARD}" ]] || fail "one-use provider-start guard already exists"
 /bin/mkdir "${FABLE_ENTRY_LOCK}" || fail "exclusive launcher-entry lock creation failed"
 print -- "pid=${$}" >"${FABLE_ENTRY_LOCK}/pid.txt"
 print -- "entry_utc=$(/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')" >"${FABLE_ENTRY_LOCK}/entry-utc.txt"
-/bin/mkdir "${FABLE_RECEIPT}" || fail "unique receipt directory creation failed"
 
 typeset -a receipt_outputs
 receipt_outputs=(
@@ -365,11 +430,10 @@ receipt_outputs=(
 [[ "$(/usr/bin/printf '%s\n' "${receipt_outputs[@]}" | /usr/bin/sort -u | /usr/bin/wc -l | /usr/bin/tr -d ' ')" == "${#receipt_outputs[@]}" ]] ||
   fail "receipt output list contains duplicate names"
 for output_name in "${receipt_outputs[@]}"; do
+  [[ "${output_name}" == "00-preflight.txt" ]] && continue
   [[ ! -e "${FABLE_RECEIPT}/${output_name}" ]] || fail "receipt output already exists: ${output_name}"
 done
 
-exec 3>"${FABLE_RECEIPT}/00-preflight.txt"
-log "preflight_started_utc=$(/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 log "canonical_cwd=$(pwd -P)"
 log "entry_lock=${FABLE_ENTRY_LOCK}"
 preflight_launcher_sha="$(sha256_of "${FABLE_LAUNCHER}")"
@@ -455,7 +519,7 @@ log "packet_members=28 member_list_sha256=${member_list_sha} modes=100644 encryp
 [[ "$(/usr/bin/find "${FABLE_EXTRACTION}" -type f | /usr/bin/wc -l | /usr/bin/tr -d ' ')" == "28" ]] || fail "extraction regular-file count mismatch"
 [[ -z "$(/usr/bin/find "${FABLE_STAGING}" -type l -print -quit)" ]] || fail "staging contains a symlink"
 [[ -z "$(/usr/bin/find "${FABLE_EXTRACTION}" -type l -print -quit)" ]] || fail "extraction contains a symlink"
-[[ -z "$(/usr/bin/find "${FABLE_EXTRACTION}" -type f -perm -222 -print -quit)" ]] || fail "extraction contains a writable file"
+require_readonly_regular_tree "${FABLE_EXTRACTION}" "extraction"
 /usr/bin/diff -qr "${FABLE_STAGING}" "${FABLE_EXTRACTION}" >&3 || fail "staging/extraction byte mismatch"
 (
   cd "${FABLE_EXTRACTION}"
@@ -463,7 +527,7 @@ log "packet_members=28 member_list_sha256=${member_list_sha} modes=100644 encryp
   /usr/bin/shasum -a 256 MANIFEST.sha256
   /usr/bin/shasum -a 256 --check MANIFEST.sha256
 ) >"${FABLE_RECEIPT}/12-manifest-check.txt" 2>&1 || fail "internal manifest check failed"
-log "staging_extraction_identical=true extraction_writable_files=0 symlinks=0"
+log "staging_extraction_identical=true extraction_writable_entries=0 symlinks=0"
 
 "${FABLE_GITLEAKS}" dir --no-banner --redact --exit-code 1 "${FABLE_STAGING}" >"${FABLE_RECEIPT}/03-staging-gitleaks.txt" 2>&1 || fail "staging Gitleaks scan failed"
 "${FABLE_GITLEAKS}" dir --no-banner --redact --exit-code 1 "${FABLE_EXTRACTION}" >"${FABLE_RECEIPT}/04-extraction-gitleaks.txt" 2>&1 || fail "extraction Gitleaks scan failed"
@@ -471,6 +535,25 @@ log "staging_extraction_identical=true extraction_writable_files=0 symlinks=0"
 "${FABLE_GITLEAKS}" detect --no-banner --redact --no-git --source "${FABLE_TASK}" >"${FABLE_RECEIPT}/07-task-gitleaks.txt" 2>&1 || fail "task Gitleaks scan failed"
 targeted_scan "${FABLE_STAGING}" "${FABLE_RECEIPT}/08-targeted-staging.txt"
 targeted_scan "${FABLE_EXTRACTION}" "${FABLE_RECEIPT}/09-targeted-extraction.txt"
+
+typeset -a parent_read_probe_paths
+parent_read_probe_paths=(
+  "/Users/lifeng/.claude.json"
+  "/Users/lifeng/Library/Application Support/Google/Chrome/Default/Cookies"
+  "/Library/Keychains/System.keychain"
+  "/System/Volumes/Data/Users/lifeng/.claude.json"
+  "/System/Volumes/Data/Users/lifeng/Library/Application Support/Google/Chrome/Default/Cookies"
+  "/System/Volumes/Data/Library/Keychains/System.keychain"
+)
+for probe_candidate in "${parent_read_probe_paths[@]}"; do
+  [[ -f "${probe_candidate}" && -r "${probe_candidate}" ]] ||
+    fail "sandbox negative-probe parent read control is unavailable"
+  /usr/bin/head -c 1 "${probe_candidate}" >/dev/null 2>&1 ||
+    fail "sandbox negative-probe parent read control failed"
+done
+/usr/bin/env -i PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
+  /usr/bin/security list-keychains >/dev/null 2>&1 ||
+  fail "unsandboxed keychain-service positive control failed"
 
 print -- "isolated HOME read-denial canary" >"${FABLE_HOME}/.fable-read-denial-canary"
 /bin/chmod 600 "${FABLE_HOME}/.fable-read-denial-canary"
@@ -512,8 +595,12 @@ sandbox_probe_output="$(
     '
 )"
 readonly expected_sandbox_probe_output=$'packet_read=allowed\ntask_read=allowed\nreal_claude_config_read=denied\nchrome_cookie_read=denied\nsystem_keychain_read=denied\ndata_alias_claude_config_read=denied\ndata_alias_chrome_cookie_read=denied\ndata_alias_system_keychain_read=denied\nisolated_home_read=denied\nhosts_read=allowed\nkeychain_service=denied\npacket_write=denied\nisolated_tmp_write=allowed'
-print -r -- "${sandbox_probe_output}" >"${FABLE_RECEIPT}/02-sandbox-probes.txt"
 [[ "${sandbox_probe_output}" == "${expected_sandbox_probe_output}" ]] || fail "sandbox probe matrix mismatch"
+{
+  print -- "parent_sensitive_read_positive_controls=${#parent_read_probe_paths[@]}"
+  print -- "parent_env_i_keychain_service_positive_control=passed"
+  print -r -- "${sandbox_probe_output}"
+} >"${FABLE_RECEIPT}/02-sandbox-probes.txt"
 /bin/rm -f "${FABLE_TMP}/sandbox-write-probe"
 /bin/rm -f "${FABLE_HOME}/.fable-read-denial-canary"
 [[ ! -e "${FABLE_EXTRACTION}/.sandbox-write-probe" ]] || fail "packet write probe unexpectedly created a file"
@@ -644,11 +731,10 @@ done
 [[ "$(/usr/bin/find "${FABLE_EXTRACTION}" -type f | /usr/bin/wc -l | /usr/bin/tr -d ' ')" == "28" ]] || fail "post-run extraction regular-file count mismatch"
 [[ -z "$(/usr/bin/find "${FABLE_STAGING}" -type l -print -quit)" ]] || fail "post-run staging contains a symlink"
 [[ -z "$(/usr/bin/find "${FABLE_EXTRACTION}" -type l -print -quit)" ]] || fail "post-run extraction contains a symlink"
-[[ -z "$(/usr/bin/find "${FABLE_STAGING}" -type f -perm -222 -print -quit)" ]] || fail "post-run staging contains a writable file"
-[[ -z "$(/usr/bin/find "${FABLE_EXTRACTION}" -type f -perm -222 -print -quit)" ]] || fail "post-run extraction contains a writable file"
+require_readonly_regular_tree "${FABLE_EXTRACTION}" "post_run_extraction"
 /usr/bin/diff -qr "${FABLE_STAGING}" "${FABLE_EXTRACTION}" >&3 || fail "post-run staging/extraction byte mismatch"
 log "post_packet_inventory_modes_encryption=passed post_extracted_manifest_check=passed"
-log "post_staging_extraction_identical=true post_staging_extraction_writable_files=0 post_symlinks=0"
+log "post_staging_extraction_identical=true post_extraction_writable_entries=0 post_symlinks=0"
 
 require_sha256 "${FABLE_TASK}" "${EXPECTED_TASK_SHA256}"
 require_sha256 "${FABLE_SANDBOX}" "${EXPECTED_SANDBOX_SHA256}"
@@ -685,6 +771,7 @@ if [[ ${provider_exit} -eq 0 ]]; then
       type == "string" and (gsub("\\s"; "") | length > 0);
     ([.[] | select(.type == "system" and .subtype == "init")]) as $inits |
     ([.[] | select(.type == "result")]) as $results |
+    ([.[] | select(.type == "assistant")]) as $assistants |
     ([.[] | select(.type == "assistant") | .message.model? // empty] | unique) as $assistant_models |
     ([.[] | .modelUsage? | objects | keys[]] | unique) as $usage_models |
     ($results[0].session_id) as $session |
@@ -703,11 +790,25 @@ if [[ ${provider_exit} -eq 0 ]]; then
       else true
       end) and
     all(.[];
+      if has("session_id")
+      then ((.session_id | type) == "string" and (.session_id | length) > 0 and .session_id == $session)
+      else true
+      end) and
+    all(.[];
       if has("permission_denials")
       then ((.permission_denials | type) == "array" and (.permission_denials | length) == 0)
       else true
       end) and
     all(.[]; .subtype? != "model_refusal_fallback") and
+    all(.[]; if has("model") then .model == $model else true end) and
+    all(.[];
+      if ((.message? | type) == "object" and (.message | has("model")))
+      then .message.model == $model
+      else true
+      end) and
+    ($assistants | length) > 0 and
+    all($assistants[];
+      (.message | type) == "object" and (.message | has("model")) and .message.model == $model) and
     ($assistant_models | length) > 0 and
     all($assistant_models[]; . == $model) and
     all($usage_models[]; . == $model)
@@ -733,7 +834,8 @@ fi
   "${FABLE_RECEIPT}/22-events.json" >"${FABLE_RECEIPT}/25-tool-uses.json"
 /usr/bin/jq '[.[] as $event | $event.message.content[]? | select(.type == "tool_result") |
   {event_type: ($event.type // null), event_session_id: ($event.session_id // null),
-   tool_use_id: (.tool_use_id // null), is_error: (.is_error // false)}]' \
+   tool_use_id: (.tool_use_id // null), has_is_error: has("is_error"),
+   is_error: (if has("is_error") then .is_error else null end)}]' \
   "${FABLE_RECEIPT}/22-events.json" >"${FABLE_RECEIPT}/25b-tool-results.json"
 if [[ ${provider_exit} -eq 0 ]]; then
   /usr/bin/jq -e 'length > 0 and all(.[]; .name == "Read" or .name == "Glob" or .name == "Grep")' \
@@ -775,7 +877,7 @@ fi
   def pattern_path_ok($root):
     . as $value |
     ($value | lexical_path_ok($root)) and
-    (["..", "{", "}", "(", ")", "|", "!", "\\"] |
+    (["..", "{", "}", "(", ")", "[", "]", "|", "!", "\\"] |
      all(.[]; . as $bad | (($value | contains($bad)) | not)));
   def object_keys_only($allowed):
     (.input | type == "object") and
@@ -832,7 +934,9 @@ if [[ ${provider_exit} -eq 0 ]]; then
         .event_type == "user" and
         ((.event_session_id | type) == "string" and .event_session_id == $session) and
         ((.tool_use_id | type) == "string" and (.tool_use_id | length) > 0) and
-        ((.is_error | type) == "boolean" and .is_error == false)) and
+        ((.has_is_error | type) == "boolean") and
+        ((.has_is_error == false and .is_error == null) or
+         (.has_is_error == true and (.is_error | type) == "boolean" and .is_error == false))) and
       all($uses[]; . as $use |
         ([$results[] | select(.tool_use_id == $use.id)] | length) == 1) and
       all($results[]; . as $result |
@@ -867,16 +971,19 @@ targeted_scan "${FABLE_RECEIPT}" "${FABLE_SCAN_TMP}/targeted.txt"
 /bin/mv "${FABLE_SCAN_TMP}/targeted.txt" "${FABLE_RECEIPT}/28-final-receipt-targeted.txt"
 
 : >"${FABLE_RECEIPT}/29-receipt-manifest.sha256"
+[[ -z "$(/usr/bin/find "${FABLE_RECEIPT}" -mindepth 1 ! -type f -print -quit)" ]] ||
+  fail "final receipt contains a directory, symlink, or non-regular entry"
+[[ "$(/usr/bin/find "${FABLE_RECEIPT}" -mindepth 1 -maxdepth 1 -type f | /usr/bin/wc -l | /usr/bin/tr -d ' ')" == "${#receipt_outputs[@]}" ]] ||
+  fail "final receipt entry count does not match the frozen output inventory"
 for output_name in "${receipt_outputs[@]}"; do
+  [[ -f "${FABLE_RECEIPT}/${output_name}" && ! -L "${FABLE_RECEIPT}/${output_name}" ]] ||
+    fail "missing or non-regular frozen receipt output: ${output_name}"
   [[ "${output_name}" == "29-receipt-manifest.sha256" ]] && continue
-  [[ -f "${FABLE_RECEIPT}/${output_name}" ]] || fail "missing receipt output before manifest: ${output_name}"
   (
     cd "${FABLE_RECEIPT}"
     /usr/bin/shasum -a 256 "${output_name}"
   ) >>"${FABLE_RECEIPT}/29-receipt-manifest.sha256"
 done
-[[ "$(/usr/bin/find "${FABLE_RECEIPT}" -maxdepth 1 -type f | /usr/bin/wc -l | /usr/bin/tr -d ' ')" == "${#receipt_outputs[@]}" ]] ||
-  fail "final receipt file count does not match the frozen output inventory"
 exec 3>&-
 
 exit "${provider_exit}"

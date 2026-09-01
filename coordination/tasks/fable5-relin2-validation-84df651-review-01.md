@@ -88,7 +88,8 @@ without a self-reference cycle:
 - staging and fresh-extraction Gitleaks 8.30.1: exit `0`, no findings;
 - both targeted credential scans: no matches;
 - fresh extraction: internal manifest check passed, byte-identical to staging,
-  no symlinks, and zero writable entries.
+  no symlinks, and zero writable file or directory entries under an exact
+  `(mode & 0222) == 0` audit.
 
 The exact 28 members are:
 
@@ -214,7 +215,10 @@ tool calls.
   and `/private/var/db` reads. It explicitly denies `/System/Volumes/Data` and
   probes the corresponding user-config, browser, and system-keychain aliases.
   It also denies the enumerated macOS Security/Keychain Mach services and
-  requires a sandboxed `security list-keychains` negative canary;
+  requires a sandboxed `security list-keychains` negative canary. Before those
+  denials are trusted, the parent proves every named sensitive path is present
+  and readable and proves the same `env -i` keychain command succeeds without
+  the sandbox; the receipt records both positive controls without file content;
 - before entering the sandbox, the launcher retrieves the existing OAuth
   access and refresh tokens from macOS Keychain. It transports the values to a
   fixed-hash Python child over an anonymous NUL-delimited pipe, not process
@@ -230,8 +234,11 @@ tool calls.
   TMP, and the receipt must pass before auth, after auth, after flag parsing,
   and again immediately after the provider exits, before the parent clears its
   in-memory copies;
-- the launcher is the sole preflight-and-capture wrapper. An atomic entry lock
-  is acquired before any shared HOME/TMP/auth activity. Before a distinct
+- the launcher is the sole preflight-and-capture wrapper. It creates a unique
+  attempt receipt, opens `00-preflight.txt`, and prints that safe receipt path
+  before checking canonical CWD, a prior provider guard, or the atomic entry
+  lock. The entry lock is acquired before any shared HOME/TMP/auth activity.
+  Before a distinct
   one-use provider-start guard it fail-closes on exact
   task/CLI/profile/ZIP/manifest and source identities, Git cleanliness/remote
   equality, member inventory/modes, staging/extraction equality, Gitleaks,
@@ -255,12 +262,17 @@ tool calls.
   allowed key, type, numeric range, boolean type, or enum as applicable; every
   path/pattern field rejects parent traversal and expansion syntax and is
   lexically confined to the extraction root. Every counted tool call must have
-  exactly one successful same-session tool result, and vice versa;
+  exactly one successful same-session tool result, and vice versa. Every event
+  carrying a session or model field must match the accepted identity, every
+  assistant must explicitly carry the exact model, and an explicit null
+  tool-result error field is rejected rather than treated as success;
 - the parent receipt binds start/end time, CLI/task/packet identities, raw
   exits, output hashes, session/usage fields when present, and observed tool
   calls/paths. After provider exit it reruns the frozen packet
   inventory/mode/encryption/manifest/staging gates and requires unchanged
-  launcher, repository HEAD/tree/upstream/remote, and source identities;
+  launcher, repository HEAD/tree/upstream/remote, and source identities. The
+  final receipt must be exactly the frozen top-level regular-file set, with no
+  extra directory, symlink, nested path, or other entry;
 - a slow response must run naturally. Do not interrupt, resend, resume, or
   start a duplicate request. A transport/startup failure is recorded exactly
   and does not block local TDD work.
