@@ -25,9 +25,9 @@ and the frozen task must pass final Spec/TDD/Delivery review, before launch.
 
 - Detached task:
   `coordination/tasks/fable5-fb862a3-review-01.md`.
-- Task size: 27,114 bytes.
+- Task size: 27,130 bytes.
 - Task SHA-256:
-  `6f769579ad6de56f3425bdbfee7f582d8748f5edc1eb138190d47da57884d457`.
+  `bd6a459b64fef9513bf672b4f2d742ef97d396e78580095000e3aa302a660f04`.
 - ZIP path:
   `/var/tmp/fable5-fb862a3.gBL1Wt/fable5-fb862a3-review-packet.zip`.
 - ZIP size: 9,327,133 bytes.
@@ -95,19 +95,22 @@ Literal no-provider preflight results against the final fresh extraction:
 
 The final packet-external probe receipt is
 `/var/tmp/fable5-fb862a3.gBL1Wt/sandbox-probe-receipt-final`. Its
-`preflight-summary.txt` is 2,538 bytes with SHA-256
-`7e9c31c1e24415afd7396f7a21d0a4332cf901c106c47474f508a501eb485a7e`;
+`preflight-summary.txt` is 2,537 bytes with SHA-256
+`3f243e2464ab414f2a0b36699b1467ff0faf36cbce395281c5ef4f0524c8f191`;
 `preflight-summary.identity.txt` is 119 bytes with SHA-256
-`9f6e8430dc651be6c21ff27fa70187dc194f738cb37db91c7ca51624b4d8c5e3`.
+`7f3291cd2ec9159b8372d2fdf78e5beb0a618a3de2d597dc5f7c53fce171300e`.
 The 20-row manifest binds every retained positive/deny stdout/stderr plus both
 summary files; it is 1,789 bytes with SHA-256
-`802993b3e3bb8362715445567ba599e6c8ada04e9dd6d254ee4432182c41aa63`.
+`cdbef34cef6c3b3f329601b11d0239c27235fe348dc585a493b5703880c16784`.
 It records all ten exit values, bytes/SHA-256 for every raw capture, both
 system-profile identities, and both post-probe target-existence values. The
 first enhanced control attempt, which correctly failed when sandboxed `cat`
 was pointed directly at a temporary-path regular file, remains separately
 retained; the frozen task now requires parent-owned pipes for positive and
-negative sandbox captures.
+negative sandbox captures. The ordinary keychain-read control uses
+`status=none`, eliminating `dd`'s nondeterministic transfer-rate stderr; two
+complete consecutive executions reproduced the three bound receipt hashes
+exactly.
 
 The production profile imports Apple's positive system-runtime whitelist, then
 adds only the exact CLI binary, packet extraction, and minimal TLS/DNS reads. It

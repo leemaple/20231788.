@@ -320,6 +320,7 @@ control_user_exit=$?
   2> "$PROBE_RECEIPT/control-var.stderr"
 control_var_exit=$?
 /bin/dd if=/Library/Keychains/System.keychain of=/dev/null bs=1 count=1 \
+  status=none \
   > "$PROBE_RECEIPT/control-keychain.stdout" \
   2> "$PROBE_RECEIPT/control-keychain.stderr"
 control_keychain_exit=$?
