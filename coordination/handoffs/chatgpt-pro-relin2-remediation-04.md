@@ -84,3 +84,24 @@ build, real patch application, project source commit, hosted run, Windows run,
 or Fable5 call occurred. The one authorized terminal Fable5 review remains
 unused and reserved for the first exact Relin2 project commit that passes
 hosted Linux and Windows on the same SHA.
+
+## Latest observed checkpoint
+
+At 2026-09-01 13:18 CST, a spaced read-only inspection still showed active
+`Stop answering`, no `Retry`, and no remediation-04 download. ChatGPT Pro had
+reported these completed points in order:
+
+1. all nine outer attachment identities matched;
+2. the source archive's 2,266 entries and original delivery manifest passed
+   its stated path, integrity, and checksum gates;
+3. the clean-room base tree and pristine OpenFHE 1.5.0 pin matched;
+4. the rejected remediation-03 series was reconstructed; and
+5. the exact base commit object was independently reproduced as
+   `fb862a3dfeeb0b79eb8f0e4218749d8a898e96c9`.
+
+Its latest stated next action was a fresh build of the supplied pristine
+OpenFHE and preparation of the exact remediation-03 comparison tree. Two
+later spaced read-only inspections through 13:20 CST showed the same terminal
+state and no newer checkpoint. This is normal active execution, not evidence
+of a stall. Codex did not stop, refresh, prod, retry, resend, or duplicate the
+request.
