@@ -1,0 +1,552 @@
+linux-gcc	Set up job	﻿2026-09-01T16:00:48.6301312Z Current runner version: '2.337.0'
+linux-gcc	Set up job	2026-09-01T16:00:48.6328148Z ##[group]Runner Image Provisioner
+linux-gcc	Set up job	2026-09-01T16:00:48.6329047Z Hosted Compute Agent
+linux-gcc	Set up job	2026-09-01T16:00:48.6329750Z Version: 20260819.586
+linux-gcc	Set up job	2026-09-01T16:00:48.6330457Z Commit: 3cc4a88dfa507ef76119ad1bb3eccc6378bb2b76
+linux-gcc	Set up job	2026-09-01T16:00:48.6331358Z Build Date: 2026-08-18T23:20:18Z
+linux-gcc	Set up job	2026-09-01T16:00:48.6332084Z Worker ID: {129d9c83-152c-4a2e-9b40-908290f2de7f}
+linux-gcc	Set up job	2026-09-01T16:00:48.6333032Z Azure Region: northcentralus
+linux-gcc	Set up job	2026-09-01T16:00:48.6333782Z ##[endgroup]
+linux-gcc	Set up job	2026-09-01T16:00:48.6335336Z ##[group]Operating System
+linux-gcc	Set up job	2026-09-01T16:00:48.6336462Z Ubuntu
+linux-gcc	Set up job	2026-09-01T16:00:48.6337107Z 24.04.4
+linux-gcc	Set up job	2026-09-01T16:00:48.6337676Z LTS
+linux-gcc	Set up job	2026-09-01T16:00:48.6338277Z ##[endgroup]
+linux-gcc	Set up job	2026-09-01T16:00:48.6338894Z ##[group]Runner Image
+linux-gcc	Set up job	2026-09-01T16:00:48.6339548Z Image: ubuntu-24.04
+linux-gcc	Set up job	2026-09-01T16:00:48.6340150Z Version: 20260823.283.1
+linux-gcc	Set up job	2026-09-01T16:00:48.6341235Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260823.283/images/ubuntu/Ubuntu2404-Readme.md
+linux-gcc	Set up job	2026-09-01T16:00:48.6343417Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260823.283
+linux-gcc	Set up job	2026-09-01T16:00:48.6344498Z ##[endgroup]
+linux-gcc	Set up job	2026-09-01T16:00:48.6345671Z ##[group]GITHUB_TOKEN Permissions
+linux-gcc	Set up job	2026-09-01T16:00:48.6347884Z Contents: read
+linux-gcc	Set up job	2026-09-01T16:00:48.6348587Z Metadata: read
+linux-gcc	Set up job	2026-09-01T16:00:48.6349174Z ##[endgroup]
+linux-gcc	Set up job	2026-09-01T16:00:48.6351688Z Secret source: Actions
+linux-gcc	Set up job	2026-09-01T16:00:48.6353427Z Prepare workflow directory
+linux-gcc	Set up job	2026-09-01T16:00:48.6911163Z Prepare all required actions
+linux-gcc	Set up job	2026-09-01T16:00:48.6961661Z Getting action download info
+linux-gcc	Set up job	2026-09-01T16:00:48.9818666Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+linux-gcc	Set up job	2026-09-01T16:00:49.1440978Z Download action repository 'actions/cache@v4' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+linux-gcc	Set up job	2026-09-01T16:00:49.3424102Z Complete job name: linux-gcc
+linux-gcc	Check out clean-room source	﻿2026-09-01T16:00:49.4164470Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4173452Z ##[group]Run actions/checkout@v4
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4174302Z with:
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4174772Z   repository: leemaple/20231788.
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4178651Z   token: ***
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4179095Z   ssh-strict: true
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4179538Z   ssh-user: git
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4180007Z   persist-credentials: true
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4180498Z   clean: true
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4180956Z   sparse-checkout-cone-mode: true
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4181484Z   fetch-depth: 1
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4181921Z   fetch-tags: false
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4182368Z   show-progress: true
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4183017Z   lfs: false
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4183449Z   submodules: false
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4183954Z   set-safe-directory: true
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4184465Z   allow-unsafe-pr-checkout: false
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4185235Z env:
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4185766Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4186599Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.4187315Z ##[endgroup]
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5209748Z Syncing repository: leemaple/20231788.
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5212334Z ##[group]Getting Git version info
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5213777Z Working directory is '/home/runner/work/20231788./20231788.'
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5215497Z [command]/usr/bin/git version
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5299999Z git version 2.55.0
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5325996Z ##[endgroup]
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5345479Z Temporarily overriding HOME='/home/runner/work/_temp/752ff897-d605-4aeb-81ed-613b954b2ce9' before making global git config changes
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5348615Z Adding repository directory to the temporary git global config as a safe directory
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5350840Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788.
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5407509Z Deleting the contents of '/home/runner/work/20231788./20231788.'
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5416285Z ##[group]Initializing the repository
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5421014Z [command]/usr/bin/git init /home/runner/work/20231788./20231788.
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5566024Z hint: Using 'master' as the name for the initial branch. This default branch name
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5567836Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5569703Z hint: to use in all of your new repositories, which will suppress this warning,
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5571207Z hint: call:
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5571910Z hint:
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5573130Z hint: 	git config --global init.defaultBranch <name>
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5574329Z hint:
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5575398Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5577128Z hint: 'development'. The just-created branch can be renamed via this command:
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5578627Z hint:
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5579419Z hint: 	git branch -m <name>
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5580881Z hint:
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5582189Z hint: Disable this message with "git config set advice.defaultBranchName false"
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5584623Z Initialized empty Git repository in /home/runner/work/20231788./20231788./.git/
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5589091Z [command]/usr/bin/git remote add origin https://github.com/leemaple/20231788.
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5643034Z ##[endgroup]
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5644362Z ##[group]Disabling automatic garbage collection
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5648308Z [command]/usr/bin/git config --local gc.auto 0
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5685929Z ##[endgroup]
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5686711Z ##[group]Setting up auth
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5695272Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.5740166Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.6189929Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.6228585Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.6459544Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.6503950Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.6753607Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.6795388Z ##[endgroup]
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.6796856Z ##[group]Fetching the repository
+linux-gcc	Check out clean-room source	2026-09-01T16:00:49.6806813Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +6f1645b97ce5b2175530cde5bfd0929370997634:refs/remotes/origin/agent/codex-relin2-01
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1332337Z From https://github.com/leemaple/20231788.
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1334263Z  * [new ref]         6f1645b97ce5b2175530cde5bfd0929370997634 -> origin/agent/codex-relin2-01
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1338569Z ##[endgroup]
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1339948Z ##[group]Determining the checkout info
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1341721Z ##[endgroup]
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1347808Z [command]/usr/bin/git sparse-checkout disable
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1404129Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1435946Z ##[group]Checking out the ref
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1448167Z [command]/usr/bin/git checkout --progress --force -B agent/codex-relin2-01 refs/remotes/origin/agent/codex-relin2-01
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1587162Z Switched to a new branch 'agent/codex-relin2-01'
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1593930Z branch 'agent/codex-relin2-01' set up to track 'origin/agent/codex-relin2-01'.
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1599477Z ##[endgroup]
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1643547Z [command]/usr/bin/git log -1 --format=%H
+linux-gcc	Check out clean-room source	2026-09-01T16:00:50.1669631Z 6f1645b97ce5b2175530cde5bfd0929370997634
+linux-gcc	Check out pristine OpenFHE 1.5.0	﻿2026-09-01T16:00:50.2041260Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2044650Z ##[group]Run actions/checkout@v4
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2045244Z with:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2045770Z   repository: openfheorg/openfhe-development
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2046474Z   ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2047158Z   path: .ci/openfhe-src
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2047694Z   submodules: recursive
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2051906Z   token: ***
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2052685Z   ssh-strict: true
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2053230Z   ssh-user: git
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2053761Z   persist-credentials: true
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2054319Z   clean: true
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2054836Z   sparse-checkout-cone-mode: true
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2055439Z   fetch-depth: 1
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2055987Z   fetch-tags: false
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2056516Z   show-progress: true
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2057057Z   lfs: false
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2057546Z   set-safe-directory: true
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2058125Z   allow-unsafe-pr-checkout: false
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2058707Z env:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2059288Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2060219Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2061035Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2900268Z Syncing repository: openfheorg/openfhe-development
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2903156Z ##[group]Getting Git version info
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2904283Z Working directory is '/home/runner/work/20231788./20231788./.ci/openfhe-src'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2934744Z [command]/usr/bin/git version
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.2977764Z git version 2.55.0
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3001618Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3016203Z Temporarily overriding HOME='/home/runner/work/_temp/c4297813-c2ad-4ace-8513-4673f9808e8b' before making global git config changes
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3017950Z Adding repository directory to the temporary git global config as a safe directory
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3021500Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788./.ci/openfhe-src
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3057472Z ##[group]Initializing the repository
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3062879Z [command]/usr/bin/git init /home/runner/work/20231788./20231788./.ci/openfhe-src
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3106783Z hint: Using 'master' as the name for the initial branch. This default branch name
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3108972Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3110955Z hint: to use in all of your new repositories, which will suppress this warning,
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3113067Z hint: call:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3113901Z hint:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3114668Z hint: 	git config --global init.defaultBranch <name>
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3115526Z hint:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3116377Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3117637Z hint: 'development'. The just-created branch can be renamed via this command:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3118942Z hint:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3119622Z hint: 	git branch -m <name>
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3120614Z hint:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3121579Z hint: Disable this message with "git config set advice.defaultBranchName false"
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3123742Z Initialized empty Git repository in /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3127214Z [command]/usr/bin/git remote add origin https://github.com/openfheorg/openfhe-development
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3162018Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3163116Z ##[group]Disabling automatic garbage collection
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3166523Z [command]/usr/bin/git config --local gc.auto 0
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3196787Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3197667Z ##[group]Setting up auth
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3204669Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3239791Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3482106Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3524158Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3797794Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.3836496Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.4099087Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.4146059Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.4147384Z ##[group]Fetching the repository
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:50.4156371Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.2419992Z From https://github.com/openfheorg/openfhe-development
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.2421961Z  * branch            df495ba2e91739a6dc8f1de254fc5a41155ce504 -> FETCH_HEAD
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.2425668Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.2426975Z ##[group]Determining the checkout info
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.2428422Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.2435780Z [command]/usr/bin/git sparse-checkout disable
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.2478971Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.2510914Z ##[group]Checking out the ref
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.2515760Z [command]/usr/bin/git checkout --progress --force df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3084965Z Note: switching to 'df495ba2e91739a6dc8f1de254fc5a41155ce504'.
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3085696Z 
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3086429Z You are in 'detached HEAD' state. You can look around, make experimental
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3087498Z changes and commit them, and you can discard any commits you make in this
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3088454Z state without impacting any branches by switching back to a branch.
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3089006Z 
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3089441Z If you want to create a new branch to retain commits you create, you may
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3090314Z do so (now or later) by using -c with the switch command. Example:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3090861Z 
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3091089Z   git switch -c <new-branch-name>
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3091443Z 
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3091669Z Or undo this operation with:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3092035Z 
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3092230Z   git switch -
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3092777Z 
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3093113Z Turn off this advice by setting config variable advice.detachedHead to false
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3093512Z 
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3093894Z HEAD is now at df495ba Merge pull request #1130 from openfheorg/dev
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3097543Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3098083Z ##[group]Setting up auth for fetching submodules
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3102928Z [command]/usr/bin/git config --global http.https://github.com/.extraheader AUTHORIZATION: basic ***
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3143436Z [command]/usr/bin/git config --global --unset-all url.https://github.com/.insteadOf
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3176598Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf git@github.com:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3209616Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf org-26023695@github.com:
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3241645Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3242142Z ##[group]Fetching submodules
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3245433Z [command]/usr/bin/git submodule sync --recursive
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3474361Z [command]/usr/bin/git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3690452Z Submodule 'third-party/cereal' (https://github.com/openfheorg/cereal.git) registered for path 'third-party/cereal'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3695547Z Submodule 'third-party/google-benchmark' (https://github.com/google/benchmark.git) registered for path 'third-party/google-benchmark'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3700239Z Submodule 'third-party/google-test' (https://github.com/google/googletest.git) registered for path 'third-party/google-test'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3705264Z Submodule 'third-party/gperftools' (https://github.com/gperftools/gperftools.git) registered for path 'third-party/gperftools'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.3733691Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/cereal'...
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:51.9383770Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/google-benchmark'...
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:52.4271266Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/google-test'...
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:52.9990263Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/gperftools'...
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:54.0223782Z Submodule path 'third-party/cereal': checked out '984e3f194862b17916536b5fade40cba6e47a6fe'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:55.2162131Z From https://github.com/google/benchmark
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:55.2163534Z  * branch            eddb0241389718a23a42db6af5f0164b6e0139af -> FETCH_HEAD
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:55.2368961Z Submodule path 'third-party/google-benchmark': checked out 'eddb0241389718a23a42db6af5f0164b6e0139af'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:56.4297135Z From https://github.com/google/googletest
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:56.4297939Z  * branch            52eb8108c5bdec04579160ae17225d66034bd723 -> FETCH_HEAD
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:56.4707598Z Submodule path 'third-party/google-test': checked out '52eb8108c5bdec04579160ae17225d66034bd723'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.8300965Z From https://github.com/gperftools/gperftools
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.8301589Z  * branch            83edb60836d87cf1b406e8846b9059c03031e8f5 -> FETCH_HEAD
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9151545Z Submodule path 'third-party/gperftools': checked out '83edb60836d87cf1b406e8846b9059c03031e8f5'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9190352Z [command]/usr/bin/git submodule foreach --recursive git config --local gc.auto 0
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9431630Z Entering 'third-party/cereal'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9479229Z Entering 'third-party/google-benchmark'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9517822Z Entering 'third-party/google-test'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9556242Z Entering 'third-party/gperftools'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9613512Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9614780Z ##[group]Persisting credentials for submodules
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9616573Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'url\.https\:\/\/github\.com\/\.insteadOf' && git config --local --unset-all 'url.https://github.com/.insteadOf' || :"
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9837155Z Entering 'third-party/cereal'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9882253Z Entering 'third-party/google-benchmark'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9926117Z Entering 'third-party/google-test'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:57.9970552Z Entering 'third-party/gperftools'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0027005Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local 'http.https://github.com/.extraheader' 'AUTHORIZATION: basic ***' && git config --local --show-origin --name-only --get-regexp remote.origin.url"
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0274042Z Entering 'third-party/cereal'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0335296Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/cereal/config	remote.origin.url
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0362139Z Entering 'third-party/google-benchmark'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0401338Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-benchmark/config	remote.origin.url
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0426272Z Entering 'third-party/google-test'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0463916Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-test/config	remote.origin.url
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0484151Z Entering 'third-party/gperftools'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0523143Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/gperftools/config	remote.origin.url
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0581888Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'git@github.com:'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0809144Z Entering 'third-party/cereal'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0848016Z Entering 'third-party/google-benchmark'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0886777Z Entering 'third-party/google-test'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0925855Z Entering 'third-party/gperftools'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.0977152Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'org-26023695@github.com:'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.1189907Z Entering 'third-party/cereal'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.1228861Z Entering 'third-party/google-benchmark'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.1267407Z Entering 'third-party/google-test'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.1305452Z Entering 'third-party/gperftools'
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.1351798Z ##[endgroup]
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.1393502Z [command]/usr/bin/git log -1 --format=%H
+linux-gcc	Check out pristine OpenFHE 1.5.0	2026-09-01T16:00:58.1420449Z df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Verify OpenFHE provenance	﻿2026-09-01T16:00:58.1566394Z ##[group]Run actual="$(git -C .ci/openfhe-src rev-parse HEAD)"
+linux-gcc	Verify OpenFHE provenance	2026-09-01T16:00:58.1566918Z ^[[36;1mactual="$(git -C .ci/openfhe-src rev-parse HEAD)"^[[0m
+linux-gcc	Verify OpenFHE provenance	2026-09-01T16:00:58.1567284Z ^[[36;1mtest "$actual" = "$OPENFHE_COMMIT"^[[0m
+linux-gcc	Verify OpenFHE provenance	2026-09-01T16:00:58.1567635Z ^[[36;1mgit -C .ci/openfhe-src status --short^[[0m
+linux-gcc	Verify OpenFHE provenance	2026-09-01T16:00:58.1609624Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+linux-gcc	Verify OpenFHE provenance	2026-09-01T16:00:58.1609973Z env:
+linux-gcc	Verify OpenFHE provenance	2026-09-01T16:00:58.1610228Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Verify OpenFHE provenance	2026-09-01T16:00:58.1610669Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Verify OpenFHE provenance	2026-09-01T16:00:58.1611055Z ##[endgroup]
+linux-gcc	Install independent-oracle test dependency	﻿2026-09-01T16:00:58.2884375Z ##[group]Run sudo apt-get update
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.2884716Z ^[[36;1msudo apt-get update^[[0m
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.2885082Z ^[[36;1msudo apt-get install --yes --no-install-recommends libboost-dev^[[0m
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.2922210Z shell: /usr/bin/bash -e {0}
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.2922690Z env:
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.2922958Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.2923407Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.2923775Z ##[endgroup]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.3780517Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.4106237Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.4115214Z Get:6 https://packages.microsoft.com/repos/azure-cli noble InRelease [3564 B]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.4124487Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.4130845Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.4174156Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.4200931Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.5459577Z Get:8 https://packages.microsoft.com/repos/azure-cli noble/main amd64 Packages [2515 B]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.5695667Z Get:9 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.5937682Z Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [429 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6049826Z Get:11 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.5 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6081913Z Get:12 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [382 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6427325Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1230 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6503987Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [287 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6532816Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6563416Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1689 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6657352Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [338 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6687085Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6713349Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1486 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6803619Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [339 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.6833425Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.7083395Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5740 B]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.7510501Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.7803614Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [979 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.7829841Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [209 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.7851865Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.7869858Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1205 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.7947654Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [241 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.7972094Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.2 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.7991309Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1392 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.8078613Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [321 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.8108783Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [11.1 kB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:00:58.8901469Z Get:33 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1404 B]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:02.8306155Z Fetched 11.7 MB in 1s (8549 kB/s)
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.5858137Z Reading package lists...
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.6166228Z Reading package lists...
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.7807947Z Building dependency tree...
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.7815100Z Reading state information...
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9125777Z The following additional packages will be installed:
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9130525Z   libboost1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9135723Z Suggested packages:
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9136297Z   libboost-doc libboost1.83-doc libboost-atomic1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9137262Z   libboost-chrono1.83-dev libboost-container1.83-dev libboost-context1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9137922Z   libboost-contract1.83-dev libboost-coroutine1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9138541Z   libboost-date-time1.83-dev libboost-exception1.83-dev libboost-fiber1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9139187Z   libboost-filesystem1.83-dev libboost-graph-parallel1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9139913Z   libboost-graph1.83-dev libboost-iostreams1.83-dev libboost-json1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9140563Z   libboost-locale1.83-dev libboost-log1.83-dev libboost-math1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9141222Z   libboost-mpi-python1.83-dev libboost-mpi1.83-dev libboost-nowide1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9141837Z   libboost-numpy1.83-dev libboost-program-options1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9142757Z   libboost-python1.83-dev libboost-random1.83-dev libboost-regex1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9143392Z   libboost-serialization1.83-dev libboost-stacktrace1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9143984Z   libboost-system1.83-dev libboost-test1.83-dev libboost-thread1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9144638Z   libboost-timer1.83-dev libboost-type-erasure1.83-dev libboost-url1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9145727Z   libboost-wave1.83-dev libboost1.83-tools-dev libmpfrc++-dev libntl-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9288850Z The following NEW packages will be installed:
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9293897Z   libboost-dev libboost1.83-dev
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9493319Z 0 upgraded, 2 newly installed, 0 to remove and 74 not upgraded.
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9493995Z Need to get 10.7 MB of archives.
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9494564Z After this operation, 161 MB of additional disk space will be used.
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:03.9495265Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.0077154Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libboost1.83-dev amd64 1.83.0-2.1ubuntu3.2 [10.7 MB]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.6386291Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libboost-dev amd64 1.83.0.1ubuntu2 [4308 B]
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.8864128Z Fetched 10.7 MB in 1s (15.3 MB/s)
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9123735Z Selecting previously unselected package libboost1.83-dev:amd64.
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9462078Z (Reading database ... 
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9462788Z (Reading database ... 5%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9463421Z (Reading database ... 10%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9463716Z (Reading database ... 15%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9463985Z (Reading database ... 20%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9464256Z (Reading database ... 25%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9464533Z (Reading database ... 30%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9464952Z (Reading database ... 35%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9465336Z (Reading database ... 40%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9466064Z (Reading database ... 45%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9466502Z (Reading database ... 50%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9466909Z (Reading database ... 55%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:04.9980833Z (Reading database ... 60%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:05.1926414Z (Reading database ... 65%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:05.3955923Z (Reading database ... 70%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:05.5873512Z (Reading database ... 75%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:05.7673561Z (Reading database ... 80%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:05.8932576Z (Reading database ... 85%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:06.0517600Z (Reading database ... 90%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:06.1953862Z (Reading database ... 95%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:06.1954231Z (Reading database ... 100%
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:06.1954694Z (Reading database ... 203385 files and directories currently installed.)
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:06.1998367Z Preparing to unpack .../libboost1.83-dev_1.83.0-2.1ubuntu3.2_amd64.deb ...
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:06.2024886Z Unpacking libboost1.83-dev:amd64 (1.83.0-2.1ubuntu3.2) ...
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:08.9558175Z Selecting previously unselected package libboost-dev:amd64.
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:08.9746447Z Preparing to unpack .../libboost-dev_1.83.0.1ubuntu2_amd64.deb ...
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:08.9756277Z Unpacking libboost-dev:amd64 (1.83.0.1ubuntu2) ...
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.0128745Z Setting up libboost1.83-dev:amd64 (1.83.0-2.1ubuntu3.2) ...
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.0154860Z Setting up libboost-dev:amd64 (1.83.0.1ubuntu2) ...
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.6681278Z 
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.6681828Z Running kernel seems to be up-to-date.
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.6682253Z 
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.6682618Z No services need to be restarted.
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.6693173Z 
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.6693463Z No containers need to be restarted.
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.6693770Z 
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.6693916Z No user sessions are running outdated binaries.
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.6694157Z 
+linux-gcc	Install independent-oracle test dependency	2026-09-01T16:01:09.6694358Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+linux-gcc	Report toolchain versions	﻿2026-09-01T16:01:10.4831841Z ##[group]Run cmake --version
+linux-gcc	Report toolchain versions	2026-09-01T16:01:10.4832163Z ^[[36;1mcmake --version^[[0m
+linux-gcc	Report toolchain versions	2026-09-01T16:01:10.4832692Z ^[[36;1mc++ --version^[[0m
+linux-gcc	Report toolchain versions	2026-09-01T16:01:10.4870848Z shell: /usr/bin/bash -e {0}
+linux-gcc	Report toolchain versions	2026-09-01T16:01:10.4871103Z env:
+linux-gcc	Report toolchain versions	2026-09-01T16:01:10.4871358Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Report toolchain versions	2026-09-01T16:01:10.4871804Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Report toolchain versions	2026-09-01T16:01:10.4872185Z ##[endgroup]
+linux-gcc	Report toolchain versions	2026-09-01T16:01:11.0489882Z cmake version 3.31.6
+linux-gcc	Report toolchain versions	2026-09-01T16:01:11.0490273Z 
+linux-gcc	Report toolchain versions	2026-09-01T16:01:11.0490576Z CMake suite maintained and supported by Kitware (kitware.com/cmake).
+linux-gcc	Report toolchain versions	2026-09-01T16:01:11.0579384Z c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+linux-gcc	Report toolchain versions	2026-09-01T16:01:11.0579965Z Copyright (C) 2023 Free Software Foundation, Inc.
+linux-gcc	Report toolchain versions	2026-09-01T16:01:11.0580812Z This is free software; see the source for copying conditions.  There is NO
+linux-gcc	Report toolchain versions	2026-09-01T16:01:11.0581974Z warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+linux-gcc	Report toolchain versions	2026-09-01T16:01:11.0602113Z 
+linux-gcc	Cache pristine OpenFHE install	﻿2026-09-01T16:01:11.0674699Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0675984Z ##[group]Run actions/cache@v4
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0676225Z with:
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0676422Z   path: .ci/openfhe-install
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0676772Z   key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0677185Z   enableCrossOsArchive: false
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0677451Z   fail-on-cache-miss: false
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0677686Z   lookup-only: false
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0677892Z   save-always: false
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0678084Z env:
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0678332Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0678763Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.0679168Z ##[endgroup]
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.1765342Z (node:3276) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.1766297Z (Use `node --trace-deprecation ...` to show where the warning was created)
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.3134588Z Cache hit for: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.3244871Z (node:3276) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.6829039Z Received 2476755 of 2476755 (100.0%), 9.1 MBs/sec
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.6829821Z Cache Size: ~2 MB (2476755 B)
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.6859991Z [command]/usr/bin/tar -xf /home/runner/work/_temp/1eae855f-1dfc-438e-a112-0d78c7317271/cache.tzst -P -C /home/runner/work/20231788./20231788. --use-compress-program unzstd
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.7206316Z Cache restored successfully
+linux-gcc	Cache pristine OpenFHE install	2026-09-01T16:01:11.7286210Z Cache restored from key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Configure clean-room project	﻿2026-09-01T16:01:11.7420524Z ##[group]Run cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+linux-gcc	Configure clean-room project	2026-09-01T16:01:11.7421219Z ^[[36;1mcmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}^[[0m
+linux-gcc	Configure clean-room project	2026-09-01T16:01:11.7458547Z shell: /usr/bin/bash -e {0}
+linux-gcc	Configure clean-room project	2026-09-01T16:01:11.7458872Z env:
+linux-gcc	Configure clean-room project	2026-09-01T16:01:11.7459142Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Configure clean-room project	2026-09-01T16:01:11.7459632Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Configure clean-room project	2026-09-01T16:01:11.7460010Z ##[endgroup]
+linux-gcc	Configure clean-room project	2026-09-01T16:01:12.2040823Z -- The CXX compiler identification is GNU 13.3.0
+linux-gcc	Configure clean-room project	2026-09-01T16:01:12.3323727Z -- Detecting CXX compiler ABI info
+linux-gcc	Configure clean-room project	2026-09-01T16:01:12.5430794Z -- Detecting CXX compiler ABI info - done
+linux-gcc	Configure clean-room project	2026-09-01T16:01:12.5608587Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+linux-gcc	Configure clean-room project	2026-09-01T16:01:12.5673656Z -- Detecting CXX compile features
+linux-gcc	Configure clean-room project	2026-09-01T16:01:12.5753628Z -- Detecting CXX compile features - done
+linux-gcc	Configure clean-room project	2026-09-01T16:01:12.6037532Z -- Configuring done (0.8s)
+linux-gcc	Configure clean-room project	2026-09-01T16:01:12.6142799Z -- Generating done (0.0s)
+linux-gcc	Configure clean-room project	2026-09-01T16:01:12.6146341Z -- Build files have been written to: /home/runner/work/20231788./20231788./build
+linux-gcc	Build warning-clean project	﻿2026-09-01T16:01:12.6201843Z ##[group]Run cmake --build build --parallel 2
+linux-gcc	Build warning-clean project	2026-09-01T16:01:12.6202222Z ^[[36;1mcmake --build build --parallel 2^[[0m
+linux-gcc	Build warning-clean project	2026-09-01T16:01:12.6238631Z shell: /usr/bin/bash -e {0}
+linux-gcc	Build warning-clean project	2026-09-01T16:01:12.6239065Z env:
+linux-gcc	Build warning-clean project	2026-09-01T16:01:12.6239331Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Build warning-clean project	2026-09-01T16:01:12.6239794Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Build warning-clean project	2026-09-01T16:01:12.6240183Z ##[endgroup]
+linux-gcc	Build warning-clean project	2026-09-01T16:01:12.6447282Z [ 12%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+linux-gcc	Build warning-clean project	2026-09-01T16:01:19.3901376Z [ 25%] Linking CXX static library libopenfhe_2023_1788.a
+linux-gcc	Build warning-clean project	2026-09-01T16:01:20.2031423Z [ 25%] Built target openfhe_2023_1788
+linux-gcc	Build warning-clean project	2026-09-01T16:01:20.2102036Z [ 37%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+linux-gcc	Build warning-clean project	2026-09-01T16:01:20.2107602Z [ 50%] Building CXX object CMakeFiles/tensor2_api_contract_test.dir/tests/tensor2_api_contract_test.cpp.o
+linux-gcc	Build warning-clean project	2026-09-01T16:01:22.8164314Z [ 62%] Linking CXX executable tensor2_api_contract_test
+linux-gcc	Build warning-clean project	2026-09-01T16:01:22.8858061Z [ 62%] Built target tensor2_api_contract_test
+linux-gcc	Build warning-clean project	2026-09-01T16:01:22.8927398Z [ 75%] Building CXX object CMakeFiles/tensor2_test.dir/tests/tensor2_test.cpp.o
+linux-gcc	Build warning-clean project	2026-09-01T16:01:35.3196660Z [ 87%] Linking CXX executable dcp_rcb_test
+linux-gcc	Build warning-clean project	2026-09-01T16:01:35.3691672Z [100%] Linking CXX executable tensor2_test
+linux-gcc	Build warning-clean project	2026-09-01T16:01:35.4442299Z [100%] Built target dcp_rcb_test
+linux-gcc	Build warning-clean project	2026-09-01T16:01:35.4850603Z [100%] Built target tensor2_test
+linux-gcc	Build Relin2 public API contract	﻿2026-09-01T16:01:35.4911573Z ##[group]Run cmake --build build --target relin2_api_contract_test --parallel 2
+linux-gcc	Build Relin2 public API contract	2026-09-01T16:01:35.4912192Z ^[[36;1mcmake --build build --target relin2_api_contract_test --parallel 2^[[0m
+linux-gcc	Build Relin2 public API contract	2026-09-01T16:01:35.4949243Z shell: /usr/bin/bash -e {0}
+linux-gcc	Build Relin2 public API contract	2026-09-01T16:01:35.4949505Z env:
+linux-gcc	Build Relin2 public API contract	2026-09-01T16:01:35.4949783Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Build Relin2 public API contract	2026-09-01T16:01:35.4950256Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Build Relin2 public API contract	2026-09-01T16:01:35.4950635Z ##[endgroup]
+linux-gcc	Build Relin2 public API contract	2026-09-01T16:01:35.5254895Z [ 50%] Built target openfhe_2023_1788
+linux-gcc	Build Relin2 public API contract	2026-09-01T16:01:35.5321091Z [ 75%] Building CXX object CMakeFiles/relin2_api_contract_test.dir/tests/relin2_api_contract_test.cpp.o
+linux-gcc	Build Relin2 public API contract	2026-09-01T16:01:38.0792798Z [100%] Linking CXX executable relin2_api_contract_test
+linux-gcc	Build Relin2 public API contract	2026-09-01T16:01:38.1412853Z [100%] Built target relin2_api_contract_test
+linux-gcc	Run clean-room project tests	﻿2026-09-01T16:01:38.1488756Z ##[group]Run ctest --test-dir build --output-on-failure
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.1489506Z ^[[36;1mctest --test-dir build --output-on-failure^[[0m
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.1533929Z shell: /usr/bin/bash -e {0}
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.1534204Z env:
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.1534471Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.1534942Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.1535323Z ##[endgroup]
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.5654709Z Internal ctest changing into directory: /home/runner/work/20231788./20231788./build
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.6419301Z Test project /home/runner/work/20231788./20231788./build
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.6927267Z     Start 1: dcp_rcb
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7307230Z 1/6 Test #1: dcp_rcb ...................................   Passed    0.03 sec
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7375593Z     Start 2: tensor2_valid_arithmetic_immutability
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7454386Z 2/6 Test #2: tensor2_valid_arithmetic_immutability .....   Passed    0.01 sec
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7455994Z     Start 3: tensor2_result_scale_contract
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7500401Z 3/6 Test #3: tensor2_result_scale_contract .............   Passed    0.00 sec
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7502069Z     Start 4: tensor2_right_input_validation
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7545296Z 4/6 Test #4: tensor2_right_input_validation ............   Passed    0.00 sec
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7546813Z     Start 5: tensor2_mutual_compatibility
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7589786Z 5/6 Test #5: tensor2_mutual_compatibility ..............   Passed    0.00 sec
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7591399Z     Start 6: tensor2_prearithmetic_key_compatibility
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7635470Z 6/6 Test #6: tensor2_prearithmetic_key_compatibility ...   Passed    0.00 sec
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7638458Z 
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7638628Z 100% tests passed, 0 tests failed out of 6
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7639157Z 
+linux-gcc	Run clean-room project tests	2026-09-01T16:01:38.7639263Z Total Test time (real) =   0.12 sec
+linux-gcc	Post Cache pristine OpenFHE install	﻿2026-09-01T16:01:38.8142855Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+linux-gcc	Post Cache pristine OpenFHE install	2026-09-01T16:01:38.8144144Z Post job cleanup.
+linux-gcc	Post Cache pristine OpenFHE install	2026-09-01T16:01:38.9245277Z Cache hit occurred on the primary key openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504, not saving cache.
+linux-gcc	Post Cache pristine OpenFHE install	2026-09-01T16:01:38.9246945Z (node:3471) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+linux-gcc	Post Cache pristine OpenFHE install	2026-09-01T16:01:38.9248095Z (Use `node --trace-deprecation ...` to show where the warning was created)
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	﻿2026-09-01T16:01:38.9367186Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:38.9368444Z Post job cleanup.
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0211131Z [command]/usr/bin/git version
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0253581Z git version 2.55.0
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0291924Z Temporarily overriding HOME='/home/runner/work/_temp/64db964c-5987-4137-9a63-735d9bff8f26' before making global git config changes
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0293655Z Adding repository directory to the temporary git global config as a safe directory
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0297593Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788./.ci/openfhe-src
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0335500Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0370551Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0601878Z Entering 'third-party/cereal'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0651750Z Entering 'third-party/google-benchmark'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0701048Z Entering 'third-party/google-test'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0746142Z Entering 'third-party/gperftools'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0817842Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0848045Z http.https://github.com/.extraheader
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0859224Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.0895339Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1143539Z Entering 'third-party/cereal'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1160080Z http.https://github.com/.extraheader
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1202609Z Entering 'third-party/google-benchmark'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1223840Z http.https://github.com/.extraheader
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1259219Z Entering 'third-party/google-test'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1284888Z http.https://github.com/.extraheader
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1319253Z Entering 'third-party/gperftools'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1344562Z http.https://github.com/.extraheader
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1397802Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1438362Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1673071Z Entering 'third-party/cereal'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1692840Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/cereal/config	remote.origin.url
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1710921Z Entering 'third-party/google-benchmark'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1730585Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-benchmark/config	remote.origin.url
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1749213Z Entering 'third-party/google-test'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1769300Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-test/config	remote.origin.url
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1788329Z Entering 'third-party/gperftools'
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1808073Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/gperftools/config	remote.origin.url
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1845814Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/cereal/config --name-only --get-regexp ^includeIf\.gitdir:
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1882964Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-benchmark/config --name-only --get-regexp ^includeIf\.gitdir:
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1920497Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-test/config --name-only --get-regexp ^includeIf\.gitdir:
+linux-gcc	Post Check out pristine OpenFHE 1.5.0	2026-09-01T16:01:39.1955521Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/gperftools/config --name-only --get-regexp ^includeIf\.gitdir:
+linux-gcc	Post Check out clean-room source	﻿2026-09-01T16:01:39.2139789Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.2141084Z Post job cleanup.
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3027202Z [command]/usr/bin/git version
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3070254Z git version 2.55.0
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3119933Z Temporarily overriding HOME='/home/runner/work/_temp/a7571cf7-6023-4c76-b7b4-16cf4488a6ff' before making global git config changes
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3141799Z Adding repository directory to the temporary git global config as a safe directory
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3166167Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788.
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3167853Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3193273Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3438405Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3462789Z http.https://github.com/.extraheader
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3474533Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3524609Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3778551Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+linux-gcc	Post Check out clean-room source	2026-09-01T16:01:39.3819127Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+linux-gcc	Complete job	﻿2026-09-01T16:01:39.4198491Z Cleaning up orphan processes
+linux-gcc	Complete job	2026-09-01T16:01:39.4509665Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
