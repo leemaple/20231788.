@@ -40,3 +40,22 @@ resume the stale Windows implementation as a source input and do not create a
 duplicate ZCode task. The one terminal-only Fable5 authorization remains unused
 and is now held for a concrete unresolved dispute rather than preallocated as a
 quota substitute.
+
+## 2026-09-01 21:26 Fable5 substitution
+
+The user explicitly superseded the 19:16 allocation for the current review:
+use terminal Fable5 in place of ZCode, return to ZCode after its service/capacity
+recovers, and do not let ZCode block the critical path.
+
+The already submitted Windows task remains preserved exactly as dispatched. It
+showed only the unchanged `已工作 1 秒` shell after more than fifteen minutes and
+never produced a verdict, error, or completed artifact. Do not interrupt,
+retry, resend, duplicate, reclaim, or treat that blank state as evidence.
+
+Exactly one Fable5 provider process is now allocated to an independent review
+of accepted DCP/RCB/Tensor2 commit `fb862a3dfeeb0b79eb8f0e4218749d8a898e96c9`.
+Its task, packet, sandbox, and receipt must pass the project gates before
+launch. The allowance is consumed at process start, even if transport or output
+is later lost; no retry, resume, follow-up, or second Fable invocation is
+permitted. ZCode returns to the normal collaboration pool only after a fresh
+capacity/service check shows it is usable.

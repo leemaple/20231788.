@@ -2,8 +2,10 @@
 
 Submitted: 2026-09-01 20:34 Asia/Shanghai
 
-Status: **submitted exactly once; actively working**. This is a dispatch
-receipt, not a review verdict, source change, build, test, or acceptance claim.
+Status: **submitted exactly once; preserved without a verdict and superseded on
+the critical path by the user's 2026-09-01 21:26 Fable5 instruction**. This is a
+dispatch receipt, not a review verdict, source change, build, test, or
+acceptance claim.
 
 ## Exact Git and candidate binding
 
@@ -89,6 +91,13 @@ complete verdict and all three required deliverables; a progress-only response
 is not acceptance. It is forbidden to edit, commit, push, merge, or rewrite the
 candidate or coordination repository.
 
+Subsequent spaced read-only checks for more than fifteen minutes showed only
+the unchanged `已工作 1 秒` shell: no substantive output, terminal verdict,
+explicit error, stop control, or downloadable artifact appeared. The user then
+directed Codex to use Fable5 instead, return to ZCode after recovery, and avoid
+blocking. The Windows page/task is therefore preserved exactly as-is; no
+interrupt, retry, resend, duplicate, or inferred review result is allowed.
+
 ## Capacity and execution bounds
 
 The last official BigModel reading before allocation showed 0% five-hour use,
@@ -96,5 +105,5 @@ The last official BigModel reading before allocation showed 0% five-hour use,
 with reset displayed as 2026-09-25 10:00. This is the one restored critical
 ZCode allocation. The task pins `OMP_NUM_THREADS=2`, `OMP_THREAD_LIMIT=2`,
 `CTEST_PARALLEL_LEVEL=1`, and both CTest invocations to `--parallel 1` so the
-Windows host remains responsive. Fable5 remains unused and reserved for a
-concrete unresolved three-party dispute.
+Windows host remains responsive. The later user instruction recorded above
+supersedes the former Fable reservation for this exact review.

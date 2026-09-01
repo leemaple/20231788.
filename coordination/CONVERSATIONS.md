@@ -344,6 +344,16 @@ browser workflow forbids automatic takeover or a workaround. No refresh,
 reclaim, retry, prod, resend, duplicate, ZIP inspection, candidate script, or
 Mac OpenFHE build occurred.
 
+At 2026-09-01 21:26 CST, the user explicitly replaced ZCode with terminal
+Fable5 for the current exact `fb862a3` DCP/RCB/Tensor2 review, directed Codex to
+return to ZCode after recovery, and prohibited blocking on ZCode. The submitted
+Windows task had remained at the unchanged `已工作 1 秒` shell for more than
+fifteen minutes without a verdict, error, stop control, or artifact. It remains
+preserved without interruption, retry, resend, duplication, or inferred
+result. One Fable5 process is allocated to this exact review only; it is not yet
+consumed and cannot launch until the task, expanded evidence packet, OS
+sandbox, secret scans, and execution receipt contract all pass their gates.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
