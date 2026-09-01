@@ -25,3 +25,18 @@ The current allocation decision is:
 
 This is a task-specific user override, not a permanent relaxation of the
 project workflow's ordinary three-party escalation rule.
+
+## 2026-09-01 19:16 quota restoration
+
+The official BigModel usage page now reports 0% five-hour use and 39% weekly
+use, with the weekly reset still displayed as 2026-09-02 10:00. The reason for
+the counter change is unknown; the current official reading is sufficient for
+an operational allocation change but not for a claim about provider billing.
+
+Normal three-party review allocation is restored for the next stable Relin2
+candidate: Codex plus the preserved Windows ZCode/Zima session plus ChatGPT Pro
+must review the same exact commit after its hosted Linux/Windows gate. Do not
+resume the stale Windows implementation as a source input and do not create a
+duplicate ZCode task. The one terminal-only Fable5 authorization remains unused
+and is now held for a concrete unresolved dispute rather than preallocated as a
+quota substitute.

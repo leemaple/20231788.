@@ -257,6 +257,17 @@ five-hour pool at 0% used, weekly capacity at 100% used with reset at
 2026-09-25 10:00. No ZCode work is dispatched before the weekly reset; the page
 must be reread after reset before normal allocation resumes.
 
+At 2026-09-01 19:16 CST, a fresh read-only check of the same official page
+instead showed 0% five-hour use, 39% weekly use, and 4% MCP monthly use. The
+weekly and MCP reset times remained 2026-09-02 10:00 and 2026-09-25 10:00.
+Because the page now reports 61% weekly capacity remaining, one critical-path
+ZCode allocation is restored for an exact-commit Relin2 review after static and
+hosted cross-platform acceptance. No duplicate task is created, the preserved
+Windows implementation remains excluded as a source input, and the unused
+terminal Fable5 allowance returns to its ordinary role for a concrete
+unresolved three-party dispute. The change in the provider's displayed counter
+is observed but unexplained.
+
 At 2026-09-01 18:55 CST, a spaced read-only Ego check found that the Relin2
 remediation-06 response had ended with the terminal UI error `Message delivery
 timed out. Please try again.` after the visible completed checkpoints `Read
