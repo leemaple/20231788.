@@ -573,6 +573,9 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
     if (firstEvaluationKey->GetCryptoContext().get() != context_.get()) {
         Invalid("Relin2 first evaluation key belongs to a different context");
     }
+    if (firstEvaluationKey->GetKeyTag() != tensor.GetKeyTag()) {
+        Invalid("Relin2 first evaluation key tag does not match the Tensor key tag");
+    }
     throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
 }
 
