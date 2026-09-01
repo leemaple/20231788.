@@ -136,5 +136,11 @@ and either a second `Mult2` or an executable fail-fast refresh boundary.
    design, not adjusted after seeing the result.
 5. Warning-enabled builds and tests run on Windows or GitHub Actions; Mac is
    not used for sustained compilation.
-6. Codex, Windows ZCode/Zima, and ChatGPT Pro review the same exact commit. Only
-   a concrete unresolved disagreement is escalated to terminal-only Fable5.
+6. Normally Codex, Windows ZCode/Zima, and ChatGPT Pro review the same exact
+   commit. While the recorded shared-quota override is active, the project's
+   single authorized terminal-only Fable5 invocation may replace the pending
+   ZCode review, but only for one exact Linux/Windows-green commit with the
+   evidence and consumption record required by `coordination/REVIEW_ALLOCATION.md`.
+   A separate concrete unresolved disagreement may be escalated only under the
+   ordinary project workflow; it must not be conflated with or silently consume
+   the one-review substitution.
