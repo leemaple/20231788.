@@ -192,6 +192,33 @@ hosted logs that ordinary `git add` would omit under `.gitignore`. No new
 implementation, TDD, verdict, or archive checkpoint is visible yet, so none is
 claimed; Codex did not refresh, stop, retry, prod, resend, or duplicate it.
 
+At 2026-09-01 09:55 CST, the natural 48m02s Relin2 remediation response was
+collected and quarantined. Its 45,632-byte ZIP has SHA-256
+`910f7c248b82cdc6c1d6e1a290093b96881fee0bb9cdcc06e603008c3eb74d10`;
+the ten-file membership, nine internal hashes, `unzip -t`, Gitleaks scan, and
+exact-base seven-patch replay all passed, and Codex independently reproduced
+the claimed final tree `c045eb4a3f252984e0b8a3b56563b510e6bf7123`.
+Independent paper/production Spec review passed, but Standards/TDD and delivery
+reviews rejected the candidate with `changes needed`: its retained replay omits
+the index update required for its `git write-tree` claims, metadata snapshots
+omit observable pointer identities, the deep key guard cannot restore changed
+context identity, per-NativePoly tower format is not asserted, one new RCB
+negative still accepts a substring diagnostic, and the patch-05 Relin2 call
+omits its Tensor snapshot. No patch was applied to the real branch.
+
+At 2026-09-01 10:08 CST, one complete Relin2 remediation-02 request was
+submitted in the same saved conversation and Ego task space 85. All eight
+authority/review artifacts were attached again with exact byte/hash identities,
+including the 16,329-byte task SHA-256
+`6654a10f45b080ca6e5f3b271c474ea404d8077cfe30534f40eea5256054261b`.
+The full task was repeated in the composer; normalized browser readback matched
+all 291 nonempty source lines. Pre-send state showed exactly eight attachments;
+post-send state showed an empty composer, the exact task hash/end marker in the
+sent message, active `Thinking`/`Stop answering`, and no Retry. The request must
+not be refreshed, stopped, prodded, retried, resent, or duplicated while it
+runs. Exact dispatch evidence is retained in
+`coordination/handoffs/chatgpt-pro-relin2-remediation-02.md`.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
