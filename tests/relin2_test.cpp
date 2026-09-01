@@ -143,7 +143,7 @@ struct TensorSnapshot {
     std::size_t noiseScaleDegree;
     std::string keyTag;
     std::uint32_t slots;
-    lbcrypto::Format format;
+    Format format;
     std::size_t componentCount;
 };
 
