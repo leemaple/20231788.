@@ -203,7 +203,8 @@ void CheckTensorUnchanged(const TensorCiphertextPair& tensor, const TensorSnapsh
     Check(tensor.GetComponentCount() == before.componentCount, label + " component-count manifest changed");
 }
 
-CryptoContext<DCRTPoly> MakeContext(std::uint32_t multiplicativeDepth = 3) {
+CryptoContext<DCRTPoly> MakeContext(std::uint32_t multiplicativeDepth = 3,
+                                    std::uint32_t batchSize = 8) {
     lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
     parameters.SetMultiplicativeDepth(multiplicativeDepth);
     parameters.SetScalingModSize(30);
@@ -211,7 +212,7 @@ CryptoContext<DCRTPoly> MakeContext(std::uint32_t multiplicativeDepth = 3) {
     parameters.SetScalingTechnique(lbcrypto::FIXEDMANUAL);
     parameters.SetSecurityLevel(lbcrypto::HEStd_NotSet);
     parameters.SetRingDim(32);
-    parameters.SetBatchSize(8);
+    parameters.SetBatchSize(batchSize);
 
     auto context = lbcrypto::GenCryptoContext(parameters);
     context->Enable(lbcrypto::PKE);
@@ -420,6 +421,99 @@ void TestNullFirstEvaluationKey() {
     Check(evaluationKeys.empty(), "Relin2 null-first-key fixture failed to restore the evaluation-key cache");
 }
 
+void TestWrongContextEvaluationKey() {
+    auto context = MakeContext();
+    auto foreignContext = MakeContext(3, 4);
+    Check(foreignContext.get() != context.get(),
+          "Relin2 wrong-context fixture must use a distinct CryptoContext");
+    Check(*foreignContext->GetCryptoParameters()->GetElementParams() ==
+              *context->GetCryptoParameters()->GetElementParams(),
+          "Relin2 wrong-context fixture contexts must have identical element parameters");
+
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    leftInput->SetMetadataByKey("relin2-wrong-context-immutability-probe",
+                                std::make_shared<ImmutabilityProbeMetadata>("unchanged"));
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 4,
+          "Relin2 wrong-context fixture must have exactly four full-basis towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 3,
+          "Relin2 wrong-context fixture must have exactly three active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 wrong-context fixture must have noise-scale degree three");
+    Check(!tensor.GetKeyTag().empty(), "Relin2 wrong-context fixture must have a nonempty key tag");
+    const auto highMetadata = tensor.GetHigh()->GetMetadataMap();
+    const auto lowMetadata = tensor.GetLow()->GetMetadataMap();
+    Check(highMetadata != nullptr && highMetadata->size() == 1 &&
+              highMetadata->find("relin2-wrong-context-immutability-probe") != highMetadata->end(),
+          "Relin2 wrong-context fixture high ciphertext lost its metadata probe");
+    Check(lowMetadata != nullptr && lowMetadata->size() == 1 &&
+              lowMetadata->find("relin2-wrong-context-immutability-probe") != lowMetadata->end(),
+          "Relin2 wrong-context fixture low ciphertext lost its metadata probe");
+
+    auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(evaluationKeys.empty(), "Relin2 wrong-context fixture must start with an empty evaluation-key cache");
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeys);
+        const auto foreignKeys = foreignContext->KeyGen();
+        foreignKeys.secretKey->SetKeyTag(tensor.GetKeyTag());
+        foreignContext->EvalMultKeyGen(foreignKeys.secretKey);
+
+        const auto generatedRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(evaluationKeys.size() == 1 && generatedRow != evaluationKeys.end() &&
+                  generatedRow->second.size() == 1 && generatedRow->second.front() != nullptr,
+              "Relin2 wrong-context fixture must generate exactly one evaluation key");
+        const auto wrongContextKey =
+            std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(generatedRow->second.front());
+        Check(wrongContextKey != nullptr,
+              "Relin2 wrong-context fixture key must have the relinearization-key subtype");
+        Check(wrongContextKey->GetCryptoContext().get() == foreignContext.get() &&
+                  wrongContextKey->GetCryptoContext().get() != tensor.GetContextIdentity(),
+              "Relin2 wrong-context fixture key lost its foreign context");
+        Check(wrongContextKey->GetKeyTag() == tensor.GetKeyTag(),
+              "Relin2 wrong-context fixture key must otherwise have the expected tag");
+        Check(!wrongContextKey->GetAVector().empty() && !wrongContextKey->GetBVector().empty(),
+              "Relin2 wrong-context fixture must contain generated key material");
+
+        const auto* cacheIdentityBefore = &evaluationKeys;
+        const auto* vectorIdentityBefore = &generatedRow->second;
+        const auto keyIdentityBefore = generatedRow->second.front();
+        const auto keyContextBefore = wrongContextKey->GetCryptoContext();
+        const auto keyTagBefore = wrongContextKey->GetKeyTag();
+        const auto keyABefore = wrongContextKey->GetAVector();
+        const auto keyBBefore = wrongContextKey->GetBVector();
+        const auto tensorBefore = SnapshotTensor(tensor);
+        CheckThrowsExactInvalidArgument(
+            [&] { (void)module.Relin2(tensor); },
+            "DoubleCKKS: Relin2 first evaluation key belongs to a different context",
+            "Relin2 wrong-context first evaluation key");
+        CheckTensorUnchanged(tensor, tensorBefore, "Relin2 wrong-context rejection");
+        const auto currentRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBefore && evaluationKeys.size() == 1 &&
+                  currentRow != evaluationKeys.end() && &currentRow->second == vectorIdentityBefore &&
+                  currentRow->second.size() == 1 &&
+                  currentRow->second.front().get() == keyIdentityBefore.get(),
+              "Relin2 wrong-context rejection mutated the evaluation-key cache shape or identity");
+        Check(wrongContextKey->GetCryptoContext().get() == keyContextBefore.get(),
+              "Relin2 wrong-context rejection mutated the evaluation-key context");
+        Check(wrongContextKey->GetKeyTag() == keyTagBefore,
+              "Relin2 wrong-context rejection mutated the evaluation-key tag");
+        Check(wrongContextKey->GetAVector() == keyABefore && wrongContextKey->GetBVector() == keyBBefore,
+              "Relin2 wrong-context rejection mutated the evaluation-key A/B vectors");
+    }
+    Check(evaluationKeys.empty(), "Relin2 wrong-context fixture failed to restore the evaluation-key cache");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -437,6 +531,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "key_null_first") {
         return &TestNullFirstEvaluationKey;
+    }
+    if (name == "key_wrong_context") {
+        return &TestWrongContextEvaluationKey;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }

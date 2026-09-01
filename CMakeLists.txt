@@ -82,3 +82,4 @@ add_test(NAME relin2_insufficient_active_basis COMMAND relin2_test insufficient_
 add_test(NAME relin2_missing_eval_key COMMAND relin2_test missing_eval_key)
 add_test(NAME relin2_key_empty COMMAND relin2_test key_empty)
 add_test(NAME relin2_key_null_first COMMAND relin2_test key_null_first)
+add_test(NAME relin2_key_wrong_context COMMAND relin2_test key_wrong_context)
