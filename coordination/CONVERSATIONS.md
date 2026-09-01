@@ -462,3 +462,16 @@ JSON, complete logs ZIPs, manifests, Gitleaks, targeted scans, identities, and
 the initial compile-red record are pushed on dedicated evidence branches.
 Intermediate Windows jobs were cancelled after Linux capture and make no test
 claim. ZCode and Fable5 remained outside the critical path, as directed.
+
+At 2026-09-02 05:56 CST, Relin2's null-first-evaluation-key boundary also closed
+without external-provider blocking. Red `66d2815` added only the eleventh
+public test and produced hosted `10/11`: warning-clean build/API compilation and
+all inherited tests passed, while the new case alone reached the old scaffold.
+Green `37d1758` added four production lines to bind the first shared pointer and
+reject null without dereference or later key-shape work. Three read-only reviews
+returned PASS, and hosted Linux passed exactly 11/11 including immediate
+Tensor/cache/deep-metadata invariance checks. Both raw evidence sets passed ZIP,
+manifest, Gitleaks, targeted-scan, identity, and remote-ref gates and are pushed
+on dedicated evidence branches. Intermediate Windows jobs were cancelled after
+Linux capture and make no project-test claim. The next isolated red is a
+nonnull first key from the wrong CryptoContext.
