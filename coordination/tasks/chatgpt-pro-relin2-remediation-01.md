@@ -64,7 +64,16 @@ not edit or repackage code.
 Every mathematical, public-state, OpenFHE, validation-order, key-shape,
 forbidden-symbol, TDD-boundary, testing, and claim restriction in the original
 task remains in force. This remediation narrows and strengthens those
-requirements; it does not replace or relax them.
+requirements, with one explicit execution-authority override: the original
+task's requirements to bind Linux red/green results to pushed project SHAs and
+GitHub Actions URLs are downstream Codex duties, because that same task forbids
+ChatGPT Pro from committing, pushing, or dispatching CI. For this replacement,
+bind local results to the exact base, each patch SHA-256, each cumulative replay
+tree, pristine OpenFHE identity, and the actual local environment. A
+`ready to apply` verdict may and must leave all Actions URLs and same-commit
+hosted Linux/Windows results `pending`; Codex will perform them only after
+accepting and applying the series. This paragraph supersedes only the
+conflicting hosted-execution wording and relaxes no algorithm or test contract.
 
 Return a fresh replacement series from exact base `fb862a3...`, not an
 incremental patch on the rejected candidate. Preserve the same seven filenames
@@ -184,10 +193,12 @@ so a mutated key can contaminate the reference and make a wrong result pass.
 
 Required correction:
 
-- build a test-owned deep key-cache snapshot that records every row and entry,
-  pointer identity/nullness, concrete subtype, context identity, actual tag,
-  complete A/B vector lengths, each DCRT polynomial's format and ordered
-  parameters, and every residue;
+- build a test-owned deep key-cache snapshot that records every row and entry
+  conditionally: null entries record nullness only; every non-null entry records
+  pointer identity, concrete subtype, context identity, and actual tag; only an
+  `EvalKeyRelinImpl<DCRTPoly>` records complete A/B vector lengths, each DCRT
+  polynomial's format and ordered parameters, and every residue. For another
+  subtype, mark A/B as not applicable and do not call a base A/B getter;
 - make the RAII guard restore both the entire original row/pointer shape and
   every mutable pointee observable, even if an assertion throws;
 - immediately compare the deep cache after every production Relin2 call and
@@ -290,10 +301,16 @@ Required correction:
   scaffold green, runtime reds, core green, directed lifecycle red, and final
   green;
 - the applied candidate tree must contain a concise evidence index under
-  `artifacts/tdd/relin2/` that binds those records to the seven patch SHA-256
-  values and cumulative trees available in your replay;
+  `artifacts/tdd/relin2/` that binds those records to patches 01-06, their
+  SHA-256 values, and cumulative trees through the pre-07 tree. It may also
+  bind evidence-file hashes that do not include the index itself. It must not
+  claim patch 07's own hash or the final tree and therefore must not create a
+  self-hash cycle;
 - the root delivery `TESTS.md` must agree byte-for-meaning with the retained
-  evidence and state every unrun environment as `pending`;
+  evidence, bind all seven patch hashes and the final cumulative tree from
+  outside the applied candidate tree, and state every unrun environment as
+  `pending`. The delivery-level `PATCHES.sha256` then closes all nine returned
+  files without a self-reference;
 - do not claim GitHub Actions or Windows. Codex will create and retain hosted
   Linux/Windows evidence later, after this static gate passes.
 
@@ -313,6 +330,13 @@ double-precision claim. Do not assert an unjustified decryption tolerance,
 precision bit count, analytic error bound, or end-to-end Mult2 result. The
 controlled RNS/key fixture, not random public encryption, remains the sole
 authority for the fixed K, v/w, and centered-boundary witnesses.
+
+This closes only the representative encrypted public-path portion of the
+Standards finding. Plaintext-semantic decryption, end-to-end precision, and
+error validation require the later complete Mult2/RS2 pipeline and are
+explicitly deferred to Codex's Mult2 acceptance work. Record that owner and
+deferral in both `REVIEW.md` and `TESTS.md`; do not claim this Relin2 slice has
+fixed or passed plaintext precision coverage.
 
 ## Red-first requirements for these corrections
 
@@ -357,7 +381,7 @@ For every replacement patch, on a new disposable exact-base replay:
 2. apply in order;
 3. run `git diff --check`;
 4. record cumulative tree identity;
-5. execute the exact boundary commands required by the original task;
+5. execute the exact local boundary commands required by the original task;
 6. preserve every intended red and subsequent green as actual output.
 
 Final local Linux requirements:
@@ -372,7 +396,10 @@ Final local Linux requirements:
   commit, push, PR, or CI dispatch.
 
 Mark Windows and hosted CI `pending` even if the original base has prior green
-evidence. Do not infer the revised candidate result from the base.
+evidence. Do not infer the revised candidate result from the base. Under the
+explicit execution-authority override above, pending Actions URLs and pending
+same-commit hosted Linux/Windows results do not prevent `ready to apply` when
+all required local gates genuinely pass.
 
 ## Replacement output contract
 
