@@ -2,7 +2,12 @@
 
 Recorded: 2026-08-31
 
-Status: Codex proposal for external-agent review before the first implementation slice. The user has already confirmed the public behavioral seams DCP, RCB, pair Add/Sub, Tensor2, Relin2, RS2, and Mult2.
+Status: historical Codex proposal written before the first implementation
+slice. The user confirmed the public behavioral seams DCP, RCB, pair Add/Sub,
+Tensor2, Relin2, RS2, and Mult2, but later accepted slice-specific records
+control their exact contracts. In particular, `reviews/rs2-preflight.md`
+supersedes this file's former `RefreshRequired` lifecycle and private RS2
+rescale assumptions.
 
 ## Module boundary
 
@@ -40,11 +45,16 @@ public:
 - `DCP` accepts only a fresh, two-component, evaluation-format, level-0 ciphertext on the exact full basis `[q0, ..., q_l, q_div]` and returns `CiphertextPair::ReadyForFirstMult` on its exact prefix.
 - `Tensor2` accepts only compatible `ReadyForFirstMult` pairs and returns `TensorCiphertextPair`; the distinct type prevents accidentally passing a two-component pair to Relin2.
 - `Relin2` accepts only `TensorCiphertextPair` and returns `CiphertextPair::ReadyForRS2` with two RLWE components in each member.
-- `RS2` accepts only `ReadyForRS2` and returns `CiphertextPair::RefreshRequired` after dropping `q_l`.
+- `RS2` accepts only `ReadyForRS2` and provisionally returns
+  `CiphertextPair::AfterFirstRS2` after dropping `q_l`; the exact name and
+  predicates remain deferred to the accepted-Relin2 runtime gate in
+  `reviews/rs2-preflight.md`.
 - `Mult2` composes those three calls and accepts only `ReadyForFirstMult`.
 - `RCB` accepts every valid two-component pair lifecycle state.
 - Add/Sub require identical lifecycle state and all compatibility facts; they preserve that state.
-- A second Mult2 on `RefreshRequired` fails before tensoring or key-switch table access.
+- A second Mult2 on `AfterFirstRS2` fails before tensoring or key-switch table
+  access. This bounded state does not assert that refresh is mathematically
+  required.
 
 The lifecycle enum is a validation fact, not a substitute for checking the actual context pointer, key tag, ordered moduli, level, format, component counts, and dual scale metadata on every public entry.
 
@@ -54,7 +64,10 @@ The lifecycle enum is a validation fact, not a substitute for checking the actua
 - Relin2 uses the evaluation-key vector registered for the input key tag, and validates it before modulus raising. The first slice does not introduce its own global key store.
 - Exact multiplication by `q_div` uses the upstream native-integer operation only after module validation.
 - Tensor2 uses the public raw-tensor operation only after module validation.
-- DCP/RS2 use a private last-tower rescale adapter; zero-tower modulus extension and metadata normalization remain private.
+- DCP keeps its accepted project-private decomposition seam. RS2 uses exactly
+  two public, output-returning OpenFHE `Rescale` calls after its complete
+  fail-fast gate; it does not add a project-private rescale adapter. Zero-tower
+  modulus extension and any accepted DCP metadata handling remain private.
 
 ## Deliberate exclusions
 

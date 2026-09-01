@@ -14,9 +14,12 @@ Relin2 commit that has passed same-SHA Linux/Windows verification and review.
 
 ## Minimal executable matrix
 
-Use one dispatching executable `tests/rs2_test.cpp <case>` with every negative
-case independently registered in CTest. Keep `rs2_api_contract_test`
-compile-only and outside CTest.
+Use one dispatching executable `tests/rs2_test.cpp <case>` for exactly 25
+runtime cases, with every runtime negative independently registered in CTest.
+Keep `rs2_api_contract_test` compile-only and outside CTest. The
+`invalid_lifecycle_source_gate` row is one separately executed token/AST audit,
+not a CTest registration, so it does not change the symbolic `B+25` final
+runtime count.
 
 | Case | Mechanical obligation | Oracle class |
 |---|---|---|
@@ -45,7 +48,7 @@ compile-only and outside CTest.
 | `reject_low_native_tower_format` | Corrupt one named low NativePoly tower while aggregate format remains valid | Member state |
 | `reject_high_tower_basis` | Corrupt only high ordered basis identity, not only count | Member state |
 | `reject_low_tower_basis` | Corrupt only low ordered basis identity, not only count | Member state |
-| `invalid_lifecycle_source_gate` | Token/AST gate proves the lifecycle switch has an invalid-enum branch without adding a friend/setter solely to make an unreachable runtime fixture | Static gate |
+| `invalid_lifecycle_source_gate` | Token/AST gate proves the complete lifecycle validation/dispatch rejects every invalid enum value on all paths, without requiring a particular `switch`/`if` syntax or adding a friend/setter solely to make an unreachable runtime fixture; execute it outside CTest | Static gate (excluded from runtime count) |
 
 When an inherited guard makes a newly registered regression green on its first
 execution, record an inherited green honestly. Do not weaken the fixture or
@@ -195,12 +198,16 @@ field already has an accepted exact message.
 1. Close the accepted Relin2 exact-base/manifest gate.
 2. Compile red only for the appended lifecycle symbol and exact RS2 API type.
 3. Add an immediate-throw scaffold; all inherited tests remain green.
-4. Add complete validation/lifecycle/composite tests before minimal validation
-   green.
-5. Add one complete valid arithmetic/state/RCB test; it remains red at the
+4. Add the complete manifest/member/composite validation tests, then make only
+   that validation boundary green.
+5. Add the wrong-lifecycle runtime case after validation is green, then add the
+   minimal lifecycle guard. Run the invalid-enum source gate at both boundaries
+   and distinguish an authentic new red from an inherited green; rerun it after
+   every later source-changing boundary and on the final exact SHA.
+6. Add one complete valid arithmetic/state/RCB test; it remains red at the
    scaffold until the smallest complete formula makes its unchanged oracle
    green.
-6. Add metadata, cache, and after-lifecycle regressions, distinguishing new red
+7. Add metadata, cache, and after-lifecycle regressions, distinguishing new red
    from inherited green.
-7. Prove final unique CTest name/command identity and same-SHA Linux/Windows
+8. Prove final unique CTest name/command identity and same-SHA Linux/Windows
    green before any acceptance claim.

@@ -27,25 +27,42 @@ red-green series is:
 |---:|---|---|
 | 01 | workflow trigger, CMake, compile-only API contract | production library builds; API target fails only for missing `AfterFirstRS2` and `RS2` |
 | 02 | appended enum value, declaration, immediate-throw scaffold | all `B` inherited tests pass |
-| 03 | malformed-manifest, insufficient-basis, and composite-degree red tests | all `B` inherited tests pass; all three named new tests independently fail at their intended oracle |
-| 04 | complete validation and composite-degree-one guard | `B+3` pass; valid input still reaches the scaffold |
-| 05 | one wrong-lifecycle red | `B+3` pass and the one named new test independently fails |
-| 06 | minimal `ReadyForRS2` lifecycle guard | `B+4` pass |
-| 07 | one complete valid arithmetic/oracle red | `B+4` pass; the valid case contains the complete oracle but still fails at the unchanged immediate-throw scaffold before that oracle executes |
-| 08 | minimal RS2 arithmetic and `AfterFirstRS2` construction | `B+5` pass |
-| 09 | separately registered Tensor2/RS2 `AfterFirstRS2` regressions | `B+7` pass |
-| 10 | final documentation and retained local TDD evidence only | `B+7` pass; no source, CMake, workflow, or test change |
+| 03 | all 19 complete-validation runtime reds: short/composite basis, ordered manifest/descriptor, and independent high/low member-state cases | all `B` inherited tests pass; all 19 named new cases execute independently and fail at their unchanged exact oracle |
+| 04 | complete validation and composite-degree-one guard | `B+19` pass; source identity proves the immediate-throw scaffold and absence of RS2 arithmetic remain unchanged |
+| 05 | one `ReadyForFirstMult` lifecycle runtime red; execute the separate invalid-enum source audit without forcing its outcome | `B+19` runtime tests pass and the one named runtime case independently fails; record the source audit as an authentic red or inherited green |
+| 06 | minimal `ReadyForRS2` lifecycle guard; add an invalid-enum branch only if patch 05 proved it missing | `B+20` runtime tests pass; the separate source audit exits zero without an audit-only production change |
+| 07 | one complete valid arithmetic/coefficient/state/public-RCB oracle red | `B+20` pass and the one valid-path case reaches the unchanged immediate-throw scaffold and fails with its complete oracle already present |
+| 08 | minimal RS2 arithmetic and `AfterFirstRS2` construction | `B+21` pass with the unchanged complete valid-path oracle executing |
+| 09 | metadata provenance, no-evaluation-key dependency, and the Tensor2/RS2 `AfterFirstRS2` regressions | `B+25` pass; record each newly registered case as an inherited green only if the existing implementation actually supplies it |
+| 10 | final documentation and retained local TDD evidence only | `B+25` pass; no source, CMake, workflow, or test change |
 
-Patch 07's valid test source must already contain the complete independent
+Patch 07's valid arithmetic test must already contain the complete independent
 `(A,B)` coefficient oracle, public RCB identity and immutability, exact state
-and basis, metadata provenance, fixed rounding/carry witnesses, and whole-input
-immutability. Its observed red remains the inherited scaffold exception;
-patch 08 removes that scaffold and must be the first boundary to execute and
-pass the unchanged complete oracle. Splitting those correctness obligations
-into later test patches would weaken the arithmetic boundary.
+and basis, fixed rounding/carry witnesses, and whole-input immutability. Its
+observed red remains the inherited scaffold exception; patch 08 removes that
+scaffold and must be the first boundary to execute and pass the unchanged
+complete oracle. Splitting those correctness obligations into later test
+patches would weaken the arithmetic boundary.
+
+Patch 09's metadata, cache, and two lifecycle regressions are expected to be
+inherited greens. If any exposes genuinely missing behavior, retain its
+authentic red, insert a minimal green implementation boundary, renumber the
+documentation boundary, and recompute every later count; never bury a new red
+in the documentation patch or manufacture one by weakening the fixture.
+
+The invalid-enum source audit is likewise not entitled to an artificial red
+or to a required `switch` spelling. It must prove the complete lifecycle
+validation/dispatch rejects every invalid enum value on all paths. Run it
+against the exact accepted Relin2 base, at patches 05 and 06, after every later
+source-changing boundary, and again on the final exact SHA. If the transitive
+accepted validator already supplies the semantic guard, record an inherited
+green and leave it unchanged. Only an authentic missing guard may produce the
+patch-05 red and authorize the smallest patch-06 fix. Patch 08's
+`AfterFirstRS2` construction/validation must not delete or bypass that guard.
+This static audit never changes `B`.
 
 If and only if the final Relin2 gate proves `B=37`, the corresponding expected
-green totals become 37, 40, 41, 42, and 44. These numbers are illustrative
+green totals become 37, 56, 57, 58, and 62. These numbers are illustrative
 until then and must not appear as accepted claims.
 
 ## Source-agent and isolated-replay command shapes

@@ -250,11 +250,13 @@ The existing first field retains its accepted meaning: the recorded factor at
 the input to this pair transition. The pair's independent current recorded
 factor is `SF_T/baseSF`. For the first supported parameter lifecycle, that
 current value can numerically equal the fresh degree-two factor `baseSF^2`, so
-factor and degree alone cannot distinguish states. `ValidatePair` must use an
-explicit lifecycle `switch` and independently validate, for every state,
+factor and degree alone cannot distinguish states. `ValidatePair` must dispatch
+on the complete lifecycle value and independently validate, for every state,
 lifecycle, level, exact basis, degree, current recorded factor,
-`inputRecordedScalingFactor`, and both logical scales. Invalid enum values keep
-a stable project diagnostic.
+`inputRecordedScalingFactor`, and both logical scales. Its control flow must
+cover every named state and reject every invalid enum value with a stable
+project diagnostic; a particular `switch`/`if` spelling is not part of the
+contract.
 
 ## Metadata source and alias boundary
 
@@ -376,7 +378,7 @@ The eventual external task should preserve separately observable boundaries:
    greens honestly where an existing Tensor2 guard already supplies behavior;
 7. final exact Linux/Windows green and documentation only afterward.
 
-Every negative case is a separately named CTest and requires exact
+Every negative runtime case is a separately named CTest and requires exact
 `std::invalid_argument`, `DoubleCKKS: ` attribution, stable field-specific
 text, and whole-input immutability. Production `try`/`catch` is forbidden.
 
