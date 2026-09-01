@@ -255,7 +255,7 @@ common = [
     "--permission-mode", "plan", "--safe-mode", "--no-chrome",
     "--no-session-persistence", "--disable-slash-commands",
     "--prompt-suggestions", "false", "--strict-mcp-config",
-    "--mcp-config", "{}", "--tools", "Read,Glob,Grep",
+    "--mcp-config", "{\"mcpServers\":{}}", "--tools", "Read,Glob,Grep",
     "--max-budget-usd", "5.00", "--output-format", "stream-json",
     "--verbose",
 ]
