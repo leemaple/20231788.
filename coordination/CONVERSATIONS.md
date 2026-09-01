@@ -508,3 +508,23 @@ off the critical path until quota recovery; the exhausted local Fable5 launch
 was not retried, and internal review plus GitHub Actions continued without
 blocking. The next isolated boundary is the wrong concrete evaluation-key
 subtype, rejected before any A/B getter.
+
+At 2026-09-02 07:34 CST, the wrong-concrete-evaluation-key-subtype boundary
+closed on the nonblocking Codex/Actions path. Initial red `143b624` registered
+the fourteenth test but exposed a test-only `-Werror=address` pointer-comparison
+compile failure; one-line correction `fafe385` then produced the accepted
+behavioral `13/14`, with inherited 13/13 green. The durable real-key positive
+control first reached and accepted the old scaffold; only the exact-base
+`EvalKeyImpl` negative control treated it as the failing observation. That
+positive control prevents an unconditional wrong-subtype
+diagnostic from going falsely green while allowing the future complete Relin2
+to return normally. Green `331dd7d` added only a five-line dynamic-cast/null
+guard after the existing tag check. Three source and three evidence reviews
+returned PASS, and hosted Linux built warning-clean, compiled the API contract,
+and passed exact `14/14`, including both positive- and negative-control
+postchecks and cache restoration. Red evidence includes the initial compile
+failure record; both red and green evidence passed ZIP, manifest, Gitleaks,
+targeted-scan, identity, and remote-ref gates and are pushed. Windows jobs were
+cancelled during official toolchain installation and make no project-test
+claim. ZCode and the exhausted local Fable5 launch remained off the critical
+path. The next isolated red is the HYBRID A-vector length mismatch.
