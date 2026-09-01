@@ -162,17 +162,21 @@ Therefore project validation must precede every public Add/Sub call.
 ### 3.3 Successful strict-compatible behavior
 
 For two-component, same-basis, same-format inputs, public non-in-place Add/Sub
-is exact componentwise polynomial Add/Sub. The result keeps the left member's
-context, key tag, encoding, slots, level, noise-scale degree, recorded factor,
-hops, integer factor, and metadata map; OpenFHE does not recompute them.
+is exact componentwise polynomial Add/Sub. The result keeps the corresponding
+left member's context, key tag, encoding, slots, level, noise-scale degree,
+recorded factor, hops, integer factor, and metadata map; OpenFHE does not
+recompute them. Thus `result.high` inherits from `left.high` and `result.low`
+inherits from `left.low`.
 
 `CiphertextImpl::CloneEmpty()` creates a new metadata map containing the same
 `shared_ptr<Metadata>` values, not deep-cloned metadata values
-(`ciphertext.h:322-330,390-398`). Right metadata is not merged. The minimal
-contract is therefore explicit left-member metadata inheritance plus deep
-observable input immutability. It must not claim metadata merge, exchange
-symmetry, or absence of output/input metadata aliasing unless a later accepted
-implementation deliberately establishes those properties.
+(`ciphertext.h:322-330,390-398`). Each output member has an outer map distinct
+from every input map, while its metadata-value pointers shallow-alias the
+corresponding left member; right metadata is not merged. The minimal contract
+is therefore explicit left-member metadata inheritance plus input state that
+is observably unchanged during and immediately after the call. It must not
+claim metadata merge, exchange symmetry, deep metadata-value isolation, or
+future independence after mutation through an aliased metadata pointer.
 
 ## 4. Preliminary public API boundary
 
@@ -214,14 +218,18 @@ Mutual compatibility must include exact:
 - two RLWE components per member and Evaluation format;
 - key tag, CKKS encoding, and slots;
 - lifecycle;
-- noise-scale degree and recorded factor;
+- noise-scale degree and current OpenFHE recorded scaling factor;
+- `PaperScaleDescriptor::inputRecordedScalingFactor` as an independent
+  historical field;
 - high and recombined logical scales;
 - every accepted manifest/descriptor invariant.
 
-The supported same-lifecycle set remains provisional until exact Relin2/RS2
-green establishes `ReadyForRS2` and `RefreshRequired`. Cross-lifecycle Add/Sub,
-automatic lifecycle conversion, and automatic level/scale/divisor repair are
-always rejected.
+The final set of same-lifecycle states supported by Add/Sub remains pending the
+exact-green gate. Candidates are `ReadyForFirstMult`, `ReadyForRS2`, and the
+neutral provisional `AfterFirstRS2`; listing a candidate does not accept it.
+Cross-lifecycle Add/Sub, automatic lifecycle conversion, and automatic
+level/scale/divisor repair are always rejected. `AfterFirstRS2` records only a
+completed first RS2 and makes no paper-unsupported refresh claim.
 
 ### 5.2 Minimal production path
 
@@ -236,8 +244,9 @@ or the same two calls with `EvalSub`. Use output-returning methods only; do not
 use InPlace, Mutable, NoCheck, or a private DCRT component loop.
 
 Construct the result with the proven-compatible left descriptor, explicit
-left-member metadata semantics, unchanged lifecycle/scales/factor/degree, then
-fully validate the result before returning.
+left-member metadata semantics, and unchanged lifecycle, logical scales,
+current recorded factor, `inputRecordedScalingFactor`, and degree. Fully
+validate both current and historical factor fields before returning.
 
 ### 5.3 Independent oracle and fixed witnesses
 
@@ -256,18 +265,28 @@ q_div*(h1 +/- h2) + (l1 +/- l2)
     = RCB(C1) +/- RCB(C2) mod Q.
 ```
 
-The expected path must not call project Add, Sub, or RCB. Fixed witnesses cover
-positive/negative modular wrap, carry/borrow, exact cancellation, Sub operand
-direction, nonzero high/low, and a low term crossing the centered `q_div/2`
-boundary so componentwise output differs from an incorrect
-`DCP(RCB(left) +/- RCB(right))` implementation.
+The expected path must not call project Add, Sub, or RCB. Separately bind the
+real return from `module.RCB(actualResult)` and compare every component, tower,
+and coefficient with the independently computed
+`RCB(C1) +/- RCB(C2)`. Verify its complete state and its metadata inheritance
+from `actualResult.high`, and snapshot `actualResult` before the call to prove
+public RCB leaves it observably unchanged during and immediately after the
+call. This checks the public RCB result; the displayed identity alone is not an
+oracle for that implementation.
+
+Fixed witnesses cover positive/negative modular wrap, carry/borrow, exact
+cancellation, Sub operand direction, nonzero high/low, and a low term crossing
+the centered `q_div/2` boundary so componentwise output differs from an
+incorrect `DCP(RCB(left) +/- RCB(right))` implementation.
 
 ### 5.4 State and adversarial tests
 
 Successful tests assert unchanged basis, level, lifecycle, component count,
-format, context/tag/slots/encoding, degree/factor, divisor, and both logical
-scales. Deep snapshots must prove both pairs and their metadata maps are
-unchanged.
+format, context/tag/slots/encoding, degree, current recorded factor,
+`inputRecordedScalingFactor`, divisor, and both logical scales. State snapshots
+must prove both pairs, their distinct outer metadata maps, their map entries,
+and immediately observable metadata values are unchanged; this is not a claim
+that returned shallow-aliased metadata values are isolated from later mutation.
 
 Every mismatch class is an independent negative test with exact
 `std::invalid_argument`, `DoubleCKKS: `, and a stable field diagnostic:
@@ -276,7 +295,8 @@ Every mismatch class is an independent negative test with exact
 - context, key tag, slots, encoding, or format;
 - component count;
 - tower count, order, modulus/root/parameter identity, or level;
-- degree, factor, high scale, recombined scale, divisor, or lifecycle.
+- degree, current recorded factor, descriptor `inputRecordedScalingFactor`,
+  high scale, recombined scale, divisor, or lifecycle.
 
 Composite degree is not an Add/Sub precondition or negative-test dimension;
 it is an RS2/Mult2 boundary. Add/Sub performs no rescale and must not be
@@ -321,14 +341,20 @@ Subject to exact Relin2/RS2 confirmation:
 | level | `1 -> 1 -> 1 -> 2` |
 | components/member | `2 -> 3 -> 2 -> 2` |
 | noise-scale degree | `2 -> 3 -> 3 -> 2` |
-| recorded factor | `SF_i -> SF1*SF2/baseSF -> same -> SF1*SF2/baseSF^2` |
+| current OpenFHE recorded factor | `SF_i -> SF1*SF2/baseSF -> same -> SF1*SF2/baseSF^2` |
+| `PaperScaleDescriptor::inputRecordedScalingFactor` | `SF_i -> N/A` (`TensorScaleDescriptor`) `-> SF_T=SF1*SF2/baseSF -> retained SF_T` |
 | high logical scale | `H_i -> H1*H2 -> same -> H1*H2/q_l` |
 | recombined logical scale | `R_i -> R1*R2/q_div -> same -> R1*R2/(q_div*q_l)` |
-| lifecycle | `ReadyForFirstMult -> TensorCiphertextPair -> ReadyForRS2 -> RefreshRequired` |
+| lifecycle | `ReadyForFirstMult -> TensorCiphertextPair -> ReadyForRS2 -> AfterFirstRS2` |
 
 The fixture must make `q_div`, exact active prime `q_l`, and `baseSF` distinct.
 Context, key tag, slots, CKKS encoding, and Evaluation format remain fixed.
 `q_div` remains the pair recombination divisor; RS2 consumes only `q_l`.
+The RS2-relative metadata candidate is `final.high <- RS2 input.high` and
+`final.low <- RS2 input.high`. Their outer maps are distinct, while metadata
+value pointers shallow-alias that RS2 input member. Which original
+Tensor2/Relin2 sentinel this ultimately denotes remains pending the exact-green
+gate and must not be frozen here.
 
 ### 6.3 Independent composition oracle
 
@@ -348,6 +374,11 @@ call project `Tensor2`, `Relin2`, `RS2`, `Mult2`, or their private helpers.
    `A`, `C`, and `B=C-q_div*A`.
 5. Compare all actual `(A,B)` components, towers, and coefficients, and
    independently prove `q_div*A+B=C`.
+6. Separately bind the real return from `module.RCB(actualResult)` and compare
+   every component, tower, and coefficient with the independent RS oracle's
+   `C`. Verify its complete state and metadata source from `actualResult.high`;
+   snapshot `actualResult` first and prove public RCB leaves it observably
+   unchanged during and immediately after the call.
 
 This oracle independently verifies the project composition, not pristine
 OpenFHE key-switch arithmetic; `Relinearize` remains an explicitly trusted
@@ -362,17 +393,21 @@ Permanent fixed witnesses must cover:
 - centered RS positive/negative boundaries;
 - `B != RS(low)`;
 - a first real Mult2 output rejected on a second Mult2 before Tensor/key-cache
-  access with the stable refresh-required diagnostic.
+  access with the exact project-owned `ReadyForFirstMult` input-lifecycle
+  diagnostic. The rejection proves only that a second multiplication is not
+  implemented in this bounded project state, not that refresh is required.
 
 Black-box tests prove the returned diagnostic and observable immutability;
 source-order review proves that no discarded arithmetic or key-cache access
 happened first.
 
-Every valid and failing Mult2 path deep-snapshots both input pairs and their
-metadata maps and proves them unchanged. Every evaluation-key success,
-missing-key, or malformed-key fixture uses a test-owned RAII guard that saves
-and restores the entire prior static evaluation-key map even if an assertion
-throws; no test may rely on `EvalMultKeyGen` overwriting an existing tag entry.
+Every valid and failing Mult2 path snapshots both input pairs, outer metadata
+maps, entries, and immediately observable metadata values and proves them
+unchanged without claiming future isolation from shallow-aliased outputs. Every
+evaluation-key success, missing-key, or malformed-key fixture uses a test-owned
+RAII guard that saves and restores the entire prior static evaluation-key map
+even if an assertion throws; no test may rely on `EvalMultKeyGen` overwriting an
+existing tag entry.
 
 ## 7. Minimal TDD patch order
 
@@ -417,7 +452,9 @@ provide all of:
 
 - exact source SHA/tree and complete old/new CTest count;
 - exact Linux/Windows successful run and toolchain identities;
-- accepted `ReadyForRS2` and `RefreshRequired` state fields;
+- accepted `ReadyForRS2` and `AfterFirstRS2` state fields, including the
+  distinction between retained descriptor input factor `SF_T` and current
+  recorded factor `SF_T/baseSF`;
 - actual HYBRID/BV support and fixed key-switch/DCP/RS witness coordinates;
 - exact `q_l`, level, degree, factor, and dual-scale observations;
 - source-verified metadata-map inheritance and aliasing behavior;
