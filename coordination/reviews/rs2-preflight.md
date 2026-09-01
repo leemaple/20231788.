@@ -8,6 +8,12 @@ are viable. The exact task/base, final lifecycle predicates, diagnostic text,
 fixture values, and execution claims must wait for accepted Relin2 patches and
 exact Linux/Windows green evidence.
 
+The revised document passed independent paper/TDD and pristine OpenFHE/API
+read-only gates after correcting descriptor semantics, lifecycle naming,
+metadata provenance/alias scope, public-RCB proof, exact API typing, and exact
+integer multiplication. Those document gates do not replace the deferred
+exact-Relin2 runtime gate below.
+
 This is a clean-room algorithm/numeric-integration review. It uses the supplied
 paper, accepted project contracts, and pristine OpenFHE 1.5.0 only. It does not
 inspect or reuse any previous implementation and makes no build, test,
@@ -106,9 +112,11 @@ The source is pinned at
   `src/pke/include/cryptocontext.h:2502-2531`.
 - Output-returning RNS `ModReduce` clones the ciphertext before operating:
   `src/pke/lib/schemerns/rns-leveledshe.cpp:311-321`.
-- CKKS rescale increments level, decrements noise-scale degree, calls
-  `DropLastElementAndScale` for every RLWE component, and updates the recorded
-  factor:
+- On the project's supported FIXEDMANUAL path, public CKKS rescale increments
+  level, decrements noise-scale degree, calls `DropLastElementAndScale` for
+  every RLWE component, and updates the recorded factor; the public RNS entry
+  gates that internal operation on FIXEDMANUAL:
+  `src/pke/lib/schemerns/rns-leveledshe.cpp:317-321` and
   `src/pke/lib/scheme/ckksrns/ckksrns-leveledshe.cpp:172-190`.
 - The coefficient/RNS arithmetic uses the actual active last prime selected by
   the current tower count. `DropLastElementAndScale` performs centered modulus
@@ -123,6 +131,17 @@ The source is pinned at
 - Public `EvalSub` can silently align different tower counts through level
   reduction, so project compatibility must be complete before subtraction:
   `src/pke/lib/schemerns/rns-leveledshe.cpp:393-407`.
+- `CiphertextImpl::CloneEmpty` creates a new outer metadata-map container but
+  shallow-copies its `shared_ptr<Metadata>` values:
+  `src/pke/include/ciphertext.h:390-405`.
+- Project RCB clones its high member and public Rescale clones its input. After
+  the required complete compatibility recheck proves no alignment is needed,
+  public EvalSub clones its first operand and changes only that result's
+  elements; without that precheck it may level-reduce either working clone:
+  `src/double_ckks.cpp:555-565`,
+  `src/pke/lib/schemerns/rns-leveledshe.cpp:114-130,311-321,393-407`,
+  `src/pke/lib/scheme/ckksrns/ckksrns-leveledshe.cpp:197-201`, and
+  `src/pke/lib/schemebase/base-leveledshe.cpp:601-617`.
 
 Therefore one valid public Rescale with composite degree one has the exact
 metadata split:
@@ -163,7 +182,7 @@ The later task should consider exactly:
 enum class PairLifecycle : std::uint8_t {
     ReadyForFirstMult,
     ReadyForRS2,
-    RefreshRequired,
+    AfterFirstRS2,
 };
 
 CiphertextPair RS2(const CiphertextPair& relinearized) const;
@@ -174,11 +193,13 @@ callers do not supply it. No second pair type, public setter/friend, arbitrary
 level argument, refresh implementation, or future multiplication seam is
 needed.
 
-`RefreshRequired` is a project boundary, not paper terminology. It is the
-minimal honest state because exact primes differ from `baseSF`: the result
-cannot be called `ReadyForFirstMult` or passed to a second Tensor2/Mult2 under
-the current first-lifecycle contract. RCB accepts it; Tensor2 and RS2 reject it
-before arithmetic.
+`AfterFirstRS2` is a neutral project state, not paper terminology. It records
+only what this bounded implementation has completed. The paper discusses
+sequential multiplications, and the ordinary FIXEDMANUAL difference between an
+exact prime and `baseSF` does not prove that refresh is mathematically required.
+The current project has no second-multiplication contract, so RCB accepts this
+state while Tensor2 and RS2 reject it before arithmetic. Any future transition
+from it remains pending rather than being mislabeled as a refresh requirement.
 
 This lifecycle name and its complete validation predicates remain provisional
 until exact Relin2 green state is available.
@@ -190,20 +211,48 @@ until exact Relin2 green state is available.
 | `ReadyForRS2` input | `Q_l` | 1 | 2 | 3 | `SF_T` | `H_T`, `R_T` |
 | rescaled high | `Q_(l-1)` | 2 | 2 | 2 | `SF_T/baseSF` | `H_T/q_l` |
 | rescaled recombination | `Q_(l-1)` | 2 | 2 | 2 | `SF_T/baseSF` | `R_T/q_l` |
-| `RefreshRequired` output | `Q_(l-1)` | 2 | 2 | 2 | `SF_T/baseSF` | `H_T/q_l`, `R_T/q_l` |
+| `AfterFirstRS2` output | `Q_(l-1)` | 2 | 2 | 2 | `SF_T/baseSF` | `H_T/q_l`, `R_T/q_l` |
 
 The minimal output descriptor candidate is:
 
 ```text
-inputRecordedScalingFactor              = SF_T/baseSF
+inputRecordedScalingFactor              = SF_T
 divisor                                  = q_div
 approximateLogicalScalingFactor          = H_T/exact_q_l
 approximateRecombinedLogicalScalingFactor = R_T/exact_q_l
 ```
 
-The existing first-field name is retained for API stability; its exact
-post-RS2 meaning must be stated in the eventual task rather than inferred from
-the name.
+The existing first field retains its accepted meaning: the recorded factor at
+the input to this pair transition. The pair's independent current recorded
+factor is `SF_T/baseSF`. For the first supported parameter lifecycle, that
+current value can numerically equal the fresh degree-two factor `baseSF^2`, so
+factor and degree alone cannot distinguish states. `ValidatePair` must use an
+explicit lifecycle `switch` and independently validate, for every state,
+lifecycle, level, exact basis, degree, current recorded factor,
+`inputRecordedScalingFactor`, and both logical scales. Invalid enum values keep
+a stable project diagnostic.
+
+## Metadata source and alias boundary
+
+With the required operand order, metadata provenance is fixed:
+
+```text
+RS2.high metadata  <- input.high
+RCB result metadata <- input.high
+RS2.low metadata   <- rescaled RCB result <- input.high
+```
+
+Input-low metadata does not propagate to either output. Each public clone has a
+separate outer map container, but pristine OpenFHE shallow-copies the metadata
+value pointers. To stay KISS-consistent with pristine OpenFHE and the existing
+accepted project operations, this bounded RS2 slice provisionally accepts that
+upstream alias behavior; the deferred exact Relin2 gate must still confirm its
+actual output. RS2 promises only that the full input, including deep metadata
+values, is unchanged during the call and immediately after return. It does not
+promise that a later mutation through OpenFHE's mutable metadata pointer cannot
+affect another ciphertext. Tests use different high/low sentinels to prove
+value provenance and call-time non-mutation without claiming value-pointer
+isolation. A project-wide deep-isolation change is outside this slice.
 
 ## Required fail-fast sequence candidate
 
@@ -219,13 +268,18 @@ the name.
 5. Completely validate both results: context, actual tag, slots, CKKS encoding,
    Evaluation format, exact ordered `Q_(l-1)` tower parameters, two components,
    level 2, degree 2, and exact recorded factor `SF_T/baseSF`.
-6. Multiply the one rescaled-high clone by exact integer `NativeInteger q_div`.
-   Before subtraction, recheck every compatibility field so public EvalSub
-   cannot hide an error through auto-alignment.
+6. Clone the already validated rescaled high and multiply every DCRT component
+   directly with `DCRTPoly::operator*=(NativeInteger q_div)`. This is exact RNS
+   integer arithmetic; CKKS scalar `EvalMult` is forbidden because it encodes an
+   approximate scalar and can change scale/level. Before subtraction, recheck
+   every compatibility field so public EvalSub cannot hide an error through
+   auto-alignment.
 7. Compute only `rescaledRecombined - q_div*rescaledHigh`; preserve the first
    rescaled high unchanged.
-8. Construct the complete `RefreshRequired` pair, validate it before return,
-   and prove the input plus every deep metadata-map observable unchanged.
+8. Construct the complete `AfterFirstRS2` pair, validate it before return, and
+   prove the input plus every deep metadata-map value unchanged by the call.
+   Assert both output maps have the specified high-member value provenance;
+   do not claim deep pointer isolation.
 
 Public Rescale is the trusted pristine primitive. Do not add project-private
 rescale/CRT arithmetic to production merely to duplicate it. The independent
@@ -246,7 +300,11 @@ should:
 6. set `B=C-q_div*A mod Q_(l-1)`;
 7. compare `(A,B)` against every coefficient-format actual-output
    component/tower/coefficient;
-8. separately prove `q_div*A+B=C`, the exact RCB identity.
+8. bind the return from public `module.RCB(result)`, compare both components,
+   every remaining tower, and every coefficient to independent `C`, and check
+   its complete state and specified metadata source;
+9. deep-snapshot the RS2 pair before public RCB, prove it unchanged immediately
+   afterward, and separately prove `q_div*A+B=C`.
 
 The fixed fixture must name coordinates and residues for positive and negative
 rounding boundaries, quotient carry, nonzero high/low contributions, and a
@@ -266,15 +324,18 @@ for malformed manifest, wrong lifecycle, and composite degree other than one.
 
 The eventual external task should preserve separately observable boundaries:
 
-1. compile red for only `RefreshRequired` and `RS2`;
+1. compile red for only `AfterFirstRS2` and `RS2`; use an exact
+   member-function-pointer `static_assert` for
+   `CiphertextPair (DoubleCKKS::*)(const CiphertextPair&) const`, and check the
+   enum underlying type and appended value;
 2. immediate-throw, warning-clean non-mergeable scaffold;
 3. complete-validation red, then minimal validation green;
 4. wrong-lifecycle red, then minimal lifecycle green;
 5. one valid arithmetic red must already assert complete `(A,B)` coefficients,
    public RCB acceptance and immutability on the RS2 result, and the exact
    recombination identity; then the complete formula makes that boundary green;
-6. add only remaining refresh-boundary regressions, recording inherited greens
-   honestly where an existing Tensor2 guard already supplies behavior;
+6. add only remaining after-first-RS2 boundary regressions, recording inherited
+   greens honestly where an existing Tensor2 guard already supplies behavior;
 7. final exact Linux/Windows green and documentation only afterward.
 
 Every negative case is a separately named CTest and requires exact
@@ -289,7 +350,7 @@ Do not implement or claim:
 - `DCP o RS o RCB`;
 - `LevelReduce`, private `ModReduceInternal`, in-place Rescale, or manual
   metadata repair after Rescale;
-- floating `q_div`, arbitrary-level RS2, Add/Sub, Mult2, refresh,
+- floating or CKKS-scalar `q_div`, arbitrary-level RS2, Add/Sub, Mult2, refresh,
   bootstrapping, repeated multiplication, serialization, or performance work;
 - a Lemma 4.6 or decoded-slot precision bound without all hypotheses and
   measured quantities.
@@ -306,7 +367,7 @@ Before writing the RS2 engineering task, bind and independently audit:
   `q_l`, `q_div`, and `baseSF` inequality witnesses;
 - public Rescale's exact observed basis/level/degree/factor behavior on that
   fixture;
-- the final `RefreshRequired` name and every validation predicate.
+- the final `AfterFirstRS2` name and every validation predicate.
 
 Until that gate passes, no RS2 source patch, test patch, external implementation
 request, build, or test result is claimed.
