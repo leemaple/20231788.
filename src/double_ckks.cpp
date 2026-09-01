@@ -576,6 +576,11 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
     if (firstEvaluationKey->GetKeyTag() != tensor.GetKeyTag()) {
         Invalid("Relin2 first evaluation key tag does not match the Tensor key tag");
     }
+    const auto relinearizationKey =
+        std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<lbcrypto::DCRTPoly>>(firstEvaluationKey);
+    if (!relinearizationKey) {
+        Invalid("Relin2 first evaluation key has the wrong concrete subtype");
+    }
     throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
 }
 
