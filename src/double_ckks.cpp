@@ -555,6 +555,9 @@ TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const Ciphe
 
 CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
     ValidateTensorResult(tensor);
+    if (tensor.GetOrderedModuli().size() < tensor.GetNoiseScaleDegree()) {
+        Invalid("Relin2 requires at least as many active Q_l towers as the Tensor noise-scale degree");
+    }
     throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
 }
 
