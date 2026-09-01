@@ -447,3 +447,18 @@ public API compilation, and exactly 9/9. Red and green raw evidence passed ZIP,
 manifest, and secret-scan gates and is pushed on isolated evidence branches.
 Intermediate Windows work was cancelled after Linux capture without a Windows
 claim; ZCode/Fable5 remained outside the critical path.
+
+At 2026-09-02 05:33 CST, the nonblocking path closed Relin2's present-but-empty
+evaluation-key-vector boundary. The first red checkpoint `f165365` exposed a
+test-only `Format` namespace compile error; that failure was retained without
+being misrepresented as the behavioral red. One-line correction `e976626`
+then produced the accepted hosted `9/10`: warning-clean build and public API
+compilation succeeded, inherited 9/9 stayed green, and only the new empty-vector
+case reached the old not-implemented exception. Green `342686a` reused a single
+map iterator and added only the exact empty-vector guard; three read-only
+reviews returned PASS and hosted Linux passed exactly 10/10, including immediate
+Tensor/cache/deep-metadata invariance checks. Raw red/green evidence, terminal
+JSON, complete logs ZIPs, manifests, Gitleaks, targeted scans, identities, and
+the initial compile-red record are pushed on dedicated evidence branches.
+Intermediate Windows jobs were cancelled after Linux capture and make no test
+claim. ZCode and Fable5 remained outside the critical path, as directed.
