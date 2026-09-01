@@ -76,7 +76,7 @@ void CheckPassesCurrentScaffoldOrCompletes(Function&& function, const std::strin
     catch (const std::logic_error& exception) {
         Check(typeid(exception) == typeid(std::logic_error),
               label + " threw a derived logic-error type: " + exception.what());
-        Check(exception.what() == "DoubleCKKS: Relin2 is not implemented",
+        Check(std::string(exception.what()) == "DoubleCKKS: Relin2 is not implemented",
               label + " reported an unexpected diagnostic: " + exception.what());
     }
     catch (const std::exception& exception) {
