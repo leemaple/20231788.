@@ -139,3 +139,43 @@ empty composer, exactly one continuation marker, active `Thinking` and
 `Stop answering`, and no Retry control. Do not interrupt, refresh, edit,
 resend, retry, or open another conversation while this packaging-only response
 is active.
+
+## Packaging response, quarantine, and rejection
+
+The packaging-only continuation completed naturally after a page-reported
+57 seconds with a single download control. Codex clicked it exactly once. The
+browser completed download event `a09fb628-cc93-4c1c-b0c0-14ebc6d7a354`,
+32,652 bytes, then the file was moved from the default Downloads directory into
+the new project quarantine without a second download.
+
+The received `chatgpt-pro-relin2-01-delivery.zip` has SHA-256
+`cb17f339f8bc63b36edbd3f43cca1c517d4f450996b2dd1b850a6665f6a262a6`.
+It contains exactly the seven patches, `REVIEW.md`, `TESTS.md`, and
+`PATCHES.sha256` as ten regular root files. Path/link/duplicate inspection,
+`unzip -t`, all nine listed checksums, and fresh Gitleaks 8.30.1 scans passed.
+
+All seven patches then passed `git apply --check --whitespace=error-all`,
+actual ordered application, and `git diff --check` in a disposable
+`--no-hardlinks` clone of exact base `fb862a3...`. The candidate tree is
+`bd2edcaec7adaf7556c9fbfa7b65502a70f27b4a`; disposable review-only commit
+`49adc5baa5275f555998e3d04065582d241e396d` exists only to bind the formal diff.
+No patch was applied to the real branch and no Mac build was run.
+
+The candidate was rejected with `changes needed`. The exact receipt and formal
+two-axis review are in `coordination/reviews/relin2-delivery-receipt.md`.
+Blocking gaps include an unchecked public RCB return, randomly scanned K and
+v/w witnesses, a boundary test that discards production output, incomplete
+result/tower/metadata assertions, shallow and non-restoring key-cache evidence,
+missing absent-key snapshots, a non-exact API signature assertion, mutable
+production cache binding, substring-only diagnostic checks, changed legacy
+failure attribution, copied/unregistered Tensor2 tests, insufficient
+representative public-input coverage, and no retained project-tree Relin2 TDD
+evidence. Independent pristine OpenFHE/API review passed; that does not override
+the paper/TDD/Standards/Spec failures.
+
+A complete replacement-series task is being prepared at
+`coordination/tasks/chatgpt-pro-relin2-remediation-01.md`. It will be sent once
+in this same conversation only after independent gate review, with the complete
+original source ZIP, binding, original task, rejected delivery, and standalone
+remediation task reattached. Until then the task space remains open and idle;
+no duplicate conversation is authorized.

@@ -1,0 +1,22 @@
+diff --git a/README.md b/README.md
+index 9f42e5f..44d8a45 100644
+--- a/README.md
++++ b/README.md
+@@ -7,11 +7,15 @@ The destination repository's previous implementation and every related local cod
+ ## Live project state
+ 
+ - Default integration branch: [`cleanroom/reimplement-mult2-20260831`](https://github.com/leemaple/20231788./tree/cleanroom/reimplement-mult2-20260831)
+-- Current implementation slice: `agent/codex-tensor2-01` extends the accepted DCP/RCB base with the bounded `t=2` Tensor2 public seam, distinct three-component result type, and independent negacyclic-oracle tests. It is not merged into the default branch.
++- Current implementation slice: `agent/codex-relin2-01` extends the accepted Tensor2 base with the bounded first-multiplication `Relin2` transition. The public seam is `CiphertextPair Relin2(const TensorCiphertextPair& tensor) const`; its result lifecycle is `ReadyForRS2`. It is not merged into the default branch.
+ - Exact Tensor2 base evidence: GitHub Actions run `33411494861` passed the pristine OpenFHE 1.5.0 DCP/RCB base at source commit `87c84b879c13b55cf15d6559d3317853228fdc05` on Linux/GCC and Windows 2022/MSYS2 MinGW64. That retained run is baseline evidence only; final Tensor2 same-commit Actions verification is pending downstream application.
+ - First Tensor2 production green: Actions run `33427271692` passed the strict build and all 6/6 CTest entries on Linux at implementation commit `1408d46217e97a1c14d43d49b64791da22f652da`; its intermediate Windows job was intentionally cancelled. Merge requires a later run whose `headSha` is the final source/test/workflow commit and whose Linux and Windows jobs both succeed.
+ - External review: ChatGPT Pro returned the ordered Tensor2 candidate with verdict `ready to apply`; Codex independently hardened its pre-arithmetic validation test and reviewed the resulting source. ChatGPT Pro has not yet reviewed the final post-hardening commit, and the preserved Windows ZCode/Zima task has not reviewed it. The DCP/RCB-only exact closure is `MERGEABLE`, conditional on that separate Windows review.
+-- Still outside this bounded slice: exact-current external closure and implementation of Relin2, RS2, Mult2, and pair addition/subtraction.
++- Relin2 state contract: `ReadyForFirstMult` remains the DCP/Tensor2 input state; Relin2 returns `ReadyForRS2` at unchanged level 1 with two RLWE components per member, Tensor2 degree/factor metadata, and separately preserved high/recombined logical-scale descriptors. Public RCB accepts either valid lifecycle; Tensor2 rejects `ReadyForRS2` before arithmetic.
++- Relin2 arithmetic contract: the high Tensor member is restored to the complete ordered basis by integer multiplication by `q_div` plus an appended zero `q_div` residue, publicly relinearized once, decomposed through the shared private DCP arithmetic seam, and combined as `(u, v + Relin(low3))`. No working tower is consumed.
++- Relin2 key preflight validates only evaluation-key index zero for the exact Tensor tag/context, concrete relinearization-key subtype, and HYBRID/BV key-shape/basis/format requirements before basis restoration or public relinearization. Later vector entries are deliberately neither required nor inspected.
++- Final local Relin2 TDD evidence is carried by the ordered patch series and `TESTS.md` in the review delivery. Hosted same-commit Linux/Windows verification remains a downstream gate and is not claimed here.
++- Still outside this bounded slice: RS2, Mult2, pair addition/subtraction, rotations, refresh/bootstrapping, repeated multiplication, serialization, and performance work.
+ - Continuity: an active long-running Codex Goal advances the project across turns; the daily 07:00 Asia/Shanghai automation independently produces and delivers the PDF status report.
+ - Progress evidence: [`coordination/CONVERSATIONS.md`](coordination/CONVERSATIONS.md)
+ - Paper/OpenFHE API review: [`coordination/CODEX_API_REVIEW.md`](coordination/CODEX_API_REVIEW.md)

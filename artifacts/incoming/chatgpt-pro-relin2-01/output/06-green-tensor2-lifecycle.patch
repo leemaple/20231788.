@@ -1,0 +1,15 @@
+diff --git a/src/double_ckks.cpp b/src/double_ckks.cpp
+index 57322b4..e81941f 100644
+--- a/src/double_ckks.cpp
++++ b/src/double_ckks.cpp
+@@ -546,6 +546,10 @@ TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const Ciphe
+     ValidatePair(left);
+     ValidatePair(right);
+     ValidateTensorCompatibility(left, right);
++    if (left.lifecycle_ != PairLifecycle::ReadyForFirstMult ||
++        right.lifecycle_ != PairLifecycle::ReadyForFirstMult) {
++        Invalid("Tensor2 requires ReadyForFirstMult inputs");
++    }
+ 
+     lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> leftHigh = left.high_;
+     lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> leftLow = left.low_;

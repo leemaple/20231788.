@@ -1,0 +1,62 @@
+diff --git a/.github/workflows/dcp-rcb.yml b/.github/workflows/dcp-rcb.yml
+index 41dab53..c4c3e55 100644
+--- a/.github/workflows/dcp-rcb.yml
++++ b/.github/workflows/dcp-rcb.yml
+@@ -5,6 +5,7 @@ on:
+     branches:
+       - agent/codex-dcp-rcb-01
+       - agent/codex-tensor2-01
++      - agent/codex-relin2-01
+       - cleanroom/reimplement-mult2-20260831
+   workflow_dispatch:
+ 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b751353..649887b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -45,16 +45,22 @@ target_link_libraries(tensor2_api_contract_test PRIVATE openfhe_2023_1788)
+ add_executable(tensor2_test tests/tensor2_test.cpp)
+ target_link_libraries(tensor2_test PRIVATE openfhe_2023_1788)
+ 
++# Compile-only Relin2 public API contract. It is intentionally not a CTest entry.
++add_executable(relin2_api_contract_test tests/relin2_api_contract_test.cpp)
++target_link_libraries(relin2_api_contract_test PRIVATE openfhe_2023_1788)
++
+ if(MSVC)
+     target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
+     target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
+     target_compile_options(tensor2_api_contract_test PRIVATE /W4 /WX)
+     target_compile_options(tensor2_test PRIVATE /W4 /WX)
++    target_compile_options(relin2_api_contract_test PRIVATE /W4 /WX)
+ else()
+     target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
+     target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+     target_compile_options(tensor2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+     target_compile_options(tensor2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
++    target_compile_options(relin2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+ endif()
+ 
+ enable_testing()
+diff --git a/tests/relin2_api_contract_test.cpp b/tests/relin2_api_contract_test.cpp
+new file mode 100644
+index 0000000..646c7e6
+--- /dev/null
++++ b/tests/relin2_api_contract_test.cpp
+@@ -0,0 +1,17 @@
++#include "openfhe_2023_1788/double_ckks.h"
++
++#include <type_traits>
++
++int main() {
++    using openfhe_2023_1788::DoubleCKKS;
++    using openfhe_2023_1788::PairLifecycle;
++    using openfhe_2023_1788::PaperScaleDescriptor;
++
++    const auto lifecycle = PairLifecycle::ReadyForRS2;
++    PaperScaleDescriptor scale{};
++    scale.approximateRecombinedLogicalScalingFactor = 1.0L;
++    static_assert(std::is_member_function_pointer_v<decltype(&DoubleCKKS::Relin2)>);
++    (void)lifecycle;
++    (void)scale;
++    return 0;
++}

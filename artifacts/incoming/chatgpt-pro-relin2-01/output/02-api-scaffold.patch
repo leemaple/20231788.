@@ -1,0 +1,51 @@
+diff --git a/include/openfhe_2023_1788/double_ckks.h b/include/openfhe_2023_1788/double_ckks.h
+index 798b6ad..76b4c96 100644
+--- a/include/openfhe_2023_1788/double_ckks.h
++++ b/include/openfhe_2023_1788/double_ckks.h
+@@ -16,12 +16,14 @@ using ReadOnlyCiphertext = std::shared_ptr<const lbcrypto::CiphertextImpl<lbcryp
+ 
+ enum class PairLifecycle : std::uint8_t {
+     ReadyForFirstMult,
++    ReadyForRS2,
+ };
+ 
+ struct PaperScaleDescriptor final {
+     double inputRecordedScalingFactor;
+     lbcrypto::NativeInteger divisor;
+     long double approximateLogicalScalingFactor;
++    long double approximateRecombinedLogicalScalingFactor;
+ };
+ 
+ struct TensorScaleDescriptor final {
+@@ -138,6 +140,7 @@ public:
+ 
+     CiphertextPair DCP(const ReadOnlyCiphertext& ciphertext) const;
+     TensorCiphertextPair Tensor2(const CiphertextPair& left, const CiphertextPair& right) const;
++    CiphertextPair Relin2(const TensorCiphertextPair& tensor) const;
+     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> RCB(const CiphertextPair& pair) const;
+ 
+ private:
+diff --git a/src/double_ckks.cpp b/src/double_ckks.cpp
+index d38fa38..d512774 100644
+--- a/src/double_ckks.cpp
++++ b/src/double_ckks.cpp
+@@ -371,6 +371,7 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
+         divisor_,
+         static_cast<long double>(recordedScalingFactor) /
+             static_cast<long double>(divisor_.ConvertToInt()),
++        static_cast<long double>(recordedScalingFactor),
+     };
+ 
+     CiphertextPair pair(std::move(highCiphertext), std::move(lowCiphertext), context_.get(), divisor_,
+@@ -552,6 +553,11 @@ TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const Ciphe
+     return result;
+ }
+ 
++
++CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair&) const {
++    throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
++}
++
+ lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {
+     ValidatePair(pair);
+ 

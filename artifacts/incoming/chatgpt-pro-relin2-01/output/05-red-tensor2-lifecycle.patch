@@ -1,0 +1,44 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 22d5110..c69c556 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -105,3 +105,4 @@ add_test(NAME relin2_bvnz_valid_shapes COMMAND relin2_test bvnz_valid_shapes)
+ add_test(NAME relin2_first_recombined_rcb_validation COMMAND relin2_test first_recombined_rcb_validation)
+ add_test(NAME relin2_first_recombined_tensor2_validation COMMAND relin2_test first_recombined_tensor2_validation)
+ add_test(NAME relin2_deterministic_dcp_boundary_witnesses COMMAND relin2_test deterministic_dcp_boundary_witnesses)
++add_test(NAME tensor2_rejects_ready_for_rs2 COMMAND relin2_test tensor2_rejects_ready_for_rs2)
+diff --git a/tests/relin2_test.cpp b/tests/relin2_test.cpp
+index ec244d6..d9addb3 100644
+--- a/tests/relin2_test.cpp
++++ b/tests/relin2_test.cpp
+@@ -1106,6 +1106,22 @@ void TestDeterministicDcpBoundaryWitnesses() {
+     std::cout << "Relin2 deterministic DCP witnesses: positive=(0,0), negative/carry=(0,1)\n";
+     (void)module.Relin2(tensor);
+ }
++
++void TestTensor2RejectsReadyForRs2() {
++    EvalKeyMapGuard keyGuard;
++    auto fixture = MakeTensorFixtureFor(MakeRelinContext());
++    DoubleCKKS module(fixture.context);
++    auto [left, right] = MakePairs(fixture, module);
++    auto tensor = module.Tensor2(left, right);
++    fixture.context->EvalMultKeyGen(fixture.keys.secretKey);
++    const auto readyForRs2 = module.Relin2(tensor);
++    Check(readyForRs2.GetLifecycle() == PairLifecycle::ReadyForRS2,
++          "lifecycle red fixture did not reach a valid ReadyForRS2 value");
++    CheckThrowsInvalidArgument([&] { (void)module.Tensor2(readyForRs2, readyForRs2); },
++                               "Tensor2 requires ReadyForFirstMult inputs",
++                               "Tensor2 ReadyForRS2 lifecycle guard");
++}
++
+ using TestFunction = void (*)();
+ 
+ TestFunction ResolveTest(const std::string& name) {
+@@ -1146,6 +1162,7 @@ TestFunction ResolveTest(const std::string& name) {
+     if (name == "first_recombined_rcb_validation") return &TestFirstLifecycleRecombinedRcbValidation;
+     if (name == "first_recombined_tensor2_validation") return &TestFirstLifecycleRecombinedTensor2Validation;
+     if (name == "deterministic_dcp_boundary_witnesses") return &TestDeterministicDcpBoundaryWitnesses;
++    if (name == "tensor2_rejects_ready_for_rs2") return &TestTensor2RejectsReadyForRs2;
+     throw TestFailure("unknown Relin2 test case: " + name);
+ }
+ 

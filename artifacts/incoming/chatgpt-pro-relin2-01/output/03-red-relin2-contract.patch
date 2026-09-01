@@ -1,0 +1,1242 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 649887b..22d5110 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -49,18 +49,23 @@ target_link_libraries(tensor2_test PRIVATE openfhe_2023_1788)
+ add_executable(relin2_api_contract_test tests/relin2_api_contract_test.cpp)
+ target_link_libraries(relin2_api_contract_test PRIVATE openfhe_2023_1788)
+ 
++add_executable(relin2_test tests/relin2_test.cpp)
++target_link_libraries(relin2_test PRIVATE openfhe_2023_1788)
++
+ if(MSVC)
+     target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
+     target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
+     target_compile_options(tensor2_api_contract_test PRIVATE /W4 /WX)
+     target_compile_options(tensor2_test PRIVATE /W4 /WX)
+     target_compile_options(relin2_api_contract_test PRIVATE /W4 /WX)
++    target_compile_options(relin2_test PRIVATE /W4 /WX)
+ else()
+     target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
+     target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+     target_compile_options(tensor2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+     target_compile_options(tensor2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+     target_compile_options(relin2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
++    target_compile_options(relin2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+ endif()
+ 
+ enable_testing()
+@@ -70,3 +75,33 @@ add_test(NAME tensor2_result_scale_contract COMMAND tensor2_test result_scale_co
+ add_test(NAME tensor2_right_input_validation COMMAND tensor2_test right_input_validation)
+ add_test(NAME tensor2_mutual_compatibility COMMAND tensor2_test mutual_compatibility)
+ add_test(NAME tensor2_prearithmetic_key_compatibility COMMAND tensor2_test prearithmetic_key_compatibility)
++
++# Relin2 public-seam cases; each is intentionally independent.
++add_test(NAME relin2_valid_arithmetic_state_immutability COMMAND relin2_test valid_arithmetic_state_immutability)
++add_test(NAME relin2_tensor_validation_before_key COMMAND relin2_test tensor_validation_before_key)
++add_test(NAME relin2_insufficient_active_basis COMMAND relin2_test insufficient_active_basis)
++add_test(NAME relin2_missing_eval_key COMMAND relin2_test missing_eval_key)
++add_test(NAME relin2_key_empty COMMAND relin2_test key_empty)
++add_test(NAME relin2_key_null_first COMMAND relin2_test key_null_first)
++add_test(NAME relin2_key_wrong_context COMMAND relin2_test key_wrong_context)
++add_test(NAME relin2_key_wrong_tag COMMAND relin2_test key_wrong_tag)
++add_test(NAME relin2_key_wrong_subtype COMMAND relin2_test key_wrong_subtype)
++add_test(NAME relin2_hybrid_a_length COMMAND relin2_test hybrid_a_length)
++add_test(NAME relin2_hybrid_b_length COMMAND relin2_test hybrid_b_length)
++add_test(NAME relin2_hybrid_basis COMMAND relin2_test hybrid_basis)
++add_test(NAME relin2_hybrid_format COMMAND relin2_test hybrid_format)
++add_test(NAME relin2_bv0_a_length COMMAND relin2_test bv0_a_length)
++add_test(NAME relin2_bv0_b_length COMMAND relin2_test bv0_b_length)
++add_test(NAME relin2_bv0_basis COMMAND relin2_test bv0_basis)
++add_test(NAME relin2_bv0_format COMMAND relin2_test bv0_format)
++add_test(NAME relin2_bvnz_a_length COMMAND relin2_test bvnz_a_length)
++add_test(NAME relin2_bvnz_b_length COMMAND relin2_test bvnz_b_length)
++add_test(NAME relin2_bvnz_basis COMMAND relin2_test bvnz_basis)
++add_test(NAME relin2_bvnz_format COMMAND relin2_test bvnz_format)
++add_test(NAME relin2_extra_later_valid COMMAND relin2_test extra_later_valid)
++add_test(NAME relin2_malformed_later_ignored COMMAND relin2_test malformed_later_ignored)
++add_test(NAME relin2_bv0_valid_shapes COMMAND relin2_test bv0_valid_shapes)
++add_test(NAME relin2_bvnz_valid_shapes COMMAND relin2_test bvnz_valid_shapes)
++add_test(NAME relin2_first_recombined_rcb_validation COMMAND relin2_test first_recombined_rcb_validation)
++add_test(NAME relin2_first_recombined_tensor2_validation COMMAND relin2_test first_recombined_tensor2_validation)
++add_test(NAME relin2_deterministic_dcp_boundary_witnesses COMMAND relin2_test deterministic_dcp_boundary_witnesses)
+diff --git a/tests/relin2_test.cpp b/tests/relin2_test.cpp
+new file mode 100644
+index 0000000..ec244d6
+--- /dev/null
++++ b/tests/relin2_test.cpp
+@@ -0,0 +1,1174 @@
++#include "openfhe.h"
++#include "openfhe_2023_1788/double_ckks.h"
++
++#include <boost/multiprecision/cpp_int.hpp>
++
++#include <algorithm>
++#include <cmath>
++#include <cstddef>
++#include <cstdint>
++#include <functional>
++#include <iostream>
++#include <map>
++#include <memory>
++#include <stdexcept>
++#include <string>
++#include <type_traits>
++#include <utility>
++#include <vector>
++
++namespace {
++
++using BigInt = boost::multiprecision::cpp_int;
++using lbcrypto::Ciphertext;
++using lbcrypto::CryptoContext;
++using lbcrypto::DCRTPoly;
++using lbcrypto::NativeInteger;
++using openfhe_2023_1788::CiphertextPair;
++using openfhe_2023_1788::DoubleCKKS;
++using openfhe_2023_1788::PaperScaleDescriptor;
++using openfhe_2023_1788::PairLifecycle;
++using openfhe_2023_1788::TensorCiphertextPair;
++
++class TestFailure final : public std::runtime_error {
++public:
++    using std::runtime_error::runtime_error;
++};
++
++void Check(bool condition, const std::string& message) {
++    if (!condition) {
++        throw TestFailure(message);
++    }
++}
++
++template <class Function>
++void CheckThrowsInvalidArgument(Function&& function, const std::string& expectedMessage,
++                                const std::string& label) {
++    bool threw = false;
++    try {
++        std::invoke(std::forward<Function>(function));
++    }
++    catch (const std::invalid_argument& exception) {
++        const std::string message(exception.what());
++        Check(message.rfind("DoubleCKKS: ", 0) == 0, label + " did not fail in the DoubleCKKS module");
++        Check(message.find(expectedMessage) != std::string::npos,
++              label + " reported an unexpected diagnostic: " + message);
++        threw = true;
++    }
++    catch (const std::exception& exception) {
++        throw TestFailure(label + " threw the wrong exception type: " + exception.what());
++    }
++    Check(threw, label + " did not fail fast");
++}
++
++class ImmutabilityProbeMetadata final : public lbcrypto::Metadata {
++public:
++    explicit ImmutabilityProbeMetadata(std::string value) : value_(std::move(value)) {}
++
++    std::shared_ptr<lbcrypto::Metadata> Clone() const override {
++        return std::make_shared<ImmutabilityProbeMetadata>(value_);
++    }
++
++    bool operator==(const lbcrypto::Metadata& metadata) const override {
++        const auto* other = dynamic_cast<const ImmutabilityProbeMetadata*>(&metadata);
++        return other != nullptr && value_ == other->value_;
++    }
++
++private:
++    std::string value_;
++};
++
++struct MetadataSnapshotEntry {
++    std::string key;
++    std::shared_ptr<lbcrypto::Metadata> value;
++};
++
++using MetadataSnapshot = std::vector<MetadataSnapshotEntry>;
++
++MetadataSnapshot SnapshotMetadata(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext, const std::string& label) {
++    const auto metadata = ciphertext->GetMetadataMap();
++    Check(metadata != nullptr, label + " metadata map is null");
++
++    MetadataSnapshot snapshot;
++    snapshot.reserve(metadata->size());
++    for (const auto& [key, value] : *metadata) {
++        Check(value != nullptr, label + " metadata value is null");
++        auto cloned = value->Clone();
++        Check(cloned != nullptr, label + " metadata clone is null");
++        snapshot.push_back({key, std::move(cloned)});
++    }
++    return snapshot;
++}
++
++void CheckMetadataUnchanged(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext, const MetadataSnapshot& before,
++                            const std::string& label) {
++    const auto metadata = ciphertext->GetMetadataMap();
++    Check(metadata != nullptr, label + " metadata map is null");
++    Check(metadata->size() == before.size(), label + " metadata map size changed");
++
++    auto current = metadata->begin();
++    for (const auto& expected : before) {
++        Check(current != metadata->end(), label + " metadata entry disappeared");
++        Check(current->first == expected.key, label + " metadata key changed");
++        Check(current->second != nullptr, label + " metadata value became null");
++        Check(*(current->second) == *(expected.value), label + " metadata value changed");
++        ++current;
++    }
++}
++
++BigInt PositiveMod(BigInt value, const BigInt& modulus) {
++    value %= modulus;
++    if (value < 0) {
++        value += modulus;
++    }
++    return value;
++}
++
++BigInt ExtendedGcd(BigInt a, BigInt b, BigInt& x, BigInt& y) {
++    if (b == 0) { x = 1; y = 0; return a; }
++    BigInt nextX;
++    BigInt nextY;
++    const BigInt gcd = ExtendedGcd(b, a % b, nextX, nextY);
++    x = nextY;
++    y = nextX - (a / b) * nextY;
++    return gcd;
++}
++
++BigInt ModInverse(const BigInt& value, const BigInt& modulus) {
++    BigInt x;
++    BigInt y;
++    const BigInt gcd = ExtendedGcd(PositiveMod(value, modulus), modulus, x, y);
++    Check(gcd == 1, "CRT oracle received non-coprime moduli");
++    return PositiveMod(x, modulus);
++}
++
++BigInt Product(const std::vector<BigInt>& values) {
++    BigInt result = 1;
++    for (const auto& value : values) result *= value;
++    return result;
++}
++
++BigInt Center(const BigInt& residue, const BigInt& modulus) {
++    BigInt centered = PositiveMod(residue, modulus);
++    if (centered > modulus / 2) centered -= modulus;
++    return centered;
++}
++
++BigInt ReconstructCentered(const std::vector<BigInt>& residues, const std::vector<BigInt>& moduli) {
++    const BigInt modulus = Product(moduli);
++    BigInt result = 0;
++    for (std::size_t i = 0; i < moduli.size(); ++i) {
++        const BigInt partial = modulus / moduli[i];
++        result += PositiveMod(residues[i], moduli[i]) * partial * ModInverse(partial, moduli[i]);
++    }
++    return Center(result, modulus);
++}
++
++std::vector<BigInt> GetModuli(const DCRTPoly& polynomial);
++DCRTPoly ToCoefficient(const DCRTPoly& polynomial);
++BigInt CoefficientResidue(const DCRTPoly& coefficientPolynomial, std::size_t tower, std::size_t coefficient);
++
++BigInt ReconstructCoefficient(const DCRTPoly& polynomial, std::size_t coefficient) {
++    const auto coeff = ToCoefficient(polynomial);
++    const auto moduli = GetModuli(coeff);
++    std::vector<BigInt> residues;
++    residues.reserve(moduli.size());
++    for (std::size_t tower = 0; tower < moduli.size(); ++tower)
++        residues.push_back(CoefficientResidue(coeff, tower, coefficient));
++    return ReconstructCentered(residues, moduli);
++}
++
++std::pair<BigInt, BigInt> DecomposeCentered(const BigInt& value, const BigInt& divisor) {
++    BigInt remainder = PositiveMod(value, divisor);
++    if (remainder > divisor / 2) remainder -= divisor;
++    const BigInt quotient = (value - remainder) / divisor;
++    Check(value == divisor * quotient + remainder, "Relin2 DCP oracle identity failed");
++    return {quotient, remainder};
++}
++
++std::vector<BigInt> GetModuli(const DCRTPoly& polynomial) {
++    std::vector<BigInt> result;
++    result.reserve(polynomial.GetAllElements().size());
++    for (const auto& tower : polynomial.GetAllElements()) {
++        result.emplace_back(tower.GetModulus().ConvertToInt());
++    }
++    return result;
++}
++
++std::vector<NativeInteger> GetNativeModuli(const DCRTPoly& polynomial) {
++    std::vector<NativeInteger> result;
++    result.reserve(polynomial.GetAllElements().size());
++    for (const auto& tower : polynomial.GetAllElements()) {
++        result.push_back(tower.GetModulus());
++    }
++    return result;
++}
++
++DCRTPoly ToCoefficient(const DCRTPoly& polynomial) {
++    DCRTPoly result(polynomial);
++    result.SetFormat(Format::COEFFICIENT);
++    return result;
++}
++
++BigInt CoefficientResidue(const DCRTPoly& coefficientPolynomial, std::size_t tower, std::size_t coefficient) {
++    return BigInt(coefficientPolynomial.GetAllElements().at(tower).GetValues().at(coefficient).ConvertToInt());
++}
++
++DCRTPoly MakePolynomial(const std::shared_ptr<DCRTPoly::Params>& params, const std::vector<BigInt>& coefficients) {
++    DCRTPoly result(params, Format::COEFFICIENT, true);
++    auto& towers = result.GetAllElements();
++    const std::size_t ringDimension = params->GetRingDimension();
++    Check(coefficients.size() == ringDimension, "test coefficient vector has wrong ring dimension");
++
++    for (std::size_t towerIndex = 0; towerIndex < towers.size(); ++towerIndex) {
++        const auto modulusNative = towers[towerIndex].GetModulus();
++        const BigInt modulus(modulusNative.ConvertToInt());
++        lbcrypto::NativeVector residues(ringDimension, modulusNative);
++        for (std::size_t coefficient = 0; coefficient < ringDimension; ++coefficient) {
++            const auto residue = PositiveMod(coefficients[coefficient], modulus).convert_to<std::uint64_t>();
++            residues[coefficient] = NativeInteger(residue);
++        }
++        towers[towerIndex].SetValues(std::move(residues), Format::COEFFICIENT);
++    }
++    result.SetFormat(Format::EVALUATION);
++    return result;
++}
++
++CryptoContext<DCRTPoly> MakeContext() {
++    lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
++    parameters.SetMultiplicativeDepth(3);
++    parameters.SetScalingModSize(30);
++    parameters.SetFirstModSize(35);
++    parameters.SetScalingTechnique(lbcrypto::FIXEDMANUAL);
++    parameters.SetSecurityLevel(lbcrypto::HEStd_NotSet);
++    parameters.SetRingDim(32);
++    parameters.SetBatchSize(8);
++
++    auto context = lbcrypto::GenCryptoContext(parameters);
++    context->Enable(lbcrypto::PKE);
++    context->Enable(lbcrypto::KEYSWITCH);
++    context->Enable(lbcrypto::LEVELEDSHE);
++    return context;
++}
++
++std::vector<BigInt> ComposeSource(const BigInt& divisor, const std::vector<BigInt>& high,
++                                  const std::vector<BigInt>& low) {
++    Check(high.size() == low.size(), "source high/low fixture size mismatch");
++    std::vector<BigInt> source(high.size());
++    for (std::size_t i = 0; i < high.size(); ++i) {
++        source[i] = divisor * high[i] + low[i];
++    }
++    return source;
++}
++
++struct TensorFixture {
++    CryptoContext<DCRTPoly> context;
++    lbcrypto::KeyPair<DCRTPoly> keys;
++    Ciphertext<DCRTPoly> leftInput;
++    Ciphertext<DCRTPoly> rightInput;
++};
++
++TensorFixture MakeTensorFixture() {
++    TensorFixture fixture;
++    fixture.context = MakeContext();
++    fixture.keys = fixture.context->KeyGen();
++
++    auto plaintext = fixture.context->MakeCKKSPackedPlaintext(std::vector<double>{0.0}, 2, 0);
++    fixture.leftInput = fixture.context->Encrypt(plaintext, fixture.keys.publicKey);
++    fixture.rightInput = fixture.context->Encrypt(plaintext, fixture.keys.publicKey);
++
++    const auto params = fixture.leftInput->GetElements().front().GetParams();
++    const std::size_t n = params->GetRingDimension();
++    const auto fullModuli = GetModuli(fixture.leftInput->GetElements().front());
++    Check(fullModuli.size() >= 3, "Tensor2 fixture requires at least three full-basis towers");
++    const BigInt divisor = fullModuli.back();
++
++    std::vector<BigInt> leftHigh0(n, 0);
++    std::vector<BigInt> leftLow0(n, 0);
++    std::vector<BigInt> leftHigh1(n, 0);
++    std::vector<BigInt> leftLow1(n, 0);
++    std::vector<BigInt> rightHigh0(n, 0);
++    std::vector<BigInt> rightLow0(n, 0);
++    std::vector<BigInt> rightHigh1(n, 0);
++    std::vector<BigInt> rightLow1(n, 0);
++
++    // Explicit negacyclic witness: X^(N-1) * X = -1.
++    leftHigh0[n - 1] = 1;
++    rightHigh0[1] = 1;
++
++    // Explicit signed product large enough to cross an active ~30-bit tower modulus.
++    leftHigh1[0] = -1000003;
++    rightHigh1[0] = 1000033;
++
++    // Explicit omitted low-low witness: 17 * (-19) = -323 at coefficient 5.
++    leftLow0[2] = 17;
++    rightLow0[3] = -19;
++    leftLow1[4] = -23;
++    rightLow1[5] = 29;
++
++    fixture.leftInput->SetElements({
++        MakePolynomial(params, ComposeSource(divisor, leftHigh0, leftLow0)),
++        MakePolynomial(params, ComposeSource(divisor, leftHigh1, leftLow1)),
++    });
++    fixture.rightInput->SetElements({
++        MakePolynomial(params, ComposeSource(divisor, rightHigh0, rightLow0)),
++        MakePolynomial(params, ComposeSource(divisor, rightHigh1, rightLow1)),
++    });
++
++    Check(fixture.leftInput->GetLevel() == 0 && fixture.rightInput->GetLevel() == 0,
++          "Tensor2 fixtures must start at level zero");
++    Check(fixture.leftInput->GetNoiseScaleDeg() == 2 && fixture.rightInput->GetNoiseScaleDeg() == 2,
++          "Tensor2 fixtures must start at noise-scale degree two");
++    Check(fixture.leftInput->GetKeyTag() == fixture.rightInput->GetKeyTag(),
++          "Tensor2 fixtures must use one key tag");
++    Check(fixture.leftInput->GetSlots() == fixture.rightInput->GetSlots(),
++          "Tensor2 fixtures must start with matching slots");
++    return fixture;
++}
++
++std::vector<BigInt> NegacyclicConvolutionMod(const std::vector<BigInt>& left,
++                                             const std::vector<BigInt>& right,
++                                             const BigInt& modulus) {
++    Check(left.size() == right.size(), "negacyclic oracle input size mismatch");
++    const std::size_t n = left.size();
++    std::vector<BigInt> result(n, 0);
++    for (std::size_t i = 0; i < n; ++i) {
++        for (std::size_t j = 0; j < n; ++j) {
++            std::size_t coefficient = i + j;
++            BigInt term = left[i] * right[j];
++            if (coefficient >= n) {
++                coefficient -= n;
++                term = -term;
++            }
++            result[coefficient] = PositiveMod(result[coefficient] + term, modulus);
++        }
++    }
++    return result;
++}
++
++struct TensorOracleResult {
++    std::vector<BigInt> moduli;
++    std::vector<std::vector<std::vector<BigInt>>> values;  // component, tower, coefficient
++};
++
++TensorOracleResult TensorOracle(lbcrypto::ConstCiphertext<DCRTPoly> left,
++                                lbcrypto::ConstCiphertext<DCRTPoly> right) {
++    Check(left != nullptr && right != nullptr, "tensor oracle received null ciphertext");
++    Check(left->NumberCiphertextElements() == 2 && right->NumberCiphertextElements() == 2,
++          "tensor oracle requires two-component inputs");
++
++    std::vector<DCRTPoly> leftCoefficient;
++    std::vector<DCRTPoly> rightCoefficient;
++    for (const auto& element : left->GetElements()) {
++        leftCoefficient.push_back(ToCoefficient(element));
++    }
++    for (const auto& element : right->GetElements()) {
++        rightCoefficient.push_back(ToCoefficient(element));
++    }
++
++    TensorOracleResult result;
++    result.moduli = GetModuli(leftCoefficient.front());
++    Check(result.moduli == GetModuli(rightCoefficient.front()), "tensor oracle basis mismatch");
++    const std::size_t towerCount = result.moduli.size();
++    const std::size_t n = leftCoefficient.front().GetParams()->GetRingDimension();
++    result.values.assign(3, std::vector<std::vector<BigInt>>(towerCount, std::vector<BigInt>(n, 0)));
++
++    for (std::size_t leftComponent = 0; leftComponent < 2; ++leftComponent) {
++        for (std::size_t rightComponent = 0; rightComponent < 2; ++rightComponent) {
++            const std::size_t outputComponent = leftComponent + rightComponent;
++            for (std::size_t tower = 0; tower < towerCount; ++tower) {
++                std::vector<BigInt> leftResidues(n);
++                std::vector<BigInt> rightResidues(n);
++                for (std::size_t coefficient = 0; coefficient < n; ++coefficient) {
++                    leftResidues[coefficient] =
++                        CoefficientResidue(leftCoefficient[leftComponent], tower, coefficient);
++                    rightResidues[coefficient] =
++                        CoefficientResidue(rightCoefficient[rightComponent], tower, coefficient);
++                }
++                const auto product = NegacyclicConvolutionMod(leftResidues, rightResidues, result.moduli[tower]);
++                for (std::size_t coefficient = 0; coefficient < n; ++coefficient) {
++                    result.values[outputComponent][tower][coefficient] =
++                        PositiveMod(result.values[outputComponent][tower][coefficient] + product[coefficient],
++                                    result.moduli[tower]);
++                }
++            }
++        }
++    }
++    return result;
++}
++
++TensorOracleResult AddOracleResults(const TensorOracleResult& left, const TensorOracleResult& right) {
++    Check(left.moduli == right.moduli, "oracle-add basis mismatch");
++    Check(left.values.size() == right.values.size(), "oracle-add component mismatch");
++    TensorOracleResult result = left;
++    for (std::size_t component = 0; component < result.values.size(); ++component) {
++        for (std::size_t tower = 0; tower < result.moduli.size(); ++tower) {
++            for (std::size_t coefficient = 0; coefficient < result.values[component][tower].size(); ++coefficient) {
++                result.values[component][tower][coefficient] =
++                    PositiveMod(left.values[component][tower][coefficient] +
++                                    right.values[component][tower][coefficient],
++                                result.moduli[tower]);
++            }
++        }
++    }
++    return result;
++}
++
++void CheckAgainstOracle(lbcrypto::ConstCiphertext<DCRTPoly> actual, const TensorOracleResult& expected,
++                        const std::string& label) {
++    Check(actual != nullptr, label + " is null");
++    Check(actual->NumberCiphertextElements() == 3, label + " must contain exactly three RLWE components");
++    Check(actual->GetElements().size() == expected.values.size(), label + " oracle component count mismatch");
++
++    for (std::size_t component = 0; component < expected.values.size(); ++component) {
++        const auto coefficientPolynomial = ToCoefficient(actual->GetElements().at(component));
++        Check(GetModuli(coefficientPolynomial) == expected.moduli, label + " oracle basis mismatch");
++        for (std::size_t tower = 0; tower < expected.moduli.size(); ++tower) {
++            for (std::size_t coefficient = 0; coefficient < expected.values[component][tower].size(); ++coefficient) {
++                const BigInt residue = CoefficientResidue(coefficientPolynomial, tower, coefficient);
++                Check(residue == expected.values[component][tower][coefficient],
++                      label + " mismatch at component " + std::to_string(component) + ", tower " +
++                          std::to_string(tower) + ", coefficient " + std::to_string(coefficient));
++            }
++        }
++    }
++}
++
++struct CiphertextSnapshot {
++    lbcrypto::Ciphertext<DCRTPoly> clone;
++    MetadataSnapshot metadata;
++};
++
++struct PairSnapshot {
++    CiphertextSnapshot high;
++    CiphertextSnapshot low;
++    const lbcrypto::CryptoContextImpl<DCRTPoly>* contextIdentity;
++    NativeInteger divisor;
++    std::vector<NativeInteger> orderedModuli;
++    std::size_t level;
++    PaperScaleDescriptor paperScale;
++    double recordedScalingFactor;
++    std::size_t noiseScaleDegree;
++    openfhe_2023_1788::PairLifecycle lifecycle;
++    std::string keyTag;
++    std::uint32_t slots;
++    Format format;
++    std::size_t componentCount;
++};
++
++PairSnapshot SnapshotPair(const CiphertextPair& pair, const std::string& label) {
++    return {
++        {pair.GetHigh()->Clone(), SnapshotMetadata(pair.GetHigh(), label + " high")},
++        {pair.GetLow()->Clone(), SnapshotMetadata(pair.GetLow(), label + " low")},
++        pair.GetContextIdentity(),
++        pair.GetDivisor(),
++        pair.GetOrderedModuli(),
++        pair.GetLevel(),
++        pair.GetPaperScale(),
++        pair.GetRecordedScalingFactor(),
++        pair.GetNoiseScaleDegree(),
++        pair.GetLifecycle(),
++        pair.GetKeyTag(),
++        pair.GetSlots(),
++        pair.GetFormat(),
++        pair.GetComponentCount(),
++    };
++}
++
++void CheckPairUnchanged(const CiphertextPair& pair, const PairSnapshot& before, const std::string& label) {
++    Check(*pair.GetHigh() == *before.high.clone, label + " high observable ciphertext state changed");
++    Check(*pair.GetLow() == *before.low.clone, label + " low observable ciphertext state changed");
++    CheckMetadataUnchanged(pair.GetHigh(), before.high.metadata, label + " high");
++    CheckMetadataUnchanged(pair.GetLow(), before.low.metadata, label + " low");
++    Check(pair.GetContextIdentity() == before.contextIdentity, label + " context manifest changed");
++    Check(pair.GetDivisor() == before.divisor, label + " divisor manifest changed");
++    Check(pair.GetOrderedModuli() == before.orderedModuli, label + " basis manifest changed");
++    Check(pair.GetLevel() == before.level, label + " level manifest changed");
++    Check(pair.GetPaperScale().inputRecordedScalingFactor == before.paperScale.inputRecordedScalingFactor,
++          label + " paper input scale changed");
++    Check(pair.GetPaperScale().divisor == before.paperScale.divisor, label + " paper divisor changed");
++    Check(pair.GetPaperScale().approximateLogicalScalingFactor ==
++              before.paperScale.approximateLogicalScalingFactor,
++          label + " paper high scale changed");
++    Check(pair.GetPaperScale().approximateRecombinedLogicalScalingFactor ==
++              before.paperScale.approximateRecombinedLogicalScalingFactor,
++          label + " paper recombined scale changed");
++    Check(pair.GetRecordedScalingFactor() == before.recordedScalingFactor,
++          label + " recorded scaling factor manifest changed");
++    Check(pair.GetNoiseScaleDegree() == before.noiseScaleDegree, label + " noise-scale degree manifest changed");
++    Check(pair.GetLifecycle() == before.lifecycle, label + " lifecycle manifest changed");
++    Check(pair.GetKeyTag() == before.keyTag, label + " key-tag manifest changed");
++    Check(pair.GetSlots() == before.slots, label + " slots manifest changed");
++    Check(pair.GetFormat() == before.format, label + " format manifest changed");
++    Check(pair.GetComponentCount() == before.componentCount, label + " component-count manifest changed");
++}
++
++void CheckOrderedModuli(const std::vector<NativeInteger>& actual, const std::vector<NativeInteger>& expected,
++                        const std::string& label) {
++    Check(actual.size() == expected.size(), label + " modulus count mismatch");
++    for (std::size_t index = 0; index < expected.size(); ++index) {
++        Check(actual[index] == expected[index],
++              label + " ordered modulus mismatch at tower " + std::to_string(index));
++    }
++}
++
++void CheckTensorMemberMetadata(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext,
++                               const CryptoContext<DCRTPoly>& expectedContext,
++                               const std::vector<NativeInteger>& expectedModuli, std::size_t expectedLevel,
++                               std::size_t expectedNoiseScaleDegree, double expectedScalingFactor,
++                               const std::string& expectedKeyTag, std::uint32_t expectedSlots,
++                               const std::string& label) {
++    Check(ciphertext != nullptr, label + " is null");
++    Check(ciphertext->GetCryptoContext().get() == expectedContext.get(), label + " context identity mismatch");
++    Check(ciphertext->GetEncodingType() == lbcrypto::CKKS_PACKED_ENCODING, label + " encoding metadata mismatch");
++    Check(ciphertext->NumberCiphertextElements() == 3, label + " component count mismatch");
++    Check(ciphertext->GetLevel() == expectedLevel, label + " level mismatch");
++    Check(ciphertext->GetNoiseScaleDeg() == expectedNoiseScaleDegree, label + " noise-scale degree mismatch");
++    Check(ciphertext->GetScalingFactor() == expectedScalingFactor, label + " recorded scaling factor mismatch");
++    Check(ciphertext->GetKeyTag() == expectedKeyTag, label + " key tag mismatch");
++    Check(ciphertext->GetSlots() == expectedSlots, label + " slot-count metadata mismatch");
++    for (const auto& element : ciphertext->GetElements()) {
++        Check(element.GetFormat() == Format::EVALUATION, label + " is not in evaluation format");
++        CheckOrderedModuli(GetNativeModuli(element), expectedModuli, label);
++    }
++}
++
++std::pair<CiphertextPair, CiphertextPair> MakePairs(TensorFixture& fixture, DoubleCKKS& module) {
++    fixture.leftInput->SetMetadataByKey("tensor2-immutability-left",
++                                       std::make_shared<ImmutabilityProbeMetadata>("left-unchanged"));
++    fixture.rightInput->SetMetadataByKey("tensor2-immutability-right",
++                                        std::make_shared<ImmutabilityProbeMetadata>("right-unchanged"));
++    return {module.DCP(fixture.leftInput), module.DCP(fixture.rightInput)};
++}
++
++void TestValidArithmeticAndImmutability() {
++    auto fixture = MakeTensorFixture();
++    DoubleCKKS module(fixture.context);
++    auto [left, right] = MakePairs(fixture, module);
++
++    const auto leftBefore = SnapshotPair(left, "left pair");
++    const auto rightBefore = SnapshotPair(right, "right pair");
++
++    const auto expectedHigh = TensorOracle(left.GetHigh(), right.GetHigh());
++    const auto expectedCrossA = TensorOracle(left.GetHigh(), right.GetLow());
++    const auto expectedCrossB = TensorOracle(left.GetLow(), right.GetHigh());
++    const auto expectedLow = AddOracleResults(expectedCrossA, expectedCrossB);
++    const auto omittedLowLow = TensorOracle(left.GetLow(), right.GetLow());
++
++    const std::size_t n = left.GetHigh()->GetElements().front().GetParams()->GetRingDimension();
++    Check(n == 32, "fixture ring dimension changed unexpectedly");
++
++    const auto leftHigh0 = ToCoefficient(left.GetHigh()->GetElements().at(0));
++    const auto rightHigh0 = ToCoefficient(right.GetHigh()->GetElements().at(0));
++    Check(CoefficientResidue(leftHigh0, 0, n - 1) == 1, "X^(N-1) witness missing from left high");
++    Check(CoefficientResidue(rightHigh0, 0, 1) == 1, "X witness missing from right high");
++    Check(expectedHigh.values.at(0).at(0).at(0) == expectedHigh.moduli.at(0) - 1,
++          "negacyclic X^(N-1)*X witness did not produce -1 at component 0/tower 0/coefficient 0");
++
++    Check(expectedHigh.moduli.size() > 1, "signed modular-wrap witness requires active tower 1");
++    const BigInt signedProduct = BigInt(-1000003) * BigInt(1000033);
++    Check(-signedProduct > expectedHigh.moduli.at(1),
++          "signed product no longer crosses named active tower 1 modulus");
++    Check(expectedHigh.values.at(2).at(1).at(0) == PositiveMod(signedProduct, expectedHigh.moduli.at(1)),
++          "signed modular-wrap witness mismatch at component 2/tower 1/coefficient 0");
++
++    Check(omittedLowLow.values.at(0).at(0).at(5) == PositiveMod(BigInt(-323), omittedLowLow.moduli.at(0)),
++          "low-low omission witness is not -323 at component 0/tower 0/coefficient 5");
++    Check(omittedLowLow.values.at(0).at(0).at(5) != 0,
++          "low-low omission witness is zero modulo named active tower 0");
++
++    const TensorCiphertextPair result = module.Tensor2(left, right);
++    CheckAgainstOracle(result.GetHigh(), expectedHigh, "Tensor2 high");
++    CheckAgainstOracle(result.GetLow(), expectedLow, "Tensor2 low");
++
++    const auto actualLow0 = ToCoefficient(result.GetLow()->GetElements().at(0));
++    const BigInt actualWitness = CoefficientResidue(actualLow0, 0, 5);
++    const BigInt crossWitness = expectedLow.values.at(0).at(0).at(5);
++    const BigInt crossPlusLowLow =
++        PositiveMod(crossWitness + omittedLowLow.values.at(0).at(0).at(5), omittedLowLow.moduli.at(0));
++    Check(actualWitness == crossWitness,
++          "Tensor2 low is not the independent cross term at the omission witness");
++    Check(actualWitness != crossPlusLowLow,
++          "Tensor2 low incorrectly includes the independently nonzero low-low term");
++
++    CheckPairUnchanged(left, leftBefore, "left pair");
++    CheckPairUnchanged(right, rightBefore, "right pair");
++}
++
++void TestResultAndScaleContract() {
++    auto fixture = MakeTensorFixture();
++    DoubleCKKS module(fixture.context);
++    auto [left, right] = MakePairs(fixture, module);
++
++    const long double h1 = left.GetPaperScale().approximateLogicalScalingFactor;
++    const long double h2 = right.GetPaperScale().approximateLogicalScalingFactor;
++    const long double r1 = static_cast<long double>(left.GetPaperScale().inputRecordedScalingFactor);
++    const long double r2 = static_cast<long double>(right.GetPaperScale().inputRecordedScalingFactor);
++    const long double divisor = static_cast<long double>(left.GetDivisor().ConvertToInt());
++    const long double expectedHighLogicalScale = h1 * h2;
++    const long double expectedRecombinedLogicalScale = r1 * r2 / divisor;
++
++    const auto parameters =
++        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(fixture.context->GetCryptoParameters());
++    Check(parameters != nullptr, "fixture must expose CKKS-RNS parameters");
++    const double baseScalingFactor = parameters->GetScalingFactorReal(0);
++    const double expectedRecordedScalingFactor =
++        left.GetRecordedScalingFactor() * right.GetRecordedScalingFactor() / baseScalingFactor;
++    const std::size_t expectedNoiseScaleDegree =
++        left.GetNoiseScaleDegree() + right.GetNoiseScaleDegree() - 1;
++
++    Check(divisor != static_cast<long double>(baseScalingFactor),
++          "test fixture unexpectedly equates the actual q_div prime with OpenFHE baseSF");
++
++    const TensorCiphertextPair result = module.Tensor2(left, right);
++    static_assert(std::is_same_v<std::decay_t<decltype(result)>, TensorCiphertextPair>,
++                  "Tensor2 must return the distinct three-component result type");
++
++    Check(result.GetContextIdentity() == fixture.context.get(), "Tensor2 result context identity mismatch");
++    Check(result.GetDivisor() == left.GetDivisor(), "Tensor2 result divisor mismatch");
++    Check(result.GetOrderedModuli() == left.GetOrderedModuli(), "Tensor2 result ordered basis mismatch");
++    Check(result.GetLevel() == left.GetLevel(), "Tensor2 must not consume a tower or change level");
++    Check(result.GetRecordedScalingFactor() == expectedRecordedScalingFactor,
++          "Tensor2 normalized OpenFHE recorded scaling factor mismatch");
++    Check(result.GetNoiseScaleDegree() == expectedNoiseScaleDegree,
++          "Tensor2 normalized OpenFHE noise-scale degree mismatch");
++    Check(result.GetNoiseScaleDegree() == 3, "fresh first Tensor2 result must have noise-scale degree three");
++    Check(result.GetKeyTag() == left.GetKeyTag(), "Tensor2 result key tag mismatch");
++    Check(result.GetSlots() == left.GetSlots(), "Tensor2 result slots mismatch");
++    Check(result.GetFormat() == Format::EVALUATION, "Tensor2 result format mismatch");
++    Check(result.GetComponentCount() == 3, "Tensor2 result manifest must record three components");
++
++    const auto& tensorScale = result.GetTensorScale();
++    Check(tensorScale.approximateHighLogicalScalingFactor == expectedHighLogicalScale,
++          "Tensor2 H_out paper-scale transition mismatch");
++    Check(tensorScale.approximateRecombinedLogicalScalingFactor == expectedRecombinedLogicalScale,
++          "Tensor2 R_out paper-scale transition mismatch");
++
++    CheckTensorMemberMetadata(result.GetHigh(), fixture.context, left.GetOrderedModuli(), left.GetLevel(),
++                              expectedNoiseScaleDegree, expectedRecordedScalingFactor, left.GetKeyTag(),
++                              left.GetSlots(), "Tensor2 high metadata");
++    CheckTensorMemberMetadata(result.GetLow(), fixture.context, left.GetOrderedModuli(), left.GetLevel(),
++                              expectedNoiseScaleDegree, expectedRecordedScalingFactor, left.GetKeyTag(),
++                              left.GetSlots(), "Tensor2 low metadata");
++}
++
++void TestRightInputValidation() {
++    auto fixture = MakeTensorFixture();
++    DoubleCKKS module(fixture.context);
++    auto [left, right] = MakePairs(fixture, module);
++
++    auto& corruptedScale = const_cast<PaperScaleDescriptor&>(right.GetPaperScale());
++    corruptedScale.approximateLogicalScalingFactor *= 2.0L;
++
++    CheckThrowsInvalidArgument([&] { (void)module.Tensor2(left, right); },
++                               "pair paper-scale descriptor is inconsistent",
++                               "Tensor2 right-input manifest validation");
++}
++
++void TestMutualCompatibility() {
++    auto fixture = MakeTensorFixture();
++    DoubleCKKS module(fixture.context);
++
++    const std::uint32_t leftSlots = fixture.leftInput->GetSlots();
++    Check(leftSlots > 1, "fixture needs more than one slot for compatibility test");
++    fixture.rightInput->SetSlots(leftSlots - 1);
++
++    const auto left = module.DCP(fixture.leftInput);
++    const auto right = module.DCP(fixture.rightInput);
++
++    // These public calls re-run the complete existing pair validator and prove each pair is individually valid.
++    (void)module.RCB(left);
++    (void)module.RCB(right);
++    Check(left.GetSlots() != right.GetSlots(), "mutual-compatibility fixture failed to create unequal slots");
++
++    CheckThrowsInvalidArgument([&] { (void)module.Tensor2(left, right); }, "Tensor2 input slots do not match",
++                               "Tensor2 mutual slot compatibility");
++}
++
++void TestPreArithmeticKeyCompatibility() {
++    auto fixture = MakeTensorFixture();
++    DoubleCKKS module(fixture.context);
++
++    auto secondKeys = fixture.context->KeyGen();
++    auto secondPlaintext = fixture.context->MakeCKKSPackedPlaintext(std::vector<double>{0.0}, 2, 0);
++    auto secondInput = fixture.context->Encrypt(secondPlaintext, secondKeys.publicKey);
++    auto deterministicElements = fixture.rightInput->GetElements();
++    secondInput->SetElements(std::move(deterministicElements));
++
++    const auto left = module.DCP(fixture.leftInput);
++    const auto right = module.DCP(secondInput);
++
++    // Both pairs are individually valid and slots match. OpenFHE TypeCheck also
++    // rejects different key tags, so the project-owned diagnostic proves that
++    // Tensor2 checks mutual compatibility before invoking multiplication.
++    (void)module.RCB(left);
++    (void)module.RCB(right);
++    Check(left.GetSlots() == right.GetSlots(), "key-compatibility fixture has unequal slots");
++    Check(left.GetKeyTag() != right.GetKeyTag(), "key-compatibility fixture did not create distinct key tags");
++
++    CheckThrowsInvalidArgument([&] { (void)module.Tensor2(left, right); }, "Tensor2 input key tags do not match",
++                               "Tensor2 pre-arithmetic key compatibility");
++}
++
++
++
++struct TensorSnapshot {
++    CiphertextSnapshot high;
++    CiphertextSnapshot low;
++    const lbcrypto::CryptoContextImpl<DCRTPoly>* contextIdentity;
++    NativeInteger divisor;
++    std::vector<NativeInteger> orderedModuli;
++    std::size_t level;
++    openfhe_2023_1788::TensorScaleDescriptor tensorScale;
++    double recordedScalingFactor;
++    std::size_t noiseScaleDegree;
++    std::string keyTag;
++    std::uint32_t slots;
++    Format format;
++    std::size_t componentCount;
++};
++
++TensorSnapshot SnapshotTensor(const TensorCiphertextPair& tensor, const std::string& label) {
++    return {{tensor.GetHigh()->Clone(), SnapshotMetadata(tensor.GetHigh(), label + " high")},
++            {tensor.GetLow()->Clone(), SnapshotMetadata(tensor.GetLow(), label + " low")},
++            tensor.GetContextIdentity(), tensor.GetDivisor(), tensor.GetOrderedModuli(), tensor.GetLevel(),
++            tensor.GetTensorScale(), tensor.GetRecordedScalingFactor(), tensor.GetNoiseScaleDegree(),
++            tensor.GetKeyTag(), tensor.GetSlots(), tensor.GetFormat(), tensor.GetComponentCount()};
++}
++
++void CheckTensorUnchanged(const TensorCiphertextPair& tensor, const TensorSnapshot& before, const std::string& label) {
++    Check(*tensor.GetHigh() == *before.high.clone, label + " high ciphertext changed");
++    Check(*tensor.GetLow() == *before.low.clone, label + " low ciphertext changed");
++    CheckMetadataUnchanged(tensor.GetHigh(), before.high.metadata, label + " high");
++    CheckMetadataUnchanged(tensor.GetLow(), before.low.metadata, label + " low");
++    Check(tensor.GetContextIdentity() == before.contextIdentity, label + " context manifest changed");
++    Check(tensor.GetDivisor() == before.divisor, label + " divisor manifest changed");
++    Check(tensor.GetOrderedModuli() == before.orderedModuli, label + " basis manifest changed");
++    Check(tensor.GetLevel() == before.level, label + " level manifest changed");
++    Check(tensor.GetTensorScale().approximateHighLogicalScalingFactor ==
++              before.tensorScale.approximateHighLogicalScalingFactor,
++          label + " high logical scale changed");
++    Check(tensor.GetTensorScale().approximateRecombinedLogicalScalingFactor ==
++              before.tensorScale.approximateRecombinedLogicalScalingFactor,
++          label + " recombined logical scale changed");
++    Check(tensor.GetRecordedScalingFactor() == before.recordedScalingFactor, label + " factor changed");
++    Check(tensor.GetNoiseScaleDegree() == before.noiseScaleDegree, label + " degree changed");
++    Check(tensor.GetKeyTag() == before.keyTag, label + " tag changed");
++    Check(tensor.GetSlots() == before.slots, label + " slots changed");
++    Check(tensor.GetFormat() == before.format, label + " format changed");
++    Check(tensor.GetComponentCount() == before.componentCount, label + " component count changed");
++}
++
++CryptoContext<DCRTPoly> MakeRelinContext(lbcrypto::KeySwitchTechnique technique = lbcrypto::HYBRID,
++                                         std::uint32_t digitSize = 0, std::uint32_t depth = 3) {
++    lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
++    parameters.SetMultiplicativeDepth(depth);
++    parameters.SetScalingModSize(30);
++    parameters.SetFirstModSize(35);
++    parameters.SetScalingTechnique(lbcrypto::FIXEDMANUAL);
++    parameters.SetSecurityLevel(lbcrypto::HEStd_NotSet);
++    parameters.SetRingDim(32);
++    parameters.SetBatchSize(8);
++    parameters.SetKeySwitchTechnique(technique);
++    if (technique == lbcrypto::HYBRID) parameters.SetNumLargeDigits(2);
++    if (technique == lbcrypto::BV) parameters.SetDigitSize(digitSize);
++    auto context = lbcrypto::GenCryptoContext(parameters);
++    context->Enable(lbcrypto::PKE);
++    context->Enable(lbcrypto::KEYSWITCH);
++    context->Enable(lbcrypto::LEVELEDSHE);
++    return context;
++}
++
++TensorFixture MakeTensorFixtureFor(const CryptoContext<DCRTPoly>& context) {
++    TensorFixture fixture;
++    fixture.context = context;
++    fixture.keys = fixture.context->KeyGen();
++    auto plaintext = fixture.context->MakeCKKSPackedPlaintext(std::vector<double>{0.0}, 2, 0);
++    fixture.leftInput = fixture.context->Encrypt(plaintext, fixture.keys.publicKey);
++    fixture.rightInput = fixture.context->Encrypt(plaintext, fixture.keys.publicKey);
++    const auto params = fixture.leftInput->GetElements().front().GetParams();
++    const std::size_t n = params->GetRingDimension();
++    const auto fullModuli = GetModuli(fixture.leftInput->GetElements().front());
++    Check(fullModuli.size() >= 3, "Relin2 fixture requires at least three full-basis towers");
++    const BigInt divisor = fullModuli.back();
++    std::vector<BigInt> lh0(n,0), ll0(n,0), lh1(n,0), ll1(n,0), rh0(n,0), rl0(n,0), rh1(n,0), rl1(n,0);
++    lh0[n-1] = 1; rh0[1] = 1;
++    lh1[0] = -1000003; rh1[0] = 1000033;
++    ll0[2] = 17; rl0[3] = -19; ll1[4] = -23; rl1[5] = 29;
++    fixture.leftInput->SetElements({MakePolynomial(params, ComposeSource(divisor, lh0, ll0)),
++                                    MakePolynomial(params, ComposeSource(divisor, lh1, ll1))});
++    fixture.rightInput->SetElements({MakePolynomial(params, ComposeSource(divisor, rh0, rl0)),
++                                     MakePolynomial(params, ComposeSource(divisor, rh1, rl1))});
++    return fixture;
++}
++
++struct EvalKeyMapGuard {
++    using Map = std::map<std::string, std::vector<lbcrypto::EvalKey<DCRTPoly>>>;
++    Map before;
++    EvalKeyMapGuard() : before(lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys()) {}
++    ~EvalKeyMapGuard() { lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys() = before; }
++};
++
++using KeyMapShape = std::map<std::string, std::vector<const void*>>;
++KeyMapShape SnapshotKeyMapShape() {
++    KeyMapShape result;
++    for (const auto& [tag, keys] : lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys()) {
++        auto& row = result[tag];
++        for (const auto& key : keys) row.push_back(key.get());
++    }
++    return result;
++}
++
++void CheckKeyMapUnchanged(const KeyMapShape& before, const std::string& label) {
++    Check(SnapshotKeyMapShape() == before, label + " changed the static eval-key map");
++}
++
++std::shared_ptr<lbcrypto::EvalKeyRelinImpl<DCRTPoly>> CloneRelinKey(const lbcrypto::EvalKey<DCRTPoly>& key) {
++    auto relin = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(key);
++    Check(relin != nullptr, "fixture eval key has wrong subtype");
++    auto clone = std::make_shared<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(*relin);
++    clone->SetKeyTag(relin->GetKeyTag());
++    return clone;
++}
++
++DCRTPoly RaiseElement(const DCRTPoly& source, const NativeInteger& divisor,
++                      const std::shared_ptr<DCRTPoly::Params>& fullParams) {
++    auto towers = source.GetAllElements();
++    for (auto& tower : towers) tower *= divisor;
++    lbcrypto::NativePoly zero(fullParams->GetParams().back(), Format::EVALUATION, true);
++    towers.push_back(std::move(zero));
++    return DCRTPoly(towers);
++}
++
++Ciphertext<DCRTPoly> RaiseHighReference(const TensorCiphertextPair& tensor,
++                                        const CryptoContext<DCRTPoly>& context) {
++    const auto parameters = std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
++    Check(parameters != nullptr, "Relin2 reference missing CKKS parameters");
++    auto raised = tensor.GetHigh()->Clone();
++    auto elements = raised->GetElements();
++    for (auto& element : elements) element = RaiseElement(element, tensor.GetDivisor(), parameters->GetElementParams());
++    raised->SetElements(std::move(elements));
++    raised->SetLevel(0);
++    return raised;
++}
++
++void CheckPublicRelinearizationShapes(const TensorCiphertextPair& tensor, const CryptoContext<DCRTPoly>& context) {
++    auto raised = RaiseHighReference(tensor, context);
++    lbcrypto::ConstCiphertext<DCRTPoly> raisedConst = raised;
++    auto high = context->Relinearize(raisedConst);
++    lbcrypto::ConstCiphertext<DCRTPoly> lowConst = tensor.GetLow();
++    auto low = context->Relinearize(lowConst);
++    Check(high->NumberCiphertextElements() == 2 && high->GetLevel() == 0,
++          "full-basis public Relinearize shape mismatch");
++    Check(low->NumberCiphertextElements() == 2 && low->GetLevel() == 1,
++          "level-one-prefix public Relinearize shape mismatch");
++}
++
++void CheckExactRelin2Oracle(const TensorCiphertextPair& tensor, const CiphertextPair& actual,
++                            const CryptoContext<DCRTPoly>& context) {
++    auto raised = RaiseHighReference(tensor, context);
++    lbcrypto::ConstCiphertext<DCRTPoly> raisedConst = raised;
++    auto relinRaised = context->Relinearize(raisedConst);
++    lbcrypto::ConstCiphertext<DCRTPoly> lowConst = tensor.GetLow();
++    auto relinLow = context->Relinearize(lowConst);
++    const BigInt divisor(tensor.GetDivisor().ConvertToInt());
++    const std::size_t n = raised->GetElements().front().GetParams()->GetRingDimension();
++    bool keySwitchWitness = false;
++    bool remainderLowWitness = false;
++    std::string keySwitchName;
++    std::string remainderLowName;
++    for (std::size_t component = 0; component < 2; ++component) {
++        auto k = relinRaised->GetElements()[component] - raised->GetElements()[component];
++        auto kc = ToCoefficient(k);
++        for (std::size_t tower=0; tower<kc.GetAllElements().size() && !keySwitchWitness; ++tower) {
++            for (std::size_t coefficient=0; coefficient<n; ++coefficient) {
++                if (CoefficientResidue(kc,tower,coefficient) != 0) {
++                    keySwitchWitness = true;
++                    keySwitchName = "component="+std::to_string(component)+",tower="+std::to_string(tower)+",coefficient="+std::to_string(coefficient);
++                    break;
++                }
++            }
++        }
++        const auto actualHigh = ToCoefficient(actual.GetHigh()->GetElements()[component]);
++        const auto actualLow = ToCoefficient(actual.GetLow()->GetElements()[component]);
++        const auto w = ToCoefficient(relinLow->GetElements()[component]);
++        const auto prefixModuli = GetModuli(actualHigh);
++        for (std::size_t coefficient = 0; coefficient < n; ++coefficient) {
++            const BigInt source = ReconstructCoefficient(relinRaised->GetElements()[component], coefficient);
++            const auto [quotient, remainder] = DecomposeCentered(source, divisor);
++            for (std::size_t tower=0; tower<prefixModuli.size(); ++tower) {
++                const BigInt wResidue = CoefficientResidue(w,tower,coefficient);
++                Check(CoefficientResidue(actualHigh,tower,coefficient) == PositiveMod(quotient,prefixModuli[tower]),
++                      "Relin2 quotient oracle mismatch");
++                Check(CoefficientResidue(actualLow,tower,coefficient) == PositiveMod(remainder+wResidue,prefixModuli[tower]),
++                      "Relin2 v+w oracle mismatch");
++                if (!remainderLowWitness && PositiveMod(remainder,prefixModuli[tower]) != 0 && wResidue != 0) {
++                    remainderLowWitness = true;
++                    remainderLowName = "component="+std::to_string(component)+",tower="+std::to_string(tower)+",coefficient="+std::to_string(coefficient);
++                }
++            }
++        }
++    }
++    Check(keySwitchWitness, "Relin2 fixture failed to produce a nonzero K0/K1 key-switch contribution");
++    Check(remainderLowWitness, "Relin2 fixture failed to produce a common nonzero v/w position");
++    std::cout << "Relin2 K witness: " << keySwitchName << '\n';
++    std::cout << "Relin2 v/w witness: " << remainderLowName << '\n';
++
++    const auto recombined = actual.GetHigh()->Clone();
++    auto& recombinedElements = recombined->GetElements();
++    const auto& actualLowElements = actual.GetLow()->GetElements();
++    for (std::size_t i=0;i<recombinedElements.size();++i) {
++        recombinedElements[i] *= tensor.GetDivisor();
++        recombinedElements[i] += actualLowElements[i];
++    }
++    for (std::size_t component=0; component<2; ++component) {
++        const auto rc = ToCoefficient(recombined->GetElements()[component]);
++        const auto w = ToCoefficient(relinLow->GetElements()[component]);
++        const auto moduli = GetModuli(rc);
++        for (std::size_t coefficient=0; coefficient<n; ++coefficient) {
++            const BigInt source = ReconstructCoefficient(relinRaised->GetElements()[component], coefficient);
++            for (std::size_t tower=0;tower<moduli.size();++tower) {
++                Check(CoefficientResidue(rc,tower,coefficient) ==
++                          PositiveMod(source + CoefficientResidue(w,tower,coefficient), moduli[tower]),
++                      "Relin2 RCB identity mismatch");
++            }
++        }
++    }
++}
++
++void TestRelin2ValidArithmeticStateImmutability() {
++    EvalKeyMapGuard keyGuard;
++    auto fixture = MakeTensorFixtureFor(MakeRelinContext());
++    DoubleCKKS module(fixture.context);
++    auto [left,right] = MakePairs(fixture,module);
++    auto tensor = module.Tensor2(left,right);
++    auto mutableHigh = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(tensor.GetHigh());
++    mutableHigh->SetMetadataByKey("relin2-immutability-high", std::make_shared<ImmutabilityProbeMetadata>("high"));
++    auto mutableLow = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(tensor.GetLow());
++    mutableLow->SetMetadataByKey("relin2-immutability-low", std::make_shared<ImmutabilityProbeMetadata>("low"));
++    const auto before = SnapshotTensor(tensor,"Relin2 tensor");
++    fixture.context->EvalMultKeyGen(fixture.keys.secretKey);
++    CheckPublicRelinearizationShapes(tensor, fixture.context);
++    const auto result = module.Relin2(tensor);
++    Check(result.GetLifecycle() == PairLifecycle::ReadyForRS2, "Relin2 lifecycle mismatch");
++    Check(result.GetLevel() == 1 && result.GetComponentCount() == 2, "Relin2 output shape mismatch");
++    Check(result.GetNoiseScaleDegree() == 3, "Relin2 output degree mismatch");
++    Check(result.GetRecordedScalingFactor() == tensor.GetRecordedScalingFactor(), "Relin2 factor mismatch");
++    Check(result.GetPaperScale().approximateLogicalScalingFactor == tensor.GetTensorScale().approximateHighLogicalScalingFactor,
++          "Relin2 high logical scale mismatch");
++    Check(result.GetPaperScale().approximateRecombinedLogicalScalingFactor == tensor.GetTensorScale().approximateRecombinedLogicalScalingFactor,
++          "Relin2 recombined logical scale mismatch");
++    CheckExactRelin2Oracle(tensor,result,fixture.context);
++    const auto pairBefore = SnapshotPair(result,"Relin2 output");
++    (void)module.RCB(result);
++    CheckPairUnchanged(result,pairBefore,"Relin2 output after RCB");
++    CheckTensorUnchanged(tensor,before,"Relin2 tensor");
++}
++
++void TestRelin2TensorValidationBeforeKey() {
++    EvalKeyMapGuard keyGuard;
++    auto fixture=MakeTensorFixtureFor(MakeRelinContext()); DoubleCKKS module(fixture.context);
++    auto [left,right]=MakePairs(fixture,module); auto tensor=module.Tensor2(left,right);
++    auto& basis=const_cast<std::vector<NativeInteger>&>(tensor.GetOrderedModuli()); basis.front() += NativeInteger(2);
++    CheckThrowsInvalidArgument([&]{ (void)module.Relin2(tensor); }, "Tensor2 result basis or level is invalid", "Relin2 Tensor validation order");
++}
++
++void TestRelin2InsufficientActiveBasis() {
++    EvalKeyMapGuard keyGuard;
++    auto fixture=MakeTensorFixtureFor(MakeRelinContext(lbcrypto::HYBRID,0,2)); DoubleCKKS module(fixture.context);
++    auto [left,right]=MakePairs(fixture,module); auto tensor=module.Tensor2(left,right);
++    Check(tensor.GetOrderedModuli().size()==2, "minimum Relin2 fixture must expose two active towers");
++    (void)module.RCB(left);
++    CheckThrowsInvalidArgument([&]{ (void)module.Relin2(tensor); }, "at least as many active Q_l towers", "Relin2 insufficient active basis");
++}
++
++void TestRelin2MissingKey() {
++    EvalKeyMapGuard keyGuard;
++    auto fixture=MakeTensorFixtureFor(MakeRelinContext()); DoubleCKKS module(fixture.context);
++    auto [left,right]=MakePairs(fixture,module); auto tensor=module.Tensor2(left,right);
++    CheckThrowsInvalidArgument([&]{ (void)module.Relin2(tensor); }, "evaluation key is missing", "Relin2 missing key");
++}
++
++enum class KeyMutation { Empty, NullFirst, WrongContext, WrongTag, WrongSubtype, ALength, BLength, Basis, Format,
++                         ExtraValid, MalformedLater };
++
++void RunKeyMutation(lbcrypto::KeySwitchTechnique technique, std::uint32_t digitSize, KeyMutation mutation,
++                    const std::string& expected, bool expectSuccess) {
++    EvalKeyMapGuard keyGuard;
++    auto fixture=MakeTensorFixtureFor(MakeRelinContext(technique,digitSize)); DoubleCKKS module(fixture.context);
++    auto [left,right]=MakePairs(fixture,module); auto tensor=module.Tensor2(left,right);
++    fixture.context->EvalMultKeyGen(fixture.keys.secretKey);
++    auto& map=lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
++    const std::string tag=tensor.GetKeyTag();
++    Check(map.find(tag)!=map.end() && !map.at(tag).empty(), "fixture eval key missing");
++    auto valid=map.at(tag).front();
++    if (mutation==KeyMutation::Empty) map[tag].clear();
++    else if (mutation==KeyMutation::NullFirst) map[tag]={nullptr};
++    else if (mutation==KeyMutation::WrongContext) {
++        auto other=MakeRelinContext(technique,digitSize,4);
++        auto wrong=std::make_shared<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(other); wrong->SetKeyTag(tag);
++        auto base=CloneRelinKey(valid); wrong->SetAVector(base->GetAVector()); wrong->SetBVector(base->GetBVector()); map[tag]={wrong};
++    }
++    else if (mutation==KeyMutation::WrongTag) { auto k=CloneRelinKey(valid); k->SetKeyTag("wrong-tag"); map[tag]={k}; }
++    else if (mutation==KeyMutation::WrongSubtype) {
++        auto k=std::make_shared<lbcrypto::EvalKeyImpl<DCRTPoly>>(fixture.context); k->SetKeyTag(tag); map[tag]={k};
++    }
++    else if (mutation==KeyMutation::ExtraValid) map[tag]={valid,valid};
++    else if (mutation==KeyMutation::MalformedLater) map[tag]={valid,nullptr};
++    else {
++        auto k=CloneRelinKey(valid); auto a=k->GetAVector(); auto b=k->GetBVector();
++        if (mutation==KeyMutation::ALength) a.pop_back();
++        if (mutation==KeyMutation::BLength) b.pop_back();
++        if (mutation==KeyMutation::Basis) { auto bad=a.front(); bad.DropLastElement(); a.front()=std::move(bad); }
++        if (mutation==KeyMutation::Format) { auto bad=a.front(); bad.SetFormat(Format::COEFFICIENT); a.front()=std::move(bad); }
++        k->SetAVector(std::move(a)); k->SetBVector(std::move(b)); map[tag]={k};
++    }
++    const auto tensorBefore=SnapshotTensor(tensor,"malformed-key Tensor");
++    const auto mapBefore=SnapshotKeyMapShape();
++    if (expectSuccess) { const auto result=module.Relin2(tensor); Check(result.GetLifecycle()==PairLifecycle::ReadyForRS2,"extra-key Relin2 failed"); }
++    else CheckThrowsInvalidArgument([&]{ (void)module.Relin2(tensor); }, expected, "Relin2 malformed key");
++    CheckTensorUnchanged(tensor,tensorBefore,"malformed-key Tensor");
++    CheckKeyMapUnchanged(mapBefore,"Relin2 malformed-key case");
++}
++
++void TestKeyEmpty(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::Empty,"vector is empty",false);}
++void TestKeyNull(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::NullFirst,"first evaluation key is null",false);}
++void TestKeyWrongContext(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::WrongContext,"different context",false);}
++void TestKeyWrongTag(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::WrongTag,"key tag does not match",false);}
++void TestKeyWrongSubtype(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::WrongSubtype,"wrong concrete subtype",false);}
++void TestHybridALength(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::ALength,"HYBRID A vector length mismatch",false);}
++void TestHybridBLength(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::BLength,"HYBRID B vector length mismatch",false);}
++void TestHybridBasis(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::Basis,"HYBRID entry basis mismatch",false);}
++void TestHybridFormat(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::Format,"HYBRID entry must be in evaluation format",false);}
++void TestBv0ALength(){RunKeyMutation(lbcrypto::BV,0,KeyMutation::ALength,"BV A vector length mismatch",false);}
++void TestBv0BLength(){RunKeyMutation(lbcrypto::BV,0,KeyMutation::BLength,"BV B vector length mismatch",false);}
++void TestBv0Basis(){RunKeyMutation(lbcrypto::BV,0,KeyMutation::Basis,"BV entry basis mismatch",false);}
++void TestBv0Format(){RunKeyMutation(lbcrypto::BV,0,KeyMutation::Format,"BV entry must be in evaluation format",false);}
++void TestBvNZALength(){RunKeyMutation(lbcrypto::BV,10,KeyMutation::ALength,"BV A vector length mismatch",false);}
++void TestBvNZBLength(){RunKeyMutation(lbcrypto::BV,10,KeyMutation::BLength,"BV B vector length mismatch",false);}
++void TestBvNZBasis(){RunKeyMutation(lbcrypto::BV,10,KeyMutation::Basis,"BV entry basis mismatch",false);}
++void TestBvNZFormat(){RunKeyMutation(lbcrypto::BV,10,KeyMutation::Format,"BV entry must be in evaluation format",false);}
++void TestExtraValid(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::ExtraValid,"",true);}
++void TestMalformedLater(){RunKeyMutation(lbcrypto::HYBRID,0,KeyMutation::MalformedLater,"",true);}
++
++void TestValidTechnique(lbcrypto::KeySwitchTechnique technique, std::uint32_t digitSize) {
++    EvalKeyMapGuard guard; auto fixture=MakeTensorFixtureFor(MakeRelinContext(technique,digitSize)); DoubleCKKS module(fixture.context);
++    auto [left,right]=MakePairs(fixture,module); auto tensor=module.Tensor2(left,right); fixture.context->EvalMultKeyGen(fixture.keys.secretKey);
++    CheckPublicRelinearizationShapes(tensor,fixture.context); (void)module.Relin2(tensor);
++}
++void TestBv0ValidShapes(){TestValidTechnique(lbcrypto::BV,0);}
++void TestBvNZValidShapes(){TestValidTechnique(lbcrypto::BV,10);}
++
++void TestFirstLifecycleRecombinedRcbValidation() {
++    auto fixture=MakeTensorFixtureFor(MakeRelinContext()); DoubleCKKS module(fixture.context); auto pair=module.DCP(fixture.leftInput);
++    Check(pair.GetPaperScale().approximateRecombinedLogicalScalingFactor == static_cast<long double>(fixture.leftInput->GetScalingFactor()),
++          "DCP did not propagate the recombined logical scale");
++    auto& scale=const_cast<PaperScaleDescriptor&>(pair.GetPaperScale()); scale.approximateRecombinedLogicalScalingFactor *= 2.0L;
++    CheckThrowsInvalidArgument([&]{(void)module.RCB(pair);},"recombined logical scale","ReadyForFirstMult RCB recombined field validation");
++}
++
++void TestFirstLifecycleRecombinedTensor2Validation() {
++    auto fixture=MakeTensorFixtureFor(MakeRelinContext()); DoubleCKKS module(fixture.context); auto left=module.DCP(fixture.leftInput); auto right=module.DCP(fixture.rightInput);
++    Check(right.GetPaperScale().approximateRecombinedLogicalScalingFactor == static_cast<long double>(fixture.rightInput->GetScalingFactor()),
++          "DCP did not propagate the recombined logical scale");
++    auto& scale=const_cast<PaperScaleDescriptor&>(right.GetPaperScale()); scale.approximateRecombinedLogicalScalingFactor *= 2.0L;
++    CheckThrowsInvalidArgument([&]{(void)module.Tensor2(left,right);},"recombined logical scale","Tensor2 recombined field validation");
++}
++
++void TestDeterministicDcpBoundaryWitnesses() {
++    EvalKeyMapGuard guard;
++    auto fixture=MakeTensorFixtureFor(MakeRelinContext(lbcrypto::BV,0)); DoubleCKKS module(fixture.context);
++    auto [left,right]=MakePairs(fixture,module); auto tensor=module.Tensor2(left,right);
++    const BigInt divisor(tensor.GetDivisor().ConvertToInt()); const BigInt half=divisor/2;
++    auto mutableHigh=std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(tensor.GetHigh());
++    auto elements=mutableHigh->GetElements(); auto c2=ToCoefficient(elements.at(2)); auto& towers=c2.GetAllElements();
++    for (auto& tower:towers) { lbcrypto::NativeVector zeros(tower.GetLength(),tower.GetModulus()); tower.SetValues(std::move(zeros),Format::COEFFICIENT); }
++    const BigInt q0(towers.at(0).GetModulus().ConvertToInt()); const BigInt inv=ModInverse(divisor,q0);
++    const std::vector<BigInt> targets={half,half+1,1};
++    auto vals=towers.at(0).GetValues();
++    for(std::size_t i=0;i<targets.size();++i) vals[i]=NativeInteger(PositiveMod(targets[i]*inv,q0).convert_to<std::uint64_t>());
++    towers.at(0).SetValues(std::move(vals),Format::COEFFICIENT); c2.SetFormat(Format::EVALUATION); elements.at(2)=std::move(c2); mutableHigh->SetElements(std::move(elements));
++
++    const auto params=std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(fixture.context->GetCryptoParameters());
++    const std::size_t count=params->GetElementParams()->GetParams().size();
++    std::vector<DCRTPoly> a(count,DCRTPoly(params->GetElementParams(),Format::EVALUATION,true));
++    std::vector<DCRTPoly> b(count,DCRTPoly(params->GetElementParams(),Format::EVALUATION,true));
++    const std::size_t n=params->GetElementParams()->GetRingDimension(); std::vector<BigInt> one(n,0); one[0]=1; b[0]=MakePolynomial(params->GetElementParams(),one);
++    auto key=std::make_shared<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(fixture.context); key->SetKeyTag(tensor.GetKeyTag()); key->SetAVector(a); key->SetBVector(b);
++    auto& map=lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys(); map[tensor.GetKeyTag()]={key};
++    auto raised=RaiseHighReference(tensor,fixture.context); lbcrypto::ConstCiphertext<DCRTPoly> rc=raised; auto relin=fixture.context->Relinearize(rc);
++    const BigInt s0=ReconstructCoefficient(relin->GetElements().at(0),0); const auto d0=DecomposeCentered(s0,divisor);
++    const BigInt s1=ReconstructCoefficient(relin->GetElements().at(0),1); const auto d1=DecomposeCentered(s1,divisor);
++    Check(d0.second==half,"deterministic positive centered-remainder boundary missing at component=0,coefficient=0");
++    Check(d1.second==-half,"deterministic negative centered-remainder boundary missing at component=0,coefficient=1");
++    const BigInt positiveResidue=half+1; const BigInt baseQuotient=(s1-positiveResidue)/divisor;
++    Check(d1.first==baseQuotient+1,"deterministic quotient-carry witness missing at component=0,coefficient=1");
++    std::cout << "Relin2 deterministic DCP witnesses: positive=(0,0), negative/carry=(0,1)\n";
++    (void)module.Relin2(tensor);
++}
++using TestFunction = void (*)();
++
++TestFunction ResolveTest(const std::string& name) {
++    // Keep the accepted Tensor2 functions referenced in this copied public-seam
++    // harness so strict -Wunused-function remains warning-clean. They are not
++    // registered as Relin2 CTests; the original tensor2_test target remains the
++    // regression authority for these cases.
++    if (name == "legacy_valid_arithmetic") return &TestValidArithmeticAndImmutability;
++    if (name == "legacy_result_scale") return &TestResultAndScaleContract;
++    if (name == "legacy_right_validation") return &TestRightInputValidation;
++    if (name == "legacy_mutual_compatibility") return &TestMutualCompatibility;
++    if (name == "legacy_key_compatibility") return &TestPreArithmeticKeyCompatibility;
++    if (name == "valid_arithmetic_state_immutability") return &TestRelin2ValidArithmeticStateImmutability;
++    if (name == "tensor_validation_before_key") return &TestRelin2TensorValidationBeforeKey;
++    if (name == "insufficient_active_basis") return &TestRelin2InsufficientActiveBasis;
++    if (name == "missing_eval_key") return &TestRelin2MissingKey;
++    if (name == "key_empty") return &TestKeyEmpty;
++    if (name == "key_null_first") return &TestKeyNull;
++    if (name == "key_wrong_context") return &TestKeyWrongContext;
++    if (name == "key_wrong_tag") return &TestKeyWrongTag;
++    if (name == "key_wrong_subtype") return &TestKeyWrongSubtype;
++    if (name == "hybrid_a_length") return &TestHybridALength;
++    if (name == "hybrid_b_length") return &TestHybridBLength;
++    if (name == "hybrid_basis") return &TestHybridBasis;
++    if (name == "hybrid_format") return &TestHybridFormat;
++    if (name == "bv0_a_length") return &TestBv0ALength;
++    if (name == "bv0_b_length") return &TestBv0BLength;
++    if (name == "bv0_basis") return &TestBv0Basis;
++    if (name == "bv0_format") return &TestBv0Format;
++    if (name == "bvnz_a_length") return &TestBvNZALength;
++    if (name == "bvnz_b_length") return &TestBvNZBLength;
++    if (name == "bvnz_basis") return &TestBvNZBasis;
++    if (name == "bvnz_format") return &TestBvNZFormat;
++    if (name == "extra_later_valid") return &TestExtraValid;
++    if (name == "malformed_later_ignored") return &TestMalformedLater;
++    if (name == "bv0_valid_shapes") return &TestBv0ValidShapes;
++    if (name == "bvnz_valid_shapes") return &TestBvNZValidShapes;
++    if (name == "first_recombined_rcb_validation") return &TestFirstLifecycleRecombinedRcbValidation;
++    if (name == "first_recombined_tensor2_validation") return &TestFirstLifecycleRecombinedTensor2Validation;
++    if (name == "deterministic_dcp_boundary_witnesses") return &TestDeterministicDcpBoundaryWitnesses;
++    throw TestFailure("unknown Relin2 test case: " + name);
++}
++
++}  // namespace
++
++int main(int argc, char** argv) {
++    if (argc != 2) {
++        std::cerr << "Relin2 test failure: expected exactly one case name\n";
++        return 2;
++    }
++
++    try {
++        ResolveTest(argv[1])();
++        lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
++        std::cout << "Relin2 case passed: " << argv[1] << '\n';
++        return 0;
++    }
++    catch (const TestFailure& failure) {
++        std::cerr << "Relin2 test failure: " << failure.what() << '\n';
++        return 1;
++    }
++    catch (const std::exception& exception) {
++        std::cerr << "Relin2 unexpected exception: " << exception.what() << '\n';
++        return 1;
++    }
++}

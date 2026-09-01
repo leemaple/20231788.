@@ -1,0 +1,362 @@
+diff --git a/include/openfhe_2023_1788/double_ckks.h b/include/openfhe_2023_1788/double_ckks.h
+index 76b4c96..2a38c0a 100644
+--- a/include/openfhe_2023_1788/double_ckks.h
++++ b/include/openfhe_2023_1788/double_ckks.h
+@@ -8,6 +8,7 @@
+ #include <cstdint>
+ #include <memory>
+ #include <string>
++#include <utility>
+ #include <vector>
+ 
+ namespace openfhe_2023_1788 {
+@@ -144,6 +145,9 @@ public:
+     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> RCB(const CiphertextPair& pair) const;
+ 
+ private:
++    std::pair<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>, lbcrypto::Ciphertext<lbcrypto::DCRTPoly>>
++    DecomposeValidatedFullBasis(const ReadOnlyCiphertext& ciphertext) const;
++    void ValidateRelin2EvaluationKey(const std::string& keyTag) const;
+     void ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const;
+     void ValidatePair(const CiphertextPair& pair) const;
+     void ValidateTensorCompatibility(const CiphertextPair& left, const CiphertextPair& right) const;
+diff --git a/src/double_ckks.cpp b/src/double_ckks.cpp
+index d512774..57322b4 100644
+--- a/src/double_ckks.cpp
++++ b/src/double_ckks.cpp
+@@ -34,6 +34,26 @@ bool SameOrderedModuli(const std::vector<lbcrypto::NativeInteger>& left,
+     return true;
+ }
+ 
++bool SameDcrtParameters(const lbcrypto::DCRTPoly& element,
++                        const std::shared_ptr<lbcrypto::DCRTPoly::Params>& expected) {
++    if (!expected) {
++        return false;
++    }
++    const auto& towers = element.GetAllElements();
++    const auto& params = expected->GetParams();
++    if (towers.size() != params.size()) {
++        return false;
++    }
++    for (std::size_t index = 0; index < towers.size(); ++index) {
++        if (!params[index] || towers[index].GetModulus() != params[index]->GetModulus() ||
++            towers[index].GetRootOfUnity() != params[index]->GetRootOfUnity() ||
++            towers[index].GetCyclotomicOrder() != params[index]->GetCyclotomicOrder()) {
++            return false;
++        }
++    }
++    return true;
++}
++
+ }  // namespace
+ 
+ CiphertextPair::CiphertextPair(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high,
+@@ -325,9 +345,8 @@ void DoubleCKKS::ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const {
+                        ciphertext->GetSlots(), 2, "pair", "DCP input");
+ }
+ 
+-CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
+-    ValidateDcpInput(ciphertext);
+-
++std::pair<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>, lbcrypto::Ciphertext<lbcrypto::DCRTPoly>>
++DoubleCKKS::DecomposeValidatedFullBasis(const ReadOnlyCiphertext& ciphertext) const {
+     std::vector<lbcrypto::NativeInteger> quotientFactors;
+     std::vector<lbcrypto::NativeInteger> divisorInverses;
+     quotientFactors.reserve(firstPairModuli_.size());
+@@ -342,7 +361,6 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
+     std::vector<lbcrypto::DCRTPoly> lowElements;
+     highElements.reserve(ciphertext->GetElements().size());
+     lowElements.reserve(ciphertext->GetElements().size());
+-
+     for (const auto& source : ciphertext->GetElements()) {
+         auto high = source;
+         high.DropLastElementAndScale(quotientFactors, divisorInverses);
+@@ -352,7 +370,6 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
+         auto scaledHigh = high;
+         scaledHigh *= divisor_;
+         sourcePrefix -= scaledHigh;
+-
+         highElements.push_back(std::move(high));
+         lowElements.push_back(std::move(sourcePrefix));
+     }
+@@ -360,10 +377,15 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
+     auto highCiphertext = ciphertext->Clone();
+     highCiphertext->SetElements(std::move(highElements));
+     highCiphertext->SetLevel(1);
+-
+     auto lowCiphertext = ciphertext->Clone();
+     lowCiphertext->SetElements(std::move(lowElements));
+     lowCiphertext->SetLevel(1);
++    return {std::move(highCiphertext), std::move(lowCiphertext)};
++}
++
++CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
++    ValidateDcpInput(ciphertext);
++    auto decomposed = DecomposeValidatedFullBasis(ciphertext);
+ 
+     const double recordedScalingFactor = ciphertext->GetScalingFactor();
+     PaperScaleDescriptor paperScale{
+@@ -374,7 +396,7 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
+         static_cast<long double>(recordedScalingFactor),
+     };
+ 
+-    CiphertextPair pair(std::move(highCiphertext), std::move(lowCiphertext), context_.get(), divisor_,
++    CiphertextPair pair(std::move(decomposed.first), std::move(decomposed.second), context_.get(), divisor_,
+                         firstPairModuli_, 1, paperScale, recordedScalingFactor, 2,
+                         PairLifecycle::ReadyForFirstMult, ciphertext->GetKeyTag(), ciphertext->GetSlots(),
+                         Format::EVALUATION, 2);
+@@ -392,27 +414,41 @@ void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
+     if (pair.componentCount_ != 2 || pair.format_ != Format::EVALUATION) {
+         Invalid("pair shape or format is invalid");
+     }
+-    if (pair.level_ == 0 || pair.level_ >= fullModuli_.size()) {
+-        Invalid("pair level is outside the supported context basis");
++    if (pair.lifecycle_ != PairLifecycle::ReadyForFirstMult && pair.lifecycle_ != PairLifecycle::ReadyForRS2) {
++        Invalid("pair lifecycle is invalid");
+     }
+-
+-    std::vector<lbcrypto::NativeInteger> expectedModuli(fullModuli_.begin(), fullModuli_.end() - pair.level_);
+-    if (!SameOrderedModuli(pair.orderedModuli_, expectedModuli)) {
++    if (pair.level_ != 1 || !SameOrderedModuli(pair.orderedModuli_, firstPairModuli_)) {
+         Invalid("pair ordered RNS basis does not match its level");
+     }
+-    if (!std::isfinite(pair.recordedScalingFactor_) ||
+-        pair.recordedScalingFactor_ != expectedInputScalingFactor_) {
++
++    const double baseScalingFactor = parameters_->GetScalingFactorReal(0);
++    const bool firstLifecycle = pair.lifecycle_ == PairLifecycle::ReadyForFirstMult;
++    const double expectedRecordedScalingFactor =
++        firstLifecycle ? expectedInputScalingFactor_
++                       : expectedInputScalingFactor_ * expectedInputScalingFactor_ / baseScalingFactor;
++    const std::size_t expectedNoiseScaleDegree = firstLifecycle ? 2 : 3;
++    if (!std::isfinite(pair.recordedScalingFactor_) || pair.recordedScalingFactor_ != expectedRecordedScalingFactor ||
++        pair.noiseScaleDegree_ != expectedNoiseScaleDegree) {
+         Invalid("pair scale metadata is invalid");
+     }
+-    const long double expectedLogicalScalingFactor =
+-        static_cast<long double>(pair.recordedScalingFactor_) /
+-        static_cast<long double>(divisor_.ConvertToInt());
++
++    const long double divisor = static_cast<long double>(divisor_.ConvertToInt());
++    const long double firstHighScale = static_cast<long double>(expectedInputScalingFactor_) / divisor;
++    const long double expectedHighScale = firstLifecycle ? firstHighScale : firstHighScale * firstHighScale;
++    const long double expectedRecombinedScale =
++        firstLifecycle ? static_cast<long double>(expectedInputScalingFactor_)
++                       : static_cast<long double>(expectedInputScalingFactor_) *
++                             static_cast<long double>(expectedInputScalingFactor_) / divisor;
+     if (pair.paperScale_.inputRecordedScalingFactor != pair.recordedScalingFactor_ ||
+         pair.paperScale_.divisor != divisor_ ||
+         !std::isfinite(pair.paperScale_.approximateLogicalScalingFactor) ||
+-        pair.paperScale_.approximateLogicalScalingFactor != expectedLogicalScalingFactor) {
++        pair.paperScale_.approximateLogicalScalingFactor != expectedHighScale) {
+         Invalid("pair paper-scale descriptor is inconsistent");
+     }
++    if (!std::isfinite(pair.paperScale_.approximateRecombinedLogicalScalingFactor) ||
++        pair.paperScale_.approximateRecombinedLogicalScalingFactor != expectedRecombinedScale) {
++        Invalid("pair recombined logical scale is inconsistent");
++    }
+     if (pair.keyTag_.empty()) {
+         Invalid("pair key tag is empty");
+     }
+@@ -541,8 +577,8 @@ TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const Ciphe
+ 
+     TensorScaleDescriptor tensorScale{
+         left.paperScale_.approximateLogicalScalingFactor * right.paperScale_.approximateLogicalScalingFactor,
+-        static_cast<long double>(left.paperScale_.inputRecordedScalingFactor) *
+-            static_cast<long double>(right.paperScale_.inputRecordedScalingFactor) /
++        left.paperScale_.approximateRecombinedLogicalScalingFactor *
++            right.paperScale_.approximateRecombinedLogicalScalingFactor /
+             static_cast<long double>(divisor_.ConvertToInt()),
+     };
+ 
+@@ -554,8 +590,135 @@ TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const Ciphe
+ }
+ 
+ 
+-CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair&) const {
+-    throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
++void DoubleCKKS::ValidateRelin2EvaluationKey(const std::string& keyTag) const {
++    auto& allKeys = lbcrypto::CryptoContextImpl<lbcrypto::DCRTPoly>::GetAllEvalMultKeys();
++    const auto found = allKeys.find(keyTag);
++    if (found == allKeys.end()) {
++        Invalid("Relin2 evaluation key is missing for the Tensor key tag");
++    }
++    const auto& keys = found->second;
++    if (keys.empty()) {
++        Invalid("Relin2 evaluation-key vector is empty");
++    }
++    const auto& key = keys.front();
++    if (!key) {
++        Invalid("Relin2 first evaluation key is null");
++    }
++    if (key->GetCryptoContext().get() != context_.get()) {
++        Invalid("Relin2 first evaluation key belongs to a different context");
++    }
++    if (key->GetKeyTag() != keyTag) {
++        Invalid("Relin2 first evaluation key tag does not match the Tensor key tag");
++    }
++    const auto relinKey = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<lbcrypto::DCRTPoly>>(key);
++    if (!relinKey) {
++        Invalid("Relin2 first evaluation key has the wrong concrete subtype");
++    }
++
++    const auto& a = relinKey->GetAVector();
++    const auto& b = relinKey->GetBVector();
++    const auto technique = parameters_->GetKeySwitchTechnique();
++    std::size_t expectedCount = 0;
++    std::shared_ptr<lbcrypto::DCRTPoly::Params> expectedParams;
++    const char* techniqueLabel = nullptr;
++    if (technique == lbcrypto::HYBRID) {
++        expectedCount = parameters_->GetNumPartQ();
++        expectedParams = parameters_->GetParamsQP();
++        techniqueLabel = "HYBRID";
++    }
++    else if (technique == lbcrypto::BV) {
++        const auto digitSize = parameters_->GetDigitSize();
++        if (digitSize == 0) {
++            expectedCount = fullModuli_.size();
++        }
++        else {
++            const auto& qParams = parameters_->GetElementParams()->GetParams();
++            for (const auto& qParam : qParams) {
++                expectedCount += (qParam->GetModulus().GetMSB() + digitSize - 1) / digitSize;
++            }
++        }
++        expectedParams = parameters_->GetElementParams();
++        techniqueLabel = "BV";
++    }
++    else {
++        Invalid("Relin2 key-switch technique is unsupported");
++    }
++
++    if (a.size() != expectedCount) {
++        Invalid(std::string("Relin2 evaluation key ") + techniqueLabel + " A vector length mismatch");
++    }
++    if (b.size() != expectedCount) {
++        Invalid(std::string("Relin2 evaluation key ") + techniqueLabel + " B vector length mismatch");
++    }
++    for (std::size_t index = 0; index < expectedCount; ++index) {
++        if (a[index].GetFormat() != Format::EVALUATION || b[index].GetFormat() != Format::EVALUATION) {
++            Invalid(std::string("Relin2 evaluation key ") + techniqueLabel + " entry must be in evaluation format");
++        }
++        if (!SameDcrtParameters(a[index], expectedParams) || !SameDcrtParameters(b[index], expectedParams)) {
++            Invalid(std::string("Relin2 evaluation key ") + techniqueLabel + " entry basis mismatch");
++        }
++    }
++}
++
++CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
++    ValidateTensorResult(tensor);
++    if (tensor.orderedModuli_.size() < tensor.noiseScaleDegree_) {
++        Invalid("Relin2 requires at least as many active Q_l towers as the Tensor noise-scale degree");
++    }
++    ValidateRelin2EvaluationKey(tensor.keyTag_);
++
++    auto raisedHigh = tensor.high_->Clone();
++    auto raisedElements = raisedHigh->GetElements();
++    const auto& fullTowerParameters = parameters_->GetElementParams()->GetParams();
++    for (auto& element : raisedElements) {
++        auto towers = element.GetAllElements();
++        for (auto& tower : towers) {
++            tower *= divisor_;
++        }
++        lbcrypto::NativePoly zeroTower(fullTowerParameters.back(), Format::EVALUATION, true);
++        towers.push_back(std::move(zeroTower));
++        element = lbcrypto::DCRTPoly(towers);
++    }
++    raisedHigh->SetElements(std::move(raisedElements));
++    raisedHigh->SetLevel(0);
++    ValidateCiphertext(raisedHigh, fullModuli_, 0, 3, tensor.recordedScalingFactor_, tensor.keyTag_, tensor.slots_, 3,
++                       "Relin2 raised-high", "Relin2 raised high");
++
++    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> raisedHighConst = raisedHigh;
++    auto relinearizedHigh = context_->Relinearize(raisedHighConst);
++    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> lowConst = tensor.low_;
++    auto relinearizedLow = context_->Relinearize(lowConst);
++
++    ValidateCiphertext(relinearizedHigh, fullModuli_, 0, 3, tensor.recordedScalingFactor_, tensor.keyTag_, tensor.slots_,
++                       2, "Relin2 relinearized-high", "Relin2 relinearized high");
++    auto decomposed = DecomposeValidatedFullBasis(relinearizedHigh);
++
++    ValidateCiphertext(decomposed.second, firstPairModuli_, 1, 3, tensor.recordedScalingFactor_, tensor.keyTag_,
++                       tensor.slots_, 2, "Relin2 DCP remainder", "Relin2 DCP remainder");
++    ValidateCiphertext(relinearizedLow, firstPairModuli_, 1, 3, tensor.recordedScalingFactor_, tensor.keyTag_,
++                       tensor.slots_, 2, "Relin2 relinearized-low", "Relin2 relinearized low");
++    if (decomposed.second->GetCryptoContext().get() != relinearizedLow->GetCryptoContext().get() ||
++        decomposed.second->GetKeyTag() != relinearizedLow->GetKeyTag() ||
++        decomposed.second->GetSlots() != relinearizedLow->GetSlots() ||
++        decomposed.second->GetEncodingType() != relinearizedLow->GetEncodingType() ||
++        decomposed.second->GetLevel() != relinearizedLow->GetLevel() ||
++        decomposed.second->GetNoiseScaleDeg() != relinearizedLow->GetNoiseScaleDeg() ||
++        decomposed.second->GetScalingFactor() != relinearizedLow->GetScalingFactor()) {
++        Invalid("Relin2 pre-add ciphertext metadata mismatch");
++    }
++
++    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> remainderConst = decomposed.second;
++    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> relinearizedLowConst = relinearizedLow;
++    auto outputLow = context_->EvalAdd(remainderConst, relinearizedLowConst);
++
++    PaperScaleDescriptor paperScale{tensor.recordedScalingFactor_, divisor_,
++                                    tensor.tensorScale_.approximateHighLogicalScalingFactor,
++                                    tensor.tensorScale_.approximateRecombinedLogicalScalingFactor};
++    CiphertextPair result(std::move(decomposed.first), std::move(outputLow), context_.get(), divisor_, firstPairModuli_,
++                          1, paperScale, tensor.recordedScalingFactor_, 3, PairLifecycle::ReadyForRS2, tensor.keyTag_,
++                          tensor.slots_, Format::EVALUATION, 2);
++    ValidatePair(result);
++    return result;
+ }
+ 
+ lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {
+diff --git a/tests/dcp_rcb_test.cpp b/tests/dcp_rcb_test.cpp
+index 301e998..1b05a51 100644
+--- a/tests/dcp_rcb_test.cpp
++++ b/tests/dcp_rcb_test.cpp
+@@ -459,6 +459,8 @@ void TestDcpAndRcbExactOracle() {
+     Check(paperScale.approximateLogicalScalingFactor ==
+               static_cast<long double>(recordedScale) / divisorBig.convert_to<long double>(),
+           "DCP paper logical scale mismatch");
++    Check(paperScale.approximateRecombinedLogicalScalingFactor == static_cast<long double>(recordedScale),
++          "DCP paper recombined logical scale mismatch");
+     Check(divisor.Mod(NativeInteger(2)) == NativeInteger(1), "DCP divisor must be odd");
+     Check(pair.GetKeyTag() == keyTag, "DCP pair key tag mismatch");
+     Check(pair.GetSlots() == slots, "DCP pair slot-count metadata mismatch");
+@@ -747,6 +749,14 @@ void TestRcbRejectsTamperedPairStorage() {
+         CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "paper-scale descriptor",
+                                    "tampered pair paper scale");
+     }
++
++    {
++        auto pair = module.DCP(fixture.input);
++        auto& paperScale = const_cast<PaperScaleDescriptor&>(pair.GetPaperScale());
++        paperScale.approximateRecombinedLogicalScalingFactor *= 2.0L;
++        CheckThrowsInvalidArgument([&] { module.RCB(pair); }, "recombined logical scale",
++                                   "tampered pair recombined logical scale");
++    }
+ }
+ 
+ }  // namespace
+diff --git a/tests/tensor2_test.cpp b/tests/tensor2_test.cpp
+index 50e8b84..8fd96f5 100644
+--- a/tests/tensor2_test.cpp
++++ b/tests/tensor2_test.cpp
+@@ -426,6 +426,9 @@ void CheckPairUnchanged(const CiphertextPair& pair, const PairSnapshot& before,
+     Check(pair.GetPaperScale().approximateLogicalScalingFactor ==
+               before.paperScale.approximateLogicalScalingFactor,
+           label + " paper high scale changed");
++    Check(pair.GetPaperScale().approximateRecombinedLogicalScalingFactor ==
++              before.paperScale.approximateRecombinedLogicalScalingFactor,
++          label + " paper recombined scale changed");
+     Check(pair.GetRecordedScalingFactor() == before.recordedScalingFactor,
+           label + " recorded scaling factor manifest changed");
+     Check(pair.GetNoiseScaleDegree() == before.noiseScaleDegree, label + " noise-scale degree manifest changed");
+@@ -535,8 +538,8 @@ void TestResultAndScaleContract() {
+ 
+     const long double h1 = left.GetPaperScale().approximateLogicalScalingFactor;
+     const long double h2 = right.GetPaperScale().approximateLogicalScalingFactor;
+-    const long double r1 = static_cast<long double>(left.GetPaperScale().inputRecordedScalingFactor);
+-    const long double r2 = static_cast<long double>(right.GetPaperScale().inputRecordedScalingFactor);
++    const long double r1 = left.GetPaperScale().approximateRecombinedLogicalScalingFactor;
++    const long double r2 = right.GetPaperScale().approximateRecombinedLogicalScalingFactor;
+     const long double divisor = static_cast<long double>(left.GetDivisor().ConvertToInt());
+     const long double expectedHighLogicalScale = h1 * h2;
+     const long double expectedRecombinedLogicalScale = r1 * r2 / divisor;
