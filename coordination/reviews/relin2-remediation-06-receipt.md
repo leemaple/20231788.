@@ -58,11 +58,18 @@ secret gate:
    and credential-pattern scan before and after packaging;
 2. it must finish all existing mutation/build/archive evidence and produce the
    exact ten-file ZIP without installing software or claiming Gitleaks;
-3. Codex must save the immutable response/ZIP first, then run actual Gitleaks on
-   a fresh extraction, the final replayed tracked-tree export, and every decoded
-   Base64 artifact before reading or executing candidate scripts;
+3. Codex must save the immutable response/ZIP first, scan a fresh extraction,
+   then use only non-executing structural/identity operations to replay/export
+   the final tracked tree and strictly decode the Base64 artifacts; it must scan
+   both derived surfaces before reading beyond structural checks or executing
+   candidate scripts;
 4. any unexplained finding, identity mismatch, unsafe entry, or missing raw
    evidence rejects the delivery before the real implementation branch changes.
+
+The successor task must label a complete archive `ready for quarantine`, not
+`ready to apply`, and place an exact STOP marker immediately after the verdict.
+Application remains forbidden until Codex's Gitleaks, decoded-driver CPython,
+replay, audit, and all other receipt gates pass.
 
 All other remediation-06 gates remain controlling. The exact implementation
 branch remains clean at
