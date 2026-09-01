@@ -250,13 +250,25 @@ validate both current and historical factor fields before returning.
 
 ### 5.3 Independent oracle and fixed witnesses
 
-For high and low, each RLWE component, tower, and coefficient:
+First derive `Q_active` from the accepted same-lifecycle state and require both
+pairs to carry that exact ordered basis. `ReadyForFirstMult` and `ReadyForRS2`
+use their current `Q_l`; an accepted `AfterFirstRS2` case, if the exact-green
+gate later permits it, uses its current `Q_(l-1)`. The oracle must never use an
+unqualified fixture-wide `Q` that could silently retain the pre-RS2 basis.
+
+For high and low, each RLWE component, tower, and coefficient over `Q_active`:
 
 1. clone and convert test inputs to COEFFICIENT;
 2. reconstruct signed coefficients with independent `cpp_int` CRT over `Q`;
 3. compute `(x+y) mod Q` or `(x-y) mod Q` independently;
 4. reduce independently into every tower;
-5. compare with the actual project output.
+5. clone every actual Add/Sub output member, convert only those clones to
+   COEFFICIENT, and compare them coefficient by coefficient.
+
+Here and in the displayed arithmetic above, `Q` means exactly `Q_active`.
+After all coefficient comparisons, separately prove that the original inputs
+and actual outputs remain in Evaluation format and retain their complete
+observable state. Converting a live project result in place is forbidden.
 
 Also independently prove:
 
@@ -271,8 +283,10 @@ and coefficient with the independently computed
 `RCB(C1) +/- RCB(C2)`. Verify its complete state and its metadata inheritance
 from `actualResult.high`, and snapshot `actualResult` before the call to prove
 public RCB leaves it observably unchanged during and immediately after the
-call. This checks the public RCB result; the displayed identity alone is not an
-oracle for that implementation.
+call. Clone the returned RCB ciphertext, convert only the clone to COEFFICIENT,
+and use that clone for the coefficient comparison; the live RCB result must
+remain Evaluation and observably unchanged. This checks the public RCB result;
+the displayed identity alone is not an oracle for that implementation.
 
 Fixed witnesses cover positive/negative modular wrap, carry/borrow, exact
 cancellation, Sub operand direction, nonzero high/low, and a low term crossing
@@ -297,6 +311,14 @@ Every mismatch class is an independent negative test with exact
 - tower count, order, modulus/root/parameter identity, or level;
 - degree, current recorded factor, descriptor `inputRecordedScalingFactor`,
   high scale, recombined scale, divisor, or lifecycle.
+
+For every negative, corrupt only the named test-owned field, snapshot both
+pairs (including manifests, outer metadata-map identities, metadata-value
+pointer identities, and deep values), invoke the public project operation,
+require the exact exception, and immediately prove both inputs unchanged
+before any later getter, oracle, or project call. The corrupted fixture is
+compared with its post-call snapshot; the test must not confuse deliberate
+pre-call corruption with mutation by the operation under test.
 
 Composite degree is not an Add/Sub precondition or negative-test dimension;
 it is an RS2/Mult2 boundary. Add/Sub performs no rescale and must not be
@@ -361,9 +383,18 @@ gate and must not be frozen here.
 The actual path calls only public project `Mult2`. The expected path must not
 call project `Tensor2`, `Relin2`, `RS2`, `Mult2`, or their private helpers.
 
-1. Reconstruct input coefficients with independent CRT and build the exact
+Immediately before the actual `module.Mult2(left, right)` call, take complete
+snapshots of both pairs and a deep snapshot of the process-wide evaluation-key
+cache. Immediately after it returns, and before any lifecycle getter,
+reference-oracle step, public RCB, or other project/OpenFHE operation, prove
+both inputs and the deep cache unchanged. The trusted `Relinearize` calls below
+therefore start only after the actual-path immutability proof has closed.
+
+1. Clone every input member, convert only those clones to COEFFICIENT,
+   reconstruct their coefficients with independent CRT, and build the exact
    three-component Tensor polynomials using schoolbook negacyclic convolution;
-   omit low-low.
+   omit low-low. The live production inputs must remain Evaluation and are
+   covered by the already-completed immediate post-Mult2 state proof.
 2. Build test-owned valid ciphertexts for Definition 4.3's `q_div*h3`: multiply
    every existing `Q_l` residue of high by `q_div`, then append a `q_div` tower
    whose residue is zero. Only then call trusted pristine public `Relinearize`
@@ -372,13 +403,18 @@ call project `Tensor2`, `Relin2`, `RS2`, `Mult2`, or their private helpers.
    then independently compute `v+w`.
 4. Apply test-owned centered RS to `u` and `q_div*u+v+w`, obtaining
    `A`, `C`, and `B=C-q_div*A`.
-5. Compare all actual `(A,B)` components, towers, and coefficients, and
-   independently prove `q_div*A+B=C`.
+5. Clone every trusted `Relinearize` result before coefficient inspection and
+   convert only the clones to COEFFICIENT. Likewise clone every actual Mult2
+   output member, convert only those clones to COEFFICIENT, compare all actual
+   `(A,B)` components, towers, and coefficients over the exact output
+   `Q_(l-1)`, and independently prove `q_div*A+B=C`.
 6. Separately bind the real return from `module.RCB(actualResult)` and compare
    every component, tower, and coefficient with the independent RS oracle's
    `C`. Verify its complete state and metadata source from `actualResult.high`;
    snapshot `actualResult` first and prove public RCB leaves it observably
-   unchanged during and immediately after the call.
+   unchanged during and immediately after the call. Convert only a clone of
+   the RCB return to COEFFICIENT for this comparison; both the live Mult2 and
+   RCB outputs must remain Evaluation and observably unchanged.
 
 This oracle independently verifies the project composition, not pristine
 OpenFHE key-switch arithmetic; `Relinearize` remains an explicitly trusted
@@ -405,15 +441,48 @@ Every valid and failing Mult2 path snapshots both input pairs, outer metadata
 maps, entries, and immediately observable metadata values and proves them
 unchanged without claiming future isolation from shallow-aliased outputs. Every
 evaluation-key success, missing-key, or malformed-key fixture uses a test-owned
-RAII guard that saves and restores the entire prior static evaluation-key map
-even if an assertion throws; no test may rely on `EvalMultKeyGen` overwriting an
-existing tag entry.
+non-throwing RAII guard. It must deep-snapshot and restore the exact prior map
+shape and original pointer identities plus every original non-null key's
+context identity, actual tag, concrete subtype, and, for
+`EvalKeyRelinImpl<DCRTPoly>`, complete A/B vectors including lengths,
+polynomial/tower parameters, aggregate and per-tower formats, and residues.
+It must never call base A/B getters for another subtype. A nested positive
+guard test must mutate map shape and pointee context/tag/A/B state, leave
+scope, and prove the complete deep snapshot restored. No test may rely on
+`EvalMultKeyGen` overwriting an existing tag entry or on a shallow copy of the
+static map.
+
+Each missing-key, malformed-key, lifecycle, composite-degree, or other Mult2
+negative has this mechanical order: complete exactly the named fixture state;
+snapshot both inputs and the deep cache after fixture setup; call public
+`Mult2`; require the exact project-owned exception; make the required input and
+deep-cache equality checks the first post-exception observations; and prove
+they equal those post-setup baselines before any unrelated getter, oracle,
+project/OpenFHE call, or guard destruction. Fixture setup may install one named
+test-owned corruption, but a real first-Mult2 output used for the lifecycle
+negative is already the required state and must not be artificially corrupted.
+Likewise, a missing-key or composite-degree fixture must not corrupt an
+unrelated input merely to satisfy this ordering rule. Only after the immediate
+attribution check may the guard leave scope and restore the complete
+pre-fixture cache, whose equality is checked again outside the scope. This
+distinguishes operation-under-test mutation from deliberate fixture state and
+RAII cleanup.
 
 ## 7. Minimal TDD patch order
 
 ### 7.1 Pair Add/Sub slice
 
-1. Separate Add and Sub compile-only tests; retain both missing-API reds.
+1. Separate Add and Sub compile-only tests; retain both missing-API reds. Each
+   binds the exact const member-function signature with a member-function
+   pointer `static_assert`:
+
+   ```cpp
+   using BinaryPairSignature = CiphertextPair (DoubleCKKS::*)(
+       const CiphertextPair&, const CiphertextPair&) const;
+   static_assert(std::is_same_v<decltype(&DoubleCKKS::Add), BinaryPairSignature>);
+   static_assert(std::is_same_v<decltype(&DoubleCKKS::Sub), BinaryPairSignature>);
+   ```
+
 2. Add final declarations and unnamed-parameter immediate-throw scaffolds;
    preserve the complete old suite.
 3. Add all named valid/oracle/negative/order CTests and retain independent
@@ -421,11 +490,18 @@ existing tag entry.
 4. Add the smallest full validation plus two-public-call implementation for
    each method; retain first complete green.
 5. Only after green, make necessary local refactors/docs without changing the
-   oracle.
+   oracle, then run the final exact same-SHA Linux/Windows gate.
 
 ### 7.2 Mult2 slice
 
-1. Retain an independent missing-API compile red.
+1. Retain an independent missing-API compile red that binds exactly:
+
+   ```cpp
+   using BinaryPairSignature = CiphertextPair (DoubleCKKS::*)(
+       const CiphertextPair&, const CiphertextPair&) const;
+   static_assert(std::is_same_v<decltype(&DoubleCKKS::Mult2), BinaryPairSignature>);
+   ```
+
 2. Add the final declaration and immediate-throw scaffold.
 3. Retain independent validation/lifecycle/composite reds. Add the exact
    missing/malformed-key ordering reds only after accepted Relin2/RS2 close
@@ -438,12 +514,23 @@ existing tag entry.
 7. Add the actual-first-output to second-Mult2 regression. If the existing
    lifecycle guard already makes it green, record inherited green honestly;
    never manufacture a red.
-8. Run full regression, strict warning build, and exact same-commit Linux and
-   Windows evidence before documentation closure.
+8. Complete the implementation-branch documentation and retained local
+   evidence, then run full regression, strict warning build, and exact
+   same-commit Linux and Windows evidence on that last content-bearing SHA.
 
-Every API/test/source/workflow/doc boundary is a separate small commit, pushed
-immediately. Red Windows jobs are unnecessary after the corresponding exact
-Linux red is retained; final Linux and Windows must bind the same commit.
+The future external-agent task requests only a semantic patch series and local
+evidence; it must explicitly prohibit commit, push, CI dispatch, cancellation,
+merge, and PR operations. After an accepted delivery, Codex applies each
+API/test/source/workflow/doc boundary as a separate small commit and pushes it
+immediately, retaining the exact intermediate Linux boundary before proceeding.
+Red Windows jobs are unnecessary after the corresponding exact Linux red is
+retained. The final content-bearing patch must already contain all source,
+tests, workflow, implementation-branch documentation, and retained local
+evidence before its push; Linux and Windows must both succeed on that exact
+SHA. Any later implementation-branch documentation change invalidates the
+same-SHA gate and requires another full dual-platform run. Downstream review
+receipts may be recorded on the separate coordination branch without changing
+the verified implementation SHA.
 
 ## 8. Deferred exact-green gates
 
