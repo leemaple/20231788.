@@ -5,6 +5,7 @@ on:
     branches:
       - agent/codex-dcp-rcb-01
       - agent/codex-tensor2-01
+      - agent/codex-relin2-01
       - cleanroom/reimplement-mult2-20260831
   workflow_dispatch:
 
@@ -82,6 +83,9 @@ jobs:
 
       - name: Build warning-clean project
         run: cmake --build build --parallel 2
+
+      - name: Build Relin2 public API contract
+        run: cmake --build build --target relin2_api_contract_test --parallel 2
 
       - name: Run clean-room project tests
         run: ctest --test-dir build --output-on-failure
@@ -200,6 +204,13 @@ jobs:
         run: |
           build="$(cygpath -u "$PROJECT_BUILD")"
           cmake --build "$build" --parallel 2
+
+      - name: Build Relin2 public API contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target relin2_api_contract_test --parallel 2
 
       - name: Run clean-room project tests
         shell: msys2 {0}
