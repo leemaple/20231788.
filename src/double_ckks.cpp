@@ -553,7 +553,8 @@ TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const Ciphe
     return result;
 }
 
-CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair&) const {
+CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
+    ValidateTensorResult(tensor);
     throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
 }
 
