@@ -254,9 +254,10 @@ factor and degree alone cannot distinguish states. `ValidatePair` must dispatch
 on the complete lifecycle value and independently validate, for every state,
 lifecycle, level, exact basis, degree, current recorded factor,
 `inputRecordedScalingFactor`, and both logical scales. Its control flow must
-cover every named state and reject every invalid enum value with a stable
-project diagnostic; a particular `switch`/`if` spelling is not part of the
-contract.
+cover every named state and reject every invalid enum value with the rebound
+exact `std::invalid_argument` type and complete
+`DoubleCKKS: pair lifecycle is invalid` diagnostic; a particular `switch`/`if`
+spelling is not part of the contract.
 
 ## Metadata source and alias boundary
 
@@ -307,6 +308,23 @@ isolation. A project-wide deep-isolation change is outside this slice.
    Assert both output maps have the specified high-member value provenance;
    do not claim deep pointer isolation.
 
+Under the accepted public construction routes, an otherwise valid
+`ReadyForRS2` pair with only two active towers is unreachable: pair state is
+private and Relin2 rejects the short basis before producing that lifecycle.
+This conclusion has two independent source obligations: every project route
+that constructs `ReadyForRS2` must reject a short basis before construction,
+and RS2 itself must retain an at-least-three-tower defense even though public
+callers cannot presently reach it. Discover and bind every construction route;
+for each route, independently mutate guard removal and threshold relaxation.
+Keep the RS2 defense, but prove its presence and ordering separately with a
+token/AST source gate rather than a runtime fixture. The gate
+must bind the rebound exact `std::invalid_argument` type and complete
+`DoubleCKKS: RS2 input must contain at least three active Q towers` diagnostic;
+checking only that some throw exists is insufficient. Do not add a friend,
+setter, layout/UB hack, or weakened validation seam solely to make that
+malformed state constructible. Rebind this conclusion to the final accepted
+Relin2 SHA before freezing the RS2 task.
+
 Public Rescale is the trusted pristine primitive. Do not add project-private
 rescale/CRT arithmetic to production merely to duplicate it. The independent
 test oracle must not call public Rescale to produce expected coefficients.
@@ -330,7 +348,10 @@ should:
    every remaining tower, and every coefficient to independent `C`, and check
    its complete state and specified metadata source;
 9. deep-snapshot the RS2 pair before public RCB, prove it unchanged immediately
-   afterward, and separately prove `q_div*A+B=C`.
+   afterward, then reconstruct `q_div*A+B` from the actual output residues and
+   compare it coefficient-by-coefficient with independent `C` as a congruence
+   modulo exact `Q_(l-1)`. Do not require an unbounded `cpp_int` equality and do
+   not derive both sides from the same expected `B` value.
 
 For the odd active prime `q_l`, define the centered residue mechanically:
 
@@ -369,7 +390,8 @@ The eventual external task should preserve separately observable boundaries:
    `CiphertextPair (DoubleCKKS::*)(const CiphertextPair&) const`, and check the
    enum underlying type and appended value;
 2. immediate-throw, warning-clean non-mergeable scaffold;
-3. complete-validation red, then minimal validation green;
+3. complete-validation runtime reds plus a static short-active-basis source
+   red, then minimal validation/short-basis/composite green;
 4. wrong-lifecycle red, then minimal lifecycle green;
 5. one valid arithmetic red must already assert complete `(A,B)` coefficients,
    public RCB acceptance and immutability on the RS2 result, and the exact
