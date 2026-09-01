@@ -2,8 +2,8 @@
 
 Submitted: 2026-09-01 17:44 CST
 
-Status: **original submitted exactly once; one terminal-timeout recovery is
-actively answering**. This is a dispatch/recovery receipt, not an
+Status: **recovery finished naturally with `changes needed`; no ZIP was
+produced or downloaded**. This is a dispatch/result receipt, not an
 implementation, test, review, or acceptance claim.
 
 ## Saved conversation and Git binding
@@ -96,15 +96,18 @@ the findings and their reviewed non-secret disposition.
 
 ## Waiting rule and current project state
 
-Do not stop, refresh, edit, prod, retry, resend, or create another conversation
-while the recovery response is active. Use spaced read-only checks. When it finishes
-naturally, collect at most the one required remediation-06 ZIP and quarantine it
-before reading. If this recovery also reports a terminal delivery error, record
-that exact state and reassess; do not automatically click either Retry.
+At 19:24 CST the recovery finished naturally after 15m33s with `changes needed`.
+It reported that Gitleaks is unavailable in the source-agent environment and
+correctly refused to create the ZIP because remediation 06 required actual
+source-agent Gitleaks evidence before `ready to apply`. Read-only DOM inspection
+found no active Stop, no Retry, and no remediation-06 download. Codex saved the
+complete normalized result sidecar and did not download any file. Exact receipt
+and safe gate-relocation boundary:
+`coordination/reviews/relin2-remediation-06-receipt.md`.
 
 The real implementation branch remains exact clean local/remote
 `fb862a3dfeeb0b79eb8f0e4218749d8a898e96c9`. No rejected Relin2 patch was
 applied there. No Mac OpenFHE build, hosted revised-candidate run, Windows run,
 Zcode/Zima call, or Fable5 call occurred. The one authorized terminal Fable5
-review remains unused and reserved for the first exact Relin2 project commit that
-passes hosted Linux and Windows on the same SHA.
+review remains unused. The restored ZCode quota returns Fable5 to its normal
+role for a concrete unresolved three-party dispute.

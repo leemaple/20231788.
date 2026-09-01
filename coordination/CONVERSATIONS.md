@@ -287,6 +287,19 @@ new active `Stop answering`; the old failed response's Retry remains untouched.
 Do not refresh, stop, retry, prod, resend, or duplicate this recovery while it
 runs.
 
+At 2026-09-01 19:24 CST, the recovery finished naturally after 15m33s with
+`changes needed`. All eleven identities were reported readable, but no Gitleaks
+binary exists in the source-agent environment; `command -v` returned 1,
+`gitleaks version` returned 127, and the bounded filesystem search found no
+binary. Because remediation 06 made actual source-agent Gitleaks evidence a
+precondition for `ready to apply` while forbidding installation, the agent
+correctly did not create or attach a ZIP. Codex did not click Stop/Retry,
+download a file, or apply code. The complete normalized response sidecar is
+2,072 UTF-8 bytes with SHA-256
+`87b7aa548e8e965c5eb155dbe01aaf8b45467dbdfc7b70c1851d6acea6f37c58`;
+the exact receipt and fail-closed gate-relocation plan are in
+`coordination/reviews/relin2-remediation-06-receipt.md`.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
