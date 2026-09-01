@@ -99,3 +99,22 @@ weekly reset before assigning new ZCode work. Once service and quota are both
 usable, return subsequent ZCode review/build work to its Windows clean-room
 task. Do not retroactively reopen already evidenced boundaries solely because
 an external reviewer was unavailable.
+
+## 2026-09-02 04:09 Relin2 validation Fable5 outcome
+
+The fresh exact-boundary Relin2 review packet never reached a model. One
+pre-provider wrapper attempt exposed and then closed an inherited-`TRAPEXIT`
+temporary-file bug. Two later provider-capable processes both exited during
+local CLI startup with zero raw stdout, zero stream events, zero session/model
+identity, and no usage or answer: the first rejected the empty MCP JSON shape;
+after that one-line correction and a fresh three-axis PASS, the final process
+was denied while creating `/tmp/claude-501` by the read-only sandbox.
+
+Both provider-capable attempts completed their 65-entry receipt manifests,
+post-provider exact-token scans, Gitleaks scans, and identity gates. The final
+guard remains bound to `receipt-attempt-13408`; no further process is permitted
+for this task and no Fable5 review is claimed. Exact identities and outcomes are
+in `coordination/handoffs/fable5-relin2-validation-84df651-review-01/RECEIPT.md`.
+Per the nonblocking policy, Codex continues Relin2 TDD with existing independent
+reviewers and Linux/Windows executable evidence. ZCode remains outside the
+critical path until a fresh official service/quota check supports restoring it.

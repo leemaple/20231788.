@@ -410,3 +410,17 @@ unchanged.
 - Stopping condition: greenfield implementation, retained red/green oracle evidence, Windows or GitHub Actions verification, tri-party review resolution, and complete pushed provenance/report evidence
 - Persistence rule: continue choosing the next safe in-scope action without waiting for a user message; pause only for a decision or authority that would materially change scope or risk
 - Checkpoint rule: every coherent change is committed, pushed, and verified against the remote object ID according to `coordination/GIT_CHECKPOINT_POLICY.md`
+
+At 2026-09-02 04:09 CST, the fresh exact-boundary Fable5 Relin2 validation task
+closed without a model response. A pre-provider wrapper attempt first exposed
+an inherited-zsh-EXIT-trap bug, which was fixed, tested, reviewed, committed,
+and pushed. The first provider-capable process then rejected the local MCP JSON
+shape before emitting stdout; after correcting it to exact empty
+`mcpServers`, the final process stopped on the sandbox denial for
+`/tmp/claude-501`. Both provider-capable receipts contain zero events, sessions,
+tool calls, usage, cost, answers, or verdicts and pass their 65-entry manifests,
+post-provider secret scans, and Git identity checks. No Fable review is claimed
+and no further process is started for that task. The critical path continues
+through Codex TDD, existing independent reviewers, GitHub Actions, and direct
+Windows work; details are in
+`coordination/handoffs/fable5-relin2-validation-84df651-review-01/RECEIPT.md`.
