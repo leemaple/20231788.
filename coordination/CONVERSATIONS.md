@@ -237,6 +237,26 @@ refresh, prod, resend, retry, or duplicate this request while it runs. Exact
 evidence is retained in
 `coordination/handoffs/chatgpt-pro-relin2-remediation-04.md`.
 
+At 2026-09-01 17:44 CST, the three-axis-gated Relin2 remediation-06 request was
+submitted exactly once in the same saved conversation and Ego task space 85.
+Eleven fresh attachments bind the clean base, prior task/delivery/review chain,
+and the controlling 40,523-byte task with SHA-256
+`3219d6a06d1fcad0abf686938f467039d98210756567b599213f8e721560d83b`.
+The exact selection passed nested archive/exclusion scans; 51 redacted Gitleaks
+findings were explicitly classified as evidence hashes or synthetic test text,
+and the reviewed-fingerprint rescan had no new findings. Pre-send readback
+proved all names/hashes and eleven chips; Send was clicked once; post-send state
+showed an empty composer, zero chips, the complete sent markers/hash, and active
+`Stop answering`. Do not refresh, stop, prod, retry, resend, or duplicate it.
+Exact evidence is retained in
+`coordination/handoffs/chatgpt-pro-relin2-remediation-06.md`.
+
+At 2026-09-01 17:48 CST, the official BigModel usage page showed the shared
+five-hour pool at 0% used, weekly capacity at 100% used with reset at
+2026-09-02 10:00, and MCP monthly capacity at 10% used with reset at
+2026-09-25 10:00. No ZCode work is dispatched before the weekly reset; the page
+must be reread after reset before normal allocation resumes.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`

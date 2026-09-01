@@ -11,13 +11,14 @@ All Windows and other ZCode/Zima sessions use the same BigModel Coding Plan acco
 | 2026-09-01 06:39 | 1% used / 99% remaining | 2026-09-01 10:59 | 96% used / 4% remaining | 2026-09-02 10:00 | 9% used / 91% remaining | 2026-09-25 10:00 | The short-window pool has recovered, but the shared weekly pool is now more constrained. Do not create or duplicate any ZCode task. Preserve at most the existing Windows session for a critical same-commit review; continue to use GitHub Actions for Windows builds/tests and re-read the official page after the weekly reset before restoring normal ZCode allocation. |
 | 2026-09-01 08:40 | 1% used / 99% remaining | 2026-09-01 10:59 | 96% used / 4% remaining | 2026-09-02 10:00 | 9% used / 91% remaining | 2026-09-25 10:00 | The official page is unchanged. Keep every new or duplicate ZCode task paused; use GitHub Actions/direct Windows only after the revised Relin2 static gate passes. Preserve the one Fable5 substitution for the first exact cross-platform-green Relin2 commit, and re-read after the weekly reset before restoring normal ZCode collaboration. |
 | 2026-09-01 11:10 | 1% used / 99% remaining | 2026-09-01 16:04 | 98% used / 2% remaining | 2026-09-02 10:00 | 10% used / 90% remaining | 2026-09-25 10:00 | The shared weekly pool is now effectively exhausted. Dispatch no ZCode work before the weekly reset. Keep Windows experiments on GitHub Actions or direct Windows only after the candidate passes the static gate, and reserve the single terminal-only Fable5 substitution for the first exact same-SHA Linux/Windows-green Relin2 review. |
+| 2026-09-01 17:48 | 0% used / 100% remaining | Not displayed | 100% used / 0% remaining | 2026-09-02 10:00 | 10% used / 90% remaining | 2026-09-25 10:00 | The weekly pool is fully exhausted despite a recovered five-hour window. Dispatch no ZCode work before the weekly reset. Continue Codex/ChatGPT Pro review and use GitHub Actions or direct Windows only after the candidate passes static gates. Re-read the official page after 2026-09-02 10:00 before restoring ZCode allocation. |
 
 Source page: `https://bigmodel.cn/coding-plan/personal/usage`
 
-Latest read-only check reused the agent-owned project coordination task space,
-numeric ID 53, without taking over the user-owned quota-monitor space. The
-official page reported refresh time `2026.09.01 11:10`; the scratch quota tab
-was closed after recording the values.
+Latest read-only check reused agent-owned project task space 85 while its
+ChatGPT Pro tab continued independently. The official page reported refresh
+time `2026.09.01 17:48`; the scratch quota tab was closed after recording the
+values and control returned to the unchanged Pro tab.
 
 The existing daily 07:00 project-report heartbeat was updated at 2026-08-31 17:24 CST to include a read-only quota snapshot and allocation recommendation. The app permits only one heartbeat on this task, so the active continuous project Goal—not a duplicate automation—owns later rechecks. The latest reading above came from the freshly refreshed official page.
 
