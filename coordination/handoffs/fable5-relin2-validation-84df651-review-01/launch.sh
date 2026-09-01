@@ -348,12 +348,12 @@ typeset fable_phase="entry"
 typeset fable_step="bootstrap"
 TRAPEXIT() {
   local wrapper_exit=$?
-  for credential_temp in "${FABLE_KEYCHAIN_STDERR_TMP:-}" "${FABLE_PARSE_STDERR_TMP:-}"; do
-    if [[ -n "${credential_temp}" && -f "${credential_temp}" ]]; then
-      /bin/rm -f -- "${credential_temp}" >/dev/null 2>&1 || true
-    fi
-  done
-  if (( wrapper_exit != 0 )) && [[ "${fable_phase:-entry}" != "complete" ]]; then
+  if (( ZSH_SUBSHELL == 0 && wrapper_exit != 0 )) && [[ "${fable_phase:-entry}" != "complete" ]]; then
+    for credential_temp in "${FABLE_KEYCHAIN_STDERR_TMP:-}" "${FABLE_PARSE_STDERR_TMP:-}"; do
+      if [[ -n "${credential_temp}" && -f "${credential_temp}" ]]; then
+        /bin/rm -f -- "${credential_temp}" >/dev/null 2>&1 || true
+      fi
+    done
     print -u2 -- "Fable5 wrapper exit: phase=${fable_phase:-entry} step=${fable_step:-bootstrap} exit=${wrapper_exit}"
     if [[ -n "${FABLE_RECEIPT:-}" && -d "${FABLE_RECEIPT}" ]]; then
       print -- "wrapper_exit_phase=${fable_phase:-entry} wrapper_exit_step=${fable_step:-bootstrap} wrapper_exit=${wrapper_exit}" >>"${FABLE_RECEIPT}/00a-wrapper-errors.txt"
