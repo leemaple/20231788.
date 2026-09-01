@@ -1,0 +1,56 @@
+(version 1)
+
+(deny default)
+(import "system.sb")
+
+; The single Fable5 process may execute and communicate with its provider, but
+; it receives no persistent filesystem write permission and no executable other
+; than the fixed signed CLI binary.
+(allow process-exec
+  (literal "/Users/lifeng/.local/share/claude/versions/2.1.239"))
+(allow process-fork)
+(allow process-info*)
+(allow signal)
+(allow network-outbound)
+(allow mach*)
+(allow ipc*)
+
+; Reject user/project/session data and sensitive mutable system roots. These
+; denials also narrow any read inherited from the Apple system runtime profile.
+(deny file-read* file-test-existence
+  (subpath "/Users")
+  (subpath "/Volumes")
+  (subpath "/Library/Keychains")
+  (subpath "/tmp")
+  (subpath "/private/tmp")
+  (subpath "/var/folders")
+  (subpath "/private/var/folders")
+  (subpath "/var/tmp")
+  (subpath "/private/var/tmp")
+  (subpath "/private/var/db/DarwinDirectory")
+  (literal "/private/etc/master.passwd"))
+(deny file-write* (subpath "/cores"))
+
+; Exact executable and path traversal required to start it.
+(allow file-read-metadata file-test-existence
+  (path-ancestors "/Users/lifeng/.local/share/claude/versions/2.1.239"))
+(allow file-read* file-map-executable file-test-existence
+  (literal "/Users/lifeng/.local/share/claude/versions/2.1.239"))
+
+; Minimal TLS/DNS inputs beyond the imported Apple system runtime profile.
+(allow file-read* file-test-existence
+  (subpath "/etc/ssl")
+  (subpath "/private/etc/ssl")
+  (literal "/etc/hosts")
+  (literal "/etc/resolv.conf")
+  (literal "/private/etc/hosts")
+  (literal "/private/etc/resolv.conf"))
+
+; The only project material visible to Fable5 is the verified, read-only fresh
+; extraction of the exact fb862a3 review packet.
+(allow file-read-metadata file-test-existence
+  (path-ancestors "/var/tmp/fable5-fb862a3.gBL1Wt/fresh-extraction")
+  (path-ancestors "/private/var/tmp/fable5-fb862a3.gBL1Wt/fresh-extraction"))
+(allow file-read* file-test-existence
+  (subpath "/var/tmp/fable5-fb862a3.gBL1Wt/fresh-extraction")
+  (subpath "/private/var/tmp/fable5-fb862a3.gBL1Wt/fresh-extraction"))

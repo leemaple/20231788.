@@ -1,0 +1,59 @@
+(version 1)
+
+(deny default)
+(import "system.sb")
+
+; Probe-only derivative of fable5-fb862a3-review-01.sb. It substitutes two
+; inert filesystem utilities for the model binary so the same read boundary and
+; persistent-write denial can be tested without making a provider request.
+(allow process-exec
+  (literal "/bin/cat")
+  (literal "/bin/dd")
+  (literal "/usr/bin/touch"))
+(allow process-fork)
+(allow process-info*)
+(allow signal)
+(allow network-outbound)
+(allow mach*)
+(allow ipc*)
+
+(deny file-read* file-test-existence
+  (subpath "/Users")
+  (subpath "/Volumes")
+  (subpath "/Library/Keychains")
+  (subpath "/tmp")
+  (subpath "/private/tmp")
+  (subpath "/var/folders")
+  (subpath "/private/var/folders")
+  (subpath "/var/tmp")
+  (subpath "/private/var/tmp")
+  (subpath "/private/var/db/DarwinDirectory")
+  (literal "/private/etc/master.passwd"))
+(deny file-write* (subpath "/cores"))
+
+(allow file-read-metadata file-test-existence
+  (path-ancestors "/bin/cat")
+  (path-ancestors "/bin/dd")
+  (path-ancestors "/usr/bin/touch"))
+(allow file-read* file-map-executable file-test-existence
+  (literal "/bin/cat")
+  (literal "/bin/dd")
+  (literal "/usr/bin/cat")
+  (literal "/usr/bin/dd")
+  (literal "/usr/bin/touch"))
+
+(allow file-read-metadata file-test-existence
+  (path-ancestors "/var/tmp/fable5-fb862a3.gBL1Wt/fresh-extraction")
+  (path-ancestors "/private/var/tmp/fable5-fb862a3.gBL1Wt/fresh-extraction"))
+(allow file-read* file-test-existence
+  (subpath "/var/tmp/fable5-fb862a3.gBL1Wt/fresh-extraction")
+  (subpath "/private/var/tmp/fable5-fb862a3.gBL1Wt/fresh-extraction"))
+
+; The write canary is POSIX-writable and pre-proven by the parent. Grant only
+; traversal/metadata, never write permission, so its failure isolates the OS
+; sandbox write boundary rather than read/traverse or ordinary mode bits.
+(allow file-read-metadata file-test-existence
+  (path-ancestors "/var/tmp/fable5-fb862a3.gBL1Wt/sandbox-write-canary")
+  (path-ancestors "/private/var/tmp/fable5-fb862a3.gBL1Wt/sandbox-write-canary")
+  (subpath "/var/tmp/fable5-fb862a3.gBL1Wt/sandbox-write-canary")
+  (subpath "/private/var/tmp/fable5-fb862a3.gBL1Wt/sandbox-write-canary"))
