@@ -514,6 +514,97 @@ void TestWrongContextEvaluationKey() {
     Check(evaluationKeys.empty(), "Relin2 wrong-context fixture failed to restore the evaluation-key cache");
 }
 
+void TestWrongTagEvaluationKey() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    leftInput->SetMetadataByKey("relin2-wrong-tag-immutability-probe",
+                                std::make_shared<ImmutabilityProbeMetadata>("unchanged"));
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 4,
+          "Relin2 wrong-tag fixture must have exactly four full-basis towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 3,
+          "Relin2 wrong-tag fixture must have exactly three active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 wrong-tag fixture must have noise-scale degree three");
+    Check(!tensor.GetKeyTag().empty(), "Relin2 wrong-tag fixture must have a nonempty key tag");
+    Check(keys.secretKey->GetKeyTag() == tensor.GetKeyTag(),
+          "Relin2 wrong-tag fixture secret key must initially match the Tensor tag");
+    const auto highMetadata = tensor.GetHigh()->GetMetadataMap();
+    const auto lowMetadata = tensor.GetLow()->GetMetadataMap();
+    Check(highMetadata != nullptr && highMetadata->size() == 1 &&
+              highMetadata->find("relin2-wrong-tag-immutability-probe") != highMetadata->end(),
+          "Relin2 wrong-tag fixture high ciphertext lost its metadata probe");
+    Check(lowMetadata != nullptr && lowMetadata->size() == 1 &&
+              lowMetadata->find("relin2-wrong-tag-immutability-probe") != lowMetadata->end(),
+          "Relin2 wrong-tag fixture low ciphertext lost its metadata probe");
+
+    auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(evaluationKeys.empty(), "Relin2 wrong-tag fixture must start with an empty evaluation-key cache");
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeys);
+        context->EvalMultKeyGen(keys.secretKey);
+
+        const auto generatedRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(evaluationKeys.size() == 1 && generatedRow != evaluationKeys.end() &&
+                  generatedRow->second.size() == 1 && generatedRow->second.front() != nullptr,
+              "Relin2 wrong-tag fixture must generate exactly one evaluation key");
+        const auto wrongTagKey =
+            std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(generatedRow->second.front());
+        Check(wrongTagKey != nullptr,
+              "Relin2 wrong-tag fixture key must have the relinearization-key subtype");
+        Check(wrongTagKey->GetCryptoContext().get() == context.get(),
+              "Relin2 wrong-tag fixture key must keep the bound context");
+        Check(wrongTagKey->GetKeyTag() == tensor.GetKeyTag(),
+              "Relin2 wrong-tag fixture generated key must initially match the Tensor tag");
+        Check(!wrongTagKey->GetAVector().empty() && !wrongTagKey->GetBVector().empty(),
+              "Relin2 wrong-tag fixture must contain generated key material");
+
+        const std::string wrongKeyTag = tensor.GetKeyTag() + "-wrong";
+        wrongTagKey->SetKeyTag(wrongKeyTag);
+        Check(generatedRow->first == tensor.GetKeyTag() && wrongTagKey->GetKeyTag() == wrongKeyTag &&
+                  wrongTagKey->GetKeyTag() != tensor.GetKeyTag(),
+              "Relin2 wrong-tag fixture must change only the evaluation-key pointee tag");
+
+        const auto* cacheIdentityBefore = &evaluationKeys;
+        const auto* vectorIdentityBefore = &generatedRow->second;
+        const auto keyIdentityBefore = generatedRow->second.front();
+        const auto keyContextBefore = wrongTagKey->GetCryptoContext();
+        const auto keyTagBefore = wrongTagKey->GetKeyTag();
+        const auto keyABefore = wrongTagKey->GetAVector();
+        const auto keyBBefore = wrongTagKey->GetBVector();
+        const auto tensorBefore = SnapshotTensor(tensor);
+        CheckThrowsExactInvalidArgument(
+            [&] { (void)module.Relin2(tensor); },
+            "DoubleCKKS: Relin2 first evaluation key tag does not match the Tensor key tag",
+            "Relin2 wrong-tag first evaluation key");
+        CheckTensorUnchanged(tensor, tensorBefore, "Relin2 wrong-tag rejection");
+        const auto currentRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBefore && evaluationKeys.size() == 1 &&
+                  currentRow != evaluationKeys.end() && &currentRow->second == vectorIdentityBefore &&
+                  currentRow->second.size() == 1 &&
+                  currentRow->second.front().get() == keyIdentityBefore.get(),
+              "Relin2 wrong-tag rejection mutated the evaluation-key cache shape or identity");
+        Check(wrongTagKey->GetCryptoContext().get() == keyContextBefore.get(),
+              "Relin2 wrong-tag rejection mutated the evaluation-key context");
+        Check(wrongTagKey->GetKeyTag() == keyTagBefore,
+              "Relin2 wrong-tag rejection mutated the evaluation-key tag");
+        Check(wrongTagKey->GetAVector() == keyABefore && wrongTagKey->GetBVector() == keyBBefore,
+              "Relin2 wrong-tag rejection mutated the evaluation-key A/B vectors");
+    }
+    Check(evaluationKeys.empty(), "Relin2 wrong-tag fixture failed to restore the evaluation-key cache");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -534,6 +625,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "key_wrong_context") {
         return &TestWrongContextEvaluationKey;
+    }
+    if (name == "key_wrong_tag") {
+        return &TestWrongTagEvaluationKey;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }
