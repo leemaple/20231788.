@@ -2,6 +2,7 @@
 #include "openfhe_2023_1788/double_ckks.h"
 
 #include <cmath>
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <stdexcept>
@@ -45,9 +46,9 @@ void CheckThrowsExactInvalidArgument(Function&& function, const std::string& exp
     Check(threw, label + " did not fail fast");
 }
 
-CryptoContext<DCRTPoly> MakeContext() {
+CryptoContext<DCRTPoly> MakeContext(std::uint32_t multiplicativeDepth = 3) {
     lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
-    parameters.SetMultiplicativeDepth(3);
+    parameters.SetMultiplicativeDepth(multiplicativeDepth);
     parameters.SetScalingModSize(30);
     parameters.SetFirstModSize(35);
     parameters.SetScalingTechnique(lbcrypto::FIXEDMANUAL);
@@ -87,11 +88,42 @@ void TestTensorValidationOrder() {
         "Relin2 Tensor manifest validation before evaluation-key lookup");
 }
 
+void TestInsufficientActiveBasis() {
+    auto context = MakeContext(2);
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 3,
+          "Relin2 insufficient-basis fixture must have exactly three full-basis towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    (void)module.RCB(left);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 2,
+          "Relin2 insufficient-basis fixture must have exactly two active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 insufficient-basis fixture must have noise-scale degree three");
+
+    CheckThrowsExactInvalidArgument(
+        [&] { (void)module.Relin2(tensor); },
+        "DoubleCKKS: Relin2 requires at least as many active Q_l towers as the Tensor noise-scale degree",
+        "Relin2 insufficient active basis");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
     if (name == "tensor_validation_order") {
         return &TestTensorValidationOrder;
+    }
+    if (name == "insufficient_active_basis") {
+        return &TestInsufficientActiveBasis;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }
