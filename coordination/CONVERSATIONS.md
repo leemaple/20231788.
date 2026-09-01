@@ -332,6 +332,18 @@ and active work. Do not interrupt, resend, retry, duplicate, or open the old
 session. Exact dispatch evidence is retained in
 `coordination/handoffs/windows-zcode-fb862a3-review-01.md`.
 
+At 2026-09-01 20:44 CST, the downstream Relin2 remediation-07 environment gate
+was prepared without reading or executing any candidate output. The specified
+Gitleaks 8.30.1 binary/hash and CPython 3.10.20 were already present; the
+existing `uv` installed an isolated CPython 3.9.25 distribution in 2.30 seconds.
+Exact command paths, versions, resolved binary hashes, the fail-closed receipt
+sequence, and the still-pending claims are retained in
+`coordination/reviews/relin2-remediation-07-downstream-preflight.md`. The Ego
+Lite task space currently reports user control/inactive agent ownership, so the
+browser workflow forbids automatic takeover or a workaround. No refresh,
+reclaim, retry, prod, resend, duplicate, ZIP inspection, candidate script, or
+Mac OpenFHE build occurred.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
