@@ -219,6 +219,24 @@ not be refreshed, stopped, prodded, retried, resent, or duplicated while it
 runs. Exact dispatch evidence is retained in
 `coordination/handoffs/chatgpt-pro-relin2-remediation-02.md`.
 
+At 2026-09-01 12:49 CST, the independently approved Relin2 remediation-04
+request was submitted exactly once in the same saved conversation and Ego task
+space 85. Nine freshly attached artifacts bind the exact clean base, all four
+task authorities, the rejected remediation-03 delivery, and its independent
+receipt. The controlling 25,618-byte task has SHA-256
+`23bd11960f688ce613e6f043e1e667b82d958db943d1055f1c3e1bc2cdfd824d`;
+the coordination branch and remote both pointed to exact commit
+`1a239152595e73f0eba3d2e1583c9ba237300eb8` before dispatch. Fresh size/hash,
+archive-integrity, targeted exclusion, and pinned Gitleaks gates passed. A
+long rich-editor insert timed out at the control boundary, but no resend was
+made: read-only recovery proved the complete 429-line normalized message,
+nine attachments, both markers, exact hash, and absent probe before one Send
+click. Post-send state showed an empty composer, zero pending attachments, one
+sent request, active `Thinking`/`Stop answering`, and no Retry. Do not stop,
+refresh, prod, resend, retry, or duplicate this request while it runs. Exact
+evidence is retained in
+`coordination/handoffs/chatgpt-pro-relin2-remediation-04.md`.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
