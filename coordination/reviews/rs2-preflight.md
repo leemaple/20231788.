@@ -164,7 +164,8 @@ does not restrict that field for FIXEDMANUAL:
 
 - setter: `src/pke/include/scheme/gen-cryptocontext-params.h:455-457`;
 - validation: `src/pke/lib/scheme/gen-cryptocontext-params-validation.cpp:37-75`;
-- public Rescale lookup: `src/pke/include/cryptocontext.h:452-460`.
+- protected context helper used by public Rescale:
+  `src/pke/include/cryptocontext.h:452-460,2507-2510`.
 
 If FIXEDMANUAL carries a composite degree greater than one, one public Rescale
 can drop multiple towers. RS2 must reject `GetCompositeDegree()!=1` with a
@@ -173,6 +174,29 @@ recombination, scalar multiplication, subtraction, or Rescale. Complete
 validation may safely inspect members and towers after its null/shape gates.
 This is an RS2-only precondition so DCP/RCB/Relin2 support is not silently
 narrowed.
+
+`CryptoContextImpl::GetCompositeDegreeFromCtxt()` is a protected helper, so
+project production cannot and need not call it. The already-bound
+`CryptoParametersCKKSRNS` is the same object from which that helper obtains the
+value; RS2 must read `parameters_->GetCompositeDegree()` and require exactly
+one. Public `Rescale` will then independently read the same value internally.
+Do not copy the value into pair state or accept a caller-supplied override.
+
+This guard cannot be replaced by a post-Rescale degree check. For composite
+degree two, `ModReduceInternalInPlace` drops two towers while updating the
+noise-scale degree by `levels/compositeDegree`, which is still one. A degree
+`3 -> 2` observation can therefore look correct even though the basis, level,
+and recorded factor are wrong. The pre-arithmetic guard and complete exact
+basis/level/factor checks are independently required.
+
+The deterministic negative fixture should construct FIXEDMANUAL parameters
+with `SetCompositeDegree(2)` and enough full-Q towers to reach a valid public
+`ReadyForRS2` input without invoking Rescale. It must snapshot the complete
+pair, require exact `std::invalid_argument` text, and prove unchanged input.
+Source order must prove that neither public RCB nor either Rescale call can run
+before the rejection. The `DoubleCKKS` constructor and non-RS2 operations must
+remain accepted for this fixture; moving the restriction into construction
+would silently broaden the gate.
 
 ## Minimal candidate public seam
 
@@ -305,6 +329,20 @@ should:
    its complete state and specified metadata source;
 9. deep-snapshot the RS2 pair before public RCB, prove it unchanged immediately
    afterward, and separately prove `q_div*A+B=C`.
+
+For the odd active prime `q_l`, define the centered residue mechanically:
+
+```text
+r = x mod q_l, normalized into [0, q_l-1]
+Center_q_l(x) = r                 if 2*r <= q_l
+                r - q_l           otherwise.
+```
+
+Because every supported RNS prime is odd, equality at an ambiguous exact half
+cannot occur. Permanent boundary witnesses must include residues
+`floor(q_l/2)` and `floor(q_l/2)+1` (plus their signed/normalized counterparts),
+so an off-by-one or always-nonnegative remainder convention fails at a named
+coordinate.
 
 The fixed fixture must name coordinates and residues for positive and negative
 rounding boundaries, quotient carry, nonzero high/low contributions, and a
