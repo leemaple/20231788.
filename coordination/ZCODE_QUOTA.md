@@ -30,3 +30,10 @@ experiments or one terminal-only Fable5 review as a substitute for the pending
 ZCode review. The bounded allocation and consumption rule are recorded in
 `coordination/REVIEW_ALLOCATION.md`. This does not create or resume a ZCode
 task and does not change the quota values above.
+
+At 2026-09-01 22:46 CST, the one Fable5 process ended before any model output
+and is operationally exhausted without a retry. This changes no BigModel quota
+reading. Per the user's latest direction, ZCode remains preserved and outside
+the critical path until a fresh official page/service check shows recovery;
+Codex, ChatGPT Pro, GitHub Actions, and direct Windows experiments continue in
+the meantime.

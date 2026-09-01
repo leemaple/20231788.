@@ -59,3 +59,22 @@ launch. The allowance is consumed at process start, even if transport or output
 is later lost; no retry, resume, follow-up, or second Fable invocation is
 permitted. ZCode returns to the normal collaboration pool only after a fresh
 capacity/service check shows it is usable.
+
+## 2026-09-01 22:46 Fable5 terminal outcome
+
+All pre-launch gates passed and the one authorized provider-capable process
+started exactly once. It terminated naturally after one second with CLI exit 1
+and no `stream-json` event. The sole stderr was the local sandbox error
+`EPERM: operation not permitted, mkdir '/tmp/claude-501'`; the wrapper's
+combined post-identity comparison exited 0, though it did not emit separate
+per-item post hashes. No session ID, tool call, source path, model answer,
+provider duration/cost, or verdict was emitted.
+
+Provider acceptance cannot be proven, so the authorization is recorded exactly
+as `consumption-unknown (operationally exhausted)`. Do not retry, resume,
+follow up, create a second Fable process, or represent this as an independent
+review. Continue the critical path with Codex, the existing ChatGPT Pro work,
+and GitHub Actions/direct Windows experiments. Keep the existing ZCode task
+preserved and outside the critical path; restore ZCode collaboration only after
+a fresh capacity/service check. Exact evidence is in
+`coordination/handoffs/fable5-fb862a3-review-01-receipt/`.

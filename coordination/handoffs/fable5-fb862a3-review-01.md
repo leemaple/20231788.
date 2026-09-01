@@ -1,10 +1,13 @@
 # Fable5 fb862a3 independent-review handoff
 
 Prepared: 2026-09-01 21:36 Asia/Shanghai
+Updated: 2026-09-01 22:48 Asia/Shanghai
 
-Status: **pre-launch gates complete; provider process not yet started and the
-one-use allowance not yet consumed**. This record must be committed and pushed,
-and the frozen task must pass final Spec/TDD/Delivery review, before launch.
+Status: **the single provider-capable process terminated naturally with exit 1
+before any stream event; no Fable5 verdict exists; the one-use allowance is
+`consumption-unknown (operationally exhausted)` and may not be retried**. The
+complete raw/parsed receipt is retained under
+`coordination/handoffs/fable5-fb862a3-review-01-receipt/`.
 
 ## Exact review target
 
@@ -158,13 +161,32 @@ production terminal outcome forbids a retry, resume, follow-up, second process,
 or new session. Transport/output uncertainty is recorded as
 `consumption-unknown (operationally exhausted)`.
 
-## Post-run receipt still required
+## Terminal result
 
-After natural termination, record start/end times, exit and terminal/stop
-reasons, model/effort/mode, session ID when emitted, turns, API duration,
-provider cost when emitted, tool/path/web/subagent counts, every stream event,
-raw JSONL size/hash, stderr size/hash, extracted terminal-answer size/hash, and
-pre/post binary, project profile, macOS build, and imported system-profile
-identity. Reject the receipt on any unexpected tool or path.
-Independently verify every Fable finding before it affects acceptance, then
-commit and push the raw/parsed receipt and update the allocation ledger.
+The exact process started at `2026-09-01T14:46:10Z` and ended naturally at
+`2026-09-01T14:46:11Z`. Claude Code exited 1, the parent `tee` wait exited 0,
+and the post-identity gate exited 0. Raw JSONL is empty: 0 bytes, SHA-256
+`e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
+The 56-byte stderr has SHA-256
+`95d184c527424ea77100afcd245bdce94b0118dc3a56abafc4dbc785a5c9da4b`
+and contains only the observed local startup error:
+
+```text
+EPERM: operation not permitted, mkdir '/tmp/claude-501'
+```
+
+There were zero stream events, tool calls, read paths, web/browser calls,
+subagents, turns, or terminal-answer bytes. No session ID, API duration,
+provider cost, or Fable verdict was emitted. Provider acceptance therefore
+cannot be established. Per the frozen contract, do not retry, resume,
+follow-up, or launch a second process. The failed invocation does not replace
+source/test evidence and contributes no review finding. The retained
+`post_identity_exit=0` is a combined comparison result; the wrapper did not
+emit separate per-item post-run hashes, so no independent per-item post
+snapshot is claimed.
+
+The parsed terminal-answer artifact is explicitly retained as 0 bytes with
+SHA-256
+`e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
+The six-file receipt manifest is 536 bytes with SHA-256
+`81cf9d05b5505791c8dc72421497696dbfa2ce5f6075c297e6ab29ce87e5ebf5`.
