@@ -218,7 +218,9 @@ tool calls.
   requires a sandboxed `security list-keychains` negative canary. Before those
   denials are trusted, the parent proves every named sensitive path is present
   and readable and proves the same `env -i` keychain command succeeds without
-  the sandbox; the receipt records both positive controls without file content;
+  the sandbox. The receipt records each path, availability/read exit, aggregated
+  read stderr, plus unsandboxed Keychain stdout/stderr/exit, without retaining
+  any byte read from the sensitive files;
 - before entering the sandbox, the launcher retrieves the existing OAuth
   access and refresh tokens from macOS Keychain. It transports the values to a
   fixed-hash Python child over an anonymous NUL-delimited pipe, not process
@@ -241,9 +243,14 @@ tool calls.
   phase/step-aware exit trap append their reason, phase, step, and exact exit
   before the wrapper terminates. Git remote checks retain safe stdout, stderr,
   and exact exits; sandbox probing retains its observed matrix, stderr, and
-  exit before comparison; Keychain stdout is never persisted, while its
-  stderr/exit and every credential-JSON parse stderr/exit are retained and
-  exact-token-scanned. The entry lock is acquired before any shared
+  exit before comparison. Credential Keychain stdout is never persisted.
+  Credential-retrieval and JSON-parse stderr first remain in isolated temporary
+  files; after both OAuth tokens are known, those bytes are exact-token-scanned
+  before being moved into the receipt and before expiry parsing or lifetime can
+  fail. If either token cannot be extracted, the raw temporary stderr is
+  deleted and only its byte count, SHA-256, and exact exits are retained. A
+  trap also deletes either temporary file on every abnormal exit. The entry
+  lock is acquired before any shared
   HOME/TMP/auth activity. Before a distinct
   one-use provider-start guard it fail-closes on exact
   task/CLI/profile/ZIP/manifest and source identities, Git cleanliness/remote
@@ -273,7 +280,8 @@ tool calls.
   assistant must explicitly carry the exact model, and every present
   `modelUsage` value must be a nonempty object keyed only by that model. The
   unique init must report the exact extraction CWD, `plan` permission mode,
-  exactly Read/Glob/Grep, and an empty MCP-server list. Each matched tool result
+  exactly Read/Glob/Grep, and an empty MCP-server list. Auth status must be
+  exactly one top-level accepted JSON object. Each matched tool result
   must carry protocol content of string or array type; an explicit null
   tool-result error field is rejected rather than treated as success;
 - the parent receipt binds start/end time, CLI/task/packet identities, raw

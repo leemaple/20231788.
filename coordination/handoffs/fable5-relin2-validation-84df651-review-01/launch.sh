@@ -322,12 +322,14 @@ readonly FABLE_RECEIPT="${FABLE_ROOT}/receipt-attempt-${$}"
 readonly FABLE_SCAN_TMP="${FABLE_ROOT}/receipt-scan-${$}"
 readonly FABLE_ENTRY_LOCK="${FABLE_ROOT}/launcher-entry.lock"
 readonly FABLE_STARTED_GUARD="${FABLE_ROOT}/provider-started.once"
+readonly FABLE_KEYCHAIN_STDERR_TMP="${FABLE_TMP}/keychain-stderr-${$}.txt"
+readonly FABLE_PARSE_STDERR_TMP="${FABLE_TMP}/credential-parse-stderr-${$}.txt"
 readonly FABLE_GITLEAKS="/opt/homebrew/bin/gitleaks"
 readonly FABLE_RG="/Applications/ChatGPT.app/Contents/Resources/rg"
 readonly FABLE_PYTHON="/usr/bin/python3"
 
-readonly EXPECTED_TASK_SHA256="33ab2cbfaeacb39c4e215b3bf32ff483d9ba2f92a35c9bf063ba185fa7ca5ad7"
-readonly EXPECTED_TASK_BYTES="17562"
+readonly EXPECTED_TASK_SHA256="2472f02f950d6450183381d5eb64fdcb4af9600db1aca9185f5080c2808e0454"
+readonly EXPECTED_TASK_BYTES="18110"
 readonly EXPECTED_SANDBOX_SHA256="680fec15a149b95801cbc8dccf377661f5c756f28336e8565ce268359b8640b8"
 readonly EXPECTED_CLI_SHA256="2b4f7aafdaa65bcc2335f56a4b276317837203f2c5587b1f2a17ca78ad14e36f"
 readonly EXPECTED_GITLEAKS_SHA256="f414bc2fb952be6c9072b75cb411e3368614ef4b16d48dbd9ad238034afd2302"
@@ -346,6 +348,11 @@ typeset fable_phase="entry"
 typeset fable_step="bootstrap"
 TRAPEXIT() {
   local wrapper_exit=$?
+  for credential_temp in "${FABLE_KEYCHAIN_STDERR_TMP:-}" "${FABLE_PARSE_STDERR_TMP:-}"; do
+    if [[ -n "${credential_temp}" && -f "${credential_temp}" ]]; then
+      /bin/rm -f -- "${credential_temp}" >/dev/null 2>&1 || true
+    fi
+  done
   if (( wrapper_exit != 0 )) && [[ "${fable_phase:-entry}" != "complete" ]]; then
     print -u2 -- "Fable5 wrapper exit: phase=${fable_phase:-entry} step=${fable_step:-bootstrap} exit=${wrapper_exit}"
     if [[ -n "${FABLE_RECEIPT:-}" && -d "${FABLE_RECEIPT}" ]]; then
@@ -425,6 +432,11 @@ receipt_outputs=(
   02-sandbox-probes.txt
   02a-sandbox-stderr.txt
   02b-sandbox-exit.txt
+  02c-parent-read-controls.txt
+  02d-parent-read-controls-stderr.txt
+  02e-parent-keychain-stdout.txt
+  02f-parent-keychain-stderr.txt
+  02g-parent-keychain-exit.txt
   03-staging-gitleaks.txt
   04-extraction-gitleaks.txt
   05-runtime-home-gitleaks.txt
@@ -614,15 +626,40 @@ parent_read_probe_paths=(
   "/System/Volumes/Data/Users/lifeng/Library/Application Support/Google/Chrome/Default/Cookies"
   "/System/Volumes/Data/Library/Keychains/System.keychain"
 )
+: >"${FABLE_RECEIPT}/02c-parent-read-controls.txt"
+: >"${FABLE_RECEIPT}/02d-parent-read-controls-stderr.txt"
+typeset -i parent_read_control_failures=0
+typeset -i parent_read_control_index=0
+set +e
 for probe_candidate in "${parent_read_probe_paths[@]}"; do
-  [[ -f "${probe_candidate}" && -r "${probe_candidate}" ]] ||
-    fail "sandbox negative-probe parent read control is unavailable"
-  /usr/bin/head -c 1 "${probe_candidate}" >/dev/null 2>&1 ||
-    fail "sandbox negative-probe parent read control failed"
+  (( parent_read_control_index += 1 ))
+  [[ -f "${probe_candidate}" && -r "${probe_candidate}" ]]
+  parent_availability_exit=$?
+  /usr/bin/head -c 1 "${probe_candidate}" >/dev/null \
+    2>>"${FABLE_RECEIPT}/02d-parent-read-controls-stderr.txt"
+  parent_read_exit=$?
+  {
+    print -- "control_index=${parent_read_control_index}"
+    print -- "path=${probe_candidate}"
+    print -- "availability_exit=${parent_availability_exit}"
+    print -- "read_exit=${parent_read_exit}"
+  } >>"${FABLE_RECEIPT}/02c-parent-read-controls.txt"
+  if (( parent_availability_exit != 0 || parent_read_exit != 0 )); then
+    (( parent_read_control_failures += 1 ))
+  fi
 done
 /usr/bin/env -i PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
-  /usr/bin/security list-keychains >/dev/null 2>&1 ||
-  fail "unsandboxed keychain-service positive control failed"
+  /usr/bin/security list-keychains \
+  >"${FABLE_RECEIPT}/02e-parent-keychain-stdout.txt" \
+  2>"${FABLE_RECEIPT}/02f-parent-keychain-stderr.txt"
+parent_keychain_control_exit=$?
+set -e
+print -- "parent_keychain_control_exit=${parent_keychain_control_exit}" \
+  >"${FABLE_RECEIPT}/02g-parent-keychain-exit.txt"
+(( parent_read_control_failures == 0 )) ||
+  fail "${parent_read_control_failures} sandbox negative-probe parent read controls failed"
+[[ ${parent_keychain_control_exit} -eq 0 ]] ||
+  fail "unsandboxed keychain-service positive control failed with exit ${parent_keychain_control_exit}"
 
 print -- "isolated HOME read-denial canary" >"${FABLE_HOME}/.fable-read-denial-canary"
 /bin/chmod 600 "${FABLE_HOME}/.fable-read-denial-canary"
@@ -686,28 +723,37 @@ fable_step="keychain_retrieval"
 typeset fable_oauth_token fable_refresh_token
 set +e
 fable_credentials="$(/usr/bin/security find-generic-password -s 'Claude Code-credentials' -w \
-  2>"${FABLE_RECEIPT}/01g-keychain-stderr.txt")"
+  2>"${FABLE_KEYCHAIN_STDERR_TMP}")"
 keychain_exit=$?
 set -e
 print -- "keychain_exit=${keychain_exit}" >"${FABLE_RECEIPT}/01h-keychain-exit.txt"
-[[ ${keychain_exit} -eq 0 ]] || fail "Keychain credential retrieval failed with exit ${keychain_exit}"
+if [[ ${keychain_exit} -ne 0 ]]; then
+  {
+    print -- "raw_stderr_retained=false"
+    print -- "raw_stderr_bytes=$(/usr/bin/stat -f '%z' "${FABLE_KEYCHAIN_STDERR_TMP}")"
+    print -- "raw_stderr_sha256=$(sha256_of "${FABLE_KEYCHAIN_STDERR_TMP}")"
+  } >"${FABLE_RECEIPT}/01g-keychain-stderr.txt"
+  /bin/rm -f -- "${FABLE_KEYCHAIN_STDERR_TMP}"
+  unset fable_credentials
+  fail "Keychain credential retrieval failed with exit ${keychain_exit}"
+fi
 
-: >"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt"
+: >"${FABLE_PARSE_STDERR_TMP}"
 set +e
 fable_step="credential_json_parse"
 fable_oauth_token="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er \
   '.claudeAiOauth.accessToken | select(type == "string" and length > 0)' \
-  2>>"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt")"
+  2>>"${FABLE_PARSE_STDERR_TMP}")"
 access_parse_exit=$?
 fable_refresh_token="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er \
   '.claudeAiOauth.refreshToken | select(type == "string" and length > 0)' \
-  2>>"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt")"
+  2>>"${FABLE_PARSE_STDERR_TMP}")"
 refresh_parse_exit=$?
 fable_access_expires_ms="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er \
-  '.claudeAiOauth.expiresAt | numbers' 2>>"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt")"
+  '.claudeAiOauth.expiresAt | numbers' 2>>"${FABLE_PARSE_STDERR_TMP}")"
 access_expiry_parse_exit=$?
 fable_refresh_expires_ms="$(print -rn -- "${fable_credentials}" | /usr/bin/jq -er \
-  '.claudeAiOauth.refreshTokenExpiresAt | numbers' 2>>"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt")"
+  '.claudeAiOauth.refreshTokenExpiresAt | numbers' 2>>"${FABLE_PARSE_STDERR_TMP}")"
 refresh_expiry_parse_exit=$?
 set -e
 {
@@ -716,18 +762,34 @@ set -e
   print -- "access_expiry_parse_exit=${access_expiry_parse_exit}"
   print -- "refresh_expiry_parse_exit=${refresh_expiry_parse_exit}"
 } >"${FABLE_RECEIPT}/01j-credential-parse-exits.txt"
+if [[ ${access_parse_exit} -ne 0 || ${refresh_parse_exit} -ne 0 ]]; then
+  {
+    print -- "raw_stderr_retained=false"
+    print -- "raw_stderr_bytes=$(/usr/bin/stat -f '%z' "${FABLE_KEYCHAIN_STDERR_TMP}")"
+    print -- "raw_stderr_sha256=$(sha256_of "${FABLE_KEYCHAIN_STDERR_TMP}")"
+  } >"${FABLE_RECEIPT}/01g-keychain-stderr.txt"
+  {
+    print -- "raw_stderr_retained=false"
+    print -- "raw_stderr_bytes=$(/usr/bin/stat -f '%z' "${FABLE_PARSE_STDERR_TMP}")"
+    print -- "raw_stderr_sha256=$(sha256_of "${FABLE_PARSE_STDERR_TMP}")"
+  } >"${FABLE_RECEIPT}/01i-credential-parse-stderr.txt"
+  /bin/rm -f -- "${FABLE_KEYCHAIN_STDERR_TMP}" "${FABLE_PARSE_STDERR_TMP}"
+  unset fable_credentials fable_oauth_token fable_refresh_token
+  fail "Keychain OAuth token parsing failed"
+fi
+fable_step="credential_evidence_secret_scan"
+exact_secret_scan "${FABLE_RECEIPT}/00b-exact-pre-auth-secrets.txt" "${FABLE_HOME}" "${FABLE_TMP}" "${FABLE_RECEIPT}"
+/bin/mv "${FABLE_KEYCHAIN_STDERR_TMP}" "${FABLE_RECEIPT}/01g-keychain-stderr.txt"
+/bin/mv "${FABLE_PARSE_STDERR_TMP}" "${FABLE_RECEIPT}/01i-credential-parse-stderr.txt"
 unset fable_credentials
-[[ ${access_parse_exit} -eq 0 && ${refresh_parse_exit} -eq 0 &&
-   ${access_expiry_parse_exit} -eq 0 && ${refresh_expiry_parse_exit} -eq 0 ]] ||
-  fail "Keychain credential JSON parsing failed"
+[[ ${access_expiry_parse_exit} -eq 0 && ${refresh_expiry_parse_exit} -eq 0 ]] ||
+  fail "Keychain OAuth expiry parsing failed"
 now_ms=$(( $(/bin/date +%s) * 1000 ))
 refresh_remaining_seconds=$(( (fable_refresh_expires_ms - now_ms) / 1000 ))
 access_remaining_seconds=$(( (fable_access_expires_ms - now_ms) / 1000 ))
 (( refresh_remaining_seconds > 14400 )) || fail "OAuth refresh token has less than four hours remaining"
 log "oauth_access_remaining_seconds=${access_remaining_seconds}"
 log "oauth_refresh_remaining_seconds=${refresh_remaining_seconds}"
-
-exact_secret_scan "${FABLE_RECEIPT}/00b-exact-pre-auth-secrets.txt" "${FABLE_HOME}" "${FABLE_TMP}" "${FABLE_RECEIPT}"
 fable_phase="auth_probe"
 fable_step="isolated_auth_status"
 set +e
@@ -737,7 +799,8 @@ set -e
 print -- "auth_exit=${auth_exit}" >"${FABLE_RECEIPT}/01b-auth-exit.txt"
 exact_secret_scan "${FABLE_RECEIPT}/01f-exact-post-auth-secrets.txt" "${FABLE_HOME}" "${FABLE_TMP}" "${FABLE_RECEIPT}"
 [[ ${auth_exit} -eq 0 ]] || fail "isolated OAuth status command failed with exit ${auth_exit}"
-/usr/bin/jq -e '.loggedIn == true and .authMethod == "oauth_token" and .apiProvider == "firstParty"' "${FABLE_RECEIPT}/01-auth-status.json" >/dev/null || fail "isolated OAuth status mismatch"
+/usr/bin/jq -se 'length == 1 and (.[0] | type == "object" and .loggedIn == true and .authMethod == "oauth_token" and .apiProvider == "firstParty")' \
+  "${FABLE_RECEIPT}/01-auth-status.json" >/dev/null || fail "isolated OAuth status is not exactly one accepted object"
 
 fable_phase="flag_probe"
 fable_step="provider_flag_parse"
