@@ -490,3 +490,21 @@ gates and are pushed on dedicated evidence branches. Intermediate Windows jobs
 were cancelled after Linux capture and make no project-test claim. ZCode stayed
 off the critical path; the previously recorded Fable5 local-launch blocker was
 not retried, so neither provider delayed the next actual-key-tag boundary.
+
+At 2026-09-02 06:57 CST, the actual-evaluation-key-tag boundary closed on the
+same nonblocking path. Red `82c9fa9` added only the thirteenth public test,
+generated a valid bound-context relinearization key under the Tensor-tag map
+row, and changed only the cached pointee's actual tag. Hosted Linux built
+warning-clean, compiled the API contract, and produced the exact intended
+`12/13`, with only the new test reaching the old scaffold. Green `4bfe4fc`
+added only the three-line actual-tag guard; three source reviews and three
+evidence reviews returned PASS, and hosted Linux passed exactly `13/13` while
+executing immediate Tensor/cache/key-pointee invariance and RAII restoration
+checks. Both red and green evidence sets passed ZIP, manifest, Gitleaks,
+targeted-scan, identity, and remote-ref gates and are pushed on isolated
+evidence branches. Windows jobs were cancelled during official toolchain
+installation and make no project-test claim. Per user direction, ZCode remains
+off the critical path until quota recovery; the exhausted local Fable5 launch
+was not retried, and internal review plus GitHub Actions continued without
+blocking. The next isolated boundary is the wrong concrete evaluation-key
+subtype, rejected before any A/B getter.
