@@ -37,3 +37,11 @@ reading. Per the user's latest direction, ZCode remains preserved and outside
 the critical path until a fresh official page/service check shows recovery;
 Codex, ChatGPT Pro, GitHub Actions, and direct Windows experiments continue in
 the meantime.
+
+At 2026-09-02 00:14 CST, the user broadened the prospective fallback rule:
+terminal Fable5 replaces ZCode while ZCode is unavailable, but neither service
+may block the project. The failed historical Fable process remains closed; any
+new Fable review must be a fresh exact-boundary task with its own evidence.
+Re-read this official page after the displayed 10:00 weekly reset and restore
+subsequent ZCode allocation only after quota and service are both observed
+usable. This policy update is not a new quota reading.

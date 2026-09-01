@@ -78,3 +78,24 @@ and GitHub Actions/direct Windows experiments. Keep the existing ZCode task
 preserved and outside the critical path; restore ZCode collaboration only after
 a fresh capacity/service check. Exact evidence is in
 `coordination/handoffs/fable5-fb862a3-review-01-receipt/`.
+
+## 2026-09-02 00:14 nonblocking substitution
+
+The user prospectively superseded the one-process restriction above. While
+ZCode is unavailable, use terminal Fable5 as its review substitute and keep the
+project moving. The failed `fb862a3` invocation remains an immutable historical
+record and must not be described as a review; any later Fable5 use is a new,
+exact-boundary task with its own sanitized packet, preflight, process identity,
+and receipt rather than a retry or continuation of that failed process.
+
+Fable5 availability is advisory, not a completion lock. If a new invocation
+cannot start or produces no usable result, record the exact outcome and proceed
+with Codex, ChatGPT Pro when available, the existing independent reviewers,
+GitHub Actions/direct Windows, and executable evidence. Do not resend the same
+request merely because a response is slow.
+
+Re-read the official BigModel usage page after the displayed 2026-09-02 10:00
+weekly reset before assigning new ZCode work. Once service and quota are both
+usable, return subsequent ZCode review/build work to its Windows clean-room
+task. Do not retroactively reopen already evidenced boundaries solely because
+an external reviewer was unavailable.

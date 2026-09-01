@@ -136,11 +136,9 @@ and either a second `Mult2` or an executable fail-fast refresh boundary.
    design, not adjusted after seeing the result.
 5. Warning-enabled builds and tests run on Windows or GitHub Actions; Mac is
    not used for sustained compilation.
-6. Normally Codex, Windows ZCode/Zima, and ChatGPT Pro review the same exact
-   commit. While the recorded shared-quota override is active, the project's
-   single authorized terminal-only Fable5 invocation may replace the pending
-   ZCode review, but only for one exact Linux/Windows-green commit with the
-   evidence and consumption record required by `coordination/REVIEW_ALLOCATION.md`.
-   A separate concrete unresolved disagreement may be escalated only under the
-   ordinary project workflow; it must not be conflated with or silently consume
-   the one-review substitution.
+6. Use Codex, ChatGPT Pro, and either Windows ZCode/Zima or the current fallback
+   reviewer on the same exact commit when they are available. Follow the
+   current substitution, evidence, no-resend, and restoration rules in
+   `coordination/REVIEW_ALLOCATION.md`. External-agent unavailability must be
+   recorded accurately but does not override executable acceptance evidence or
+   block the next safe TDD boundary.

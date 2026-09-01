@@ -19,8 +19,8 @@ Deliver a minimal, tested OpenFHE implementation of the paper's double-precision
 
 - Codex owns orchestration, integration, evidence, and final accountability.
 - Prefer ChatGPT Pro for nontrivial design and code drafting. Supply a complete sanitized handoff and never assume access to local files or prior chats.
-- Prefer the Windows computer's Z code/Zima agent for independent implementation, builds, and review in a dedicated clean-room folder. Never point it at quarantined Mac code.
-- Review substantive code with Codex, Windows Z code/Zima, and ChatGPT Pro. Invoke Fable5 only from the terminal for a concrete unresolved disagreement, or use the project's single authorized Fable5 substitution for one substantive Z code review while the shared quota is constrained. Bind a substitution review to one exact Linux/Windows-green commit, record when its allowance is consumed, and verify its findings against source and tests.
+- Prefer the Windows computer's Z code/Zima agent for independent implementation, builds, and review in a dedicated clean-room folder when its shared quota is available. Never point it at quarantined Mac code.
+- Review substantive code with Codex, ChatGPT Pro, and either Z code/Zima or its current fallback reviewer. Invoke Fable5 only from the terminal. While Z code is unavailable, use Fable5 as its substitute; if Fable5 yields no usable result, record the outcome and continue with available independent review and executable tests. Resume Z code/Zima for subsequent boundaries after quota and service recover. Bind every external review to an exact commit and verify its findings against source and tests.
 - Save each external conversation/task URL or ID and enough state to resume without interrupting or duplicating long-running work.
 - Keep the Mac responsive. Put sustained builds, cryptographic tests, and broad scans on Windows or GitHub Actions; use bounded low-concurrency local checks only when necessary.
 
