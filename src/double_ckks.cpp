@@ -566,6 +566,10 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
     if (evaluationKey->second.empty()) {
         Invalid("Relin2 evaluation-key vector is empty");
     }
+    const auto& firstEvaluationKey = evaluationKey->second.front();
+    if (!firstEvaluationKey) {
+        Invalid("Relin2 first evaluation key is null");
+    }
     throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
 }
 
