@@ -116,6 +116,41 @@ void TestInsufficientActiveBasis() {
         "Relin2 insufficient active basis");
 }
 
+void TestMissingEvaluationKey() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 4,
+          "Relin2 missing-key fixture must have exactly four full-basis towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 3,
+          "Relin2 missing-key fixture must have exactly three active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 missing-key fixture must have noise-scale degree three");
+
+    const std::string keyTag = tensor.GetKeyTag();
+    const auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(evaluationKeys.empty(), "Relin2 missing-key fixture must start with an empty evaluation-key cache");
+    Check(evaluationKeys.find(keyTag) == evaluationKeys.end(),
+          "Relin2 missing-key fixture unexpectedly contains an evaluation key");
+
+    CheckThrowsExactInvalidArgument(
+        [&] { (void)module.Relin2(tensor); },
+        "DoubleCKKS: Relin2 evaluation key is missing for the Tensor key tag",
+        "Relin2 missing evaluation key");
+
+    Check(evaluationKeys.empty(), "Relin2 missing-key rejection mutated the evaluation-key cache");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -124,6 +159,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "insufficient_active_basis") {
         return &TestInsufficientActiveBasis;
+    }
+    if (name == "missing_eval_key") {
+        return &TestMissingEvaluationKey;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }
