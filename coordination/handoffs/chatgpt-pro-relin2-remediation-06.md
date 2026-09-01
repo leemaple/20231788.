@@ -2,8 +2,9 @@
 
 Submitted: 2026-09-01 17:44 CST
 
-Status: **submitted exactly once and actively answering**. This is a dispatch
-receipt, not an implementation, test, review, or acceptance claim.
+Status: **original submitted exactly once; one terminal-timeout recovery is
+actively answering**. This is a dispatch/recovery receipt, not an
+implementation, test, review, or acceptance claim.
 
 ## Saved conversation and Git binding
 
@@ -72,13 +73,34 @@ the findings and their reviewed non-secret disposition.
   zero. The latest user message retained both markers and the controlling task
   SHA-256. `Stop answering` was active.
 
+## Terminal timeout and one recovery
+
+- Spaced read-only checks left the original response untouched while `Stop
+  answering` remained active.
+- At 2026-09-01 18:55 CST the page instead showed the terminal error `Message
+  delivery timed out. Please try again.` after two visible completed
+  checkpoints: `Read attachments and executed remediation 06` and `Inspecting
+  Relin2 test source for macro audit`.
+- There was no remediation-06 download. The historical Retry was not clicked.
+- At 18:57, one same-conversation continuation was sent. It told the agent to
+  inspect its existing server-side workspace and continue from the last
+  completed position, not restart or repeat work without a concrete missing or
+  corrupt artifact.
+- The recovery repeated all eleven attachment logical names, byte sizes, and
+  SHA-256 values, named the exact controlling task, and preserved every verdict,
+  scope, frozen-byte, evidence, packaging, and no-progress-reply requirement.
+- Pre-send browser readback proved one begin marker, one end marker, eleven
+  numbered bindings, and all eleven hashes. Post-send state proved an empty
+  composer, one sent recovery, and a new active `Stop answering`. The old Retry
+  remains only on the failed historical response and must stay untouched.
+
 ## Waiting rule and current project state
 
 Do not stop, refresh, edit, prod, retry, resend, or create another conversation
-while the response is active. Use spaced read-only checks. When it finishes
+while the recovery response is active. Use spaced read-only checks. When it finishes
 naturally, collect at most the one required remediation-06 ZIP and quarantine it
-before reading. If the page reports a terminal delivery error, record that exact
-state and reassess; do not automatically retry.
+before reading. If this recovery also reports a terminal delivery error, record
+that exact state and reassess; do not automatically click either Retry.
 
 The real implementation branch remains exact clean local/remote
 `fb862a3dfeeb0b79eb8f0e4218749d8a898e96c9`. No rejected Relin2 patch was

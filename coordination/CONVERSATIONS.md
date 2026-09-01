@@ -257,6 +257,25 @@ five-hour pool at 0% used, weekly capacity at 100% used with reset at
 2026-09-25 10:00. No ZCode work is dispatched before the weekly reset; the page
 must be reread after reset before normal allocation resumes.
 
+At 2026-09-01 18:55 CST, a spaced read-only Ego check found that the Relin2
+remediation-06 response had ended with the terminal UI error `Message delivery
+timed out. Please try again.` after the visible completed checkpoints `Read
+attachments and executed remediation 06` and `Inspecting Relin2 test source for
+macro audit`. There was no remediation-06 download and no active Stop button;
+Codex did not click the historical Retry. At 18:57, after more than one hour of
+natural execution and multiple spaced checks, one same-conversation recovery
+message was submitted instead. It explicitly bound all eleven original
+attachment names, sizes, and SHA-256 values, repeated the controlling
+40,523-byte task SHA-256
+`3219d6a06d1fcad0abf686938f467039d98210756567b599213f8e721560d83b`,
+and required inspection of the existing server-side workspace plus continuation
+from the last completed position without a progress-only reply. Pre-send
+readback proved both recovery markers, all eleven hashes, and eleven numbered
+bindings. Post-send state showed an empty composer, one sent recovery, and a
+new active `Stop answering`; the old failed response's Retry remains untouched.
+Do not refresh, stop, retry, prod, resend, or duplicate this recovery while it
+runs.
+
 ## Scheduled reporting
 
 - Automation ID: `2023-1788-openfhe-07-00-pdf`
