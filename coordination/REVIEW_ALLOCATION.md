@@ -118,3 +118,18 @@ in `coordination/handoffs/fable5-relin2-validation-84df651-review-01/RECEIPT.md`
 Per the nonblocking policy, Codex continues Relin2 TDD with existing independent
 reviewers and Linux/Windows executable evidence. ZCode remains outside the
 critical path until a fresh official service/quota check supports restoring it.
+
+## 2026-09-02 Fable 5.1 and daily-report update
+
+The user superseded the prospective Fable model choice: new difficult-question
+escalations and ZCode-substitute reviews must use the latest Fable 5.1, not the
+older Fable 5 model. Invoke it only from Terminal, prefer the CLI's `fable`
+latest-model alias or a provider-advertised exact 5.1 identifier, disable model
+fallback, and retain the emitted model identity before accepting any verdict.
+Historical Fable 5 tasks and receipts remain immutable evidence and are not
+renamed or retroactively claimed as Fable 5.1 reviews. Fable availability stays
+nonblocking.
+
+The user also moved the daily standalone PDF report and Telegram Saved Messages
+delivery from 07:00 to 07:30 Asia/Shanghai. The project reporting skill and
+automation own the new schedule.

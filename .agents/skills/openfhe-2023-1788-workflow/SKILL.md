@@ -20,7 +20,7 @@ Deliver a minimal, tested OpenFHE implementation of the paper's double-precision
 - Codex owns orchestration, integration, evidence, and final accountability.
 - Prefer ChatGPT Pro for nontrivial design and code drafting. Supply a complete sanitized handoff and never assume access to local files or prior chats.
 - Prefer the Windows computer's Z code/Zima agent for independent implementation, builds, and review in a dedicated clean-room folder when its shared quota is available. Never point it at quarantined Mac code.
-- Review substantive code with Codex, ChatGPT Pro, and either Z code/Zima or its current fallback reviewer. Invoke Fable5 only from the terminal. While Z code is unavailable, use Fable5 as its substitute; if Fable5 yields no usable result, record the outcome and continue with available independent review and executable tests. Resume Z code/Zima for subsequent boundaries after quota and service recover. Bind every external review to an exact commit and verify its findings against source and tests.
+- Review substantive code with Codex, ChatGPT Pro, and either Z code/Zima or its current fallback reviewer. Invoke the latest Fable 5.1 only from the terminal, using the CLI's `fable` latest-model alias or a provider-advertised exact 5.1 identifier with fallback disabled; retain and verify the emitted model identity. Ask it promptly when targeted source/test investigation leaves a concrete difficult question unresolved. While Z code is unavailable, use Fable 5.1 as its preferred substitute; if it yields no usable result, record the outcome and continue with available independent review and executable tests. Resume Z code/Zima for subsequent boundaries after quota and service recover. Bind every external review to an exact commit and verify its findings against source and tests.
 - Save each external conversation/task URL or ID and enough state to resume without interrupting or duplicating long-running work.
 - Keep the Mac responsive. Put sustained builds, cryptographic tests, and broad scans on Windows or GitHub Actions; use bounded low-concurrency local checks only when necessary.
 
@@ -30,6 +30,6 @@ Before transferring source or contacting an external agent, read [references/ext
 
 Apply OpenFHE, TDD, KISS, YAGNI, and fail-fast invariants. Add exception handling only when a boundary can recover or deliberately translate a documented error. Classify claims as observed, inferred, or pending. Never claim a build, test, review, upload, or message without retaining evidence.
 
-For the 07:00 Asia/Shanghai PDF report, Telegram Saved Messages delivery, or urgent decision notification, read [references/reporting.md](references/reporting.md).
+For the 07:30 Asia/Shanghai PDF report, Telegram Saved Messages delivery, or urgent decision notification, read [references/reporting.md](references/reporting.md).
 
 Do not call work complete until artifacts exist, required tests ran on the stated commit, material review findings are resolved or accepted, the diff is understood, and uncertainty/decisions are explicit.

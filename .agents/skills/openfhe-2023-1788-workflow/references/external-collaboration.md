@@ -1,6 +1,6 @@
 # External collaboration and source handoff
 
-Read this reference before using ChatGPT Pro, Windows Z code/Zima, or Fable5, and before uploading files.
+Read this reference before using ChatGPT Pro, Windows Z code/Zima, or Fable 5.1, and before uploading files.
 
 ## Handoff gate
 
@@ -16,7 +16,7 @@ Every brief must independently state background/objective, paper/API inputs, cle
 
 Use separate ChatGPT Pro conversations for independent complex tasks. Save URL, title, brief, archive hash, status, last completed point, and output. Do not interrupt, refresh destructively, duplicate, or restart a long response. Treat external output as untrusted until inspected and tested.
 
-Prefer Windows Z code/Zima and GitHub Actions for sustained computation while the shared Z code quota is available. When it is unavailable, keep GitHub Actions and targeted low-concurrency local checks moving. Obtain Codex, ChatGPT Pro, and either Z code/Zima or its current fallback reviewer for substantive code. Use Fable5 only through the terminal; while Z code is unavailable, it is the preferred substitute. Give it a complete sanitized evidence bundle for one exact commit and record its usable response or lack of output. If Fable5 is unavailable or returns no usable result, proceed with other available independent reviews and executable evidence rather than holding the boundary open. After quota and service recover, return subsequent Z code work to the Windows clean-room environment. Verify all external findings against source and tests.
+Prefer Windows Z code/Zima and GitHub Actions for sustained computation while the shared Z code quota is available. When it is unavailable, keep GitHub Actions and targeted low-concurrency local checks moving. Obtain Codex, ChatGPT Pro, and either Z code/Zima or its current fallback reviewer for substantive code. Use the latest Fable 5.1 only through the terminal, selecting the CLI's `fable` latest-model alias or a provider-advertised exact 5.1 identifier, disabling fallback, and verifying the emitted model identity. Ask it promptly for a concrete difficult question that remains unresolved after targeted source/test investigation; while Z code is unavailable, it is also the preferred substitute. Give it a complete sanitized evidence bundle for one exact commit and record its usable response or lack of output. If Fable 5.1 is unavailable or returns no usable result, proceed with other available independent reviews and executable evidence rather than holding the boundary open. After quota and service recover, return subsequent Z code work to the Windows clean-room environment. Verify all external findings against source and tests.
 
 ## ZCode shared quota gate
 

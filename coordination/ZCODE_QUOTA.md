@@ -45,3 +45,8 @@ new Fable review must be a fresh exact-boundary task with its own evidence.
 Re-read this official page after the displayed 10:00 weekly reset and restore
 subsequent ZCode allocation only after quota and service are both observed
 usable. This policy update is not a new quota reading.
+
+At 2026-09-02, the user changed future fallback escalation from Fable 5 to the
+latest Fable 5.1 and moved the daily PDF/Telegram report from 07:00 to 07:30
+Asia/Shanghai. This supersedes the older prospective model and heartbeat-time
+wording above without changing any historical receipt or quota reading.
