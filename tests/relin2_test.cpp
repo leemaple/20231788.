@@ -1364,6 +1364,193 @@ void TestHybridEvaluationKeyEntryBasis() {
           "Relin2 HYBRID entry-basis fixture failed to restore the initially empty cache");
 }
 
+void TestHybridEvaluationKeyEntryFormat() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    leftInput->SetMetadataByKey("relin2-hybrid-entry-format-immutability-probe",
+                                std::make_shared<ImmutabilityProbeMetadata>("unchanged"));
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 4,
+          "Relin2 HYBRID entry-format fixture must have exactly four full-basis towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 3,
+          "Relin2 HYBRID entry-format fixture must have exactly three active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 HYBRID entry-format fixture must have noise-scale degree three");
+    Check(!tensor.GetKeyTag().empty(),
+          "Relin2 HYBRID entry-format fixture must have a nonempty key tag");
+    Check(keys.secretKey->GetKeyTag() == tensor.GetKeyTag(),
+          "Relin2 HYBRID entry-format fixture secret key must match the Tensor tag");
+    const auto highMetadata = tensor.GetHigh()->GetMetadataMap();
+    const auto lowMetadata = tensor.GetLow()->GetMetadataMap();
+    Check(highMetadata != nullptr && highMetadata->size() == 1 &&
+              highMetadata->find("relin2-hybrid-entry-format-immutability-probe") != highMetadata->end(),
+          "Relin2 HYBRID entry-format fixture high ciphertext lost its metadata probe");
+    Check(lowMetadata != nullptr && lowMetadata->size() == 1 &&
+              lowMetadata->find("relin2-hybrid-entry-format-immutability-probe") != lowMetadata->end(),
+          "Relin2 HYBRID entry-format fixture low ciphertext lost its metadata probe");
+
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
+    Check(parameters != nullptr,
+          "Relin2 HYBRID entry-format fixture must expose CKKS-RNS parameters");
+    Check(parameters->GetKeySwitchTechnique() == lbcrypto::HYBRID,
+          "Relin2 HYBRID entry-format fixture must use HYBRID key switching");
+    const auto expectedHybridKeyLength = static_cast<std::size_t>(parameters->GetNumPartQ());
+    Check(expectedHybridKeyLength == 2,
+          "Relin2 HYBRID entry-format fixture must have exactly two Q partitions");
+    const auto expectedBasis = parameters->GetParamsQP();
+    Check(expectedBasis != nullptr && !expectedBasis->GetParams().empty(),
+          "Relin2 HYBRID entry-format fixture must expose the complete ParamsQP basis");
+
+    auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(evaluationKeys.empty(),
+          "Relin2 HYBRID entry-format fixture must start with an empty evaluation-key cache");
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeys);
+        context->EvalMultKeyGen(keys.secretKey);
+
+        const auto generatedRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(evaluationKeys.size() == 1 && generatedRow != evaluationKeys.end() &&
+                  generatedRow->second.size() == 1 && generatedRow->second.front() != nullptr,
+              "Relin2 HYBRID entry-format fixture must generate exactly one evaluation key");
+        const auto hybridKey =
+            std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(generatedRow->second.front());
+        Check(hybridKey != nullptr,
+              "Relin2 HYBRID entry-format fixture must use the relinearization-key subtype");
+        Check(hybridKey->GetCryptoContext().get() == context.get(),
+              "Relin2 HYBRID entry-format fixture key must keep the bound context");
+        Check(hybridKey->GetKeyTag() == tensor.GetKeyTag(),
+              "Relin2 HYBRID entry-format fixture key must match the Tensor tag");
+
+        const auto originalA = hybridKey->GetAVector();
+        const auto originalB = hybridKey->GetBVector();
+        Check(originalA.size() == expectedHybridKeyLength &&
+                  originalB.size() == expectedHybridKeyLength,
+              "Relin2 HYBRID entry-format fixture must start with exact generated A/B lengths");
+        for (std::size_t index = 0; index < originalA.size(); ++index) {
+            Check(originalA[index].GetFormat() == Format::EVALUATION,
+                  "Relin2 HYBRID entry-format fixture generated a non-Evaluation A entry");
+            CheckKeyPolynomialBasis(originalA[index], expectedBasis,
+                                    "Relin2 HYBRID entry-format generated A entry " +
+                                        std::to_string(index));
+            for (const auto& tower : originalA[index].GetAllElements()) {
+                Check(tower.GetFormat() == Format::EVALUATION,
+                      "Relin2 HYBRID entry-format fixture generated a non-Evaluation A tower");
+            }
+        }
+        for (std::size_t index = 0; index < originalB.size(); ++index) {
+            Check(originalB[index].GetFormat() == Format::EVALUATION,
+                  "Relin2 HYBRID entry-format fixture generated a non-Evaluation B entry");
+            CheckKeyPolynomialBasis(originalB[index], expectedBasis,
+                                    "Relin2 HYBRID entry-format generated B entry " +
+                                        std::to_string(index));
+            for (const auto& tower : originalB[index].GetAllElements()) {
+                Check(tower.GetFormat() == Format::EVALUATION,
+                      "Relin2 HYBRID entry-format fixture generated a non-Evaluation B tower");
+            }
+        }
+
+        const auto* cacheIdentityBeforePositive = &evaluationKeys;
+        const auto* vectorIdentityBeforePositive = &generatedRow->second;
+        const auto keyIdentityBeforePositive = generatedRow->second.front();
+        const auto keyContextBeforePositive = hybridKey->GetCryptoContext();
+        const auto keyTagBeforePositive = hybridKey->GetKeyTag();
+        const auto tensorBeforePositive = SnapshotTensor(tensor);
+        const auto keyABeforePositive =
+            SnapshotKeyVector(hybridKey->GetAVector(), "Relin2 HYBRID entry-format positive A");
+        const auto keyBBeforePositive =
+            SnapshotKeyVector(hybridKey->GetBVector(), "Relin2 HYBRID entry-format positive B");
+        CheckPassesCurrentScaffoldOrCompletes(
+            [&] { (void)module.Relin2(tensor); },
+            "Relin2 HYBRID valid entry format");
+        CheckTensorUnchanged(tensor, tensorBeforePositive,
+                             "Relin2 HYBRID entry-format positive control");
+        CheckKeyVectorUnchanged(hybridKey->GetAVector(), keyABeforePositive,
+                                "Relin2 HYBRID entry-format positive A");
+        CheckKeyVectorUnchanged(hybridKey->GetBVector(), keyBBeforePositive,
+                                "Relin2 HYBRID entry-format positive B");
+        const auto currentPositiveRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBeforePositive && evaluationKeys.size() == 1 &&
+                  currentPositiveRow != evaluationKeys.end() &&
+                  &currentPositiveRow->second == vectorIdentityBeforePositive &&
+                  currentPositiveRow->second.size() == 1 &&
+                  currentPositiveRow->second.front().get() == keyIdentityBeforePositive.get(),
+              "Relin2 HYBRID entry-format positive control mutated the cache shape or identity");
+        Check(hybridKey->GetCryptoContext().get() == keyContextBeforePositive.get(),
+              "Relin2 HYBRID entry-format positive control mutated the key context");
+        Check(hybridKey->GetKeyTag() == keyTagBeforePositive,
+              "Relin2 HYBRID entry-format positive control mutated the key tag");
+
+        auto malformedA = originalA;
+        malformedA.front().SetFormat(Format::COEFFICIENT);
+        Check(malformedA.size() == expectedHybridKeyLength &&
+                  malformedA.front().GetFormat() == Format::COEFFICIENT &&
+                  malformedA.front().GetParams().get() == originalA.front().GetParams().get(),
+              "Relin2 HYBRID entry-format negative control must change only the first A format");
+        CheckKeyPolynomialBasis(malformedA.front(), expectedBasis,
+                                "Relin2 HYBRID Coefficient-format negative control");
+        for (const auto& tower : malformedA.front().GetAllElements()) {
+            Check(tower.GetFormat() == Format::COEFFICIENT,
+                  "Relin2 HYBRID entry-format negative control left an Evaluation tower");
+        }
+        for (std::size_t index = 1; index < malformedA.size(); ++index) {
+            Check(malformedA[index] == originalA[index] &&
+                      malformedA[index].GetFormat() == Format::EVALUATION,
+                  "Relin2 HYBRID entry-format negative control changed another A entry");
+        }
+        hybridKey->SetAVector(std::move(malformedA));
+        Check(hybridKey->GetAVector().size() == expectedHybridKeyLength &&
+                  hybridKey->GetBVector() == originalB &&
+                  hybridKey->GetAVector().front().GetFormat() == Format::COEFFICIENT,
+              "Relin2 HYBRID entry-format negative control changed key shape or B entries");
+
+        const auto* cacheIdentityBeforeNegative = &evaluationKeys;
+        const auto* vectorIdentityBeforeNegative = &generatedRow->second;
+        const auto keyIdentityBeforeNegative = generatedRow->second.front();
+        const auto keyContextBeforeNegative = hybridKey->GetCryptoContext();
+        const auto keyTagBeforeNegative = hybridKey->GetKeyTag();
+        const auto tensorBeforeNegative = SnapshotTensor(tensor);
+        const auto keyABeforeNegative =
+            SnapshotKeyVector(hybridKey->GetAVector(), "Relin2 HYBRID entry-format negative A");
+        const auto keyBBeforeNegative =
+            SnapshotKeyVector(hybridKey->GetBVector(), "Relin2 HYBRID entry-format negative B");
+        CheckThrowsExactInvalidArgument(
+            [&] { (void)module.Relin2(tensor); },
+            "DoubleCKKS: Relin2 evaluation key HYBRID entry must be in evaluation format",
+            "Relin2 HYBRID evaluation-key entry format");
+        CheckTensorUnchanged(tensor, tensorBeforeNegative,
+                             "Relin2 HYBRID entry-format rejection");
+        CheckKeyVectorUnchanged(hybridKey->GetAVector(), keyABeforeNegative,
+                                "Relin2 HYBRID entry-format rejection A");
+        CheckKeyVectorUnchanged(hybridKey->GetBVector(), keyBBeforeNegative,
+                                "Relin2 HYBRID entry-format rejection B");
+        const auto currentNegativeRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBeforeNegative && evaluationKeys.size() == 1 &&
+                  currentNegativeRow != evaluationKeys.end() &&
+                  &currentNegativeRow->second == vectorIdentityBeforeNegative &&
+                  currentNegativeRow->second.size() == 1 &&
+                  currentNegativeRow->second.front().get() == keyIdentityBeforeNegative.get(),
+              "Relin2 HYBRID entry-format rejection mutated the cache shape or identity");
+        Check(hybridKey->GetCryptoContext().get() == keyContextBeforeNegative.get(),
+              "Relin2 HYBRID entry-format rejection mutated the key context");
+        Check(hybridKey->GetKeyTag() == keyTagBeforeNegative,
+              "Relin2 HYBRID entry-format rejection mutated the key tag");
+    }
+    Check(evaluationKeys.empty(),
+          "Relin2 HYBRID entry-format fixture failed to restore the initially empty cache");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -1399,6 +1586,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "key_hybrid_entry_basis") {
         return &TestHybridEvaluationKeyEntryBasis;
+    }
+    if (name == "key_hybrid_entry_format") {
+        return &TestHybridEvaluationKeyEntryFormat;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }
