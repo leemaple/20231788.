@@ -1,0 +1,1366 @@
+﻿2026-09-02T05:34:21.6100108Z Current runner version: '2.336.0'
+2026-09-02T05:34:21.6494647Z ##[group]Runner Image Provisioner
+2026-09-02T05:34:21.6495286Z Hosted Compute Agent
+2026-09-02T05:34:21.6495720Z Version: 20260819.586
+2026-09-02T05:34:21.6496180Z Commit: 3cc4a88dfa507ef76119ad1bb3eccc6378bb2b76
+2026-09-02T05:34:21.6496709Z Build Date: 2026-08-18T23:20:18Z
+2026-09-02T05:34:21.6497193Z Worker ID: {9a1dac62-2629-45ce-9398-6cff56ab2c1f}
+2026-09-02T05:34:21.6497732Z Azure Region: westcentralus
+2026-09-02T05:34:21.6498153Z ##[endgroup]
+2026-09-02T05:34:21.6499237Z ##[group]Operating System
+2026-09-02T05:34:21.6499693Z Microsoft Windows Server 2022
+2026-09-02T05:34:21.6500135Z 10.0.20348
+2026-09-02T05:34:21.6500498Z Datacenter
+2026-09-02T05:34:21.6500847Z ##[endgroup]
+2026-09-02T05:34:21.6501238Z ##[group]Runner Image
+2026-09-02T05:34:21.6501645Z Image: windows-2022
+2026-09-02T05:34:21.6502065Z Version: 20260824.284.2
+2026-09-02T05:34:21.6503090Z Included Software: https://github.com/actions/runner-images/blob/win22/20260824.284/images/windows/Windows2022-Readme.md
+2026-09-02T05:34:21.6504213Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20260824.284
+2026-09-02T05:34:21.6504902Z ##[endgroup]
+2026-09-02T05:34:21.6505723Z ##[group]GITHUB_TOKEN Permissions
+2026-09-02T05:34:21.6507152Z Contents: read
+2026-09-02T05:34:21.6507580Z Metadata: read
+2026-09-02T05:34:21.6507969Z ##[endgroup]
+2026-09-02T05:34:21.6509620Z Secret source: Actions
+2026-09-02T05:34:21.6510393Z Prepare workflow directory
+2026-09-02T05:34:21.7916080Z Prepare all required actions
+2026-09-02T05:34:21.7957062Z Getting action download info
+2026-09-02T05:34:22.1239986Z Download action repository 'msys2/setup-msys2@v2' (SHA:66cd2cce69caa17b53920067426061ca1de3a884)
+2026-09-02T05:34:22.8583218Z Complete job name: windows-mingw64
+2026-09-02T05:34:23.7744578Z ##[group]Run git config --global core.autocrlf false
+2026-09-02T05:34:23.7745806Z [36;1mgit config --global core.autocrlf false[0m
+2026-09-02T05:34:23.7746708Z [36;1mgit config --global core.eol lf[0m
+2026-09-02T05:34:23.7747833Z [36;1mNew-Item -ItemType Directory -Path $env:WINDOWS_ROOT | Out-Null[0m
+2026-09-02T05:34:23.7748880Z [36;1m[0m
+2026-09-02T05:34:23.7749415Z [36;1mgit init $env:PROJECT_SOURCE[0m
+2026-09-02T05:34:23.7750626Z [36;1mgit -C $env:PROJECT_SOURCE remote add origin https://github.com/leemaple/20231788..git[0m
+2026-09-02T05:34:23.7752150Z [36;1mgit -C $env:PROJECT_SOURCE fetch --depth 1 origin $env:GITHUB_SHA[0m
+2026-09-02T05:34:23.7753371Z [36;1mgit -C $env:PROJECT_SOURCE checkout --detach FETCH_HEAD[0m
+2026-09-02T05:34:23.7754554Z [36;1m$projectActual = git -C $env:PROJECT_SOURCE rev-parse HEAD[0m
+2026-09-02T05:34:23.7755650Z [36;1mif ($projectActual -ne $env:GITHUB_SHA) {[0m
+2026-09-02T05:34:23.7756746Z [36;1m  throw "Project checkout mismatch: $projectActual"[0m
+2026-09-02T05:34:23.7757635Z [36;1m}[0m
+2026-09-02T05:34:23.7758147Z [36;1m[0m
+2026-09-02T05:34:23.7758704Z [36;1mgit init $env:OPENFHE_SOURCE[0m
+2026-09-02T05:34:23.7760055Z [36;1mgit -C $env:OPENFHE_SOURCE remote add origin https://github.com/openfheorg/openfhe-development.git[0m
+2026-09-02T05:34:23.7761733Z [36;1mgit -C $env:OPENFHE_SOURCE fetch --depth 1 origin $env:OPENFHE_COMMIT[0m
+2026-09-02T05:34:23.7763031Z [36;1mgit -C $env:OPENFHE_SOURCE checkout --detach FETCH_HEAD[0m
+2026-09-02T05:34:23.7764315Z [36;1mgit -C $env:OPENFHE_SOURCE submodule update --init --recursive --depth 1[0m
+2026-09-02T05:34:23.7765403Z [36;1m[0m
+2026-09-02T05:34:23.7766190Z [36;1m$projectStatus = @(git -C $env:PROJECT_SOURCE status --porcelain)[0m
+2026-09-02T05:34:23.7767286Z [36;1mif ($projectStatus.Count -ne 0) {[0m
+2026-09-02T05:34:23.7768333Z [36;1m  throw "Project checkout is dirty: $($projectStatus -join '; ')"[0m
+2026-09-02T05:34:23.7769350Z [36;1m}[0m
+2026-09-02T05:34:23.7770144Z [36;1m$openfheStatus = @(git -C $env:OPENFHE_SOURCE status --porcelain)[0m
+2026-09-02T05:34:23.7771236Z [36;1mif ($openfheStatus.Count -ne 0) {[0m
+2026-09-02T05:34:23.7883394Z [36;1m  throw "OpenFHE checkout is dirty: $($openfheStatus -join '; ')"[0m
+2026-09-02T05:34:23.7884757Z [36;1m}[0m
+2026-09-02T05:34:23.9835559Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-02T05:34:23.9836835Z env:
+2026-09-02T05:34:23.9837516Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:34:23.9838547Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-02T05:34:23.9839434Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-02T05:34:23.9840326Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-02T05:34:23.9841226Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-02T05:34:23.9842264Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33595207012-1
+2026-09-02T05:34:23.9843480Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33595207012-1
+2026-09-02T05:34:23.9844435Z ##[endgroup]
+2026-09-02T05:34:24.9048777Z Initialized empty Git repository in C:/openfhe-2023-1788/cleanroom/.git/
+2026-09-02T05:34:26.4834800Z From https://github.com/leemaple/20231788.
+2026-09-02T05:34:26.4835497Z  * branch            34678817fe863d2759e07b6358ffff2feaaf9d02 -> FETCH_HEAD
+2026-09-02T05:34:27.1373437Z HEAD is now at 3467881 test: add Relin2 BV nonzero-digit B-length red
+2026-09-02T05:34:27.2542793Z Initialized empty Git repository in C:/openfhe-2023-1788/openfhe-src/.git/
+2026-09-02T05:34:28.9157625Z From https://github.com/openfheorg/openfhe-development
+2026-09-02T05:34:28.9158424Z  * branch            df495ba2e91739a6dc8f1de254fc5a41155ce504 -> FETCH_HEAD
+2026-09-02T05:34:34.0090542Z HEAD is now at df495ba Merge pull request #1130 from openfheorg/dev
+2026-09-02T05:34:35.0661426Z Submodule 'third-party/cereal' (https://github.com/openfheorg/cereal.git) registered for path 'third-party/cereal'
+2026-09-02T05:34:35.0797934Z Submodule 'third-party/google-benchmark' (https://github.com/google/benchmark.git) registered for path 'third-party/google-benchmark'
+2026-09-02T05:34:35.0799162Z Submodule 'third-party/google-test' (https://github.com/google/googletest.git) registered for path 'third-party/google-test'
+2026-09-02T05:34:35.0824259Z Submodule 'third-party/gperftools' (https://github.com/gperftools/gperftools.git) registered for path 'third-party/gperftools'
+2026-09-02T05:34:35.1289554Z Cloning into 'C:/openfhe-2023-1788/openfhe-src/third-party/cereal'...
+2026-09-02T05:34:36.0209033Z Cloning into 'C:/openfhe-2023-1788/openfhe-src/third-party/google-benchmark'...
+2026-09-02T05:34:36.7881323Z Cloning into 'C:/openfhe-2023-1788/openfhe-src/third-party/google-test'...
+2026-09-02T05:34:37.5855980Z Cloning into 'C:/openfhe-2023-1788/openfhe-src/third-party/gperftools'...
+2026-09-02T05:34:38.8590654Z Submodule path 'third-party/cereal': checked out '984e3f194862b17916536b5fade40cba6e47a6fe'
+2026-09-02T05:34:41.1936547Z From https://github.com/google/benchmark
+2026-09-02T05:34:41.1937167Z  * branch            eddb0241389718a23a42db6af5f0164b6e0139af -> FETCH_HEAD
+2026-09-02T05:34:41.5668844Z Submodule path 'third-party/google-benchmark': checked out 'eddb0241389718a23a42db6af5f0164b6e0139af'
+2026-09-02T05:34:42.9033619Z From https://github.com/google/googletest
+2026-09-02T05:34:42.9034241Z  * branch            52eb8108c5bdec04579160ae17225d66034bd723 -> FETCH_HEAD
+2026-09-02T05:34:43.3836092Z Submodule path 'third-party/google-test': checked out '52eb8108c5bdec04579160ae17225d66034bd723'
+2026-09-02T05:34:44.8963272Z From https://github.com/gperftools/gperftools
+2026-09-02T05:34:44.8963829Z  * branch            83edb60836d87cf1b406e8846b9059c03031e8f5 -> FETCH_HEAD
+2026-09-02T05:34:45.9231784Z Submodule path 'third-party/gperftools': checked out '83edb60836d87cf1b406e8846b9059c03031e8f5'
+2026-09-02T05:34:46.1809043Z ##[group]Run msys2/setup-msys2@v2
+2026-09-02T05:34:46.1809321Z with:
+2026-09-02T05:34:46.1809473Z   msystem: MINGW64
+2026-09-02T05:34:46.1809650Z   update: true
+2026-09-02T05:34:46.1809825Z   cache: false
+2026-09-02T05:34:46.1810092Z   install: git make mingw-w64-x86_64-boost mingw-w64-x86_64-cmake mingw-w64-x86_64-gcc
+2026-09-02T05:34:46.1811011Z   path-type: minimal
+2026-09-02T05:34:46.1811171Z   release: true
+2026-09-02T05:34:46.1811330Z   platform-check-severity: fatal
+2026-09-02T05:34:46.1811538Z env:
+2026-09-02T05:34:46.1811727Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:34:46.1812020Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-02T05:34:46.1812247Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-02T05:34:46.1812457Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-02T05:34:46.1812693Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-02T05:34:46.1813005Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33595207012-1
+2026-09-02T05:34:46.1813315Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33595207012-1
+2026-09-02T05:34:46.1813552Z ##[endgroup]
+2026-09-02T05:34:46.3124133Z ##[group]Downloading MSYS2...
+2026-09-02T05:34:47.1223257Z ##[endgroup]
+2026-09-02T05:34:47.1223753Z ##[group]Extracting MSYS2...
+2026-09-02T05:34:47.1236247Z [command]C:\hostedtoolcache\windows\msys2-installer\0.0.20260611\x64\base.exe -y
+2026-09-02T05:34:47.4716747Z 
+2026-09-02T05:34:47.4717733Z 7-Zip SFX 25.01 ZS v1.5.7 R4 (x64) : Copyright (c) 1999-2025 Igor Pavlov, 2016-2026 Tino Reichardt, 2022-2026 Sergey G. Brester : 2026-01-10
+2026-09-02T05:34:47.4718373Z 
+2026-09-02T05:34:47.4719332Z Extracting archive: C:\hostedtoolcache\windows\msys2-installer\0.0.20260611\x64\base.exe
+2026-09-02T05:34:47.4719919Z --
+2026-09-02T05:34:47.4720478Z Path = C:\hostedtoolcache\windows\msys2-installer\0.0.20260611\x64\base.exe
+2026-09-02T05:34:47.4721004Z Type = 7z
+2026-09-02T05:34:47.4721303Z 
+2026-09-02T05:34:47.6684458Z   0%
+2026-09-02T05:34:47.6684674Z     
+2026-09-02T05:34:47.8723122Z   3% 1488 - msys64\usr\lib\terminfo\4d\MtxOrb204
+2026-09-02T05:34:47.8723422Z                                                 
+2026-09-02T05:34:48.0753407Z   4% 2794 - msys64\usr\lib\terminfo\6d\minitel-2-nam
+2026-09-02T05:34:48.0753784Z                                                     
+2026-09-02T05:34:48.2785271Z   4% 4121 - msys64\usr\lib\terminfo\77\wyse60-w
+2026-09-02T05:34:48.2785582Z                                                
+2026-09-02T05:34:48.4816679Z   5% 5069 - msys64\usr\share\bash-completion\completions\sha384sum
+2026-09-02T05:34:48.4817109Z                                                                   
+2026-09-02T05:34:48.6850522Z  13% 6136 - msys64\usr\share\locale\en@boldquot\LC_MESSAGES\gnupg2.mo
+2026-09-02T05:34:48.6851069Z                                                                      
+2026-09-02T05:34:48.8880715Z  31% 6857 - msys64\usr\share\locale\zh_CN\LC_MESSAGES\wget-gnulib.mo
+2026-09-02T05:34:48.8881345Z                                                                     
+2026-09-02T05:34:49.0911488Z  33% 8124 - msys64\usr\share\man\man3\CURLOPT_WRITEDATA.3.gz
+2026-09-02T05:34:49.0911805Z                                                             
+2026-09-02T05:34:49.2945060Z  34% 9433 - msys64\usr\share\man\man8\rmt.8.gz
+2026-09-02T05:34:49.2945536Z                                               
+2026-09-02T05:34:49.4974303Z  44% 10385 - msys64\usr\share\perl5\core_perl\unicore\lib\Age\V110.pl
+2026-09-02T05:34:49.4975140Z                                                                      
+2026-09-02T05:34:49.7004991Z  47% 11585 - msys64\usr\share\terminfo\63\contour
+2026-09-02T05:34:49.7005357Z                                                  
+2026-09-02T05:34:49.9044326Z  47% 12790 - msys64\usr\share\terminfo\70\psterm-basic
+2026-09-02T05:34:49.9044740Z                                                       
+2026-09-02T05:34:50.1075464Z  47% 13061 - msys64\usr\share\terminfo\74\tek4025ex
+2026-09-02T05:34:50.1075793Z                                                    
+2026-09-02T05:34:50.3106599Z  48% 14229 - msys64\usr\share\zoneinfo\Asia\Qatar
+2026-09-02T05:34:50.3106902Z                                                  
+2026-09-02T05:34:50.5165832Z  48% 15579 - msys64\usr\share\zoneinfo\right\Europe\Sofia
+2026-09-02T05:34:50.5167014Z                                                          
+2026-09-02T05:34:50.7184930Z  62% 16280 - msys64\usr\bin\msys-curl-4.dll
+2026-09-02T05:34:50.7185223Z                                            
+2026-09-02T05:34:50.7926432Z  91% 16452 - msys64\usr\bin\umount.exe
+2026-09-02T05:34:50.7926779Z                                       
+2026-09-02T05:34:50.7927047Z Everything is Ok
+2026-09-02T05:34:50.7946667Z ##[endgroup]
+2026-09-02T05:34:50.7947565Z ##[group]Disable Key Refresh...
+2026-09-02T05:34:50.7962982Z ##[endgroup]
+2026-09-02T05:34:50.7976536Z ##[group]Starting MSYS2 for the first time...
+2026-09-02T05:34:50.8471573Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'uname' '-a'"
+2026-09-02T05:34:50.9479354Z [1;32mMSYS2 is starting for the first time. Executing the initial setup.[1;0m
+2026-09-02T05:34:51.1701555Z Copying skeleton files.
+2026-09-02T05:34:51.1701950Z These files are for the users to personalise their msys2 experience.
+2026-09-02T05:34:51.1702295Z 
+2026-09-02T05:34:51.1702446Z They will never be overwritten nor automatically updated.
+2026-09-02T05:34:51.1702713Z 
+2026-09-02T05:34:51.2027187Z './.bashrc' -> '/home/runneradmin/.bashrc'
+2026-09-02T05:34:51.2138517Z './.bash_profile' -> '/home/runneradmin/.bash_profile'
+2026-09-02T05:34:51.2247177Z './.profile' -> '/home/runneradmin/.profile'
+2026-09-02T05:34:51.2704835Z 'C:\Windows\system32\drivers\etc\hosts' -> '/etc/hosts'
+2026-09-02T05:34:51.3087839Z 'C:\Windows\system32\drivers\etc\protocol' -> '/etc/protocols'
+2026-09-02T05:34:51.3412495Z 'C:\Windows\system32\drivers\etc\services' -> '/etc/services'
+2026-09-02T05:34:51.3752593Z 'C:\Windows\system32\drivers\etc\networks' -> '/etc/networks'
+2026-09-02T05:34:51.5310441Z gpg: /etc/pacman.d/gnupg/trustdb.gpg: trustdb created
+2026-09-02T05:34:51.5361074Z gpg: no ultimately trusted keys found
+2026-09-02T05:34:51.7246740Z gpg: starting migration from earlier GnuPG versions
+2026-09-02T05:34:51.7611174Z gpg: porting secret keys from '/etc/pacman.d/gnupg/secring.gpg' to gpg-agent
+2026-09-02T05:34:51.7613229Z gpg: migration succeeded
+2026-09-02T05:34:51.7756470Z ==> Generating pacman master key. This may take some time.
+2026-09-02T05:34:51.7882704Z gpg: Generating pacman keyring master key...
+2026-09-02T05:34:54.1189467Z gpg: directory '/etc/pacman.d/gnupg/openpgp-revocs.d' created
+2026-09-02T05:34:54.1399744Z gpg: revocation certificate stored as '/etc/pacman.d/gnupg/openpgp-revocs.d/08BE76237A750B2E40EDE33567F6291E6D12F3EC.rev'
+2026-09-02T05:34:54.1400453Z gpg: Done
+2026-09-02T05:34:54.1520840Z ==> Updating trust database...
+2026-09-02T05:34:54.1780925Z gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+2026-09-02T05:34:54.1781411Z gpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u
+2026-09-02T05:34:54.2624473Z ==> Appending keys from msys2.gpg...
+2026-09-02T05:34:54.7528057Z ==> Locally signing trusted keys in keyring...
+2026-09-02T05:34:55.2268118Z   -> Locally signed 5 keys.
+2026-09-02T05:34:55.2368439Z ==> Importing owner trust values...
+2026-09-02T05:34:55.2493868Z gpg: setting ownertrust to 4
+2026-09-02T05:34:55.2494194Z gpg: setting ownertrust to 4
+2026-09-02T05:34:55.2494469Z gpg: setting ownertrust to 4
+2026-09-02T05:34:55.2494651Z gpg: setting ownertrust to 4
+2026-09-02T05:34:55.2494850Z gpg: setting ownertrust to 4
+2026-09-02T05:34:55.2686393Z ==> Disabling revoked keys in keyring...
+2026-09-02T05:34:55.4745894Z   -> Disabled 4 keys.
+2026-09-02T05:34:55.4847916Z ==> Updating trust database...
+2026-09-02T05:34:55.5117998Z gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+2026-09-02T05:34:55.5139424Z gpg: depth: 0  valid:   1  signed:   5  trust: 0-, 0q, 0n, 0m, 0f, 1u
+2026-09-02T05:34:55.5161374Z gpg: depth: 1  valid:   5  signed:   6  trust: 0-, 0q, 0n, 5m, 0f, 0u
+2026-09-02T05:34:55.5172030Z gpg: depth: 2  valid:   3  signed:   2  trust: 3-, 0q, 0n, 0m, 0f, 0u
+2026-09-02T05:34:55.5435407Z pacman-key (pacman) 6.1.0
+2026-09-02T05:34:55.5436231Z Copyright (c) 2010-2024 Pacman Development Team <pacman-dev@lists.archlinux.org>.
+2026-09-02T05:34:55.5436601Z 
+2026-09-02T05:34:55.5539972Z This is free software; see the source for copying conditions.
+2026-09-02T05:34:55.5540798Z There is NO WARRANTY, to the extent permitted by law.
+2026-09-02T05:34:55.6983152Z [1;32mInitial setup complete. MSYS2 is now ready to use.[1;0m
+2026-09-02T05:34:55.7096613Z MINGW64_NT-10.0-20348 runnervm0js1w 3.6.9-01d6c708.x86_64 2026-05-24 10:45 UTC x86_64 Msys
+2026-09-02T05:34:55.7132489Z ##[endgroup]
+2026-09-02T05:34:55.7133436Z ##[group]Disable CheckSpace...
+2026-09-02T05:34:55.7740322Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'sed' '-i' 's/^CheckSpace/#CheckSpace/g' '/etc/pacman.conf'"
+2026-09-02T05:34:55.9268670Z ##[endgroup]
+2026-09-02T05:34:55.9269132Z ##[group]Updating packages...
+2026-09-02T05:34:55.9768353Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'pacman' '--noconfirm' '-Syuu' '--overwrite' '*'"
+2026-09-02T05:34:56.6696450Z :: Synchronizing package databases...
+2026-09-02T05:34:58.7551459Z  clangarm64 downloading...
+2026-09-02T05:34:58.7551725Z  mingw32 downloading...
+2026-09-02T05:34:58.7551905Z  mingw64 downloading...
+2026-09-02T05:34:58.7552071Z  ucrt64 downloading...
+2026-09-02T05:34:58.7552234Z  clang64 downloading...
+2026-09-02T05:34:58.7552397Z  msys downloading...
+2026-09-02T05:34:59.1016344Z :: Starting core system upgrade...
+2026-09-02T05:34:59.2751372Z warning: terminate other MSYS2 programs before proceeding
+2026-09-02T05:34:59.2751697Z resolving dependencies...
+2026-09-02T05:34:59.2751926Z looking for conflicting packages...
+2026-09-02T05:34:59.2832943Z 
+2026-09-02T05:34:59.2833145Z Packages (1) msys2-runtime-3.6.10-3
+2026-09-02T05:34:59.2833381Z 
+2026-09-02T05:34:59.2833477Z Total Download Size:    1.97 MiB
+2026-09-02T05:34:59.2833724Z Total Installed Size:   6.33 MiB
+2026-09-02T05:34:59.2833930Z Net Upgrade Size:      -0.20 MiB
+2026-09-02T05:34:59.2834066Z 
+2026-09-02T05:34:59.2834257Z :: Proceed with installation? [Y/n] 
+2026-09-02T05:34:59.2834472Z :: Retrieving packages...
+2026-09-02T05:35:00.4979544Z  msys2-runtime-3.6.10-3-x86_64 downloading...
+2026-09-02T05:35:00.4979930Z checking keyring...
+2026-09-02T05:35:00.5624402Z checking package integrity...
+2026-09-02T05:35:00.6933363Z loading package files...
+2026-09-02T05:35:00.6951885Z checking for file conflicts...
+2026-09-02T05:35:00.6968462Z :: Processing package changes...
+2026-09-02T05:35:00.6968814Z upgrading msys2-runtime...
+2026-09-02T05:35:00.8103619Z :: To complete this update all MSYS2 processes including this terminal will be closed. Confirm to proceed [Y/n] 
+2026-09-02T05:35:01.0432026Z ##[endgroup]
+2026-09-02T05:35:01.0432440Z ##[group]Killing remaining tasks...
+2026-09-02T05:35:01.0900215Z [command]C:\Windows\system32\taskkill.exe /F /FI "MODULES eq msys-2.0.dll"
+2026-09-02T05:35:01.1940813Z 
+2026-09-02T05:35:01.1941368Z INFO: No tasks running with the specified criteria.
+2026-09-02T05:35:01.1970051Z ##[endgroup]
+2026-09-02T05:35:01.1970393Z ##[group]Final system upgrade...
+2026-09-02T05:35:01.2429641Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'pacman' '--noconfirm' '-Syuu' '--overwrite' '*'"
+2026-09-02T05:35:01.8262911Z :: Synchronizing package databases...
+2026-09-02T05:35:02.8397613Z  clangarm64 downloading...
+2026-09-02T05:35:02.8397985Z  mingw32 downloading...
+2026-09-02T05:35:02.8398247Z  mingw64 downloading...
+2026-09-02T05:35:02.8398465Z  ucrt64 downloading...
+2026-09-02T05:35:02.8398685Z  clang64 downloading...
+2026-09-02T05:35:02.8398910Z  msys downloading...
+2026-09-02T05:35:03.1659864Z :: Starting core system upgrade...
+2026-09-02T05:35:03.3158300Z  there is nothing to do
+2026-09-02T05:35:03.3158616Z :: Starting full system upgrade...
+2026-09-02T05:35:03.3443526Z resolving dependencies...
+2026-09-02T05:35:03.3494800Z looking for conflicting packages...
+2026-09-02T05:35:03.3593721Z 
+2026-09-02T05:35:03.3595206Z Packages (31) bash-completion-2.18.0-1  bsdtar-3.8.9-1  ca-certificates-20260816-1  curl-8.21.0-1  findutils-4.11.0-2  gawk-5.4.1-1  gcc-libs-15.3.0-1  gnupg-2.4.9-3  libcurl-8.21.0-1  libexpat-2.8.3-1  libffi-3.8.0-1  libgnutls-3.8.13-2  libhogweed-4.0-1  libnettle-4.0-1  libnghttp2-1.70.0-1  libnghttp3-1.18.0-1  libngtcp2-1.25.0-1  libopenssl-3.6.4-1  libp11-kit-0.26.5-1  libpsl-0.23.2-1  libsqlite-3.53.4-1  msys2-keyring-1~20260814-1  nano-9.2-1  nettle-4.0-1  openssl-3.6.4-1  p11-kit-0.26.5-1  pacman-contrib-1.10.6-2  perl-5.42.3-1  pinentry-1.3.3-1  tzcode-2026c-1  wget-1.25.0-2
+2026-09-02T05:35:03.3596656Z 
+2026-09-02T05:35:03.3596758Z Total Download Size:    27.05 MiB
+2026-09-02T05:35:03.3596966Z Total Installed Size:  108.42 MiB
+2026-09-02T05:35:03.3597170Z Net Upgrade Size:       -1.02 MiB
+2026-09-02T05:35:03.3597295Z 
+2026-09-02T05:35:03.3597454Z :: Proceed with installation? [Y/n] 
+2026-09-02T05:35:03.3597667Z :: Retrieving packages...
+2026-09-02T05:35:06.0891123Z  perl-5.42.3-1-x86_64 downloading...
+2026-09-02T05:35:06.0891601Z  pacman-contrib-1.10.6-2-x86_64 downloading...
+2026-09-02T05:35:06.0891990Z  gnupg-2.4.9-3-x86_64 downloading...
+2026-09-02T05:35:06.0892215Z  libopenssl-3.6.4-1-x86_64 downloading...
+2026-09-02T05:35:06.0892434Z  gawk-5.4.1-1-x86_64 downloading...
+2026-09-02T05:35:06.0892638Z  libgnutls-3.8.13-2-x86_64 downloading...
+2026-09-02T05:35:06.0892852Z  gcc-libs-15.3.0-1-x86_64 downloading...
+2026-09-02T05:35:06.0893056Z  curl-8.21.0-1-x86_64 downloading...
+2026-09-02T05:35:06.0893251Z  wget-1.25.0-2-x86_64 downloading...
+2026-09-02T05:35:06.0893451Z  libsqlite-3.53.4-1-x86_64 downloading...
+2026-09-02T05:35:06.0893688Z  nano-9.2-1-x86_64 downloading...
+2026-09-02T05:35:06.0893881Z  openssl-3.6.4-1-x86_64 downloading...
+2026-09-02T05:35:06.0894083Z  findutils-4.11.0-2-x86_64 downloading...
+2026-09-02T05:35:06.0894288Z  p11-kit-0.26.5-1-x86_64 downloading...
+2026-09-02T05:35:06.0894506Z  ca-certificates-20260816-1-any downloading...
+2026-09-02T05:35:06.0894737Z  libcurl-8.21.0-1-x86_64 downloading...
+2026-09-02T05:35:06.0894928Z  bsdtar-3.8.9-1-x86_64 downloading...
+2026-09-02T05:35:06.0895117Z  tzcode-2026c-1-x86_64 downloading...
+2026-09-02T05:35:06.0895310Z  libp11-kit-0.26.5-1-x86_64 downloading...
+2026-09-02T05:35:06.0895527Z  bash-completion-2.18.0-1-any downloading...
+2026-09-02T05:35:06.0895749Z  libhogweed-4.0-1-x86_64 downloading...
+2026-09-02T05:35:06.0895946Z  libngtcp2-1.25.0-1-x86_64 downloading...
+2026-09-02T05:35:06.0896149Z  libnettle-4.0-1-x86_64 downloading...
+2026-09-02T05:35:06.0896342Z  nettle-4.0-1-x86_64 downloading...
+2026-09-02T05:35:06.0896537Z  libpsl-0.23.2-1-x86_64 downloading...
+2026-09-02T05:35:06.0896732Z  libnghttp3-1.18.0-1-x86_64 downloading...
+2026-09-02T05:35:06.0896946Z  libnghttp2-1.70.0-1-x86_64 downloading...
+2026-09-02T05:35:06.0897146Z  libexpat-2.8.3-1-x86_64 downloading...
+2026-09-02T05:35:06.0897341Z  pinentry-1.3.3-1-x86_64 downloading...
+2026-09-02T05:35:06.0897547Z  msys2-keyring-1~20260814-1-any downloading...
+2026-09-02T05:35:06.0897766Z  libffi-3.8.0-1-x86_64 downloading...
+2026-09-02T05:35:06.0897959Z checking keyring...
+2026-09-02T05:35:06.1372109Z checking package integrity...
+2026-09-02T05:35:09.9457905Z loading package files...
+2026-09-02T05:35:10.0055368Z checking for file conflicts...
+2026-09-02T05:35:10.0486917Z :: Running pre-transaction hooks...
+2026-09-02T05:35:10.0487373Z (1/1) Removing old entries from the info directory file...
+2026-09-02T05:35:10.1475655Z :: Processing package changes...
+2026-09-02T05:35:10.1476064Z upgrading bash-completion...
+2026-09-02T05:35:10.8092930Z upgrading gcc-libs...
+2026-09-02T05:35:10.8232096Z upgrading libexpat...
+2026-09-02T05:35:10.8265589Z upgrading libopenssl...
+2026-09-02T05:35:10.8465535Z upgrading bsdtar...
+2026-09-02T05:35:10.8535501Z upgrading openssl...
+2026-09-02T05:35:10.9336809Z upgrading findutils...
+2026-09-02T05:35:10.9888659Z upgrading libffi...
+2026-09-02T05:35:10.9965903Z upgrading libp11-kit...
+2026-09-02T05:35:11.0022173Z upgrading p11-kit...
+2026-09-02T05:35:11.1138502Z upgrading ca-certificates...
+2026-09-02T05:35:11.5612411Z upgrading libnghttp3...
+2026-09-02T05:35:11.5660259Z upgrading libngtcp2...
+2026-09-02T05:35:11.5720717Z upgrading libnghttp2...
+2026-09-02T05:35:11.5765948Z upgrading libpsl...
+2026-09-02T05:35:11.5835394Z upgrading libcurl...
+2026-09-02T05:35:11.5884830Z upgrading curl...
+2026-09-02T05:35:11.9152186Z upgrading gawk...
+2026-09-02T05:35:11.9923416Z upgrading libhogweed...
+2026-09-02T05:35:11.9957551Z upgrading libnettle...
+2026-09-02T05:35:11.9995276Z upgrading libgnutls...
+2026-09-02T05:35:12.0372835Z upgrading libsqlite...
+2026-09-02T05:35:12.0449863Z upgrading nettle...
+2026-09-02T05:35:12.0508861Z upgrading pinentry...
+2026-09-02T05:35:12.0554023Z upgrading gnupg...
+2026-09-02T05:35:16.6152779Z ==> Appending keys from msys2.gpg...
+2026-09-02T05:35:16.9878475Z ==> Updating trust database...
+2026-09-02T05:35:17.0076374Z gpg: no need for a trustdb check
+2026-09-02T05:35:17.0701176Z upgrading msys2-keyring...
+2026-09-02T05:35:17.3364946Z ==> Appending keys from msys2.gpg...
+2026-09-02T05:35:17.7223949Z ==> Updating trust database...
+2026-09-02T05:35:17.7355723Z gpg: next trustdb check due at 2027-02-10
+2026-09-02T05:35:17.8011458Z upgrading nano...
+2026-09-02T05:35:17.8846847Z upgrading pacman-contrib...
+2026-09-02T05:35:17.9409077Z New optional dependencies for pacman-contrib
+2026-09-02T05:35:17.9409417Z     perl: for pacsearch [installed]
+2026-09-02T05:35:17.9409642Z     vim: default diff program for pacdiff
+2026-09-02T05:35:17.9409851Z upgrading perl...
+2026-09-02T05:35:19.2838014Z upgrading tzcode...
+2026-09-02T05:35:20.7182675Z upgrading wget...
+2026-09-02T05:35:20.8140415Z :: Running post-transaction hooks...
+2026-09-02T05:35:20.8140851Z (1/1) Updating the info directory file...
+2026-09-02T05:35:22.2263851Z ##[endgroup]
+2026-09-02T05:35:22.2264369Z ##[group]Installing additional packages through pacman...
+2026-09-02T05:35:22.2721926Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'pacman' '--noconfirm' '-S' '--needed' '--overwrite' '*' 'git' 'make' 'mingw-w64-x86_64-boost' 'mingw-w64-x86_64-cmake' 'mingw-w64-x86_64-gcc'"
+2026-09-02T05:35:22.8960242Z resolving dependencies...
+2026-09-02T05:35:22.9066589Z looking for conflicting packages...
+2026-09-02T05:35:22.9174560Z 
+2026-09-02T05:35:22.9187552Z Packages (89) heimdal-7.8.0-5  heimdal-libs-7.8.0-5  libcbor-0.14.0-2  libedit-20240808_3.1-1  libfido2-1.17.0-1  mingw-w64-x86_64-binutils-2.47-3  mingw-w64-x86_64-boost-libs-1.91.0-3  mingw-w64-x86_64-brotli-1.2.0-1  mingw-w64-x86_64-bzip2-1.0.8-4  mingw-w64-x86_64-c-ares-1.34.8-1  mingw-w64-x86_64-ca-certificates-20260816-1  mingw-w64-x86_64-cppdap-1.65.r11.g6464cd7-1  mingw-w64-x86_64-crt-14.0.0.r302.gd7f3c5201-1  mingw-w64-x86_64-curl-8.21.0-2  mingw-w64-x86_64-expat-2.8.3-1  mingw-w64-x86_64-gcc-libs-16.2.0-3  mingw-w64-x86_64-gettext-runtime-1.0-1  mingw-w64-x86_64-gmp-6.3.0-2  mingw-w64-x86_64-gnutls-3.8.13-3  mingw-w64-x86_64-headers-14.0.0.r302.gd7f3c5201-1  mingw-w64-x86_64-icu-78.3-4  mingw-w64-x86_64-isl-0.28-1  mingw-w64-x86_64-jsoncpp-1.9.8-1  mingw-w64-x86_64-libarchive-3.8.9-5  mingw-w64-x86_64-libb2-0.98.1-3  mingw-w64-x86_64-libffi-3.8.0-1  mingw-w64-x86_64-libiconv-1.19-1  mingw-w64-x86_64-libidn2-2.3.8-4  mingw-w64-x86_64-libpsl-0.21.5-3  mingw-w64-x86_64-libssh2-1.11.1-2  mingw-w64-x86_64-libtasn1-4.21.0-1  mingw-w64-x86_64-libunistring-1.4.2-1  mingw-w64-x86_64-libuv-1.52.1-1  mingw-w64-x86_64-libwinpthread-14.0.0.r302.gd7f3c5201-1  mingw-w64-x86_64-lz4-1.10.0-1  mingw-w64-x86_64-mpc-1.4.1-1  mingw-w64-x86_64-mpfr-4.2.2-3  mingw-w64-x86_64-nettle-4.0-1  mingw-w64-x86_64-nghttp2-1.70.0-1  mingw-w64-x86_64-nghttp3-1.18.0-1  mingw-w64-x86_64-ngtcp2-1.25.0-1  mingw-w64-x86_64-ninja-1.13.2-1  mingw-w64-x86_64-openssl-3.6.4-1  mingw-w64-x86_64-p11-kit-0.26.5-1  mingw-w64-x86_64-pcre2-10.47-1  mingw-w64-x86_64-pkgconf-1~3.0.5-1  mingw-w64-x86_64-rhash-1.4.6-1  mingw-w64-x86_64-tzdata-2026c-1  mingw-w64-x86_64-windows-default-manifest-20260815-1  mingw-w64-x86_64-wineditline-2.208-1  mingw-w64-x86_64-winpthreads-14.0.0.r302.gd7f3c5201-1  mingw-w64-x86_64-xz-5.8.3-1  mingw-w64-x86_64-zlib-1.3.2-2  mingw-w64-x86_64-zstd-1.5.7-2  openssh-10.5p1-2  perl-Authen-SASL-2.2000-1  perl-Clone-0.50-2  perl-Convert-BinHex-1.125-2  perl-Encode-Locale-1.05-2  perl-Error-0.17030-1  perl-File-Listing-6.16-1  perl-HTML-Parser-3.85-1  perl-HTML-Tagset-3.24-1  perl-HTTP-Cookies-6.12-1  perl-HTTP-Daemon-6.17-1  perl-HTTP-Date-6.08-1  perl-HTTP-Message-7.04-1  perl-HTTP-Negotiate-6.01-3  perl-IO-HTML-1.004-2  perl-IO-Socket-SSL-2.099-1  perl-IO-Stringy-2.113-3  perl-LWP-MediaTypes-6.04-2  perl-MIME-tools-5.517-1  perl-MailTools-2.22-1  perl-Net-HTTP-6.24-1  perl-Net-SMTP-SSL-1.04-2  perl-Net-SSLeay-1.96-1  perl-TermReadKey-2.38-8  perl-TimeDate-2.35-1  perl-Try-Tiny-0.32-1  perl-URI-5.36-1  perl-WWW-RobotRules-6.03-1  perl-http-cookiejar-0.014-1  perl-libwww-6.83-2  git-2.55.0-1  make-4.4.1-3  mingw-w64-x86_64-boost-1.91.0-3  mingw-w64-x86_64-cmake-4.4.2-2  mingw-w64-x86_64-gcc-16.2.0-3
+2026-09-02T05:35:22.9199345Z 
+2026-09-02T05:35:22.9199491Z Total Download Size:    154.18 MiB
+2026-09-02T05:35:22.9199800Z Total Installed Size:  1023.08 MiB
+2026-09-02T05:35:22.9199990Z 
+2026-09-02T05:35:22.9200168Z :: Proceed with installation? [Y/n] 
+2026-09-02T05:35:22.9202597Z :: Retrieving packages...
+2026-09-02T05:35:32.1304257Z  mingw-w64-x86_64-gcc-16.2.0-3-any downloading...
+2026-09-02T05:35:32.1304720Z  mingw-w64-x86_64-icu-78.3-4-any downloading...
+2026-09-02T05:35:32.1305092Z  mingw-w64-x86_64-boost-1.91.0-3-any downloading...
+2026-09-02T05:35:32.1305478Z  mingw-w64-x86_64-cmake-4.4.2-2-any downloading...
+2026-09-02T05:35:32.1305841Z  mingw-w64-x86_64-openssl-3.6.4-1-any downloading...
+2026-09-02T05:35:32.1306148Z  git-2.55.0-1-x86_64 downloading...
+2026-09-02T05:35:32.1306513Z  mingw-w64-x86_64-headers-14.0.0.r302.gd7f3c5201-1-any downloading...
+2026-09-02T05:35:32.1307071Z  mingw-w64-x86_64-binutils-2.47-3-any downloading...
+2026-09-02T05:35:32.1307543Z  mingw-w64-x86_64-crt-14.0.0.r302.gd7f3c5201-1-any downloading...
+2026-09-02T05:35:32.1307991Z  mingw-w64-x86_64-boost-libs-1.91.0-3-any downloading...
+2026-09-02T05:35:32.1308342Z  mingw-w64-x86_64-gnutls-3.8.13-3-any downloading...
+2026-09-02T05:35:32.1308603Z  mingw-w64-x86_64-libarchive-3.8.9-5-any downloading...
+2026-09-02T05:35:32.1308855Z  mingw-w64-x86_64-curl-8.21.0-2-any downloading...
+2026-09-02T05:35:32.1309095Z  mingw-w64-x86_64-isl-0.28-1-any downloading...
+2026-09-02T05:35:32.1309341Z  mingw-w64-x86_64-pcre2-10.47-1-any downloading...
+2026-09-02T05:35:32.1309577Z  openssh-10.5p1-2-x86_64 downloading...
+2026-09-02T05:35:32.1309819Z  mingw-w64-x86_64-gcc-libs-16.2.0-3-any downloading...
+2026-09-02T05:35:32.1310093Z  mingw-w64-x86_64-libunistring-1.4.2-1-any downloading...
+2026-09-02T05:35:32.1310353Z  heimdal-libs-7.8.0-5-x86_64 downloading...
+2026-09-02T05:35:32.1310581Z  mingw-w64-x86_64-libiconv-1.19-1-any downloading...
+2026-09-02T05:35:32.1310819Z  mingw-w64-x86_64-zstd-1.5.7-2-any downloading...
+2026-09-02T05:35:32.1311058Z  mingw-w64-x86_64-p11-kit-0.26.5-1-any downloading...
+2026-09-02T05:35:32.1311301Z  mingw-w64-x86_64-gmp-6.3.0-2-any downloading...
+2026-09-02T05:35:32.1311571Z  mingw-w64-x86_64-nettle-4.0-1-any downloading...
+2026-09-02T05:35:32.1311902Z  heimdal-7.8.0-5-x86_64 downloading...
+2026-09-02T05:35:32.1312111Z  mingw-w64-x86_64-mpfr-4.2.2-3-any downloading...
+2026-09-02T05:35:32.1312377Z  mingw-w64-x86_64-cppdap-1.65.r11.g6464cd7-1-any downloading...
+2026-09-02T05:35:32.1312632Z  make-4.4.1-3-x86_64 downloading...
+2026-09-02T05:35:32.1312844Z  mingw-w64-x86_64-xz-5.8.3-1-any downloading...
+2026-09-02T05:35:32.1313294Z  mingw-w64-x86_64-brotli-1.2.0-1-any downloading...
+2026-09-02T05:35:32.1313562Z  mingw-w64-x86_64-gettext-runtime-1.0-1-any downloading...
+2026-09-02T05:35:32.1313855Z  mingw-w64-x86_64-ca-certificates-20260816-1-any downloading...
+2026-09-02T05:35:32.1314127Z  mingw-w64-x86_64-c-ares-1.34.8-1-any downloading...
+2026-09-02T05:35:32.1314497Z  mingw-w64-x86_64-libssh2-1.11.1-2-any downloading...
+2026-09-02T05:35:32.1314741Z  mingw-w64-x86_64-ngtcp2-1.25.0-1-any downloading...
+2026-09-02T05:35:32.1315133Z  mingw-w64-x86_64-rhash-1.4.6-1-any downloading...
+2026-09-02T05:35:32.1315494Z  perl-Net-SSLeay-1.96-1-x86_64 downloading...
+2026-09-02T05:35:32.1315865Z  mingw-w64-x86_64-tzdata-2026c-1-any downloading...
+2026-09-02T05:35:32.1316229Z  mingw-w64-x86_64-libuv-1.52.1-1-any downloading...
+2026-09-02T05:35:32.1316601Z  mingw-w64-x86_64-jsoncpp-1.9.8-1-any downloading...
+2026-09-02T05:35:32.1316976Z  mingw-w64-x86_64-nghttp2-1.70.0-1-any downloading...
+2026-09-02T05:35:32.1317356Z  mingw-w64-x86_64-libtasn1-4.21.0-1-any downloading...
+2026-09-02T05:35:32.1317716Z  mingw-w64-x86_64-expat-2.8.3-1-any downloading...
+2026-09-02T05:35:32.1318028Z  mingw-w64-x86_64-ninja-1.13.2-1-any downloading...
+2026-09-02T05:35:32.1318348Z  perl-MIME-tools-5.517-1-any downloading...
+2026-09-02T05:35:32.1318678Z  mingw-w64-x86_64-libidn2-2.3.8-4-any downloading...
+2026-09-02T05:35:32.1319047Z  mingw-w64-x86_64-lz4-1.10.0-1-any downloading...
+2026-09-02T05:35:32.1319408Z  perl-IO-Socket-SSL-2.099-1-any downloading...
+2026-09-02T05:35:32.1319788Z  mingw-w64-x86_64-pkgconf-1~3.0.5-1-any downloading...
+2026-09-02T05:35:32.1320189Z  mingw-w64-x86_64-nghttp3-1.18.0-1-any downloading...
+2026-09-02T05:35:32.1320571Z  mingw-w64-x86_64-mpc-1.4.1-1-any downloading...
+2026-09-02T05:35:32.1320922Z  perl-libwww-6.83-2-any downloading...
+2026-09-02T05:35:32.1321272Z  mingw-w64-x86_64-zlib-1.3.2-2-any downloading...
+2026-09-02T05:35:32.1321622Z  perl-URI-5.36-1-any downloading...
+2026-09-02T05:35:32.1321942Z  mingw-w64-x86_64-libpsl-0.21.5-3-any downloading...
+2026-09-02T05:35:32.1322331Z  mingw-w64-x86_64-bzip2-1.0.8-4-any downloading...
+2026-09-02T05:35:32.1322679Z  libedit-20240808_3.1-1-x86_64 downloading...
+2026-09-02T05:35:32.1323002Z  libfido2-1.17.0-1-x86_64 downloading...
+2026-09-02T05:35:32.1323336Z  perl-HTML-Parser-3.85-1-x86_64 downloading...
+2026-09-02T05:35:32.1323726Z  perl-HTTP-Message-7.04-1-any downloading...
+2026-09-02T05:35:32.1324083Z  perl-TimeDate-2.35-1-any downloading...
+2026-09-02T05:35:32.1324457Z  mingw-w64-x86_64-wineditline-2.208-1-any downloading...
+2026-09-02T05:35:32.1324838Z  perl-MailTools-2.22-1-any downloading...
+2026-09-02T05:35:32.1325169Z  mingw-w64-x86_64-libffi-3.8.0-1-any downloading...
+2026-09-02T05:35:32.1325520Z  perl-IO-Stringy-2.113-3-any downloading...
+2026-09-02T05:35:32.1325994Z  mingw-w64-x86_64-winpthreads-14.0.0.r302.gd7f3c5201-1-any downloading...
+2026-09-02T05:35:32.1326377Z  perl-Authen-SASL-2.2000-1-any downloading...
+2026-09-02T05:35:32.1326678Z  mingw-w64-x86_64-libwinpthread-14.0.0.r302.gd7f3c5201-1-any downloading...
+2026-09-02T05:35:32.1326992Z  perl-Convert-BinHex-1.125-2-any downloading...
+2026-09-02T05:35:32.1327228Z  mingw-w64-x86_64-libb2-0.98.1-3-any downloading...
+2026-09-02T05:35:32.1327459Z  libcbor-0.14.0-2-x86_64 downloading...
+2026-09-02T05:35:32.1327685Z  perl-HTTP-Cookies-6.12-1-any downloading...
+2026-09-02T05:35:32.1327906Z  perl-Net-HTTP-6.24-1-any downloading...
+2026-09-02T05:35:32.1328123Z  perl-Error-0.17030-1-any downloading...
+2026-09-02T05:35:32.1328338Z  perl-TermReadKey-2.38-8-x86_64 downloading...
+2026-09-02T05:35:32.1328570Z  perl-HTTP-Daemon-6.17-1-any downloading...
+2026-09-02T05:35:32.1328804Z  perl-LWP-MediaTypes-6.04-2-any downloading...
+2026-09-02T05:35:32.1329028Z  perl-Try-Tiny-0.32-1-any downloading...
+2026-09-02T05:35:32.1329233Z  perl-Clone-0.50-2-x86_64 downloading...
+2026-09-02T05:35:32.1329432Z  perl-IO-HTML-1.004-2-any downloading...
+2026-09-02T05:35:32.1329783Z  perl-WWW-RobotRules-6.03-1-any downloading...
+2026-09-02T05:35:32.1330034Z  perl-http-cookiejar-0.014-1-any downloading...
+2026-09-02T05:35:32.1330269Z  perl-HTTP-Negotiate-6.01-3-any downloading...
+2026-09-02T05:35:32.1330496Z  perl-Encode-Locale-1.05-2-any downloading...
+2026-09-02T05:35:32.1330717Z  perl-HTML-Tagset-3.24-1-any downloading...
+2026-09-02T05:35:32.1331594Z  perl-File-Listing-6.16-1-any downloading...
+2026-09-02T05:35:32.1331813Z  perl-HTTP-Date-6.08-1-any downloading...
+2026-09-02T05:35:32.1332034Z  perl-Net-SMTP-SSL-1.04-2-any downloading...
+2026-09-02T05:35:32.1332316Z  mingw-w64-x86_64-windows-default-manifest-20260815-1-any downloading...
+2026-09-02T05:35:32.1332594Z checking keyring...
+2026-09-02T05:35:32.1892163Z checking package integrity...
+2026-09-02T05:35:43.9559187Z loading package files...
+2026-09-02T05:35:44.2339527Z checking for file conflicts...
+2026-09-02T05:35:46.1185686Z :: Processing package changes...
+2026-09-02T05:35:46.1186086Z installing libedit...
+2026-09-02T05:35:46.1443237Z installing heimdal-libs...
+2026-09-02T05:35:46.1593573Z installing heimdal...
+2026-09-02T05:35:46.6337652Z installing libcbor...
+2026-09-02T05:35:46.6360051Z installing libfido2...
+2026-09-02T05:35:46.6387743Z installing openssh...
+2026-09-02T05:35:46.6693336Z installing perl-Error...
+2026-09-02T05:35:46.6753162Z installing perl-Authen-SASL...
+2026-09-02T05:35:46.6921132Z installing perl-Encode-Locale...
+2026-09-02T05:35:46.6964668Z installing perl-HTTP-Date...
+2026-09-02T05:35:46.7008421Z installing perl-File-Listing...
+2026-09-02T05:35:46.7055512Z installing perl-HTML-Tagset...
+2026-09-02T05:35:46.7101898Z installing perl-Clone...
+2026-09-02T05:35:46.7141888Z installing perl-IO-HTML...
+2026-09-02T05:35:46.7185726Z installing perl-LWP-MediaTypes...
+2026-09-02T05:35:46.7241203Z installing perl-URI...
+2026-09-02T05:35:46.7725842Z installing perl-HTTP-Message...
+2026-09-02T05:35:46.7867292Z installing perl-HTML-Parser...
+2026-09-02T05:35:46.7978960Z installing perl-HTTP-Cookies...
+2026-09-02T05:35:46.8042061Z installing perl-HTTP-Daemon...
+2026-09-02T05:35:46.8077612Z installing perl-http-cookiejar...
+2026-09-02T05:35:46.8129007Z installing perl-HTTP-Negotiate...
+2026-09-02T05:35:46.8164850Z installing perl-Net-HTTP...
+2026-09-02T05:35:46.8245727Z installing perl-WWW-RobotRules...
+2026-09-02T05:35:46.8314948Z installing perl-Try-Tiny...
+2026-09-02T05:35:46.8371235Z installing perl-libwww...
+2026-09-02T05:35:46.8626471Z Optional dependencies for perl-libwww
+2026-09-02T05:35:46.8626966Z     perl-LWP-Protocol-https: for https:// url schemes
+2026-09-02T05:35:46.8627374Z installing perl-TimeDate...
+2026-09-02T05:35:46.9112839Z installing perl-MailTools...
+2026-09-02T05:35:46.9317729Z installing perl-IO-Stringy...
+2026-09-02T05:35:46.9420638Z installing perl-Convert-BinHex...
+2026-09-02T05:35:47.0554156Z module test... pass.
+2026-09-02T05:35:47.0562485Z installing perl-MIME-tools...
+2026-09-02T05:35:47.0854024Z installing perl-Net-SSLeay...
+2026-09-02T05:35:47.1397442Z installing perl-IO-Socket-SSL...
+2026-09-02T05:35:47.1492620Z installing perl-Net-SMTP-SSL...
+2026-09-02T05:35:47.1526989Z installing perl-TermReadKey...
+2026-09-02T05:35:47.1585711Z installing git...
+2026-09-02T05:35:47.6190368Z Optional dependencies for git
+2026-09-02T05:35:47.6190775Z     python: various helper scripts
+2026-09-02T05:35:47.6191134Z     subversion: git svn
+2026-09-02T05:35:47.6191425Z     aspell: spell checking in git gui
+2026-09-02T05:35:47.6191750Z installing make...
+2026-09-02T05:35:47.6434624Z installing mingw-w64-x86_64-libwinpthread...
+2026-09-02T05:35:47.6470364Z installing mingw-w64-x86_64-tzdata...
+2026-09-02T05:35:48.8672184Z installing mingw-w64-x86_64-gcc-libs...
+2026-09-02T05:35:48.8801128Z installing mingw-w64-x86_64-bzip2...
+2026-09-02T05:35:48.8942300Z installing mingw-w64-x86_64-icu...
+2026-09-02T05:35:49.1771077Z installing mingw-w64-x86_64-libiconv...
+2026-09-02T05:35:49.1949674Z installing mingw-w64-x86_64-gettext-runtime...
+2026-09-02T05:35:49.2872156Z installing mingw-w64-x86_64-xz...
+2026-09-02T05:35:49.3700486Z installing mingw-w64-x86_64-zstd...
+2026-09-02T05:35:49.3851382Z installing mingw-w64-x86_64-zlib...
+2026-09-02T05:35:49.3913170Z installing mingw-w64-x86_64-boost-libs...
+2026-09-02T05:35:49.4276171Z installing mingw-w64-x86_64-boost...
+2026-09-02T05:36:00.1792686Z Optional dependencies for mingw-w64-x86_64-boost
+2026-09-02T05:36:00.1793258Z     mingw-w64-x86_64-python: For Boost.Python
+2026-09-02T05:36:00.1793536Z     mingw-w64-x86_64-python-numpy: For Boost.Python (NumPy)
+2026-09-02T05:36:00.1793797Z installing mingw-w64-x86_64-cppdap...
+2026-09-02T05:36:00.1978115Z installing mingw-w64-x86_64-c-ares...
+2026-09-02T05:36:00.2807229Z installing mingw-w64-x86_64-brotli...
+2026-09-02T05:36:00.2972272Z installing mingw-w64-x86_64-libunistring...
+2026-09-02T05:36:00.3329119Z installing mingw-w64-x86_64-libidn2...
+2026-09-02T05:36:00.3539706Z installing mingw-w64-x86_64-libpsl...
+2026-09-02T05:36:00.3608344Z installing mingw-w64-x86_64-libtasn1...
+2026-09-02T05:36:00.3898728Z installing mingw-w64-x86_64-libffi...
+2026-09-02T05:36:00.3975922Z installing mingw-w64-x86_64-p11-kit...
+2026-09-02T05:36:00.5454146Z installing mingw-w64-x86_64-ca-certificates...
+2026-09-02T05:36:01.0314794Z installing mingw-w64-x86_64-openssl...
+2026-09-02T05:36:05.1450179Z Optional dependencies for mingw-w64-x86_64-openssl
+2026-09-02T05:36:05.1450695Z     mingw-w64-x86_64-ca-certificates [installed]
+2026-09-02T05:36:05.1451087Z installing mingw-w64-x86_64-libssh2...
+2026-09-02T05:36:05.2417289Z installing mingw-w64-x86_64-nghttp2...
+2026-09-02T05:36:05.2538345Z installing mingw-w64-x86_64-gmp...
+2026-09-02T05:36:05.2655051Z installing mingw-w64-x86_64-nettle...
+2026-09-02T05:36:05.3067812Z installing mingw-w64-x86_64-gnutls...
+2026-09-02T05:36:06.0427053Z installing mingw-w64-x86_64-ngtcp2...
+2026-09-02T05:36:06.0584905Z installing mingw-w64-x86_64-nghttp3...
+2026-09-02T05:36:06.0683002Z installing mingw-w64-x86_64-curl...
+2026-09-02T05:36:06.3588121Z installing mingw-w64-x86_64-expat...
+2026-09-02T05:36:06.3703700Z installing mingw-w64-x86_64-jsoncpp...
+2026-09-02T05:36:06.3841225Z installing mingw-w64-x86_64-libb2...
+2026-09-02T05:36:06.3891268Z installing mingw-w64-x86_64-lz4...
+2026-09-02T05:36:06.3999553Z installing mingw-w64-x86_64-wineditline...
+2026-09-02T05:36:06.4062473Z installing mingw-w64-x86_64-pcre2...
+2026-09-02T05:36:06.5363798Z installing mingw-w64-x86_64-libarchive...
+2026-09-02T05:36:06.5951601Z installing mingw-w64-x86_64-libuv...
+2026-09-02T05:36:06.6108702Z installing mingw-w64-x86_64-ninja...
+2026-09-02T05:36:06.6148943Z installing mingw-w64-x86_64-pkgconf...
+2026-09-02T05:36:06.6306304Z installing mingw-w64-x86_64-rhash...
+2026-09-02T05:36:06.6567675Z installing mingw-w64-x86_64-cmake...
+2026-09-02T05:36:09.3251211Z Optional dependencies for mingw-w64-x86_64-cmake
+2026-09-02T05:36:09.3251659Z     mingw-w64-x86_64-emacs: for cmake emacs mode
+2026-09-02T05:36:09.3252041Z installing mingw-w64-x86_64-binutils...
+2026-09-02T05:36:09.5201083Z installing mingw-w64-x86_64-headers...
+2026-09-02T05:36:10.5491540Z installing mingw-w64-x86_64-crt...
+2026-09-02T05:36:11.0338818Z installing mingw-w64-x86_64-isl...
+2026-09-02T05:36:11.0844691Z installing mingw-w64-x86_64-mpfr...
+2026-09-02T05:36:11.1010147Z installing mingw-w64-x86_64-mpc...
+2026-09-02T05:36:11.1063300Z installing mingw-w64-x86_64-windows-default-manifest...
+2026-09-02T05:36:11.1085511Z installing mingw-w64-x86_64-winpthreads...
+2026-09-02T05:36:11.1165886Z installing mingw-w64-x86_64-gcc...
+2026-09-02T05:36:12.3483587Z :: Running post-transaction hooks...
+2026-09-02T05:36:12.3483897Z (1/1) Updating the info directory file...
+2026-09-02T05:36:12.8793397Z ##[endgroup]
+2026-09-02T05:36:12.8972330Z ##[group]Run cmake --version
+2026-09-02T05:36:12.8972599Z [36;1mcmake --version[0m
+2026-09-02T05:36:12.8972777Z [36;1mg++ --version[0m
+2026-09-02T05:36:12.8976098Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-02T05:36:12.8976319Z env:
+2026-09-02T05:36:12.8976517Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:36:12.8976802Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-02T05:36:12.8977046Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-02T05:36:12.8977262Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-02T05:36:12.8977616Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-02T05:36:12.8978239Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33595207012-1
+2026-09-02T05:36:12.8978742Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33595207012-1
+2026-09-02T05:36:12.8978996Z   MSYSTEM: MINGW64
+2026-09-02T05:36:12.8979149Z ##[endgroup]
+2026-09-02T05:36:13.0649379Z cmake version 4.4.2
+2026-09-02T05:36:13.0649727Z 
+2026-09-02T05:36:13.0649917Z CMake suite maintained and supported by Kitware (kitware.com/cmake).
+2026-09-02T05:36:13.0871303Z g++.exe (Rev3, Built by MSYS2 project) 16.2.0
+2026-09-02T05:36:13.0871612Z Copyright (C) 2026 Free Software Foundation, Inc.
+2026-09-02T05:36:13.0871943Z This is free software; see the source for copying conditions.  There is NO
+2026-09-02T05:36:13.0872335Z warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+2026-09-02T05:36:13.0872580Z 
+2026-09-02T05:36:13.1008756Z ##[group]Run source="$(cygpath -u "$OPENFHE_SOURCE")"
+2026-09-02T05:36:13.1009133Z [36;1msource="$(cygpath -u "$OPENFHE_SOURCE")"[0m
+2026-09-02T05:36:13.1009417Z [36;1mactual="$(git -C "$source" rev-parse HEAD)"[0m
+2026-09-02T05:36:13.1009659Z [36;1mtest "$actual" = "$OPENFHE_COMMIT"[0m
+2026-09-02T05:36:13.1009923Z [36;1mtest -z "$(git -C "$source" status --porcelain)"[0m
+2026-09-02T05:36:13.1010215Z [36;1mgit -C "$source" submodule status --recursive[0m
+2026-09-02T05:36:13.1011934Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-02T05:36:13.1012140Z env:
+2026-09-02T05:36:13.1012336Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:36:13.1012617Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-02T05:36:13.1012857Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-02T05:36:13.1013074Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-02T05:36:13.1013312Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-02T05:36:13.1013625Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33595207012-1
+2026-09-02T05:36:13.1013933Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33595207012-1
+2026-09-02T05:36:13.1014183Z   MSYSTEM: MINGW64
+2026-09-02T05:36:13.1014335Z ##[endgroup]
+2026-09-02T05:36:14.1800888Z  984e3f194862b17916536b5fade40cba6e47a6fe third-party/cereal (heads/main)
+2026-09-02T05:36:14.2544166Z  eddb0241389718a23a42db6af5f0164b6e0139af third-party/google-benchmark (eddb024)
+2026-09-02T05:36:14.3300421Z  52eb8108c5bdec04579160ae17225d66034bd723 third-party/google-test (52eb810)
+2026-09-02T05:36:14.4068137Z  83edb60836d87cf1b406e8846b9059c03031e8f5 third-party/gperftools (83edb60)
+2026-09-02T05:36:14.4338744Z ##[group]Run prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-02T05:36:14.4339099Z [36;1mprefix="$(cygpath -u "$OPENFHE_PREFIX")"[0m
+2026-09-02T05:36:14.4339353Z [36;1msource="$(cygpath -u "$OPENFHE_SOURCE")"[0m
+2026-09-02T05:36:14.4339594Z [36;1mbuild="$(cygpath -u "$OPENFHE_BUILD")"[0m
+2026-09-02T05:36:14.4339820Z [36;1mcmake -S "$source" -B "$build" \[0m
+2026-09-02T05:36:14.4340032Z [36;1m  -DCMAKE_BUILD_TYPE=Release \[0m
+2026-09-02T05:36:14.4340269Z [36;1m  -DCMAKE_INSTALL_PREFIX="$prefix" \[0m
+2026-09-02T05:36:14.4340482Z [36;1m  -DBUILD_UNITTESTS=OFF \[0m
+2026-09-02T05:36:14.4340672Z [36;1m  -DBUILD_EXAMPLES=OFF \[0m
+2026-09-02T05:36:14.4340863Z [36;1m  -DBUILD_BENCHMARKS=OFF \[0m
+2026-09-02T05:36:14.4341051Z [36;1m  -DBUILD_EXTRAS=OFF \[0m
+2026-09-02T05:36:14.4341240Z [36;1m  -DWITH_OPENMP=ON[0m
+2026-09-02T05:36:14.4342768Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-02T05:36:14.4342972Z env:
+2026-09-02T05:36:14.4343194Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:36:14.4343475Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-02T05:36:14.4343709Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-02T05:36:14.4343921Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-02T05:36:14.4344155Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-02T05:36:14.4344430Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33595207012-1
+2026-09-02T05:36:14.4344888Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33595207012-1
+2026-09-02T05:36:14.4345136Z   MSYSTEM: MINGW64
+2026-09-02T05:36:14.4345288Z ##[endgroup]
+2026-09-02T05:36:14.8905445Z -- The C compiler identification is GNU 16.2.0
+2026-09-02T05:36:15.1645855Z -- The CXX compiler identification is GNU 16.2.0
+2026-09-02T05:36:15.1980050Z -- Detecting C compiler ABI info
+2026-09-02T05:36:15.5472236Z -- Detecting C compiler ABI info - done
+2026-09-02T05:36:15.5728568Z -- Check for working C compiler: D:/a/_temp/msys64/mingw64/bin/cc.exe - skipped
+2026-09-02T05:36:15.5731971Z -- Detecting C compile features
+2026-09-02T05:36:15.5736639Z -- Detecting C compile features - done
+2026-09-02T05:36:15.6019562Z -- Detecting CXX compiler ABI info
+2026-09-02T05:36:15.9063668Z -- Detecting CXX compiler ABI info - done
+2026-09-02T05:36:15.9326650Z -- Check for working CXX compiler: D:/a/_temp/msys64/mingw64/bin/c++.exe - skipped
+2026-09-02T05:36:15.9330371Z -- Detecting CXX compile features
+2026-09-02T05:36:15.9336625Z -- Detecting CXX compile features - done
+2026-09-02T05:36:15.9452290Z -- Building in Release mode
+2026-09-02T05:36:15.9453281Z -- BUILD_UNITTESTS:    OFF
+2026-09-02T05:36:15.9453547Z -- BUILD_EXAMPLES:     OFF
+2026-09-02T05:36:15.9453791Z -- BUILD_BENCHMARKS:   OFF
+2026-09-02T05:36:15.9454047Z -- BUILD_EXTRAS:       OFF
+2026-09-02T05:36:15.9454262Z -- BUILD_STATIC:       OFF
+2026-09-02T05:36:15.9454496Z -- BUILD_SHARED:       ON
+2026-09-02T05:36:15.9454706Z -- GIT_SUBMOD_AUTO:    ON
+2026-09-02T05:36:15.9454937Z -- WITH_BE2:           OFF
+2026-09-02T05:36:15.9455160Z -- WITH_BE4:           OFF
+2026-09-02T05:36:15.9455367Z -- WITH_NTL:           OFF
+2026-09-02T05:36:15.9455563Z -- WITH_TCM:           OFF
+2026-09-02T05:36:15.9455795Z -- WITH_OPENMP:        ON
+2026-09-02T05:36:15.9455963Z -- NATIVE_SIZE:        64
+2026-09-02T05:36:15.9456120Z -- CKKS_M_FACTOR:      1
+2026-09-02T05:36:15.9456290Z -- WITH_NATIVEOPT:     OFF
+2026-09-02T05:36:15.9456580Z -- WITH_COVTEST:       OFF
+2026-09-02T05:36:15.9456866Z -- WITH_NOISE_DEBUG:   OFF
+2026-09-02T05:36:15.9471826Z -- WITH_REDUCED_NOISE: OFF
+2026-09-02T05:36:15.9472112Z -- USE_MACPORTS:       OFF
+2026-09-02T05:36:15.9473002Z -- BUILTIN_INFO_AVAILABLE is defined
+2026-09-02T05:36:15.9473634Z ***** INSTALL IS AT C:/openfhe-2023-1788/openfhe-install; to change, run cmake with -DCMAKE_INSTALL_PREFIX=/your/path
+2026-09-02T05:36:15.9642382Z -- Architecture is x86_64
+2026-09-02T05:36:15.9657192Z -- Looking for sys/types.h
+2026-09-02T05:36:16.2820588Z -- Looking for sys/types.h - found
+2026-09-02T05:36:16.2820935Z -- Looking for stdint.h
+2026-09-02T05:36:16.5952641Z -- Looking for stdint.h - found
+2026-09-02T05:36:16.5953683Z -- Looking for stddef.h
+2026-09-02T05:36:16.9088508Z -- Looking for stddef.h - found
+2026-09-02T05:36:16.9088780Z -- Check size of __int128
+2026-09-02T05:36:17.2236982Z -- Check size of __int128 - done
+2026-09-02T05:36:17.2239130Z -- Check size of uint64_t
+2026-09-02T05:36:17.5358114Z -- Check size of uint64_t - done
+2026-09-02T05:36:17.5358614Z -- NATIVEINT is set to 64
+2026-09-02T05:36:17.5358873Z -- MATHBACKEND is set to 4
+2026-09-02T05:36:17.5359179Z -- MATHBACKEND set to 4. Setting WITH_BE4 to ON
+2026-09-02T05:36:18.5211429Z -- Found OpenMP_C: -fopenmp (found version "5.2")
+2026-09-02T05:36:18.8502070Z -- Found OpenMP_CXX: -fopenmp (found version "5.2")
+2026-09-02T05:36:18.8505124Z -- Found OpenMP: TRUE (found version "5.2")
+2026-09-02T05:36:18.8657827Z -- Found Git: D:/a/_temp/msys64/usr/bin/git.exe (found version "2.55.0")
+2026-09-02T05:36:18.8658225Z -- Submodule update
+2026-09-02T05:36:19.1609997Z Synchronizing submodule url for 'third-party/cereal'
+2026-09-02T05:36:19.1883978Z Synchronizing submodule url for 'third-party/google-benchmark'
+2026-09-02T05:36:19.2132863Z Synchronizing submodule url for 'third-party/google-test'
+2026-09-02T05:36:19.2388355Z Synchronizing submodule url for 'third-party/gperftools'
+2026-09-02T05:36:19.6382035Z -- Configuring done (5.0s)
+2026-09-02T05:36:20.0692169Z -- Generating done (0.4s)
+2026-09-02T05:36:20.0703873Z -- Build files have been written to: C:/openfhe-2023-1788/openfhe-build-33595207012-1
+2026-09-02T05:36:20.0929525Z ##[group]Run build="$(cygpath -u "$OPENFHE_BUILD")"
+2026-09-02T05:36:20.0929881Z [36;1mbuild="$(cygpath -u "$OPENFHE_BUILD")"[0m
+2026-09-02T05:36:20.0930132Z [36;1mcmake --build "$build" --parallel 2[0m
+2026-09-02T05:36:20.0930359Z [36;1mcmake --install "$build"[0m
+2026-09-02T05:36:20.0931905Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-02T05:36:20.0932102Z env:
+2026-09-02T05:36:20.0932291Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:36:20.0932571Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-02T05:36:20.0932801Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-02T05:36:20.0933011Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-02T05:36:20.0933248Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-02T05:36:20.0933540Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33595207012-1
+2026-09-02T05:36:20.0933847Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33595207012-1
+2026-09-02T05:36:20.0934110Z   MSYSTEM: MINGW64
+2026-09-02T05:36:20.0934258Z ##[endgroup]
+2026-09-02T05:36:20.4187769Z -- Copied demoData files
+2026-09-02T05:36:20.4624014Z [  0%] Built target third-party
+2026-09-02T05:36:20.5730045Z [  1%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/constants-lattice-impl.cpp.obj
+2026-09-02T05:36:20.5769300Z [  2%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/lattice.cpp.obj
+2026-09-02T05:36:21.1646618Z [  3%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/stdlatticeparms.cpp.obj
+2026-09-02T05:36:22.1111460Z [  4%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/trapdoor-dcrtpoly.cpp.obj
+2026-09-02T05:36:29.2329918Z [  5%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/trapdoor-poly.cpp.obj
+2026-09-02T05:36:37.5492794Z [  6%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/chebyshev.cpp.obj
+2026-09-02T05:36:38.2265266Z [  6%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/dftransform.cpp.obj
+2026-09-02T05:36:39.3665730Z [  7%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/discretegaussiangeneratorgeneric.cpp.obj
+2026-09-02T05:36:39.6140295Z [  8%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/distributiongenerator.cpp.obj
+2026-09-02T05:36:40.2228335Z [  9%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintdyn/be4-math-impl.cpp.obj
+2026-09-02T05:36:40.7926315Z [ 10%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintdyn/mubintvecdyn.cpp.obj
+2026-09-02T05:36:43.2776965Z [ 11%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintdyn/ubintdyn.cpp.obj
+2026-09-02T05:36:45.1616711Z [ 12%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintfxd/be2-math-impl.cpp.obj
+2026-09-02T05:36:45.2490140Z [ 13%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintfxd/mubintvecfxd.cpp.obj
+2026-09-02T05:36:45.3385979Z [ 14%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintfxd/ubintfxd.cpp.obj
+2026-09-02T05:36:45.4293926Z [ 15%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintntl/be6-math-impl.cpp.obj
+2026-09-02T05:36:45.5141645Z [ 15%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintntl/mubintvecntl.cpp.obj
+2026-09-02T05:36:45.6355520Z [ 16%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintntl/ubintntl.cpp.obj
+2026-09-02T05:36:45.7213086Z [ 17%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/intnat/benative-math-impl.cpp.obj
+2026-09-02T05:36:45.9487462Z [ 18%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/intnat/mubintvecnat.cpp.obj
+2026-09-02T05:36:48.1013617Z [ 19%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hermite.cpp.obj
+2026-09-02T05:36:49.0568540Z [ 20%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/matrix.cpp.obj
+2026-09-02T05:36:50.3601648Z [ 21%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/nbtheory2.cpp.obj
+2026-09-02T05:36:51.7678859Z [ 22%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/blockAllocator/blockAllocator.cpp.obj
+2026-09-02T05:36:52.2927112Z [ 23%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/blockAllocator/xallocator.cpp.obj
+2026-09-02T05:36:52.9595494Z [ 24%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/debug.cpp.obj
+2026-09-02T05:36:53.0295041Z [ 24%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/demangle.cpp.obj
+2026-09-02T05:36:53.3363760Z [ 25%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/get-call-stack.cpp.obj
+2026-09-02T05:36:53.3698936Z [ 26%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/hashutil.cpp.obj
+2026-09-02T05:36:53.6716017Z [ 27%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/inttypes.cpp.obj
+2026-09-02T05:36:54.0105992Z [ 28%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/memory.cpp.obj
+2026-09-02T05:36:54.0651261Z [ 29%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/openfhebase64.cpp.obj
+2026-09-02T05:36:54.3481936Z [ 30%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/parallel.cpp.obj
+2026-09-02T05:36:54.4152379Z [ 31%] Building C object src/core/CMakeFiles/coreobj.dir/lib/utils/prng/blake2b-ref.c.obj
+2026-09-02T05:36:54.4664917Z [ 32%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/prng/blake2engine.cpp.obj
+2026-09-02T05:36:54.7645466Z [ 34%] Building C object src/core/CMakeFiles/coreobj.dir/lib/utils/prng/blake2xb-ref.c.obj
+2026-09-02T05:36:54.9133136Z [ 34%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/utilities.cpp.obj
+2026-09-02T05:36:55.2992633Z [ 34%] Built target coreobj
+2026-09-02T05:36:55.4004977Z [ 35%] Linking CXX shared library ../../lib/libOPENFHEcore.dll
+2026-09-02T05:36:55.8423325Z [ 35%] Built target OPENFHEcore
+2026-09-02T05:36:55.9493852Z [ 36%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/binfhe-base-scheme.cpp.obj
+2026-09-02T05:36:55.9543026Z [ 37%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/binfhe-constants-impl.cpp.obj
+2026-09-02T05:36:56.5494419Z [ 38%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/binfhecontext.cpp.obj
+2026-09-02T05:36:59.9243427Z [ 39%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/lwe-pke.cpp.obj
+2026-09-02T05:36:59.9898399Z [ 40%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc-cggi.cpp.obj
+2026-09-02T05:37:01.9238290Z [ 41%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc-dm.cpp.obj
+2026-09-02T05:37:02.2788057Z [ 41%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc-lmkcdey.cpp.obj
+2026-09-02T05:37:04.2761253Z [ 42%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc.cpp.obj
+2026-09-02T05:37:05.2105021Z [ 43%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-cryptoparameters.cpp.obj
+2026-09-02T05:37:07.0707908Z [ 43%] Built target binfheobj
+2026-09-02T05:37:07.1739648Z [ 43%] Linking CXX shared library ../../lib/libOPENFHEbinfhe.dll
+2026-09-02T05:37:07.4294333Z [ 43%] Built target OPENFHEbinfhe
+2026-09-02T05:37:07.5379881Z [ 44%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/ciphertext-impl.cpp.obj
+2026-09-02T05:37:07.5405306Z [ 45%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/constants-impl.cpp.obj
+2026-09-02T05:37:08.8886412Z [ 46%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/cryptocontext.cpp.obj
+2026-09-02T05:37:12.4832676Z [ 47%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/cryptocontextfactory.cpp.obj
+2026-09-02T05:37:17.1612421Z [ 48%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/cryptoobject-impl.cpp.obj
+2026-09-02T05:37:19.4254766Z [ 49%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/ckkspackedencoding.cpp.obj
+2026-09-02T05:37:21.0363338Z [ 50%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/coefpackedencoding.cpp.obj
+2026-09-02T05:37:22.9781767Z [ 51%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/encodingparams.cpp.obj
+2026-09-02T05:37:24.0296878Z [ 51%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/packedencoding.cpp.obj
+2026-09-02T05:37:24.2731378Z [ 52%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/stringencoding.cpp.obj
+2026-09-02T05:37:27.3273138Z [ 53%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/globals-impl.cpp.obj
+2026-09-02T05:37:27.4177433Z [ 54%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/evalkey.cpp.obj
+2026-09-02T05:37:29.3045281Z [ 55%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/evalkeyrelin.cpp.obj
+2026-09-02T05:37:29.8039920Z [ 56%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/privatekey.cpp.obj
+2026-09-02T05:37:33.3531873Z [ 57%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/publickey.cpp.obj
+2026-09-02T05:37:33.4137047Z [ 58%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/keyswitch/keyswitch-base.cpp.obj
+2026-09-02T05:37:35.7803650Z [ 59%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/keyswitch/keyswitch-bv.cpp.obj
+2026-09-02T05:37:37.3285196Z [ 60%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/keyswitch/keyswitch-hybrid.cpp.obj
+2026-09-02T05:37:40.3303715Z [ 60%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-cryptoparameters.cpp.obj
+2026-09-02T05:37:41.9543257Z [ 61%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-leveledshe.cpp.obj
+2026-09-02T05:37:46.5440852Z [ 62%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-multiparty.cpp.obj
+2026-09-02T05:37:47.6512822Z [ 63%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-parametergeneration.cpp.obj
+2026-09-02T05:37:51.0856773Z [ 64%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-pke.cpp.obj
+2026-09-02T05:37:51.1852408Z [ 65%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-scheme.cpp.obj
+2026-09-02T05:37:55.8739716Z [ 67%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-cryptoparameters.cpp.obj
+2026-09-02T05:37:56.5019217Z [ 68%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-leveledshe.cpp.obj
+2026-09-02T05:37:58.4664113Z [ 69%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-multiparty.cpp.obj
+2026-09-02T05:37:59.0661605Z [ 70%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-parametergeneration.cpp.obj
+2026-09-02T05:38:02.3260530Z [ 70%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-pke.cpp.obj
+2026-09-02T05:38:02.8442857Z [ 71%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-scheme.cpp.obj
+2026-09-02T05:38:06.1812432Z [ 72%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-advancedshe.cpp.obj
+2026-09-02T05:38:08.1158064Z [ 73%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-cryptoparameters.cpp.obj
+2026-09-02T05:38:10.5830448Z [ 74%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-fhe.cpp.obj
+2026-09-02T05:38:12.0969785Z [ 75%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-leveledshe.cpp.obj
+2026-09-02T05:38:16.9596754Z [ 76%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-multiparty.cpp.obj
+2026-09-02T05:38:22.1910408Z [ 77%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-parametergeneration.cpp.obj
+2026-09-02T05:38:22.9149650Z [ 78%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-pke.cpp.obj
+2026-09-02T05:38:25.1910316Z [ 79%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-scheme.cpp.obj
+2026-09-02T05:38:26.7147457Z [ 79%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-schemeswitching.cpp.obj
+2026-09-02T05:38:30.4781275Z [ 80%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-utils.cpp.obj
+2026-09-02T05:38:33.8128824Z [ 81%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/gen-cryptocontext-params-impl.cpp.obj
+2026-09-02T05:38:34.6687495Z [ 82%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/gen-cryptocontext-params-validation.cpp.obj
+2026-09-02T05:38:35.5614116Z [ 83%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/scheme-id-impl.cpp.obj
+2026-09-02T05:38:36.1753394Z [ 84%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/scheme-swch-params.cpp.obj
+2026-09-02T05:38:37.1927189Z [ 85%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-advancedshe.cpp.obj
+2026-09-02T05:38:37.5177787Z [ 86%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-cryptoparameters.cpp.obj
+2026-09-02T05:38:39.0937097Z [ 87%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-fhe.cpp.obj
+2026-09-02T05:38:41.2855413Z [ 88%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-leveledshe.cpp.obj
+2026-09-02T05:38:43.5128915Z [ 88%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-multiparty.cpp.obj
+2026-09-02T05:38:47.1264713Z [ 89%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-parametergeneration.cpp.obj
+2026-09-02T05:38:48.4806121Z [ 90%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-pke.cpp.obj
+2026-09-02T05:38:48.6749507Z [ 91%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-pre.cpp.obj
+2026-09-02T05:38:53.7416171Z [ 92%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-scheme.cpp.obj
+2026-09-02T05:38:55.0048682Z [ 93%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/rlwe-cryptoparameters-impl.cpp.obj
+2026-09-02T05:38:57.0013233Z [ 94%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemelet/rlwe-mp.cpp.obj
+2026-09-02T05:38:59.7881800Z [ 95%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-cryptoparameters.cpp.obj
+2026-09-02T05:39:02.6393026Z [ 96%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-leveledshe.cpp.obj
+2026-09-02T05:39:04.1949147Z [ 97%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-multiparty.cpp.obj
+2026-09-02T05:39:07.5705212Z [ 98%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-pke.cpp.obj
+2026-09-02T05:39:11.6837521Z [ 98%] Built target pkeobj
+2026-09-02T05:39:11.7837750Z [100%] Linking CXX shared library ../../lib/libOPENFHEpke.dll
+2026-09-02T05:39:12.5062931Z [100%] Built target OPENFHEpke
+2026-09-02T05:39:12.5938595Z -- Install configuration: "Release"
+2026-09-02T05:39:12.5946842Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/config_core.h
+2026-09-02T05:39:12.5954670Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal
+2026-09-02T05:39:12.5960382Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/access.hpp
+2026-09-02T05:39:12.5966225Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives
+2026-09-02T05:39:12.5971484Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives/adapters.hpp
+2026-09-02T05:39:12.5977714Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives/binary.hpp
+2026-09-02T05:39:12.5983576Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives/json.hpp
+2026-09-02T05:39:12.5990195Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives/portable_binary.hpp
+2026-09-02T05:39:12.5995989Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives/xml.hpp
+2026-09-02T05:39:12.6002865Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/cereal.hpp
+2026-09-02T05:39:12.6009898Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details
+2026-09-02T05:39:12.6015413Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/helpers.hpp
+2026-09-02T05:39:12.6021181Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/polymorphic_impl.hpp
+2026-09-02T05:39:12.6027633Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/polymorphic_impl_fwd.hpp
+2026-09-02T05:39:12.6033067Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/static_object.hpp
+2026-09-02T05:39:12.6061574Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/traits.hpp
+2026-09-02T05:39:12.6068551Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/util.hpp
+2026-09-02T05:39:12.6073976Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external
+2026-09-02T05:39:12.6079236Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/base64.hpp
+2026-09-02T05:39:12.6085140Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/LICENSE
+2026-09-02T05:39:12.6090603Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson
+2026-09-02T05:39:12.6096382Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/allocators.h
+2026-09-02T05:39:12.6102417Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/cursorstreamwrapper.h
+2026-09-02T05:39:12.6107997Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/document.h
+2026-09-02T05:39:12.6115257Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/encodedstream.h
+2026-09-02T05:39:12.6142235Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/encodings.h
+2026-09-02T05:39:12.6148251Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/error
+2026-09-02T05:39:12.6154186Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/error/en.h
+2026-09-02T05:39:12.6159717Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/error/error.h
+2026-09-02T05:39:12.6166177Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/filereadstream.h
+2026-09-02T05:39:12.6171966Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/filewritestream.h
+2026-09-02T05:39:12.6177567Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/fwd.h
+2026-09-02T05:39:12.6183154Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal
+2026-09-02T05:39:12.6189222Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/biginteger.h
+2026-09-02T05:39:12.6195439Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/diyfp.h
+2026-09-02T05:39:12.6201344Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/dtoa.h
+2026-09-02T05:39:12.6207167Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/ieee754.h
+2026-09-02T05:39:12.6212814Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/itoa.h
+2026-09-02T05:39:12.6218623Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/meta.h
+2026-09-02T05:39:12.6247067Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/pow10.h
+2026-09-02T05:39:12.6252903Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/regex.h
+2026-09-02T05:39:12.6260018Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/stack.h
+2026-09-02T05:39:12.6265385Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/strfunc.h
+2026-09-02T05:39:12.6270881Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/strtod.h
+2026-09-02T05:39:12.6276825Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/swap.h
+2026-09-02T05:39:12.6282615Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/istreamwrapper.h
+2026-09-02T05:39:12.6288385Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/LICENSE
+2026-09-02T05:39:12.6293985Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/memorybuffer.h
+2026-09-02T05:39:12.6299458Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/memorystream.h
+2026-09-02T05:39:12.6304968Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes
+2026-09-02T05:39:12.6311082Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes/inttypes.h
+2026-09-02T05:39:12.6317606Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes/LICENSE
+2026-09-02T05:39:12.6323650Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes/stdint.h
+2026-09-02T05:39:12.6329637Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/ostreamwrapper.h
+2026-09-02T05:39:12.6335871Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/pointer.h
+2026-09-02T05:39:12.6342910Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/prettywriter.h
+2026-09-02T05:39:12.6348939Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/rapidjson.h
+2026-09-02T05:39:12.6355240Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/reader.h
+2026-09-02T05:39:12.6362310Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/schema.h
+2026-09-02T05:39:12.6369838Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/stream.h
+2026-09-02T05:39:12.6375905Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/stringbuffer.h
+2026-09-02T05:39:12.6381899Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/writer.h
+2026-09-02T05:39:12.6408731Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml
+2026-09-02T05:39:12.6414352Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/license.txt
+2026-09-02T05:39:12.6419935Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/manual.html
+2026-09-02T05:39:12.6427229Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml.hpp
+2026-09-02T05:39:12.6434829Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml_iterators.hpp
+2026-09-02T05:39:12.6440430Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml_print.hpp
+2026-09-02T05:39:12.6467550Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml_utils.hpp
+2026-09-02T05:39:12.6476318Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/macros.hpp
+2026-09-02T05:39:12.6480806Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/specialize.hpp
+2026-09-02T05:39:12.6509194Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types
+2026-09-02T05:39:12.6514607Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/array.hpp
+2026-09-02T05:39:12.6520100Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/atomic.hpp
+2026-09-02T05:39:12.6525903Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/base_class.hpp
+2026-09-02T05:39:12.6531721Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/bitset.hpp
+2026-09-02T05:39:12.6537626Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/boost_variant.hpp
+2026-09-02T05:39:12.6564770Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/chrono.hpp
+2026-09-02T05:39:12.6570412Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/common.hpp
+2026-09-02T05:39:12.6576374Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/complex.hpp
+2026-09-02T05:39:12.6581844Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/concepts
+2026-09-02T05:39:12.6587665Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/concepts/pair_associative_container.hpp
+2026-09-02T05:39:12.6593563Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/deque.hpp
+2026-09-02T05:39:12.6599126Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/forward_list.hpp
+2026-09-02T05:39:12.6604760Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/functional.hpp
+2026-09-02T05:39:12.6610297Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/list.hpp
+2026-09-02T05:39:12.6615906Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/map.hpp
+2026-09-02T05:39:12.6621399Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/memory.hpp
+2026-09-02T05:39:12.6627571Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/optional.hpp
+2026-09-02T05:39:12.6634033Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/polymorphic.hpp
+2026-09-02T05:39:12.6640187Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/queue.hpp
+2026-09-02T05:39:12.6646456Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/set.hpp
+2026-09-02T05:39:12.6652116Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/stack.hpp
+2026-09-02T05:39:12.6657661Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/string.hpp
+2026-09-02T05:39:12.6663299Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/tuple.hpp
+2026-09-02T05:39:12.6669197Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/unordered_map.hpp
+2026-09-02T05:39:12.6677742Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/unordered_set.hpp
+2026-09-02T05:39:12.6683490Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/utility.hpp
+2026-09-02T05:39:12.6689880Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/valarray.hpp
+2026-09-02T05:39:12.6695459Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/variant.hpp
+2026-09-02T05:39:12.6703345Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/vector.hpp
+2026-09-02T05:39:12.6709236Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/version.hpp
+2026-09-02T05:39:12.6722024Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEcore.dll.a
+2026-09-02T05:39:12.6760493Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEcore.dll
+2026-09-02T05:39:12.6810215Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice
+2026-09-02T05:39:12.6817410Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/constants-lattice.h
+2026-09-02T05:39:12.6822892Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/dgsampling-impl.h
+2026-09-02T05:39:12.6829034Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/dgsampling.h
+2026-09-02T05:39:12.6836448Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/field2n-impl.h
+2026-09-02T05:39:12.6864319Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/field2n.h
+2026-09-02T05:39:12.6870153Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal
+2026-09-02T05:39:12.6875923Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/dcrtpoly-interface.h
+2026-09-02T05:39:12.6885114Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default
+2026-09-02T05:39:12.6890878Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/dcrtpoly-impl.h
+2026-09-02T05:39:12.6897959Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/dcrtpoly.h
+2026-09-02T05:39:12.6904180Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/ildcrtparams.h
+2026-09-02T05:39:12.6911730Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/ilparams.h
+2026-09-02T05:39:12.6917649Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/poly-impl.h
+2026-09-02T05:39:12.6946067Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/poly.h
+2026-09-02T05:39:12.6952217Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/elemparams.h
+2026-09-02T05:39:12.6959789Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/lat-backend.h
+2026-09-02T05:39:12.7002944Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/poly-interface.h
+2026-09-02T05:39:12.7009130Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/README.md
+2026-09-02T05:39:12.7014607Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/ilelement.h
+2026-09-02T05:39:12.7021827Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/lat-hal.h
+2026-09-02T05:39:12.7027587Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/matrix-lattice-impl.h
+2026-09-02T05:39:12.7033340Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/README.md
+2026-09-02T05:39:12.7040595Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/stdlatticeparms.h
+2026-09-02T05:39:12.7046497Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/trapdoor-impl.h
+2026-09-02T05:39:12.7052650Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/trapdoor.h
+2026-09-02T05:39:12.7060410Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/trapdoorparameters.h
+2026-09-02T05:39:12.7066111Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math
+2026-09-02T05:39:12.7071601Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/binaryuniformgenerator-impl.h
+2026-09-02T05:39:12.7078893Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/binaryuniformgenerator.h
+2026-09-02T05:39:12.7084437Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/chebyshev.h
+2026-09-02T05:39:12.7111592Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/dftransform.h
+2026-09-02T05:39:12.7164229Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/discretegaussiangenerator-impl.h
+2026-09-02T05:39:12.7170431Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/discretegaussiangenerator.h
+2026-09-02T05:39:12.7176343Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/discretegaussiangeneratorgeneric.h
+2026-09-02T05:39:12.7182399Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/discreteuniformgenerator-impl.h
+2026-09-02T05:39:12.7190307Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/discreteuniformgenerator.h
+2026-09-02T05:39:12.7195853Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/distrgen.h
+2026-09-02T05:39:12.7201468Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/distributiongenerator.h
+2026-09-02T05:39:12.7207640Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal
+2026-09-02T05:39:12.7214657Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/basicint.h
+2026-09-02T05:39:12.7220077Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintbackend.h
+2026-09-02T05:39:12.7225723Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn
+2026-09-02T05:39:12.7232871Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn/backenddyn.h
+2026-09-02T05:39:12.7238355Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn/mubintvecdyn.h
+2026-09-02T05:39:12.7244496Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn/transformdyn-impl.h
+2026-09-02T05:39:12.7279599Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn/transformdyn.h
+2026-09-02T05:39:12.7285944Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn/ubintdyn.h
+2026-09-02T05:39:12.7291974Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd
+2026-09-02T05:39:12.7321137Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd/backendfxd.h
+2026-09-02T05:39:12.7326770Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd/mubintvecfxd.h
+2026-09-02T05:39:12.7332915Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd/transformfxd-impl.h
+2026-09-02T05:39:12.7363151Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd/transformfxd.h
+2026-09-02T05:39:12.7369401Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd/ubintfxd.h
+2026-09-02T05:39:12.7375811Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl
+2026-09-02T05:39:12.7383337Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl/backendntl.h
+2026-09-02T05:39:12.7388924Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl/mubintvecntl.h
+2026-09-02T05:39:12.7395076Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl/transformntl-impl.h
+2026-09-02T05:39:12.7424294Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl/transformntl.h
+2026-09-02T05:39:12.7430686Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl/ubintntl.h
+2026-09-02T05:39:12.7437017Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/integer.h
+2026-09-02T05:39:12.7444385Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/intnat
+2026-09-02T05:39:12.7450507Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/intnat/mubintvecnat.h
+2026-09-02T05:39:12.7458409Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/intnat/transformnat-impl.h
+2026-09-02T05:39:12.7465824Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/intnat/transformnat.h
+2026-09-02T05:39:12.7471459Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/intnat/ubintnat.h
+2026-09-02T05:39:12.7502081Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/nativeintbackend.h
+2026-09-02T05:39:12.7507740Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/transform.h
+2026-09-02T05:39:12.7513636Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/vector.h
+2026-09-02T05:39:12.7521087Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hermite.h
+2026-09-02T05:39:12.7526581Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/math-hal.h
+2026-09-02T05:39:12.7532419Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/math_backends.md
+2026-09-02T05:39:12.7540269Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/matrix-impl.h
+2026-09-02T05:39:12.7546266Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/matrix.h
+2026-09-02T05:39:12.7553810Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/matrixstrassen-impl.h
+2026-09-02T05:39:12.7560675Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/matrixstrassen.h
+2026-09-02T05:39:12.7567404Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/nbtheory-impl.h
+2026-09-02T05:39:12.7575997Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/nbtheory.h
+2026-09-02T05:39:12.7604171Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/README.md
+2026-09-02T05:39:12.7657604Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/SAMPLING_README.md
+2026-09-02T05:39:12.7663589Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/ternaryuniformgenerator-impl.h
+2026-09-02T05:39:12.7669642Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/ternaryuniformgenerator.h
+2026-09-02T05:39:12.7676845Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/openfhecore.h
+2026-09-02T05:39:12.7683021Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/README.md
+2026-09-02T05:39:12.7710537Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/testdefs.h
+2026-09-02T05:39:12.7717491Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils
+2026-09-02T05:39:12.7722886Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator
+2026-09-02T05:39:12.7728960Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/blockAllocator.h
+2026-09-02T05:39:12.7736169Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/README.md
+2026-09-02T05:39:12.7741656Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/stl_allocator.h
+2026-09-02T05:39:12.7747553Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xallocator.h
+2026-09-02T05:39:12.7779927Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xlist.h
+2026-09-02T05:39:12.7785727Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xmap.h
+2026-09-02T05:39:12.7791370Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xqueue.h
+2026-09-02T05:39:12.7798405Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xset.h
+2026-09-02T05:39:12.7804056Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xsstream.h
+2026-09-02T05:39:12.7809766Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xstring.h
+2026-09-02T05:39:12.7816801Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xvector.h
+2026-09-02T05:39:12.7822231Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/caller_info.h
+2026-09-02T05:39:12.7827879Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/debug.h
+2026-09-02T05:39:12.7835060Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/demangle.h
+2026-09-02T05:39:12.7840707Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/exception.h
+2026-09-02T05:39:12.7877506Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/get-call-stack.h
+2026-09-02T05:39:12.7884554Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/hashutil.h
+2026-09-02T05:39:12.7890635Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/inttypes.h
+2026-09-02T05:39:12.7895427Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/memory.h
+2026-09-02T05:39:12.7902713Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/openfhebase64.h
+2026-09-02T05:39:12.7908249Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/parallel.h
+2026-09-02T05:39:12.7913921Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng
+2026-09-02T05:39:12.7921082Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/blake2-impl.h
+2026-09-02T05:39:12.7927309Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/blake2.h
+2026-09-02T05:39:12.7933083Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/blake2engine.h
+2026-09-02T05:39:12.7940132Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/CPPLINT.cfg
+2026-09-02T05:39:12.7945589Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/prng.h
+2026-09-02T05:39:12.7975170Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/README.md
+2026-09-02T05:39:12.7982205Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/README.md
+2026-09-02T05:39:12.7987731Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/serial.h
+2026-09-02T05:39:12.7993586Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/serializable.h
+2026-09-02T05:39:12.8000454Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/sertype.h
+2026-09-02T05:39:12.8005954Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/type_name.h
+2026-09-02T05:39:12.8011495Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/utilities-int.h
+2026-09-02T05:39:12.8018837Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/utilities.h
+2026-09-02T05:39:12.8024773Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/version.h
+2026-09-02T05:39:12.8034226Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEpke.dll.a
+2026-09-02T05:39:12.8082540Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEpke.dll
+2026-09-02T05:39:12.8177679Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke
+2026-09-02T05:39:12.8183047Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/ciphertext-fwd.h
+2026-09-02T05:39:12.8233862Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/ciphertext-ser.h
+2026-09-02T05:39:12.8239376Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/ciphertext.h
+2026-09-02T05:39:12.8245323Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/constants-defs.h
+2026-09-02T05:39:12.8274209Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/constants.h
+2026-09-02T05:39:12.8279880Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/cryptocontext-fwd.h
+2026-09-02T05:39:12.8285546Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/cryptocontext-ser.h
+2026-09-02T05:39:12.8293022Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/cryptocontext.h
+2026-09-02T05:39:12.8301389Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/cryptocontextfactory.h
+2026-09-02T05:39:12.8307537Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/cryptoobject.h
+2026-09-02T05:39:12.8314601Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding
+2026-09-02T05:39:12.8320130Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/ckkspackedencoding.h
+2026-09-02T05:39:12.8326024Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/coefpackedencoding.h
+2026-09-02T05:39:12.8333243Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/encodingparams.h
+2026-09-02T05:39:12.8507449Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/encodings.h
+2026-09-02T05:39:12.8513382Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/packedencoding.h
+2026-09-02T05:39:12.8986501Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/plaintext-fwd.h
+2026-09-02T05:39:12.8992407Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/plaintext.h
+2026-09-02T05:39:12.8998609Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/plaintextfactory.h
+2026-09-02T05:39:12.9006279Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/README.md
+2026-09-02T05:39:12.9012199Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/stringencoding.h
+2026-09-02T05:39:12.9018190Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/gen-cryptocontext.h
+2026-09-02T05:39:12.9025727Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/globals.h
+2026-09-02T05:39:12.9031245Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key
+2026-09-02T05:39:12.9036904Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/evalkey-fwd.h
+2026-09-02T05:39:12.9043835Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/evalkey.h
+2026-09-02T05:39:12.9049661Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/evalkeyrelin-fwd.h
+2026-09-02T05:39:12.9055199Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/evalkeyrelin.h
+2026-09-02T05:39:12.9083637Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/key-ser.h
+2026-09-02T05:39:12.9089217Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/key.h
+2026-09-02T05:39:12.9094829Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/keypair.h
+2026-09-02T05:39:12.9101798Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/privatekey-fwd.h
+2026-09-02T05:39:12.9107600Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/privatekey.h
+2026-09-02T05:39:12.9113422Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/publickey-fwd.h
+2026-09-02T05:39:12.9120346Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/publickey.h
+2026-09-02T05:39:12.9126269Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/README.md
+2026-09-02T05:39:12.9131703Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch
+2026-09-02T05:39:12.9139363Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-base.h
+2026-09-02T05:39:12.9145192Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-bv.h
+2026-09-02T05:39:12.9150920Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-hybrid.h
+2026-09-02T05:39:12.9180312Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-rns.h
+2026-09-02T05:39:12.9193816Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch/README.md
+2026-09-02T05:39:12.9194510Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/metadata-ser.h
+2026-09-02T05:39:12.9200309Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/metadata.h
+2026-09-02T05:39:12.9206291Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/openfhe.h
+2026-09-02T05:39:12.9211864Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/README.md
+2026-09-02T05:39:12.9219182Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme
+2026-09-02T05:39:12.9224225Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns
+2026-09-02T05:39:12.9229899Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-advancedshe.h
+2026-09-02T05:39:12.9274729Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-cryptoparameters.h
+2026-09-02T05:39:12.9280547Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-fhe.h
+2026-09-02T05:39:12.9307447Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-leveledshe.h
+2026-09-02T05:39:12.9315164Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-multiparty.h
+2026-09-02T05:39:12.9321053Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-parametergeneration.h
+2026-09-02T05:39:12.9326738Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-pke.h
+2026-09-02T05:39:12.9334068Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-pre.h
+2026-09-02T05:39:12.9339726Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-scheme.h
+2026-09-02T05:39:12.9345320Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-ser.h
+2026-09-02T05:39:12.9352629Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-internal.h
+2026-09-02T05:39:12.9358710Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-params.h
+2026-09-02T05:39:12.9364878Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns.h
+2026-09-02T05:39:12.9371513Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns
+2026-09-02T05:39:12.9377206Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-advancedshe.h
+2026-09-02T05:39:12.9382828Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-cryptoparameters.h
+2026-09-02T05:39:12.9389987Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-fhe.h
+2026-09-02T05:39:12.9415700Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-leveledshe.h
+2026-09-02T05:39:12.9422901Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-multiparty.h
+2026-09-02T05:39:12.9428605Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-parametergeneration.h
+2026-09-02T05:39:12.9434571Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-pke.h
+2026-09-02T05:39:12.9491717Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-pre.h
+2026-09-02T05:39:12.9498781Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-scheme.h
+2026-09-02T05:39:12.9549517Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-ser.h
+2026-09-02T05:39:12.9555413Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-internal.h
+2026-09-02T05:39:12.9563534Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-params.h
+2026-09-02T05:39:12.9570950Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns.h
+2026-09-02T05:39:12.9576428Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns
+2026-09-02T05:39:12.9582516Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-advancedshe.h
+2026-09-02T05:39:12.9640405Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-cryptoparameters.h
+2026-09-02T05:39:12.9647701Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-fhe.h
+2026-09-02T05:39:12.9676907Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-leveledshe.h
+2026-09-02T05:39:12.9684060Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-multiparty.h
+2026-09-02T05:39:12.9691335Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-parametergeneration.h
+2026-09-02T05:39:12.9696971Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-pke.h
+2026-09-02T05:39:12.9702694Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-pre.h
+2026-09-02T05:39:12.9709764Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-scheme.h
+2026-09-02T05:39:12.9763475Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-schemeswitching.h
+2026-09-02T05:39:12.9821084Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-ser.h
+2026-09-02T05:39:12.9868402Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-utils.h
+2026-09-02T05:39:12.9874845Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-internal.h
+2026-09-02T05:39:12.9880888Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-params.h
+2026-09-02T05:39:12.9887932Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns.h
+2026-09-02T05:39:12.9894883Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/README.md
+2026-09-02T05:39:12.9901927Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/gen-cryptocontext-params-defaults.h
+2026-09-02T05:39:12.9908024Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/gen-cryptocontext-params-validation.h
+2026-09-02T05:39:12.9979901Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/gen-cryptocontext-params.h
+2026-09-02T05:39:13.0025377Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/README.md
+2026-09-02T05:39:13.0077278Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/scheme-id.h
+2026-09-02T05:39:13.0084089Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/scheme-swch-params.h
+2026-09-02T05:39:13.0133803Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/scheme-utils.h
+2026-09-02T05:39:13.0140388Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase
+2026-09-02T05:39:13.0145890Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-advancedshe.h
+2026-09-02T05:39:13.0202359Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-cryptoparameters.h
+2026-09-02T05:39:13.0260331Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-fhe.h
+2026-09-02T05:39:13.0267977Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-leveledshe.h
+2026-09-02T05:39:13.0346844Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-multiparty.h
+2026-09-02T05:39:13.0354324Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-parametergeneration.h
+2026-09-02T05:39:13.0360194Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-pke.h
+2026-09-02T05:39:13.0407551Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-pre.h
+2026-09-02T05:39:13.0414344Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-scheme.h
+2026-09-02T05:39:13.0468169Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-ser.h
+2026-09-02T05:39:13.0474853Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/decrypt-result.h
+2026-09-02T05:39:13.0522106Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/rlwe-cryptoparameters.h
+2026-09-02T05:39:13.0529256Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemelet
+2026-09-02T05:39:13.0535944Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemelet/rlwe-mp.h
+2026-09-02T05:39:13.0541338Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns
+2026-09-02T05:39:13.0622375Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-advancedshe.h
+2026-09-02T05:39:13.0629375Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-cryptoparameters.h
+2026-09-02T05:39:13.0637226Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-fhe.h
+2026-09-02T05:39:13.0687599Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-leveledshe.h
+2026-09-02T05:39:13.0724819Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-multiparty.h
+2026-09-02T05:39:13.0732532Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-parametergeneration.h
+2026-09-02T05:39:13.0787025Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-pke.h
+2026-09-02T05:39:13.0794222Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-pre.h
+2026-09-02T05:39:13.0799788Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-scheme.h
+2026-09-02T05:39:13.0849266Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-ser.h
+2026-09-02T05:39:13.0859151Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils
+2026-09-02T05:39:13.0867752Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/BaseTestCase.h
+2026-09-02T05:39:13.0873936Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/schemeswitching-data-serializer.h
+2026-09-02T05:39:13.0880104Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestCCParams.h
+2026-09-02T05:39:13.0908605Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestCryptoContext.h
+2026-09-02T05:39:13.0914272Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestException.h
+2026-09-02T05:39:13.0920056Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestMetadataTest.h
+2026-09-02T05:39:13.0927307Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestMetadataTestSer.h
+2026-09-02T05:39:13.0933196Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestReadCSVData.h
+2026-09-02T05:39:13.0940150Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestSer.h
+2026-09-02T05:39:13.0946020Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestUtils.h
+2026-09-02T05:39:13.0956385Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEbinfhe.dll.a
+2026-09-02T05:39:13.0969409Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEbinfhe.dll
+2026-09-02T05:39:13.0984489Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe
+2026-09-02T05:39:13.0989763Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/binfhe-base-params.h
+2026-09-02T05:39:13.0997126Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/binfhe-base-scheme.h
+2026-09-02T05:39:13.1002965Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/binfhe-constants.h
+2026-09-02T05:39:13.1029926Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/binfhecontext-ser.h
+2026-09-02T05:39:13.1036789Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/binfhecontext.h
+2026-09-02T05:39:13.1042814Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-ciphertext-fwd.h
+2026-09-02T05:39:13.1048438Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-ciphertext.h
+2026-09-02T05:39:13.1057733Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-cryptoparameters.h
+2026-09-02T05:39:13.1063388Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-keypair-fwd.h
+2026-09-02T05:39:13.1068898Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-keypair.h
+2026-09-02T05:39:13.1075999Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-keyswitchkey-fwd.h
+2026-09-02T05:39:13.1081516Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-keyswitchkey.h
+2026-09-02T05:39:13.1087382Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-pke.h
+2026-09-02T05:39:13.1094687Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-privatekey-fwd.h
+2026-09-02T05:39:13.1100444Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-privatekey.h
+2026-09-02T05:39:13.1105968Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-publickey-fwd.h
+2026-09-02T05:39:13.1112734Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-publickey.h
+2026-09-02T05:39:13.1118981Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/README.md
+2026-09-02T05:39:13.1172048Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-acc-cggi.h
+2026-09-02T05:39:13.1200252Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-acc-dm.h
+2026-09-02T05:39:13.1205950Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-acc-lmkcdey.h
+2026-09-02T05:39:13.1211826Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-acc.h
+2026-09-02T05:39:13.1260430Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-acckey.h
+2026-09-02T05:39:13.1266570Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-cryptoparameters.h
+2026-09-02T05:39:13.1273990Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-evalkey.h
+2026-09-02T05:39:13.1279896Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rlwe-ciphertext.h
+2026-09-02T05:39:13.1290859Z -- Installing: C:/openfhe-2023-1788/openfhe-install/CMake/OpenFHEConfig.cmake
+2026-09-02T05:39:13.1296440Z -- Installing: C:/openfhe-2023-1788/openfhe-install/CMake/OpenFHEConfigVersion.cmake
+2026-09-02T05:39:13.1304569Z -- Installing: C:/openfhe-2023-1788/openfhe-install/CMake/OpenFHETargets.cmake
+2026-09-02T05:39:13.1333537Z -- Installing: C:/openfhe-2023-1788/openfhe-install/CMake/OpenFHETargets-release.cmake
+2026-09-02T05:39:13.1657168Z ##[group]Run prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-02T05:39:13.1657553Z [36;1mprefix="$(cygpath -u "$OPENFHE_PREFIX")"[0m
+2026-09-02T05:39:13.1657820Z [36;1mbuild="$(cygpath -u "$PROJECT_BUILD")"[0m
+2026-09-02T05:39:13.1658044Z [36;1mcmake -S . -B "$build" \[0m
+2026-09-02T05:39:13.1658245Z [36;1m  -DCMAKE_BUILD_TYPE=Debug \[0m
+2026-09-02T05:39:13.1658471Z [36;1m  -DCMAKE_PREFIX_PATH="$prefix"[0m
+2026-09-02T05:39:13.1660217Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-02T05:39:13.1660433Z env:
+2026-09-02T05:39:13.1660627Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:39:13.1660909Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-02T05:39:13.1661143Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-02T05:39:13.1661358Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-02T05:39:13.1661593Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-02T05:39:13.1661897Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33595207012-1
+2026-09-02T05:39:13.1662196Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33595207012-1
+2026-09-02T05:39:13.1662432Z   MSYSTEM: MINGW64
+2026-09-02T05:39:13.1662576Z ##[endgroup]
+2026-09-02T05:39:13.4612180Z -- Building for: Ninja
+2026-09-02T05:39:13.4612452Z -- The CXX compiler identification is GNU 16.2.0
+2026-09-02T05:39:13.4994842Z -- Detecting CXX compiler ABI info
+2026-09-02T05:39:13.7916605Z -- Detecting CXX compiler ABI info - done
+2026-09-02T05:39:13.8170873Z -- Check for working CXX compiler: D:/a/_temp/msys64/mingw64/bin/c++.exe - skipped
+2026-09-02T05:39:13.8174585Z -- Detecting CXX compile features
+2026-09-02T05:39:13.8182279Z -- Detecting CXX compile features - done
+2026-09-02T05:39:13.8413042Z -- Configuring done (0.5s)
+2026-09-02T05:39:13.8686246Z -- Generating done (0.0s)
+2026-09-02T05:39:13.8698182Z -- Build files have been written to: C:/openfhe-2023-1788/project-build-33595207012-1
+2026-09-02T05:39:13.8918187Z ##[group]Run build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-02T05:39:13.8918575Z [36;1mbuild="$(cygpath -u "$PROJECT_BUILD")"[0m
+2026-09-02T05:39:13.8918828Z [36;1mcmake --build "$build" --parallel 2[0m
+2026-09-02T05:39:13.8920729Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-02T05:39:13.8920980Z env:
+2026-09-02T05:39:13.8921228Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:39:13.8921582Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-02T05:39:13.8921861Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-02T05:39:13.8922116Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-02T05:39:13.8922421Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-02T05:39:13.8922746Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33595207012-1
+2026-09-02T05:39:13.8923085Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33595207012-1
+2026-09-02T05:39:13.8923375Z   MSYSTEM: MINGW64
+2026-09-02T05:39:13.8923649Z ##[endgroup]
+2026-09-02T05:39:21.6480779Z [1/10] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.obj
+2026-09-02T05:39:21.7256475Z [2/10] Linking CXX static library libopenfhe_2023_1788.a
+2026-09-02T05:39:24.5634031Z [3/10] Building CXX object CMakeFiles/tensor2_api_contract_test.dir/tests/tensor2_api_contract_test.cpp.obj
+2026-09-02T05:39:31.8159015Z [4/10] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.obj
+2026-09-02T05:39:39.6088023Z [5/10] Building CXX object CMakeFiles/tensor2_test.dir/tests/tensor2_test.cpp.obj
+2026-09-02T05:39:39.8421667Z [6/10] Linking CXX executable dcp_rcb_test.exe
+2026-09-02T05:39:39.9217603Z [7/10] Linking CXX executable tensor2_api_contract_test.exe
+2026-09-02T05:39:40.1032710Z [8/10] Linking CXX executable tensor2_test.exe
+2026-09-02T05:39:48.7612359Z [9/10] Building CXX object CMakeFiles/relin2_test.dir/tests/relin2_test.cpp.obj
+2026-09-02T05:39:48.9684679Z [10/10] Linking CXX executable relin2_test.exe
+2026-09-02T05:39:48.9858723Z ##[group]Run build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-02T05:39:48.9859074Z [36;1mbuild="$(cygpath -u "$PROJECT_BUILD")"[0m
+2026-09-02T05:39:48.9859389Z [36;1mcmake --build "$build" --target relin2_api_contract_test --parallel 2[0m
+2026-09-02T05:39:48.9861290Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-02T05:39:48.9861494Z env:
+2026-09-02T05:39:48.9861682Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:39:48.9861968Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-02T05:39:48.9862193Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-02T05:39:48.9862419Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-02T05:39:48.9862651Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-02T05:39:48.9862919Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33595207012-1
+2026-09-02T05:39:48.9863224Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33595207012-1
+2026-09-02T05:39:48.9863462Z   MSYSTEM: MINGW64
+2026-09-02T05:39:48.9863638Z ##[endgroup]
+2026-09-02T05:39:51.6695898Z [1/2] Building CXX object CMakeFiles/relin2_api_contract_test.dir/tests/relin2_api_contract_test.cpp.obj
+2026-09-02T05:39:51.7389157Z [2/2] Linking CXX executable relin2_api_contract_test.exe
+2026-09-02T05:39:51.7556363Z ##[group]Run prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-02T05:39:51.7556737Z [36;1mprefix="$(cygpath -u "$OPENFHE_PREFIX")"[0m
+2026-09-02T05:39:51.7556996Z [36;1mbuild="$(cygpath -u "$PROJECT_BUILD")"[0m
+2026-09-02T05:39:51.7557263Z [36;1mexport PATH="$prefix/bin:$prefix/lib:$PATH"[0m
+2026-09-02T05:39:51.7557530Z [36;1mctest --test-dir "$build" --output-on-failure[0m
+2026-09-02T05:39:51.7559173Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-02T05:39:51.7559368Z env:
+2026-09-02T05:39:51.7559555Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:39:51.7559829Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-02T05:39:51.7560104Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-02T05:39:51.7560335Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-02T05:39:51.7560580Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-02T05:39:51.7560853Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33595207012-1
+2026-09-02T05:39:51.7561182Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33595207012-1
+2026-09-02T05:39:51.7561421Z   MSYSTEM: MINGW64
+2026-09-02T05:39:51.7561562Z ##[endgroup]
+2026-09-02T05:39:51.9273888Z Test project C:/openfhe-2023-1788/project-build-33595207012-1
+2026-09-02T05:39:51.9300976Z       Start  1: dcp_rcb
+2026-09-02T05:39:51.9930999Z  1/22 Test  #1: dcp_rcb ...................................   Passed    0.06 sec
+2026-09-02T05:39:51.9961704Z       Start  2: tensor2_valid_arithmetic_immutability
+2026-09-02T05:39:52.0120390Z  2/22 Test  #2: tensor2_valid_arithmetic_immutability .....   Passed    0.02 sec
+2026-09-02T05:39:52.0123440Z       Start  3: tensor2_result_scale_contract
+2026-09-02T05:39:52.0233501Z  3/22 Test  #3: tensor2_result_scale_contract .............   Passed    0.01 sec
+2026-09-02T05:39:52.0236855Z       Start  4: tensor2_right_input_validation
+2026-09-02T05:39:52.0333687Z  4/22 Test  #4: tensor2_right_input_validation ............   Passed    0.01 sec
+2026-09-02T05:39:52.0336480Z       Start  5: tensor2_mutual_compatibility
+2026-09-02T05:39:52.0437751Z  5/22 Test  #5: tensor2_mutual_compatibility ..............   Passed    0.01 sec
+2026-09-02T05:39:52.0440661Z       Start  6: tensor2_prearithmetic_key_compatibility
+2026-09-02T05:39:52.0549004Z  6/22 Test  #6: tensor2_prearithmetic_key_compatibility ...   Passed    0.01 sec
+2026-09-02T05:39:52.0551852Z       Start  7: relin2_tensor_validation_order
+2026-09-02T05:39:52.1263474Z  7/22 Test  #7: relin2_tensor_validation_order ............   Passed    0.07 sec
+2026-09-02T05:39:52.1267122Z       Start  8: relin2_insufficient_active_basis
+2026-09-02T05:39:52.1376374Z  8/22 Test  #8: relin2_insufficient_active_basis ..........   Passed    0.01 sec
+2026-09-02T05:39:52.1379104Z       Start  9: relin2_missing_eval_key
+2026-09-02T05:39:52.1487591Z  9/22 Test  #9: relin2_missing_eval_key ...................   Passed    0.01 sec
+2026-09-02T05:39:52.1490420Z       Start 10: relin2_key_empty
+2026-09-02T05:39:52.1595989Z 10/22 Test #10: relin2_key_empty ..........................   Passed    0.01 sec
+2026-09-02T05:39:52.1598747Z       Start 11: relin2_key_null_first
+2026-09-02T05:39:52.1702167Z 11/22 Test #11: relin2_key_null_first .....................   Passed    0.01 sec
+2026-09-02T05:39:52.1705321Z       Start 12: relin2_key_wrong_context
+2026-09-02T05:39:52.1832207Z 12/22 Test #12: relin2_key_wrong_context ..................   Passed    0.01 sec
+2026-09-02T05:39:52.1834921Z       Start 13: relin2_key_wrong_tag
+2026-09-02T05:39:52.1942864Z 13/22 Test #13: relin2_key_wrong_tag ......................   Passed    0.01 sec
+2026-09-02T05:39:52.1945696Z       Start 14: relin2_key_wrong_subtype
+2026-09-02T05:39:52.2058197Z 14/22 Test #14: relin2_key_wrong_subtype ..................   Passed    0.01 sec
+2026-09-02T05:39:52.2060895Z       Start 15: relin2_key_hybrid_a_length
+2026-09-02T05:39:52.2170711Z 15/22 Test #15: relin2_key_hybrid_a_length ................   Passed    0.01 sec
+2026-09-02T05:39:52.2174983Z       Start 16: relin2_key_hybrid_b_length
+2026-09-02T05:39:52.2279877Z 16/22 Test #16: relin2_key_hybrid_b_length ................   Passed    0.01 sec
+2026-09-02T05:39:52.2282659Z       Start 17: relin2_key_hybrid_entry_basis
+2026-09-02T05:39:52.2392460Z 17/22 Test #17: relin2_key_hybrid_entry_basis .............   Passed    0.01 sec
+2026-09-02T05:39:52.2395337Z       Start 18: relin2_key_hybrid_entry_format
+2026-09-02T05:39:52.2513254Z 18/22 Test #18: relin2_key_hybrid_entry_format ............   Passed    0.01 sec
+2026-09-02T05:39:52.2516210Z       Start 19: relin2_key_bv_zero_digit_a_length
+2026-09-02T05:39:52.2617346Z 19/22 Test #19: relin2_key_bv_zero_digit_a_length .........   Passed    0.01 sec
+2026-09-02T05:39:52.2620662Z       Start 20: relin2_key_bv_zero_digit_b_length
+2026-09-02T05:39:52.2734673Z 20/22 Test #20: relin2_key_bv_zero_digit_b_length .........   Passed    0.01 sec
+2026-09-02T05:39:52.2738066Z       Start 21: relin2_key_bv_nonzero_digit_a_length
+2026-09-02T05:39:52.2855273Z 21/22 Test #21: relin2_key_bv_nonzero_digit_a_length ......   Passed    0.01 sec
+2026-09-02T05:39:52.2858509Z       Start 22: relin2_key_bv_nonzero_digit_b_length
+2026-09-02T05:39:52.2982852Z 22/22 Test #22: relin2_key_bv_nonzero_digit_b_length ......***Failed    0.01 sec
+2026-09-02T05:39:52.2983752Z Relin2 test failure: Relin2 BV nonzero-digit B-vector length threw the wrong exception type: DoubleCKKS: Relin2 is not implemented
+2026-09-02T05:39:52.2984334Z 
+2026-09-02T05:39:52.2995011Z 
+2026-09-02T05:39:52.2995217Z 95% tests passed, 1 tests failed out of 22
+2026-09-02T05:39:52.2995492Z 
+2026-09-02T05:39:52.2995603Z Total Test time (real) =   0.37 sec
+2026-09-02T05:39:52.2995828Z 
+2026-09-02T05:39:52.2995934Z The following tests FAILED:
+2026-09-02T05:39:52.3021345Z 	 22 - relin2_key_bv_nonzero_digit_b_length (Failed)
+2026-09-02T05:39:52.3030922Z Errors while running CTest
+2026-09-02T05:39:52.3131978Z ##[error]Process completed with exit code 8.
+2026-09-02T05:39:52.3211653Z Cleaning up orphan processes
