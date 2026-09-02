@@ -220,6 +220,168 @@ void CheckTensorUnchanged(const TensorCiphertextPair& tensor, const TensorSnapsh
     Check(tensor.GetComponentCount() == before.componentCount, label + " component-count manifest changed");
 }
 
+struct KeyPolynomialSnapshot {
+    DCRTPoly value;
+    const void* paramsIdentity;
+    std::uint32_t cyclotomicOrder;
+    lbcrypto::BigInteger modulus;
+    lbcrypto::BigInteger rootOfUnity;
+    Format format;
+    std::vector<const void*> declaredTowerParamIdentities;
+    std::vector<std::uint32_t> declaredTowerCyclotomicOrders;
+    std::vector<lbcrypto::NativeInteger> declaredTowerModuli;
+    std::vector<lbcrypto::NativeInteger> declaredTowerRoots;
+    std::vector<const void*> actualTowerParamIdentities;
+    std::vector<std::uint32_t> actualTowerCyclotomicOrders;
+    std::vector<lbcrypto::NativeInteger> actualTowerModuli;
+    std::vector<lbcrypto::NativeInteger> actualTowerRoots;
+    std::vector<Format> actualTowerFormats;
+};
+
+KeyPolynomialSnapshot SnapshotKeyPolynomial(const DCRTPoly& polynomial, const std::string& label) {
+    const auto& params = polynomial.GetParams();
+    Check(params != nullptr, label + " aggregate parameters are null");
+
+    KeyPolynomialSnapshot snapshot{
+        polynomial,
+        params.get(),
+        params->GetCyclotomicOrder(),
+        params->GetModulus(),
+        params->GetRootOfUnity(),
+        polynomial.GetFormat(),
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+    };
+
+    for (const auto& towerParams : params->GetParams()) {
+        Check(towerParams != nullptr, label + " declared tower parameters are null");
+        snapshot.declaredTowerParamIdentities.push_back(towerParams.get());
+        snapshot.declaredTowerCyclotomicOrders.push_back(towerParams->GetCyclotomicOrder());
+        snapshot.declaredTowerModuli.push_back(towerParams->GetModulus());
+        snapshot.declaredTowerRoots.push_back(towerParams->GetRootOfUnity());
+    }
+    for (const auto& tower : polynomial.GetAllElements()) {
+        const auto& towerParams = tower.GetParams();
+        Check(towerParams != nullptr, label + " actual tower parameters are null");
+        snapshot.actualTowerParamIdentities.push_back(towerParams.get());
+        snapshot.actualTowerCyclotomicOrders.push_back(tower.GetCyclotomicOrder());
+        snapshot.actualTowerModuli.push_back(tower.GetModulus());
+        snapshot.actualTowerRoots.push_back(tower.GetRootOfUnity());
+        snapshot.actualTowerFormats.push_back(tower.GetFormat());
+    }
+    return snapshot;
+}
+
+using KeyVectorSnapshot = std::vector<KeyPolynomialSnapshot>;
+
+KeyVectorSnapshot SnapshotKeyVector(const std::vector<DCRTPoly>& entries, const std::string& label) {
+    KeyVectorSnapshot snapshot;
+    snapshot.reserve(entries.size());
+    for (std::size_t index = 0; index < entries.size(); ++index) {
+        snapshot.push_back(SnapshotKeyPolynomial(entries[index], label + " entry " + std::to_string(index)));
+    }
+    return snapshot;
+}
+
+void CheckKeyVectorUnchanged(const std::vector<DCRTPoly>& entries, const KeyVectorSnapshot& before,
+                             const std::string& label) {
+    Check(entries.size() == before.size(), label + " vector length changed");
+    for (std::size_t index = 0; index < entries.size(); ++index) {
+        const auto current = SnapshotKeyPolynomial(entries[index], label + " entry " + std::to_string(index));
+        const auto& expected = before[index];
+        Check(current.value == expected.value, label + " polynomial value changed");
+        Check(current.paramsIdentity == expected.paramsIdentity, label + " aggregate-parameter identity changed");
+        Check(current.cyclotomicOrder == expected.cyclotomicOrder,
+              label + " aggregate cyclotomic order changed");
+        Check(current.modulus == expected.modulus, label + " aggregate modulus changed");
+        Check(current.rootOfUnity == expected.rootOfUnity, label + " aggregate root of unity changed");
+        Check(current.format == expected.format, label + " aggregate format changed");
+        Check(current.declaredTowerParamIdentities == expected.declaredTowerParamIdentities,
+              label + " declared tower-parameter identities changed");
+        Check(current.declaredTowerCyclotomicOrders == expected.declaredTowerCyclotomicOrders,
+              label + " declared tower cyclotomic orders changed");
+        Check(current.declaredTowerModuli == expected.declaredTowerModuli,
+              label + " declared tower moduli changed");
+        Check(current.declaredTowerRoots == expected.declaredTowerRoots,
+              label + " declared tower roots changed");
+        Check(current.actualTowerParamIdentities == expected.actualTowerParamIdentities,
+              label + " actual tower-parameter identities changed");
+        Check(current.actualTowerCyclotomicOrders == expected.actualTowerCyclotomicOrders,
+              label + " actual tower cyclotomic orders changed");
+        Check(current.actualTowerModuli == expected.actualTowerModuli,
+              label + " actual tower moduli changed");
+        Check(current.actualTowerRoots == expected.actualTowerRoots,
+              label + " actual tower roots changed");
+        Check(current.actualTowerFormats == expected.actualTowerFormats,
+              label + " actual tower formats changed");
+    }
+}
+
+void CheckKeyPolynomialBasis(
+    const DCRTPoly& polynomial,
+    const std::shared_ptr<lbcrypto::ILDCRTParams<lbcrypto::BigInteger>>& expectedBasis,
+    const std::string& label) {
+    Check(expectedBasis != nullptr, label + " expected basis is null");
+    const auto& actualBasis = polynomial.GetParams();
+    Check(actualBasis != nullptr && *actualBasis == *expectedBasis,
+          label + " declared basis does not match ParamsQP");
+    const auto& expectedTowers = expectedBasis->GetParams();
+    const auto& actualTowers = polynomial.GetAllElements();
+    Check(actualTowers.size() == expectedTowers.size(), label + " actual tower count does not match ParamsQP");
+    for (std::size_t index = 0; index < actualTowers.size(); ++index) {
+        Check(expectedTowers[index] != nullptr, label + " expected tower parameters are null");
+        Check(actualTowers[index].GetCyclotomicOrder() == expectedTowers[index]->GetCyclotomicOrder() &&
+                  actualTowers[index].GetModulus() == expectedTowers[index]->GetModulus() &&
+                  actualTowers[index].GetRootOfUnity() == expectedTowers[index]->GetRootOfUnity(),
+              label + " actual tower basis does not match ParamsQP");
+    }
+}
+
+DCRTPoly CloneKeyPolynomialWithIndependentParams(const DCRTPoly& source, const std::string& label) {
+    std::vector<DCRTPoly::PolyType> clonedTowers;
+    clonedTowers.reserve(source.GetAllElements().size());
+    for (std::size_t index = 0; index < source.GetAllElements().size(); ++index) {
+        const auto& sourceTower = source.GetAllElements()[index];
+        const auto& sourceParams = sourceTower.GetParams();
+        Check(sourceParams != nullptr, label + " source tower parameters are null");
+        auto clonedParams = std::make_shared<DCRTPoly::PolyType::Params>(*sourceParams);
+        Check(clonedParams.get() != sourceParams.get() && *clonedParams == *sourceParams,
+              label + " tower parameter clone is not independent and semantically equal");
+        DCRTPoly::PolyType clonedTower(clonedParams, sourceTower.GetFormat());
+        clonedTower.SetValues(sourceTower.GetValues(), sourceTower.GetFormat());
+        Check(clonedTower.GetParams().get() != sourceParams.get() &&
+                  *clonedTower.GetParams() == *sourceParams &&
+                  clonedTower.GetFormat() == sourceTower.GetFormat() &&
+                  clonedTower.GetValues() == sourceTower.GetValues(),
+              label + " tower clone changed parameters, format, or values");
+        clonedTowers.push_back(std::move(clonedTower));
+    }
+
+    DCRTPoly clone(clonedTowers);
+    Check(clone.GetParams().get() != source.GetParams().get() &&
+              *clone.GetParams() == *source.GetParams() && clone == source,
+          label + " aggregate clone is not independent and semantically equal");
+    Check(clone.GetAllElements().size() == source.GetAllElements().size(),
+          label + " aggregate clone changed the tower count");
+    for (std::size_t index = 0; index < clone.GetAllElements().size(); ++index) {
+        Check(clone.GetAllElements()[index].GetParams().get() !=
+                  source.GetAllElements()[index].GetParams().get() &&
+                  *clone.GetAllElements()[index].GetParams() ==
+                  *source.GetAllElements()[index].GetParams() &&
+                  clone.GetAllElements()[index].GetValues() ==
+                  source.GetAllElements()[index].GetValues(),
+              label + " returned tower clone reused parameters or changed values");
+    }
+    return clone;
+}
+
 CryptoContext<DCRTPoly> MakeContext(std::uint32_t multiplicativeDepth = 3,
                                     std::uint32_t batchSize = 8) {
     lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
@@ -981,6 +1143,227 @@ void TestHybridEvaluationKeyBLength() {
           "Relin2 HYBRID B-length fixture failed to restore the initially empty cache");
 }
 
+void TestHybridEvaluationKeyEntryBasis() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    leftInput->SetMetadataByKey("relin2-hybrid-entry-basis-immutability-probe",
+                                std::make_shared<ImmutabilityProbeMetadata>("unchanged"));
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 4,
+          "Relin2 HYBRID entry-basis fixture must have exactly four full-basis towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 3,
+          "Relin2 HYBRID entry-basis fixture must have exactly three active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 HYBRID entry-basis fixture must have noise-scale degree three");
+    Check(!tensor.GetKeyTag().empty(),
+          "Relin2 HYBRID entry-basis fixture must have a nonempty key tag");
+    Check(keys.secretKey->GetKeyTag() == tensor.GetKeyTag(),
+          "Relin2 HYBRID entry-basis fixture secret key must match the Tensor tag");
+    const auto highMetadata = tensor.GetHigh()->GetMetadataMap();
+    const auto lowMetadata = tensor.GetLow()->GetMetadataMap();
+    Check(highMetadata != nullptr && highMetadata->size() == 1 &&
+              highMetadata->find("relin2-hybrid-entry-basis-immutability-probe") != highMetadata->end(),
+          "Relin2 HYBRID entry-basis fixture high ciphertext lost its metadata probe");
+    Check(lowMetadata != nullptr && lowMetadata->size() == 1 &&
+              lowMetadata->find("relin2-hybrid-entry-basis-immutability-probe") != lowMetadata->end(),
+          "Relin2 HYBRID entry-basis fixture low ciphertext lost its metadata probe");
+
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
+    Check(parameters != nullptr,
+          "Relin2 HYBRID entry-basis fixture must expose CKKS-RNS parameters");
+    Check(parameters->GetKeySwitchTechnique() == lbcrypto::HYBRID,
+          "Relin2 HYBRID entry-basis fixture must use HYBRID key switching");
+    const auto expectedHybridKeyLength = static_cast<std::size_t>(parameters->GetNumPartQ());
+    Check(expectedHybridKeyLength == 2,
+          "Relin2 HYBRID entry-basis fixture must have exactly two Q partitions");
+    const auto expectedBasis = parameters->GetParamsQP();
+    Check(expectedBasis != nullptr && expectedBasis->GetParams().size() >= 2,
+          "Relin2 HYBRID entry-basis fixture must expose a nontrivial complete ParamsQP basis");
+    Check(expectedBasis->GetParams()[0] != nullptr && expectedBasis->GetParams()[1] != nullptr &&
+              expectedBasis->GetParams()[0]->GetModulus() != expectedBasis->GetParams()[1]->GetModulus(),
+          "Relin2 HYBRID entry-basis fixture must have distinguishable first two ParamsQP towers");
+
+    auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(evaluationKeys.empty(),
+          "Relin2 HYBRID entry-basis fixture must start with an empty evaluation-key cache");
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeys);
+        context->EvalMultKeyGen(keys.secretKey);
+
+        const auto generatedRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(evaluationKeys.size() == 1 && generatedRow != evaluationKeys.end() &&
+                  generatedRow->second.size() == 1 && generatedRow->second.front() != nullptr,
+              "Relin2 HYBRID entry-basis fixture must generate exactly one evaluation key");
+        const auto hybridKey =
+            std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(generatedRow->second.front());
+        Check(hybridKey != nullptr,
+              "Relin2 HYBRID entry-basis fixture must use the relinearization-key subtype");
+        Check(hybridKey->GetCryptoContext().get() == context.get(),
+              "Relin2 HYBRID entry-basis fixture key must keep the bound context");
+        Check(hybridKey->GetKeyTag() == tensor.GetKeyTag(),
+              "Relin2 HYBRID entry-basis fixture key must match the Tensor tag");
+
+        const auto originalA = hybridKey->GetAVector();
+        const auto originalB = hybridKey->GetBVector();
+        Check(originalA.size() == expectedHybridKeyLength &&
+                  originalB.size() == expectedHybridKeyLength,
+              "Relin2 HYBRID entry-basis fixture must start with exact generated A/B lengths");
+        for (std::size_t index = 0; index < originalA.size(); ++index) {
+            Check(originalA[index].GetFormat() == Format::EVALUATION,
+                  "Relin2 HYBRID entry-basis fixture generated a non-Evaluation A entry");
+            CheckKeyPolynomialBasis(originalA[index], expectedBasis,
+                                    "Relin2 HYBRID generated A entry " + std::to_string(index));
+        }
+        for (std::size_t index = 0; index < originalB.size(); ++index) {
+            Check(originalB[index].GetFormat() == Format::EVALUATION,
+                  "Relin2 HYBRID entry-basis fixture generated a non-Evaluation B entry");
+            CheckKeyPolynomialBasis(originalB[index], expectedBasis,
+                                    "Relin2 HYBRID generated B entry " + std::to_string(index));
+        }
+
+        auto equivalentB = originalB;
+        equivalentB.back() = CloneKeyPolynomialWithIndependentParams(
+            originalB.back(), "Relin2 HYBRID equivalent-pointer positive control");
+        Check(equivalentB.back().GetParams().get() != originalB.back().GetParams().get() &&
+                  equivalentB.back().GetParams().get() != expectedBasis.get(),
+              "Relin2 HYBRID entry-basis positive control must use an independent parameter object");
+        for (std::size_t index = 0; index < equivalentB.back().GetAllElements().size(); ++index) {
+            Check(equivalentB.back().GetAllElements()[index].GetParams().get() !=
+                      originalB.back().GetAllElements()[index].GetParams().get(),
+                  "Relin2 HYBRID entry-basis positive control must use independent tower parameters");
+        }
+        Check(*equivalentB.back().GetParams() == *expectedBasis &&
+                  equivalentB.back() == originalB.back() &&
+                  equivalentB.back().GetFormat() == Format::EVALUATION,
+              "Relin2 HYBRID entry-basis positive control must remain semantically equivalent");
+        CheckKeyPolynomialBasis(equivalentB.back(), expectedBasis,
+                                "Relin2 HYBRID equivalent-pointer positive control");
+        hybridKey->SetBVector(std::move(equivalentB));
+
+        const auto* cacheIdentityBeforePositive = &evaluationKeys;
+        const auto* vectorIdentityBeforePositive = &generatedRow->second;
+        const auto keyIdentityBeforePositive = generatedRow->second.front();
+        const auto keyContextBeforePositive = hybridKey->GetCryptoContext();
+        const auto keyTagBeforePositive = hybridKey->GetKeyTag();
+        const auto tensorBeforePositive = SnapshotTensor(tensor);
+        const auto keyABeforePositive = SnapshotKeyVector(hybridKey->GetAVector(), "Relin2 HYBRID positive A");
+        const auto keyBBeforePositive = SnapshotKeyVector(hybridKey->GetBVector(), "Relin2 HYBRID positive B");
+        CheckPassesCurrentScaffoldOrCompletes(
+            [&] { (void)module.Relin2(tensor); },
+            "Relin2 HYBRID equivalent-pointer entry basis");
+        CheckTensorUnchanged(tensor, tensorBeforePositive,
+                             "Relin2 HYBRID equivalent-pointer positive control");
+        CheckKeyVectorUnchanged(hybridKey->GetAVector(), keyABeforePositive,
+                                "Relin2 HYBRID equivalent-pointer positive A");
+        CheckKeyVectorUnchanged(hybridKey->GetBVector(), keyBBeforePositive,
+                                "Relin2 HYBRID equivalent-pointer positive B");
+        const auto currentPositiveRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBeforePositive && evaluationKeys.size() == 1 &&
+                  currentPositiveRow != evaluationKeys.end() &&
+                  &currentPositiveRow->second == vectorIdentityBeforePositive &&
+                  currentPositiveRow->second.size() == 1 &&
+                  currentPositiveRow->second.front().get() == keyIdentityBeforePositive.get(),
+              "Relin2 HYBRID equivalent-pointer positive control mutated the cache shape or identity");
+        Check(hybridKey->GetCryptoContext().get() == keyContextBeforePositive.get(),
+              "Relin2 HYBRID equivalent-pointer positive control mutated the key context");
+        Check(hybridKey->GetKeyTag() == keyTagBeforePositive,
+              "Relin2 HYBRID equivalent-pointer positive control mutated the key tag");
+
+        auto malformedB = originalB;
+        auto swappedTowers = malformedB.back().GetAllElements();
+        Check(swappedTowers.size() == expectedBasis->GetParams().size() && swappedTowers.size() >= 2,
+              "Relin2 HYBRID entry-basis negative control must start from complete ParamsQP towers");
+        std::swap(swappedTowers[0], swappedTowers[1]);
+        malformedB.back() = DCRTPoly(swappedTowers);
+        const auto wrongBasis = malformedB.back().GetParams();
+        Check(wrongBasis != nullptr && !(*wrongBasis == *expectedBasis) &&
+                  malformedB.back().GetFormat() == Format::EVALUATION &&
+                  malformedB.back().GetAllElements().size() == expectedBasis->GetParams().size() &&
+                  malformedB.back().GetCyclotomicOrder() == expectedBasis->GetCyclotomicOrder(),
+              "Relin2 HYBRID entry-basis negative control must preserve shape and change only tower order");
+        Check(wrongBasis->GetParams()[0]->GetModulus() == expectedBasis->GetParams()[1]->GetModulus() &&
+                  wrongBasis->GetParams()[0]->GetRootOfUnity() == expectedBasis->GetParams()[1]->GetRootOfUnity() &&
+                  wrongBasis->GetParams()[1]->GetModulus() == expectedBasis->GetParams()[0]->GetModulus() &&
+                  wrongBasis->GetParams()[1]->GetRootOfUnity() == expectedBasis->GetParams()[0]->GetRootOfUnity(),
+              "Relin2 HYBRID entry-basis negative control must swap the first two declared towers exactly");
+        Check(malformedB.back().GetAllElements()[0].GetModulus() ==
+                  expectedBasis->GetParams()[1]->GetModulus() &&
+                  malformedB.back().GetAllElements()[0].GetRootOfUnity() ==
+                  expectedBasis->GetParams()[1]->GetRootOfUnity() &&
+                  malformedB.back().GetAllElements()[1].GetModulus() ==
+                  expectedBasis->GetParams()[0]->GetModulus() &&
+                  malformedB.back().GetAllElements()[1].GetRootOfUnity() ==
+                  expectedBasis->GetParams()[0]->GetRootOfUnity(),
+              "Relin2 HYBRID entry-basis negative control must swap the first two actual towers exactly");
+        for (std::size_t index = 2; index < expectedBasis->GetParams().size(); ++index) {
+            Check(wrongBasis->GetParams()[index]->GetCyclotomicOrder() ==
+                      expectedBasis->GetParams()[index]->GetCyclotomicOrder() &&
+                      wrongBasis->GetParams()[index]->GetModulus() ==
+                      expectedBasis->GetParams()[index]->GetModulus() &&
+                      wrongBasis->GetParams()[index]->GetRootOfUnity() ==
+                      expectedBasis->GetParams()[index]->GetRootOfUnity(),
+                  "Relin2 HYBRID entry-basis negative control changed an unswapped declared tower");
+            Check(malformedB.back().GetAllElements()[index].GetCyclotomicOrder() ==
+                      originalB.back().GetAllElements()[index].GetCyclotomicOrder() &&
+                      malformedB.back().GetAllElements()[index].GetModulus() ==
+                      originalB.back().GetAllElements()[index].GetModulus() &&
+                      malformedB.back().GetAllElements()[index].GetRootOfUnity() ==
+                      originalB.back().GetAllElements()[index].GetRootOfUnity(),
+                  "Relin2 HYBRID entry-basis negative control changed an unswapped actual tower");
+        }
+        hybridKey->SetBVector(std::move(malformedB));
+        Check(hybridKey->GetAVector() == originalA &&
+                  hybridKey->GetBVector().size() == originalB.size() &&
+                  hybridKey->GetBVector().front() == originalB.front() &&
+                  hybridKey->GetBVector().back().GetParams().get() == wrongBasis.get(),
+              "Relin2 HYBRID entry-basis negative control must alter only the last B entry basis");
+
+        const auto* cacheIdentityBeforeNegative = &evaluationKeys;
+        const auto* vectorIdentityBeforeNegative = &generatedRow->second;
+        const auto keyIdentityBeforeNegative = generatedRow->second.front();
+        const auto keyContextBeforeNegative = hybridKey->GetCryptoContext();
+        const auto keyTagBeforeNegative = hybridKey->GetKeyTag();
+        const auto tensorBeforeNegative = SnapshotTensor(tensor);
+        const auto keyABeforeNegative = SnapshotKeyVector(hybridKey->GetAVector(), "Relin2 HYBRID negative A");
+        const auto keyBBeforeNegative = SnapshotKeyVector(hybridKey->GetBVector(), "Relin2 HYBRID negative B");
+        CheckThrowsExactInvalidArgument(
+            [&] { (void)module.Relin2(tensor); },
+            "DoubleCKKS: Relin2 evaluation key HYBRID entry basis mismatch",
+            "Relin2 HYBRID evaluation-key entry basis");
+        CheckTensorUnchanged(tensor, tensorBeforeNegative,
+                             "Relin2 HYBRID entry-basis rejection");
+        CheckKeyVectorUnchanged(hybridKey->GetAVector(), keyABeforeNegative,
+                                "Relin2 HYBRID entry-basis rejection A");
+        CheckKeyVectorUnchanged(hybridKey->GetBVector(), keyBBeforeNegative,
+                                "Relin2 HYBRID entry-basis rejection B");
+        const auto currentNegativeRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBeforeNegative && evaluationKeys.size() == 1 &&
+                  currentNegativeRow != evaluationKeys.end() &&
+                  &currentNegativeRow->second == vectorIdentityBeforeNegative &&
+                  currentNegativeRow->second.size() == 1 &&
+                  currentNegativeRow->second.front().get() == keyIdentityBeforeNegative.get(),
+              "Relin2 HYBRID entry-basis rejection mutated the cache shape or identity");
+        Check(hybridKey->GetCryptoContext().get() == keyContextBeforeNegative.get(),
+              "Relin2 HYBRID entry-basis rejection mutated the key context");
+        Check(hybridKey->GetKeyTag() == keyTagBeforeNegative,
+              "Relin2 HYBRID entry-basis rejection mutated the key tag");
+    }
+    Check(evaluationKeys.empty(),
+          "Relin2 HYBRID entry-basis fixture failed to restore the initially empty cache");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -1013,6 +1396,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "key_hybrid_b_length") {
         return &TestHybridEvaluationKeyBLength;
+    }
+    if (name == "key_hybrid_entry_basis") {
+        return &TestHybridEvaluationKeyEntryBasis;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }
