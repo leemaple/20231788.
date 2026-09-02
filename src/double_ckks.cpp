@@ -589,6 +589,10 @@ void DoubleCKKS::ValidateTensorResult(const TensorCiphertextPair& pair) const {
 TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const CiphertextPair& right) const {
     ValidatePair(left);
     ValidatePair(right);
+    if (left.lifecycle_ != PairLifecycle::ReadyForFirstMult ||
+        right.lifecycle_ != PairLifecycle::ReadyForFirstMult) {
+        Invalid("Tensor2 requires ReadyForFirstMult inputs");
+    }
     ValidateTensorCompatibility(left, right);
 
     lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> leftHigh = left.high_;
