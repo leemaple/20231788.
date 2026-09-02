@@ -588,3 +588,17 @@ build/test authority and any stalled ZCode work remains nonblocking. The
 quarantined historical implementation is still forbidden as input. Difficult
 unresolved questions continue to escalate to terminal-only Fable 5.1, not the
 older Fable 5 model.
+
+At 2026-09-02 10:23 CST, the HYBRID evaluation-key entry-format boundary
+closed on both hosted platforms. Red `b1f4459` generated a real two-partition
+HYBRID key, proved a valid Evaluation-format key reaches the scaffold, changed
+only the first A entry to Coefficient format, and produced exactly `17/18` on
+Linux and Windows. Green `b9f26db` changed only production source by 22 lines:
+after the accepted length and complete-basis guards, it checks every A entry
+and then every B entry at aggregate and per-tower granularity. Three source and
+three evidence reviews returned PASS. Hosted Linux and Windows built
+warning-clean, compiled the public API contract, and passed exactly `18/18`.
+Red evidence `76f9c5e` and green evidence `8b2a7dc` passed ZIP, manifest,
+Gitleaks, targeted-scan, identity, and remote-ref gates and are pushed. The
+next isolated red is BV-specific evaluation-key shape; Relin2 raising,
+relinearization, arithmetic, and metadata transformation remain untouched.
