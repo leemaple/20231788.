@@ -75,18 +75,15 @@ void CheckThrowsExactInvalidArgument(Function&& function, const std::string& exp
 }
 
 template <class Function>
-void CheckPassesCurrentScaffoldOrCompletes(Function&& function, const std::string& label) {
+void CheckCompletesNormally(Function&& function, const std::string& label) {
     try {
         std::invoke(std::forward<Function>(function));
     }
-    catch (const std::logic_error& exception) {
-        Check(typeid(exception) == typeid(std::logic_error),
-              label + " threw a derived logic-error type: " + exception.what());
-        Check(std::string(exception.what()) == "DoubleCKKS: Relin2 is not implemented",
-              label + " reported an unexpected diagnostic: " + exception.what());
-    }
     catch (const std::exception& exception) {
-        throw TestFailure(label + " threw the wrong exception type: " + exception.what());
+        throw TestFailure(label + " threw instead of completing normally: " + exception.what());
+    }
+    catch (...) {
+        throw TestFailure(label + " threw a non-standard exception instead of completing normally");
     }
 }
 
@@ -862,7 +859,7 @@ void TestWrongEvaluationKeySubtype() {
         const auto keyABefore = correctSubtypeKey->GetAVector();
         const auto keyBBefore = correctSubtypeKey->GetBVector();
         const auto tensorBefore = SnapshotTensor(tensor);
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); }, "Relin2 wrong-subtype positive control");
         CheckTensorUnchanged(tensor, tensorBefore, "Relin2 wrong-subtype positive control");
         const auto currentRow = evaluationKeys.find(tensor.GetKeyTag());
@@ -1273,7 +1270,7 @@ void TestHybridEvaluationKeyEntryBasis() {
         const auto tensorBeforePositive = SnapshotTensor(tensor);
         const auto keyABeforePositive = SnapshotKeyVector(hybridKey->GetAVector(), "Relin2 HYBRID positive A");
         const auto keyBBeforePositive = SnapshotKeyVector(hybridKey->GetBVector(), "Relin2 HYBRID positive B");
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); },
             "Relin2 HYBRID equivalent-pointer entry basis");
         CheckTensorUnchanged(tensor, tensorBeforePositive,
@@ -1484,7 +1481,7 @@ void TestHybridEvaluationKeyEntryFormat() {
             SnapshotKeyVector(hybridKey->GetAVector(), "Relin2 HYBRID entry-format positive A");
         const auto keyBBeforePositive =
             SnapshotKeyVector(hybridKey->GetBVector(), "Relin2 HYBRID entry-format positive B");
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); },
             "Relin2 HYBRID valid entry format");
         CheckTensorUnchanged(tensor, tensorBeforePositive,
@@ -1645,7 +1642,7 @@ void TestBVEvaluationKeyZeroDigitALength() {
         const auto keyAPositive = SnapshotKeyVector(bvKey->GetAVector(), "Relin2 BV zero-digit positive A");
         const auto keyBPositive = SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV zero-digit positive B");
         const auto tensorPositive = SnapshotTensor(tensor);
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); },
             "Relin2 BV zero-digit valid A/B lengths");
         CheckTensorUnchanged(tensor, tensorPositive,
@@ -1791,7 +1788,7 @@ void TestBVEvaluationKeyZeroDigitBLength() {
         const auto keyAPositive = SnapshotKeyVector(bvKey->GetAVector(), "Relin2 BV zero-digit positive A");
         const auto keyBPositive = SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV zero-digit positive B");
         const auto tensorPositive = SnapshotTensor(tensor);
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); },
             "Relin2 BV zero-digit valid A/B lengths");
         CheckTensorUnchanged(tensor, tensorPositive,
@@ -1957,7 +1954,7 @@ void TestBVEvaluationKeyNonzeroDigitALength() {
         const auto keyBPositive =
             SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV nonzero-digit positive B");
         const auto tensorPositive = SnapshotTensor(tensor);
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); },
             "Relin2 BV nonzero-digit valid A/B lengths");
         CheckTensorUnchanged(tensor, tensorPositive,
@@ -2126,7 +2123,7 @@ void TestBVEvaluationKeyNonzeroDigitBLength() {
         const auto keyBPositive =
             SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV nonzero-digit positive B");
         const auto tensorPositive = SnapshotTensor(tensor);
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); },
             "Relin2 BV nonzero-digit valid A/B lengths");
         CheckTensorUnchanged(tensor, tensorPositive,
@@ -2314,7 +2311,7 @@ void TestBVEvaluationKeyZeroDigitEntryBasis() {
             SnapshotKeyVector(bvKey->GetAVector(), "Relin2 BV zero-digit entry-basis positive A");
         const auto keyBBeforePositive =
             SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV zero-digit entry-basis positive B");
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); },
             "Relin2 BV zero-digit equivalent-pointer entry basis");
         CheckTensorUnchanged(tensor, tensorBeforePositive,
@@ -2558,7 +2555,7 @@ void TestBVEvaluationKeyNonzeroDigitEntryBasis() {
             SnapshotKeyVector(bvKey->GetAVector(), "Relin2 BV nonzero-digit entry-basis positive A");
         const auto keyBBeforePositive =
             SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV nonzero-digit entry-basis positive B");
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); },
             "Relin2 BV nonzero-digit equivalent-pointer entry basis");
         CheckTensorUnchanged(tensor, tensorBeforePositive,
@@ -2775,7 +2772,7 @@ void TestBVEvaluationKeyZeroDigitEntryFormat() {
             SnapshotKeyVector(bvKey->GetAVector(), "Relin2 BV zero-digit entry-format positive A");
         const auto keyBBeforePositive =
             SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV zero-digit entry-format positive B");
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); },
             "Relin2 BV zero-digit valid entry format");
         CheckTensorUnchanged(tensor, tensorBeforePositive,
@@ -2983,7 +2980,7 @@ void TestBVEvaluationKeyNonzeroDigitEntryFormat() {
             SnapshotKeyVector(bvKey->GetAVector(), "Relin2 BV nonzero-digit entry-format positive A");
         const auto keyBBeforePositive =
             SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV nonzero-digit entry-format positive B");
-        CheckPassesCurrentScaffoldOrCompletes(
+        CheckCompletesNormally(
             [&] { (void)module.Relin2(tensor); },
             "Relin2 BV nonzero-digit valid entry format");
         CheckTensorUnchanged(tensor, tensorBeforePositive,
