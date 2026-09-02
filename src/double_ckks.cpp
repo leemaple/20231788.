@@ -625,7 +625,7 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
         relinearizationKey->GetBVector().size() != parameters_->GetElementParams()->GetParams().size()) {
         Invalid("Relin2 evaluation key BV B vector length mismatch");
     }
-    if (parameters_->GetKeySwitchTechnique() == lbcrypto::BV && parameters_->GetDigitSize() == 0) {
+    if (parameters_->GetKeySwitchTechnique() == lbcrypto::BV) {
         const auto expectedBasis = parameters_->GetElementParams();
         for (const auto& entry : relinearizationKey->GetAVector()) {
             if (!HasCompleteOrderedBasis(entry, expectedBasis)) {
