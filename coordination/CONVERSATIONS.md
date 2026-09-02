@@ -563,3 +563,18 @@ claim. ZCode remains outside the critical path until quota recovery; Fable5 is
 used as the preferred substitute when available, while GitHub Actions and the
 internal reviews continue without waiting on either provider. The next
 isolated red is a HYBRID entry with the wrong complete `ParamsQP` basis.
+
+At 2026-09-02 09:49 CST, the complete ordered HYBRID entry-basis boundary
+closed on both hosted platforms. Red `3bca03d` generated a real two-partition
+HYBRID key, proved an independent-parameter semantic positive control reaches
+the scaffold, swapped only the first two complete towers of the last B entry,
+and produced exactly `16/17` on both Linux and Windows. Green `a90188d` changed
+only production source: one private semantic-basis helper and an A-then-B scan
+after the accepted length guards. Three source and three evidence reviews
+returned PASS. Hosted Linux and Windows both built the project warning-clean,
+compiled the public API contract, and passed exactly `17/17`, including all
+positive/negative Tensor, metadata, key-cache, A/B, context, tag, and restore
+postchecks. Red evidence `06328f8` and green evidence `02ad1ee` passed ZIP,
+manifest, Gitleaks, targeted-scan, identity, and remote-ref gates and are
+pushed. The next isolated red is HYBRID key-entry format; BV shape and all
+Relin2 arithmetic remain deliberately untouched.
