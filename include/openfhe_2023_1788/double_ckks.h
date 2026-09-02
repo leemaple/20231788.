@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace openfhe_2023_1788 {
@@ -148,6 +149,8 @@ private:
     void ValidatePair(const CiphertextPair& pair) const;
     void ValidateTensorCompatibility(const CiphertextPair& left, const CiphertextPair& right) const;
     void ValidateTensorResult(const TensorCiphertextPair& pair) const;
+    std::pair<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>, lbcrypto::Ciphertext<lbcrypto::DCRTPoly>>
+    DecomposeValidatedCiphertext(const ReadOnlyCiphertext& ciphertext) const;
     void ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
                             const std::vector<lbcrypto::NativeInteger>& orderedModuli,
                             std::size_t level,
