@@ -14,14 +14,15 @@ All Windows and other ZCode/Zima sessions use the same BigModel Coding Plan acco
 | 2026-09-01 17:48 | 0% used / 100% remaining | Not displayed | 100% used / 0% remaining | 2026-09-02 10:00 | 10% used / 90% remaining | 2026-09-25 10:00 | The weekly pool is fully exhausted despite a recovered five-hour window. Dispatch no ZCode work before the weekly reset. Continue Codex/ChatGPT Pro review and use GitHub Actions or direct Windows only after the candidate passes static gates. Re-read the official page after 2026-09-02 10:00 before restoring ZCode allocation. |
 | 2026-09-01 19:16 | 0% used / 100% remaining | Not displayed | 39% used / 61% remaining | 2026-09-02 10:00 | 4% used / 96% remaining | 2026-09-25 10:00 | The official page now reports substantial weekly capacity despite the still-displayed 2026-09-02 reset time. Treat the current page as the operational authority without inferring why the counter fell. Restore one critical-path ZCode allocation, but do not create duplicate work: use the preserved Windows session for the first exact Relin2 same-commit review after static acceptance and keep GitHub Actions/direct Windows for builds. Preserve Fable5 for a concrete unresolved three-party dispute. |
 | 2026-09-02 10:03 | 1% used / 99% remaining | 2026-09-02 15:01 | 1% used / 99% remaining | 2026-09-09 10:00 | 10% used / 90% remaining | 2026-09-25 10:00 | The weekly reset is confirmed and ordinary model capacity is usable. Restore one bounded ZCode/Zima review for the next exact, stable Relin2 boundary; keep GitHub Actions as the Windows build gate, never reuse the quarantined old implementation, and do not let a stalled ZCode session block Codex. Difficult unresolved questions still escalate to terminal-only Fable 5.1 with fallback disabled. |
+| 2026-09-02 21:12 | 1% used / 99% remaining | 2026-09-03 01:27 | 31% used / 69% remaining | 2026-09-09 10:00 | 13% used / 87% remaining | 2026-09-25 10:00 | Capacity remains usable. Dispatch at most one bounded, asynchronous ZCode/Zima review for the exact committed Relin2 R1 boundary; GitHub Actions remains authoritative for Windows build/CTest, a slow or stalled ZCode task does not block implementation, and difficult algorithm/API decisions go promptly to terminal-only Fable 5.1 with fallback disabled. One weekly reset ticket was shown as unused and is not consumed. |
 
 Source page: `https://bigmodel.cn/coding-plan/personal/usage`
 
-The latest read-only check used isolated Ego Lite task space 102 and the
-official page refresh time `2026.09.02 10:03`. The page showed the new weekly
-reset boundary and the values recorded above. After readback, task space 102
-was closed; no account token, credential, or browser-state data was read or
-retained.
+The latest read-only check used isolated Ego Lite task space 109 and the
+official page refresh time `2026.09.02 21:12`. The page showed the values and
+reset boundaries recorded in the final row above, plus one unused weekly reset
+ticket. After readback, task space 109 was closed; no account token,
+credential, or browser-state data was read or retained.
 
 The existing daily 07:00 project-report heartbeat was updated at 2026-08-31 17:24 CST to include a read-only quota snapshot and allocation recommendation. The app permits only one heartbeat on this task, so the active continuous project Goal—not a duplicate automation—owns later rechecks. The latest reading above came from the freshly refreshed official page.
 
@@ -58,3 +59,9 @@ continues to own reproducible Windows builds. Quota recovery does not authorize
 reuse of the historical Windows implementation and does not turn ZCode into a
 critical-path blocker. Fable 5.1 remains the prompt escalation for a concrete
 hard question that the ordinary reviewers cannot settle.
+
+At 2026-09-02 21:12 CST, a fresh official-page read confirmed the shared pool
+remained available: five-hour use 1%, weekly use 31%, and MCP monthly use 13%.
+The exact Relin2 R1 test boundary may therefore receive one asynchronous
+Windows ZCode review. This later reading does not broaden the clean-room scope,
+replace hosted Windows evidence, or delay the production green step.

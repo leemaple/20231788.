@@ -153,3 +153,24 @@ that ordinary source review and tests do not resolve is sent promptly to the
 latest Fable 5.1 through Terminal, with fallback disabled and model identity
 verified. Routine boundaries do not spend a Fable escalation merely because
 ZCode quota is available or unavailable.
+
+## 2026-09-02 22:33 Relin2 R1 ZCode dispatch
+
+One bounded Windows ZCode review was submitted for exact test-only Relin2 R1
+commit `f90a04d199e96a3247a2607aa3e1f80ad55be8cc`, after the source commit,
+formal Linux/Windows expected-red run, and retained evidence were all fixed and
+pushed. It uses a new ZCode task, a new launcher workspace, a sanitized
+five-file packet, and a task-level two-build-thread/one-CTest bound. The old
+implementation and all earlier Windows sessions remain quarantined.
+
+The post-send audit found two wrong paper hashes in the 1,983-character
+dispatch envelope, while the attached controlling task, binding, and files
+carry the correct hashes. Do not interrupt the active task or create a
+duplicate. Let the identity preflight finish naturally; if it returns
+`BLOCKED`, send exactly one correction in the same conversation and continue
+from that checkpoint. This operational repair stays outside the critical path.
+
+The next production-only Relin2 green proceeds independently. Any genuine
+algorithm, OpenFHE API, lifecycle, or scale ambiguity goes promptly to exact
+terminal Fable 5.1 with fallback disabled; a routine ZCode delay or envelope
+repair is not itself a reason to consume Fable 5.1.
