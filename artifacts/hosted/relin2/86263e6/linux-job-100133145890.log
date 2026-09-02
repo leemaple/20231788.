@@ -1,0 +1,585 @@
+﻿2026-09-02T05:13:43.8029093Z Current runner version: '2.337.0'
+2026-09-02T05:13:43.8052020Z ##[group]Runner Image Provisioner
+2026-09-02T05:13:43.8052910Z Hosted Compute Agent
+2026-09-02T05:13:43.8053535Z Version: 20260819.586
+2026-09-02T05:13:43.8054156Z Commit: 3cc4a88dfa507ef76119ad1bb3eccc6378bb2b76
+2026-09-02T05:13:43.8055059Z Build Date: 2026-08-18T23:20:18Z
+2026-09-02T05:13:43.8055762Z Worker ID: {4545bb32-06d0-40f2-aa71-dd35f89f0264}
+2026-09-02T05:13:43.8056448Z Azure Region: westcentralus
+2026-09-02T05:13:43.8057088Z ##[endgroup]
+2026-09-02T05:13:43.8058528Z ##[group]Operating System
+2026-09-02T05:13:43.8059115Z Ubuntu
+2026-09-02T05:13:43.8060098Z 24.04.4
+2026-09-02T05:13:43.8060604Z LTS
+2026-09-02T05:13:43.8061104Z ##[endgroup]
+2026-09-02T05:13:43.8061670Z ##[group]Runner Image
+2026-09-02T05:13:43.8062249Z Image: ubuntu-24.04
+2026-09-02T05:13:43.8062783Z Version: 20260823.283.1
+2026-09-02T05:13:43.8063997Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260823.283/images/ubuntu/Ubuntu2404-Readme.md
+2026-09-02T05:13:43.8065628Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260823.283
+2026-09-02T05:13:43.8066534Z ##[endgroup]
+2026-09-02T05:13:43.8067596Z ##[group]GITHUB_TOKEN Permissions
+2026-09-02T05:13:43.8069780Z Contents: read
+2026-09-02T05:13:43.8070357Z Metadata: read
+2026-09-02T05:13:43.8070908Z ##[endgroup]
+2026-09-02T05:13:43.8072818Z Secret source: Actions
+2026-09-02T05:13:43.8074080Z Prepare workflow directory
+2026-09-02T05:13:43.8560981Z Prepare all required actions
+2026-09-02T05:13:43.8609619Z Getting action download info
+2026-09-02T05:13:44.1487799Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-09-02T05:13:45.3700802Z Download action repository 'actions/cache@v4' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+2026-09-02T05:13:46.6282089Z Complete job name: linux-gcc
+2026-09-02T05:13:46.6921882Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-02T05:13:46.6930382Z ##[group]Run actions/checkout@v4
+2026-09-02T05:13:46.6930951Z with:
+2026-09-02T05:13:46.6931367Z   repository: leemaple/20231788.
+2026-09-02T05:13:46.6934082Z   token: ***
+2026-09-02T05:13:46.6934416Z   ssh-strict: true
+2026-09-02T05:13:46.6935240Z   ssh-user: git
+2026-09-02T05:13:46.6935620Z   persist-credentials: true
+2026-09-02T05:13:46.6936028Z   clean: true
+2026-09-02T05:13:46.6936417Z   sparse-checkout-cone-mode: true
+2026-09-02T05:13:46.6936799Z   fetch-depth: 1
+2026-09-02T05:13:46.6937183Z   fetch-tags: false
+2026-09-02T05:13:46.6937546Z   show-progress: true
+2026-09-02T05:13:46.6937930Z   lfs: false
+2026-09-02T05:13:46.6938420Z   submodules: false
+2026-09-02T05:13:46.6938789Z   set-safe-directory: true
+2026-09-02T05:13:46.6939199Z   allow-unsafe-pr-checkout: false
+2026-09-02T05:13:46.6939766Z env:
+2026-09-02T05:13:46.6940238Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:13:46.6940807Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-02T05:13:46.6941372Z ##[endgroup]
+2026-09-02T05:13:46.7947245Z Syncing repository: leemaple/20231788.
+2026-09-02T05:13:46.7948913Z ##[group]Getting Git version info
+2026-09-02T05:13:46.7949885Z Working directory is '/home/runner/work/20231788./20231788.'
+2026-09-02T05:13:46.7950815Z [command]/usr/bin/git version
+2026-09-02T05:13:46.8093997Z git version 2.55.0
+2026-09-02T05:13:46.8130835Z ##[endgroup]
+2026-09-02T05:13:46.8138379Z Temporarily overriding HOME='/home/runner/work/_temp/d2ad650c-7cbf-423d-b7f9-f8209ec2cd17' before making global git config changes
+2026-09-02T05:13:46.8140289Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-02T05:13:46.8142413Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788.
+2026-09-02T05:13:46.8636036Z Deleting the contents of '/home/runner/work/20231788./20231788.'
+2026-09-02T05:13:46.8676599Z ##[group]Initializing the repository
+2026-09-02T05:13:46.8677620Z [command]/usr/bin/git init /home/runner/work/20231788./20231788.
+2026-09-02T05:13:46.9366597Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-02T05:13:46.9367673Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-02T05:13:46.9368825Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-02T05:13:46.9369608Z hint: call:
+2026-09-02T05:13:46.9370071Z hint:
+2026-09-02T05:13:46.9370724Z hint: 	git config --global init.defaultBranch <name>
+2026-09-02T05:13:46.9371308Z hint:
+2026-09-02T05:13:46.9372005Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-02T05:13:46.9372700Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-02T05:13:46.9373268Z hint:
+2026-09-02T05:13:46.9373827Z hint: 	git branch -m <name>
+2026-09-02T05:13:46.9374281Z hint:
+2026-09-02T05:13:46.9374984Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-02T05:13:46.9376985Z Initialized empty Git repository in /home/runner/work/20231788./20231788./.git/
+2026-09-02T05:13:46.9380448Z [command]/usr/bin/git remote add origin https://github.com/leemaple/20231788.
+2026-09-02T05:13:46.9663440Z ##[endgroup]
+2026-09-02T05:13:46.9664468Z ##[group]Disabling automatic garbage collection
+2026-09-02T05:13:46.9665351Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-02T05:13:46.9899291Z ##[endgroup]
+2026-09-02T05:13:46.9900150Z ##[group]Setting up auth
+2026-09-02T05:13:46.9919495Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-02T05:13:46.9941965Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-02T05:13:47.0252750Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-02T05:13:47.0284813Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-02T05:13:47.0471741Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-02T05:13:47.0500963Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-02T05:13:47.0702419Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-02T05:13:47.1407773Z ##[endgroup]
+2026-09-02T05:13:47.1409439Z ##[group]Fetching the repository
+2026-09-02T05:13:47.1417642Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +86263e6d87899309981a10a0d108a07fdefb2251:refs/remotes/origin/agent/codex-relin2-01
+2026-09-02T05:13:47.9651555Z From https://github.com/leemaple/20231788.
+2026-09-02T05:13:47.9652851Z  * [new ref]         86263e6d87899309981a10a0d108a07fdefb2251 -> origin/agent/codex-relin2-01
+2026-09-02T05:13:47.9656029Z ##[endgroup]
+2026-09-02T05:13:47.9656840Z ##[group]Determining the checkout info
+2026-09-02T05:13:47.9658715Z ##[endgroup]
+2026-09-02T05:13:47.9665751Z [command]/usr/bin/git sparse-checkout disable
+2026-09-02T05:13:48.0440194Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-02T05:13:48.0474340Z ##[group]Checking out the ref
+2026-09-02T05:13:48.0479568Z [command]/usr/bin/git checkout --progress --force -B agent/codex-relin2-01 refs/remotes/origin/agent/codex-relin2-01
+2026-09-02T05:13:48.0972398Z Switched to a new branch 'agent/codex-relin2-01'
+2026-09-02T05:13:48.1299768Z branch 'agent/codex-relin2-01' set up to track 'origin/agent/codex-relin2-01'.
+2026-09-02T05:13:48.1302772Z ##[endgroup]
+2026-09-02T05:13:48.1670680Z [command]/usr/bin/git log -1 --format=%H
+2026-09-02T05:13:48.1694389Z 86263e6d87899309981a10a0d108a07fdefb2251
+2026-09-02T05:13:48.1944468Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-02T05:13:48.1946818Z ##[group]Run actions/checkout@v4
+2026-09-02T05:13:48.1947167Z with:
+2026-09-02T05:13:48.1947518Z   repository: openfheorg/openfhe-development
+2026-09-02T05:13:48.1947936Z   ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:13:48.1948324Z   path: .ci/openfhe-src
+2026-09-02T05:13:48.1948650Z   submodules: recursive
+2026-09-02T05:13:48.1951153Z   token: ***
+2026-09-02T05:13:48.1951465Z   ssh-strict: true
+2026-09-02T05:13:48.1951767Z   ssh-user: git
+2026-09-02T05:13:48.1952092Z   persist-credentials: true
+2026-09-02T05:13:48.1952447Z   clean: true
+2026-09-02T05:13:48.1952756Z   sparse-checkout-cone-mode: true
+2026-09-02T05:13:48.1953233Z   fetch-depth: 1
+2026-09-02T05:13:48.1953539Z   fetch-tags: false
+2026-09-02T05:13:48.1953837Z   show-progress: true
+2026-09-02T05:13:48.1954197Z   lfs: false
+2026-09-02T05:13:48.1954488Z   set-safe-directory: true
+2026-09-02T05:13:48.1955068Z   allow-unsafe-pr-checkout: false
+2026-09-02T05:13:48.1955412Z env:
+2026-09-02T05:13:48.1955745Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:13:48.1956272Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-02T05:13:48.1956706Z ##[endgroup]
+2026-09-02T05:13:48.2775300Z Syncing repository: openfheorg/openfhe-development
+2026-09-02T05:13:48.2784138Z ##[group]Getting Git version info
+2026-09-02T05:13:48.2785411Z Working directory is '/home/runner/work/20231788./20231788./.ci/openfhe-src'
+2026-09-02T05:13:48.2818402Z [command]/usr/bin/git version
+2026-09-02T05:13:48.2853107Z git version 2.55.0
+2026-09-02T05:13:48.2871218Z ##[endgroup]
+2026-09-02T05:13:48.2883297Z Temporarily overriding HOME='/home/runner/work/_temp/1b539079-5eeb-4e06-9cad-f17955c55aaa' before making global git config changes
+2026-09-02T05:13:48.2884836Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-02T05:13:48.2888711Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788./.ci/openfhe-src
+2026-09-02T05:13:48.3156985Z ##[group]Initializing the repository
+2026-09-02T05:13:48.3158083Z [command]/usr/bin/git init /home/runner/work/20231788./20231788./.ci/openfhe-src
+2026-09-02T05:13:48.4364381Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-02T05:13:48.4365787Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-02T05:13:48.4366626Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-02T05:13:48.4367232Z hint: call:
+2026-09-02T05:13:48.4367673Z hint:
+2026-09-02T05:13:48.4368185Z hint: 	git config --global init.defaultBranch <name>
+2026-09-02T05:13:48.4368851Z hint:
+2026-09-02T05:13:48.4369452Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-02T05:13:48.4370141Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-02T05:13:48.4370677Z hint:
+2026-09-02T05:13:48.4370996Z hint: 	git branch -m <name>
+2026-09-02T05:13:48.4371355Z hint:
+2026-09-02T05:13:48.4371817Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-02T05:13:48.4372496Z Initialized empty Git repository in /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/
+2026-09-02T05:13:48.4377210Z [command]/usr/bin/git remote add origin https://github.com/openfheorg/openfhe-development
+2026-09-02T05:13:48.5138888Z ##[endgroup]
+2026-09-02T05:13:48.5139624Z ##[group]Disabling automatic garbage collection
+2026-09-02T05:13:48.5146845Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-02T05:13:48.5337406Z ##[endgroup]
+2026-09-02T05:13:48.5338000Z ##[group]Setting up auth
+2026-09-02T05:13:48.5344459Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-02T05:13:48.5374500Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-02T05:13:48.5566021Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-02T05:13:48.5595470Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-02T05:13:48.5784198Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-02T05:13:48.5816365Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-02T05:13:48.6007876Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-02T05:13:48.7753811Z ##[endgroup]
+2026-09-02T05:13:48.7762903Z ##[group]Fetching the repository
+2026-09-02T05:13:48.7764032Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:13:49.9644075Z From https://github.com/openfheorg/openfhe-development
+2026-09-02T05:13:49.9645223Z  * branch            df495ba2e91739a6dc8f1de254fc5a41155ce504 -> FETCH_HEAD
+2026-09-02T05:13:49.9648123Z ##[endgroup]
+2026-09-02T05:13:49.9648945Z ##[group]Determining the checkout info
+2026-09-02T05:13:49.9651098Z ##[endgroup]
+2026-09-02T05:13:49.9656600Z [command]/usr/bin/git sparse-checkout disable
+2026-09-02T05:13:49.9693661Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-02T05:13:49.9720464Z ##[group]Checking out the ref
+2026-09-02T05:13:49.9725205Z [command]/usr/bin/git checkout --progress --force df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:13:50.0210159Z Note: switching to 'df495ba2e91739a6dc8f1de254fc5a41155ce504'.
+2026-09-02T05:13:50.0210623Z 
+2026-09-02T05:13:50.0211005Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-02T05:13:50.0211805Z changes and commit them, and you can discard any commits you make in this
+2026-09-02T05:13:50.0212635Z state without impacting any branches by switching back to a branch.
+2026-09-02T05:13:50.0213057Z 
+2026-09-02T05:13:50.0213302Z If you want to create a new branch to retain commits you create, you may
+2026-09-02T05:13:50.0213863Z do so (now or later) by using -c with the switch command. Example:
+2026-09-02T05:13:50.0214261Z 
+2026-09-02T05:13:50.0214496Z   git switch -c <new-branch-name>
+2026-09-02T05:13:50.0214908Z 
+2026-09-02T05:13:50.0215165Z Or undo this operation with:
+2026-09-02T05:13:50.0233917Z 
+2026-09-02T05:13:50.0234262Z   git switch -
+2026-09-02T05:13:50.0234561Z 
+2026-09-02T05:13:50.0235263Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-02T05:13:50.0235776Z 
+2026-09-02T05:13:50.0236270Z HEAD is now at df495ba Merge pull request #1130 from openfheorg/dev
+2026-09-02T05:13:50.0237843Z ##[endgroup]
+2026-09-02T05:13:50.0238517Z ##[group]Setting up auth for fetching submodules
+2026-09-02T05:13:50.0239408Z [command]/usr/bin/git config --global http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-02T05:13:50.0267728Z [command]/usr/bin/git config --global --unset-all url.https://github.com/.insteadOf
+2026-09-02T05:13:50.0297408Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf git@github.com:
+2026-09-02T05:13:50.0325558Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf org-26023695@github.com:
+2026-09-02T05:13:50.0348377Z ##[endgroup]
+2026-09-02T05:13:50.0348856Z ##[group]Fetching submodules
+2026-09-02T05:13:50.0352432Z [command]/usr/bin/git submodule sync --recursive
+2026-09-02T05:13:50.0536434Z [command]/usr/bin/git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
+2026-09-02T05:13:50.0713753Z Submodule 'third-party/cereal' (https://github.com/openfheorg/cereal.git) registered for path 'third-party/cereal'
+2026-09-02T05:13:50.0717746Z Submodule 'third-party/google-benchmark' (https://github.com/google/benchmark.git) registered for path 'third-party/google-benchmark'
+2026-09-02T05:13:50.0722176Z Submodule 'third-party/google-test' (https://github.com/google/googletest.git) registered for path 'third-party/google-test'
+2026-09-02T05:13:50.0727702Z Submodule 'third-party/gperftools' (https://github.com/gperftools/gperftools.git) registered for path 'third-party/gperftools'
+2026-09-02T05:13:50.0751567Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/cereal'...
+2026-09-02T05:13:50.9359000Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/google-benchmark'...
+2026-09-02T05:13:51.9188794Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/google-test'...
+2026-09-02T05:13:52.8349583Z Cloning into '/home/runner/work/20231788./20231788./.ci/openfhe-src/third-party/gperftools'...
+2026-09-02T05:13:54.0242343Z Submodule path 'third-party/cereal': checked out '984e3f194862b17916536b5fade40cba6e47a6fe'
+2026-09-02T05:13:55.9969773Z From https://github.com/google/benchmark
+2026-09-02T05:13:55.9970591Z  * branch            eddb0241389718a23a42db6af5f0164b6e0139af -> FETCH_HEAD
+2026-09-02T05:13:56.0133200Z Submodule path 'third-party/google-benchmark': checked out 'eddb0241389718a23a42db6af5f0164b6e0139af'
+2026-09-02T05:13:57.3924488Z From https://github.com/google/googletest
+2026-09-02T05:13:57.3925618Z  * branch            52eb8108c5bdec04579160ae17225d66034bd723 -> FETCH_HEAD
+2026-09-02T05:13:57.4279097Z Submodule path 'third-party/google-test': checked out '52eb8108c5bdec04579160ae17225d66034bd723'
+2026-09-02T05:13:59.0176714Z From https://github.com/gperftools/gperftools
+2026-09-02T05:13:59.0177446Z  * branch            83edb60836d87cf1b406e8846b9059c03031e8f5 -> FETCH_HEAD
+2026-09-02T05:13:59.0887670Z Submodule path 'third-party/gperftools': checked out '83edb60836d87cf1b406e8846b9059c03031e8f5'
+2026-09-02T05:13:59.0976550Z [command]/usr/bin/git submodule foreach --recursive git config --local gc.auto 0
+2026-09-02T05:13:59.1282956Z Entering 'third-party/cereal'
+2026-09-02T05:13:59.1407221Z Entering 'third-party/google-benchmark'
+2026-09-02T05:13:59.1438537Z Entering 'third-party/google-test'
+2026-09-02T05:13:59.1470333Z Entering 'third-party/gperftools'
+2026-09-02T05:13:59.1509952Z ##[endgroup]
+2026-09-02T05:13:59.1511362Z ##[group]Persisting credentials for submodules
+2026-09-02T05:13:59.1518729Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'url\.https\:\/\/github\.com\/\.insteadOf' && git config --local --unset-all 'url.https://github.com/.insteadOf' || :"
+2026-09-02T05:13:59.1705892Z Entering 'third-party/cereal'
+2026-09-02T05:13:59.1740932Z Entering 'third-party/google-benchmark'
+2026-09-02T05:13:59.1774632Z Entering 'third-party/google-test'
+2026-09-02T05:13:59.1808500Z Entering 'third-party/gperftools'
+2026-09-02T05:13:59.1854956Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local 'http.https://github.com/.extraheader' 'AUTHORIZATION: basic ***' && git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-02T05:13:59.2032285Z Entering 'third-party/cereal'
+2026-09-02T05:13:59.2068231Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/cereal/config	remote.origin.url
+2026-09-02T05:13:59.2086102Z Entering 'third-party/google-benchmark'
+2026-09-02T05:13:59.2119034Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-benchmark/config	remote.origin.url
+2026-09-02T05:13:59.2136424Z Entering 'third-party/google-test'
+2026-09-02T05:13:59.2168728Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-test/config	remote.origin.url
+2026-09-02T05:13:59.2184646Z Entering 'third-party/gperftools'
+2026-09-02T05:13:59.2218792Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/gperftools/config	remote.origin.url
+2026-09-02T05:13:59.2270608Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'git@github.com:'
+2026-09-02T05:13:59.2449574Z Entering 'third-party/cereal'
+2026-09-02T05:13:59.2480368Z Entering 'third-party/google-benchmark'
+2026-09-02T05:13:59.2512171Z Entering 'third-party/google-test'
+2026-09-02T05:13:59.2548453Z Entering 'third-party/gperftools'
+2026-09-02T05:13:59.2589201Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'org-26023695@github.com:'
+2026-09-02T05:13:59.2760266Z Entering 'third-party/cereal'
+2026-09-02T05:13:59.2793974Z Entering 'third-party/google-benchmark'
+2026-09-02T05:13:59.2825490Z Entering 'third-party/google-test'
+2026-09-02T05:13:59.2867666Z Entering 'third-party/gperftools'
+2026-09-02T05:13:59.2911177Z ##[endgroup]
+2026-09-02T05:13:59.2952749Z [command]/usr/bin/git log -1 --format=%H
+2026-09-02T05:13:59.2974464Z df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:13:59.3094603Z ##[group]Run actual="$(git -C .ci/openfhe-src rev-parse HEAD)"
+2026-09-02T05:13:59.3096518Z [36;1mactual="$(git -C .ci/openfhe-src rev-parse HEAD)"[0m
+2026-09-02T05:13:59.3097103Z [36;1mtest "$actual" = "$OPENFHE_COMMIT"[0m
+2026-09-02T05:13:59.3097509Z [36;1mgit -C .ci/openfhe-src status --short[0m
+2026-09-02T05:13:59.3127334Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-02T05:13:59.3127857Z env:
+2026-09-02T05:13:59.3128225Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:13:59.3128737Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-02T05:13:59.3129215Z ##[endgroup]
+2026-09-02T05:13:59.4156459Z ##[group]Run sudo apt-get update
+2026-09-02T05:13:59.4156909Z [36;1msudo apt-get update[0m
+2026-09-02T05:13:59.4157390Z [36;1msudo apt-get install --yes --no-install-recommends libboost-dev[0m
+2026-09-02T05:13:59.4182903Z shell: /usr/bin/bash -e {0}
+2026-09-02T05:13:59.4183260Z env:
+2026-09-02T05:13:59.4183604Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:13:59.4184199Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-02T05:13:59.4184654Z ##[endgroup]
+2026-09-02T05:13:59.4997247Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-09-02T05:13:59.5365074Z Get:6 https://packages.microsoft.com/repos/azure-cli noble InRelease [3564 B]
+2026-09-02T05:13:59.5451685Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-09-02T05:13:59.5507808Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-09-02T05:13:59.5536427Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-09-02T05:13:59.5716243Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-09-02T05:13:59.5737027Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-09-02T05:13:59.6118941Z Get:8 https://packages.microsoft.com/repos/azure-cli noble/main amd64 Packages [2515 B]
+2026-09-02T05:13:59.6190117Z Get:9 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
+2026-09-02T05:13:59.6587387Z Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [434 kB]
+2026-09-02T05:13:59.6617451Z Get:11 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [387 kB]
+2026-09-02T05:13:59.6650625Z Get:12 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.5 kB]
+2026-09-02T05:13:59.7427844Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1232 kB]
+2026-09-02T05:13:59.7500038Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [288 kB]
+2026-09-02T05:13:59.7523405Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
+2026-09-02T05:13:59.7540789Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1690 kB]
+2026-09-02T05:13:59.7621690Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [338 kB]
+2026-09-02T05:13:59.7646517Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+2026-09-02T05:13:59.7671645Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1486 kB]
+2026-09-02T05:13:59.7764215Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [339 kB]
+2026-09-02T05:13:59.7771333Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+2026-09-02T05:13:59.7895479Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5740 B]
+2026-09-02T05:13:59.8366808Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
+2026-09-02T05:13:59.8417774Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [981 kB]
+2026-09-02T05:13:59.8472738Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [210 kB]
+2026-09-02T05:13:59.8493125Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
+2026-09-02T05:13:59.8515845Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1205 kB]
+2026-09-02T05:13:59.8633161Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [241 kB]
+2026-09-02T05:13:59.8634658Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.2 kB]
+2026-09-02T05:13:59.8643509Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1392 kB]
+2026-09-02T05:13:59.8727686Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [321 kB]
+2026-09-02T05:13:59.8738284Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [11.1 kB]
+2026-09-02T05:13:59.9893231Z Get:33 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1410 B]
+2026-09-02T05:14:04.2032405Z Fetched 11.7 MB in 1s (8324 kB/s)
+2026-09-02T05:14:05.0043487Z Reading package lists...
+2026-09-02T05:14:05.0378680Z Reading package lists...
+2026-09-02T05:14:05.2020551Z Building dependency tree...
+2026-09-02T05:14:05.2027644Z Reading state information...
+2026-09-02T05:14:05.3630967Z The following additional packages will be installed:
+2026-09-02T05:14:05.3637943Z   libboost1.83-dev
+2026-09-02T05:14:05.3644936Z Suggested packages:
+2026-09-02T05:14:05.3645531Z   libboost-doc libboost1.83-doc libboost-atomic1.83-dev
+2026-09-02T05:14:05.3646326Z   libboost-chrono1.83-dev libboost-container1.83-dev libboost-context1.83-dev
+2026-09-02T05:14:05.3647162Z   libboost-contract1.83-dev libboost-coroutine1.83-dev
+2026-09-02T05:14:05.3647826Z   libboost-date-time1.83-dev libboost-exception1.83-dev libboost-fiber1.83-dev
+2026-09-02T05:14:05.3648585Z   libboost-filesystem1.83-dev libboost-graph-parallel1.83-dev
+2026-09-02T05:14:05.3649206Z   libboost-graph1.83-dev libboost-iostreams1.83-dev libboost-json1.83-dev
+2026-09-02T05:14:05.3649773Z   libboost-locale1.83-dev libboost-log1.83-dev libboost-math1.83-dev
+2026-09-02T05:14:05.3650604Z   libboost-mpi-python1.83-dev libboost-mpi1.83-dev libboost-nowide1.83-dev
+2026-09-02T05:14:05.3651296Z   libboost-numpy1.83-dev libboost-program-options1.83-dev
+2026-09-02T05:14:05.3652055Z   libboost-python1.83-dev libboost-random1.83-dev libboost-regex1.83-dev
+2026-09-02T05:14:05.3652792Z   libboost-serialization1.83-dev libboost-stacktrace1.83-dev
+2026-09-02T05:14:05.3653563Z   libboost-system1.83-dev libboost-test1.83-dev libboost-thread1.83-dev
+2026-09-02T05:14:05.3654367Z   libboost-timer1.83-dev libboost-type-erasure1.83-dev libboost-url1.83-dev
+2026-09-02T05:14:05.3655685Z   libboost-wave1.83-dev libboost1.83-tools-dev libmpfrc++-dev libntl-dev
+2026-09-02T05:14:05.3855698Z The following NEW packages will be installed:
+2026-09-02T05:14:05.3862379Z   libboost-dev libboost1.83-dev
+2026-09-02T05:14:05.4024916Z 0 upgraded, 2 newly installed, 0 to remove and 86 not upgraded.
+2026-09-02T05:14:05.4025588Z Need to get 10.7 MB of archives.
+2026-09-02T05:14:05.4026337Z After this operation, 161 MB of additional disk space will be used.
+2026-09-02T05:14:05.4026897Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-09-02T05:14:05.5113728Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libboost1.83-dev amd64 1.83.0-2.1ubuntu3.2 [10.7 MB]
+2026-09-02T05:14:05.7434267Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libboost-dev amd64 1.83.0.1ubuntu2 [4308 B]
+2026-09-02T05:14:05.9899623Z Fetched 10.7 MB in 0s (30.7 MB/s)
+2026-09-02T05:14:06.0428931Z Selecting previously unselected package libboost1.83-dev:amd64.
+2026-09-02T05:14:06.1231786Z (Reading database ... 
+2026-09-02T05:14:06.1232164Z (Reading database ... 5%
+2026-09-02T05:14:06.1233321Z (Reading database ... 10%
+2026-09-02T05:14:06.1233802Z (Reading database ... 15%
+2026-09-02T05:14:06.1234315Z (Reading database ... 20%
+2026-09-02T05:14:06.1235117Z (Reading database ... 25%
+2026-09-02T05:14:06.1235511Z (Reading database ... 30%
+2026-09-02T05:14:06.1235957Z (Reading database ... 35%
+2026-09-02T05:14:06.1236332Z (Reading database ... 40%
+2026-09-02T05:14:06.1236686Z (Reading database ... 45%
+2026-09-02T05:14:06.1237093Z (Reading database ... 50%
+2026-09-02T05:14:06.1237453Z (Reading database ... 55%
+2026-09-02T05:14:06.2466546Z (Reading database ... 60%
+2026-09-02T05:14:06.4993576Z (Reading database ... 65%
+2026-09-02T05:14:06.7488541Z (Reading database ... 70%
+2026-09-02T05:14:07.0284173Z (Reading database ... 75%
+2026-09-02T05:14:07.3220243Z (Reading database ... 80%
+2026-09-02T05:14:07.8175760Z (Reading database ... 85%
+2026-09-02T05:14:08.2869780Z (Reading database ... 90%
+2026-09-02T05:14:08.8792612Z (Reading database ... 95%
+2026-09-02T05:14:08.8793565Z (Reading database ... 100%
+2026-09-02T05:14:08.8794367Z (Reading database ... 203385 files and directories currently installed.)
+2026-09-02T05:14:08.8840389Z Preparing to unpack .../libboost1.83-dev_1.83.0-2.1ubuntu3.2_amd64.deb ...
+2026-09-02T05:14:08.9111809Z Unpacking libboost1.83-dev:amd64 (1.83.0-2.1ubuntu3.2) ...
+2026-09-02T05:14:14.9506276Z Selecting previously unselected package libboost-dev:amd64.
+2026-09-02T05:14:14.9713309Z Preparing to unpack .../libboost-dev_1.83.0.1ubuntu2_amd64.deb ...
+2026-09-02T05:14:14.9753536Z Unpacking libboost-dev:amd64 (1.83.0.1ubuntu2) ...
+2026-09-02T05:14:15.0137431Z Setting up libboost1.83-dev:amd64 (1.83.0-2.1ubuntu3.2) ...
+2026-09-02T05:14:15.0163186Z Setting up libboost-dev:amd64 (1.83.0.1ubuntu2) ...
+2026-09-02T05:14:16.0599164Z 
+2026-09-02T05:14:16.0600553Z Running kernel seems to be up-to-date.
+2026-09-02T05:14:16.0601021Z 
+2026-09-02T05:14:16.0601331Z No services need to be restarted.
+2026-09-02T05:14:16.0602001Z 
+2026-09-02T05:14:16.0602199Z No containers need to be restarted.
+2026-09-02T05:14:16.0602593Z 
+2026-09-02T05:14:16.0602832Z No user sessions are running outdated binaries.
+2026-09-02T05:14:16.0603226Z 
+2026-09-02T05:14:16.0603612Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-09-02T05:14:16.9649671Z ##[group]Run cmake --version
+2026-09-02T05:14:16.9650097Z [36;1mcmake --version[0m
+2026-09-02T05:14:16.9650412Z [36;1mc++ --version[0m
+2026-09-02T05:14:16.9674039Z shell: /usr/bin/bash -e {0}
+2026-09-02T05:14:16.9674386Z env:
+2026-09-02T05:14:16.9674969Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:14:16.9675530Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-02T05:14:16.9675987Z ##[endgroup]
+2026-09-02T05:14:17.6601992Z cmake version 3.31.6
+2026-09-02T05:14:17.6602325Z 
+2026-09-02T05:14:17.6602857Z CMake suite maintained and supported by Kitware (kitware.com/cmake).
+2026-09-02T05:14:17.7121305Z c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+2026-09-02T05:14:17.7122216Z Copyright (C) 2023 Free Software Foundation, Inc.
+2026-09-02T05:14:17.7123347Z This is free software; see the source for copying conditions.  There is NO
+2026-09-02T05:14:17.7125308Z warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+2026-09-02T05:14:17.7125795Z 
+2026-09-02T05:14:17.7196659Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-02T05:14:17.7197898Z ##[group]Run actions/cache@v4
+2026-09-02T05:14:17.7198223Z with:
+2026-09-02T05:14:17.7198548Z   path: .ci/openfhe-install
+2026-09-02T05:14:17.7198980Z   key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:14:17.7199513Z   enableCrossOsArchive: false
+2026-09-02T05:14:17.7199850Z   fail-on-cache-miss: false
+2026-09-02T05:14:17.7200199Z   lookup-only: false
+2026-09-02T05:14:17.7200512Z   save-always: false
+2026-09-02T05:14:17.7200800Z env:
+2026-09-02T05:14:17.7201150Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:14:17.7201735Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-02T05:14:17.7202208Z ##[endgroup]
+2026-09-02T05:14:17.8207852Z (node:3270) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-02T05:14:17.8208614Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-02T05:14:18.0313132Z Cache hit for: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:14:18.0411175Z (node:3270) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-09-02T05:14:18.8697689Z Received 2476755 of 2476755 (100.0%), 3.9 MBs/sec
+2026-09-02T05:14:18.8698508Z Cache Size: ~2 MB (2476755 B)
+2026-09-02T05:14:18.8721706Z [command]/usr/bin/tar -xf /home/runner/work/_temp/0fdbc578-a7ec-4ffb-a372-39609cbb42aa/cache.tzst -P -C /home/runner/work/20231788./20231788. --use-compress-program unzstd
+2026-09-02T05:14:18.8973336Z Cache restored successfully
+2026-09-02T05:14:18.9048708Z Cache restored from key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:14:18.9172869Z ##[group]Run cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+2026-09-02T05:14:18.9173577Z [36;1mcmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}[0m
+2026-09-02T05:14:18.9196861Z shell: /usr/bin/bash -e {0}
+2026-09-02T05:14:18.9197259Z env:
+2026-09-02T05:14:18.9197666Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:14:18.9198187Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-02T05:14:18.9198676Z ##[endgroup]
+2026-09-02T05:14:20.0765382Z -- The CXX compiler identification is GNU 13.3.0
+2026-09-02T05:14:20.2110536Z -- Detecting CXX compiler ABI info
+2026-09-02T05:14:20.4066010Z -- Detecting CXX compiler ABI info - done
+2026-09-02T05:14:20.4217598Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2026-09-02T05:14:20.4261908Z -- Detecting CXX compile features
+2026-09-02T05:14:20.4306070Z -- Detecting CXX compile features - done
+2026-09-02T05:14:20.4501546Z -- Configuring done (1.5s)
+2026-09-02T05:14:20.4579925Z -- Generating done (0.0s)
+2026-09-02T05:14:20.4582348Z -- Build files have been written to: /home/runner/work/20231788./20231788./build
+2026-09-02T05:14:20.4635162Z ##[group]Run cmake --build build --parallel 2
+2026-09-02T05:14:20.4635646Z [36;1mcmake --build build --parallel 2[0m
+2026-09-02T05:14:20.4659450Z shell: /usr/bin/bash -e {0}
+2026-09-02T05:14:20.4659951Z env:
+2026-09-02T05:14:20.4660347Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:14:20.4660869Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-02T05:14:20.4661383Z ##[endgroup]
+2026-09-02T05:14:20.5150650Z [ 10%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+2026-09-02T05:14:27.9124523Z [ 20%] Linking CXX static library libopenfhe_2023_1788.a
+2026-09-02T05:14:34.5014917Z [ 20%] Built target openfhe_2023_1788
+2026-09-02T05:14:34.5078779Z [ 30%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+2026-09-02T05:14:34.5080518Z [ 40%] Building CXX object CMakeFiles/tensor2_api_contract_test.dir/tests/tensor2_api_contract_test.cpp.o
+2026-09-02T05:14:36.7594018Z [ 50%] Linking CXX executable tensor2_api_contract_test
+2026-09-02T05:14:36.8277674Z [ 50%] Built target tensor2_api_contract_test
+2026-09-02T05:14:36.8341913Z [ 60%] Building CXX object CMakeFiles/tensor2_test.dir/tests/tensor2_test.cpp.o
+2026-09-02T05:14:48.8756228Z [ 70%] Linking CXX executable tensor2_test
+2026-09-02T05:14:48.9055422Z [ 80%] Linking CXX executable dcp_rcb_test
+2026-09-02T05:14:48.9876542Z [ 80%] Built target tensor2_test
+2026-09-02T05:14:48.9941789Z [ 90%] Building CXX object CMakeFiles/relin2_test.dir/tests/relin2_test.cpp.o
+2026-09-02T05:14:49.0256806Z [ 90%] Built target dcp_rcb_test
+2026-09-02T05:15:02.1228417Z [100%] Linking CXX executable relin2_test
+2026-09-02T05:15:02.2392945Z [100%] Built target relin2_test
+2026-09-02T05:15:02.2464083Z ##[group]Run cmake --build build --target relin2_api_contract_test --parallel 2
+2026-09-02T05:15:02.2465268Z [36;1mcmake --build build --target relin2_api_contract_test --parallel 2[0m
+2026-09-02T05:15:02.2490656Z shell: /usr/bin/bash -e {0}
+2026-09-02T05:15:02.2491093Z env:
+2026-09-02T05:15:02.2491472Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:15:02.2491986Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-02T05:15:02.2492528Z ##[endgroup]
+2026-09-02T05:15:02.2758940Z [ 50%] Built target openfhe_2023_1788
+2026-09-02T05:15:02.2816595Z [ 75%] Building CXX object CMakeFiles/relin2_api_contract_test.dir/tests/relin2_api_contract_test.cpp.o
+2026-09-02T05:15:04.5366353Z [100%] Linking CXX executable relin2_api_contract_test
+2026-09-02T05:15:04.5990118Z [100%] Built target relin2_api_contract_test
+2026-09-02T05:15:04.6047629Z ##[group]Run ctest --test-dir build --output-on-failure
+2026-09-02T05:15:04.6048139Z [36;1mctest --test-dir build --output-on-failure[0m
+2026-09-02T05:15:04.6071691Z shell: /usr/bin/bash -e {0}
+2026-09-02T05:15:04.6072059Z env:
+2026-09-02T05:15:04.6072432Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-02T05:15:04.6072997Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-02T05:15:04.6073448Z ##[endgroup]
+2026-09-02T05:15:04.9418860Z Internal ctest changing into directory: /home/runner/work/20231788./20231788./build
+2026-09-02T05:15:05.0018862Z Test project /home/runner/work/20231788./20231788./build
+2026-09-02T05:15:05.0397490Z       Start  1: dcp_rcb
+2026-09-02T05:15:05.0614272Z  1/21 Test  #1: dcp_rcb ...................................   Passed    0.02 sec
+2026-09-02T05:15:05.0667562Z       Start  2: tensor2_valid_arithmetic_immutability
+2026-09-02T05:15:05.1022078Z  2/21 Test  #2: tensor2_valid_arithmetic_immutability .....   Passed    0.04 sec
+2026-09-02T05:15:05.1023148Z       Start  3: tensor2_result_scale_contract
+2026-09-02T05:15:05.1067502Z  3/21 Test  #3: tensor2_result_scale_contract .............   Passed    0.00 sec
+2026-09-02T05:15:05.1069467Z       Start  4: tensor2_right_input_validation
+2026-09-02T05:15:05.1111767Z  4/21 Test  #4: tensor2_right_input_validation ............   Passed    0.00 sec
+2026-09-02T05:15:05.1113051Z       Start  5: tensor2_mutual_compatibility
+2026-09-02T05:15:05.1155278Z  5/21 Test  #5: tensor2_mutual_compatibility ..............   Passed    0.00 sec
+2026-09-02T05:15:05.1156504Z       Start  6: tensor2_prearithmetic_key_compatibility
+2026-09-02T05:15:05.1198028Z  6/21 Test  #6: tensor2_prearithmetic_key_compatibility ...   Passed    0.00 sec
+2026-09-02T05:15:05.1199308Z       Start  7: relin2_tensor_validation_order
+2026-09-02T05:15:05.1240512Z  7/21 Test  #7: relin2_tensor_validation_order ............   Passed    0.00 sec
+2026-09-02T05:15:05.1241540Z       Start  8: relin2_insufficient_active_basis
+2026-09-02T05:15:05.1282195Z  8/21 Test  #8: relin2_insufficient_active_basis ..........   Passed    0.00 sec
+2026-09-02T05:15:05.1283138Z       Start  9: relin2_missing_eval_key
+2026-09-02T05:15:05.1324455Z  9/21 Test  #9: relin2_missing_eval_key ...................   Passed    0.00 sec
+2026-09-02T05:15:05.1325594Z       Start 10: relin2_key_empty
+2026-09-02T05:15:05.1365746Z 10/21 Test #10: relin2_key_empty ..........................   Passed    0.00 sec
+2026-09-02T05:15:05.1366859Z       Start 11: relin2_key_null_first
+2026-09-02T05:15:05.1407460Z 11/21 Test #11: relin2_key_null_first .....................   Passed    0.00 sec
+2026-09-02T05:15:05.1408646Z       Start 12: relin2_key_wrong_context
+2026-09-02T05:15:05.1458400Z 12/21 Test #12: relin2_key_wrong_context ..................   Passed    0.00 sec
+2026-09-02T05:15:05.1459607Z       Start 13: relin2_key_wrong_tag
+2026-09-02T05:15:05.1501279Z 13/21 Test #13: relin2_key_wrong_tag ......................   Passed    0.00 sec
+2026-09-02T05:15:05.1502479Z       Start 14: relin2_key_wrong_subtype
+2026-09-02T05:15:05.1545857Z 14/21 Test #14: relin2_key_wrong_subtype ..................   Passed    0.00 sec
+2026-09-02T05:15:05.1546765Z       Start 15: relin2_key_hybrid_a_length
+2026-09-02T05:15:05.1611580Z 15/21 Test #15: relin2_key_hybrid_a_length ................   Passed    0.01 sec
+2026-09-02T05:15:05.1612600Z       Start 16: relin2_key_hybrid_b_length
+2026-09-02T05:15:05.1655396Z 16/21 Test #16: relin2_key_hybrid_b_length ................   Passed    0.00 sec
+2026-09-02T05:15:05.1656536Z       Start 17: relin2_key_hybrid_entry_basis
+2026-09-02T05:15:05.1698588Z 17/21 Test #17: relin2_key_hybrid_entry_basis .............   Passed    0.00 sec
+2026-09-02T05:15:05.1700010Z       Start 18: relin2_key_hybrid_entry_format
+2026-09-02T05:15:05.1743766Z 18/21 Test #18: relin2_key_hybrid_entry_format ............   Passed    0.00 sec
+2026-09-02T05:15:05.1744624Z       Start 19: relin2_key_bv_zero_digit_a_length
+2026-09-02T05:15:05.1784036Z 19/21 Test #19: relin2_key_bv_zero_digit_a_length .........   Passed    0.00 sec
+2026-09-02T05:15:05.1784994Z       Start 20: relin2_key_bv_zero_digit_b_length
+2026-09-02T05:15:05.1824455Z 20/21 Test #20: relin2_key_bv_zero_digit_b_length .........   Passed    0.00 sec
+2026-09-02T05:15:05.1825632Z       Start 21: relin2_key_bv_nonzero_digit_a_length
+2026-09-02T05:15:05.1867882Z 21/21 Test #21: relin2_key_bv_nonzero_digit_a_length ......   Passed    0.00 sec
+2026-09-02T05:15:05.1870380Z 
+2026-09-02T05:15:05.1870724Z 100% tests passed, 0 tests failed out of 21
+2026-09-02T05:15:05.1870974Z 
+2026-09-02T05:15:05.1871199Z Total Test time (real) =   0.19 sec
+2026-09-02T05:15:05.2396653Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-02T05:15:05.2397887Z Post job cleanup.
+2026-09-02T05:15:05.3460138Z Cache hit occurred on the primary key openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504, not saving cache.
+2026-09-02T05:15:05.3461659Z (node:3562) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-02T05:15:05.3462386Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-02T05:15:05.3571302Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-02T05:15:05.3572655Z Post job cleanup.
+2026-09-02T05:15:05.4411343Z [command]/usr/bin/git version
+2026-09-02T05:15:05.4448364Z git version 2.55.0
+2026-09-02T05:15:05.4480882Z Temporarily overriding HOME='/home/runner/work/_temp/a9151147-0dec-4a9b-a0b3-f228eabb60f1' before making global git config changes
+2026-09-02T05:15:05.4482282Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-02T05:15:05.4487939Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788./.ci/openfhe-src
+2026-09-02T05:15:05.4524016Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-02T05:15:05.4557133Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-02T05:15:05.4747293Z Entering 'third-party/cereal'
+2026-09-02T05:15:05.4782868Z Entering 'third-party/google-benchmark'
+2026-09-02T05:15:05.4827412Z Entering 'third-party/google-test'
+2026-09-02T05:15:05.4858876Z Entering 'third-party/gperftools'
+2026-09-02T05:15:05.4915944Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-02T05:15:05.4939778Z http.https://github.com/.extraheader
+2026-09-02T05:15:05.4951031Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-09-02T05:15:05.5011492Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-02T05:15:05.5189601Z Entering 'third-party/cereal'
+2026-09-02T05:15:05.5210478Z http.https://github.com/.extraheader
+2026-09-02T05:15:05.5239884Z Entering 'third-party/google-benchmark'
+2026-09-02T05:15:05.5259547Z http.https://github.com/.extraheader
+2026-09-02T05:15:05.5287133Z Entering 'third-party/google-test'
+2026-09-02T05:15:05.5307789Z http.https://github.com/.extraheader
+2026-09-02T05:15:05.5345534Z Entering 'third-party/gperftools'
+2026-09-02T05:15:05.5373397Z http.https://github.com/.extraheader
+2026-09-02T05:15:05.5426472Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-02T05:15:05.5463016Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-02T05:15:05.5658140Z Entering 'third-party/cereal'
+2026-09-02T05:15:05.5675885Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/cereal/config	remote.origin.url
+2026-09-02T05:15:05.5691511Z Entering 'third-party/google-benchmark'
+2026-09-02T05:15:05.5708937Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-benchmark/config	remote.origin.url
+2026-09-02T05:15:05.5722781Z Entering 'third-party/google-test'
+2026-09-02T05:15:05.5739318Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-test/config	remote.origin.url
+2026-09-02T05:15:05.5753205Z Entering 'third-party/gperftools'
+2026-09-02T05:15:05.5770004Z file:/home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/gperftools/config	remote.origin.url
+2026-09-02T05:15:05.5799556Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/cereal/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-02T05:15:05.5830074Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-benchmark/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-02T05:15:05.5856596Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/google-test/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-02T05:15:05.5881464Z [command]/usr/bin/git config --file /home/runner/work/20231788./20231788./.ci/openfhe-src/.git/modules/third-party/gperftools/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-02T05:15:05.6038328Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-02T05:15:05.6039642Z Post job cleanup.
+2026-09-02T05:15:05.6880001Z [command]/usr/bin/git version
+2026-09-02T05:15:05.6935895Z git version 2.55.0
+2026-09-02T05:15:05.6955483Z Temporarily overriding HOME='/home/runner/work/_temp/547d1dde-39bc-42ca-b74d-ccacfdb26408' before making global git config changes
+2026-09-02T05:15:05.6957221Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-02T05:15:05.6962779Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/20231788./20231788.
+2026-09-02T05:15:05.7026956Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-02T05:15:05.7060713Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-02T05:15:05.7272103Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-02T05:15:05.7288613Z http.https://github.com/.extraheader
+2026-09-02T05:15:05.7306788Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-09-02T05:15:05.7356892Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-02T05:15:05.7530938Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-02T05:15:05.7566514Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-02T05:15:05.7939982Z Cleaning up orphan processes
+2026-09-02T05:15:05.8213282Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
