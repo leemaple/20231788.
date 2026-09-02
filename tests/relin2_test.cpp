@@ -2415,6 +2415,250 @@ void TestBVEvaluationKeyZeroDigitEntryBasis() {
           "Relin2 BV zero-digit entry-basis fixture failed to restore the initially empty cache");
 }
 
+void TestBVEvaluationKeyNonzeroDigitEntryBasis() {
+    auto context = MakeContext(3, 8, lbcrypto::BV, 10);
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    leftInput->SetMetadataByKey("relin2-bv-nonzero-digit-entry-basis-immutability-probe",
+                                std::make_shared<ImmutabilityProbeMetadata>("unchanged"));
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 4,
+          "Relin2 BV nonzero-digit entry-basis fixture must have exactly four full-Q towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 3,
+          "Relin2 BV nonzero-digit entry-basis fixture must have exactly three active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 BV nonzero-digit entry-basis fixture must have noise-scale degree three");
+    Check(!tensor.GetKeyTag().empty(),
+          "Relin2 BV nonzero-digit entry-basis fixture must have a nonempty key tag");
+    Check(keys.secretKey->GetKeyTag() == tensor.GetKeyTag(),
+          "Relin2 BV nonzero-digit entry-basis fixture secret key must match the Tensor tag");
+    const auto highMetadata = tensor.GetHigh()->GetMetadataMap();
+    const auto lowMetadata = tensor.GetLow()->GetMetadataMap();
+    Check(highMetadata != nullptr && highMetadata->size() == 1 &&
+              highMetadata->find("relin2-bv-nonzero-digit-entry-basis-immutability-probe") !=
+                  highMetadata->end(),
+          "Relin2 BV nonzero-digit entry-basis fixture high ciphertext lost its metadata probe");
+    Check(lowMetadata != nullptr && lowMetadata->size() == 1 &&
+              lowMetadata->find("relin2-bv-nonzero-digit-entry-basis-immutability-probe") !=
+                  lowMetadata->end(),
+          "Relin2 BV nonzero-digit entry-basis fixture low ciphertext lost its metadata probe");
+
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
+    Check(parameters != nullptr,
+          "Relin2 BV nonzero-digit entry-basis fixture must expose CKKS-RNS parameters");
+    Check(parameters->GetKeySwitchTechnique() == lbcrypto::BV,
+          "Relin2 BV nonzero-digit entry-basis fixture must use BV key switching");
+    const auto digitSize = parameters->GetDigitSize();
+    Check(digitSize == 10,
+          "Relin2 BV nonzero-digit entry-basis fixture must use digit size ten");
+    const auto expectedBasis = parameters->GetElementParams();
+    Check(expectedBasis != nullptr && expectedBasis->GetParams().size() == 4,
+          "Relin2 BV nonzero-digit entry-basis fixture must expose the complete four-tower Q basis");
+    Check(expectedBasis->GetParams()[0] != nullptr && expectedBasis->GetParams()[1] != nullptr &&
+              expectedBasis->GetParams()[0]->GetModulus() != expectedBasis->GetParams()[1]->GetModulus(),
+          "Relin2 BV nonzero-digit entry-basis fixture must have distinguishable first two Q towers");
+    std::vector<std::uint32_t> fullQTowerBits;
+    fullQTowerBits.reserve(expectedBasis->GetParams().size());
+    std::size_t expectedBVKeyLength = 0;
+    for (const auto& towerParameters : expectedBasis->GetParams()) {
+        Check(towerParameters != nullptr,
+              "Relin2 BV nonzero-digit entry-basis fixture has null full-Q tower parameters");
+        const auto towerBits = towerParameters->GetModulus().GetMSB();
+        fullQTowerBits.push_back(towerBits);
+        expectedBVKeyLength +=
+            static_cast<std::size_t>((towerBits + digitSize - 1) / digitSize);
+    }
+    Check(fullQTowerBits == std::vector<std::uint32_t>{35, 31, 30, 31},
+          "Relin2 BV nonzero-digit entry-basis fixture has an unexpected full-Q bit-width manifest");
+    Check(expectedBVKeyLength == 15 && expectedBVKeyLength > expectedBasis->GetParams().size(),
+          "Relin2 BV nonzero-digit entry-basis fixture must have fifteen decomposed digits");
+
+    auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(evaluationKeys.empty(),
+          "Relin2 BV nonzero-digit entry-basis fixture must start with an empty evaluation-key cache");
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeys);
+        context->EvalMultKeyGen(keys.secretKey);
+
+        const auto generatedRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(evaluationKeys.size() == 1 && generatedRow != evaluationKeys.end() &&
+                  generatedRow->second.size() == 1 && generatedRow->second.front() != nullptr,
+              "Relin2 BV nonzero-digit entry-basis fixture must generate exactly one evaluation key");
+        const auto bvKey =
+            std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(generatedRow->second.front());
+        Check(bvKey != nullptr,
+              "Relin2 BV nonzero-digit entry-basis fixture must use the relinearization-key subtype");
+        Check(bvKey->GetCryptoContext().get() == context.get(),
+              "Relin2 BV nonzero-digit entry-basis fixture key must keep the bound context");
+        Check(bvKey->GetKeyTag() == tensor.GetKeyTag(),
+              "Relin2 BV nonzero-digit entry-basis fixture key must match the Tensor tag");
+
+        const auto originalA = bvKey->GetAVector();
+        const auto originalB = bvKey->GetBVector();
+        Check(originalA.size() == expectedBVKeyLength && originalB.size() == expectedBVKeyLength,
+              "Relin2 BV nonzero-digit entry-basis fixture must start with exact generated A/B lengths");
+        for (std::size_t index = 0; index < originalA.size(); ++index) {
+            Check(originalA[index].GetFormat() == Format::EVALUATION,
+                  "Relin2 BV nonzero-digit entry-basis fixture generated a non-Evaluation A entry");
+            CheckKeyPolynomialBasis(originalA[index], expectedBasis,
+                                    "Relin2 BV nonzero-digit generated A entry " + std::to_string(index));
+        }
+        for (std::size_t index = 0; index < originalB.size(); ++index) {
+            Check(originalB[index].GetFormat() == Format::EVALUATION,
+                  "Relin2 BV nonzero-digit entry-basis fixture generated a non-Evaluation B entry");
+            CheckKeyPolynomialBasis(originalB[index], expectedBasis,
+                                    "Relin2 BV nonzero-digit generated B entry " + std::to_string(index));
+        }
+
+        auto equivalentA = originalA;
+        equivalentA.back() = CloneKeyPolynomialWithIndependentParams(
+            originalA.back(), "Relin2 BV nonzero-digit equivalent-pointer positive control");
+        Check(equivalentA.back().GetParams().get() != originalA.back().GetParams().get() &&
+                  equivalentA.back().GetParams().get() != expectedBasis.get(),
+              "Relin2 BV nonzero-digit entry-basis positive control must use independent aggregate parameters");
+        for (std::size_t index = 0; index < equivalentA.back().GetAllElements().size(); ++index) {
+            Check(equivalentA.back().GetAllElements()[index].GetParams().get() !=
+                      originalA.back().GetAllElements()[index].GetParams().get(),
+                  "Relin2 BV nonzero-digit entry-basis positive control must use independent tower parameters");
+        }
+        Check(*equivalentA.back().GetParams() == *expectedBasis &&
+                  equivalentA.back() == originalA.back() &&
+                  equivalentA.back().GetFormat() == Format::EVALUATION,
+              "Relin2 BV nonzero-digit entry-basis positive control must remain semantically equivalent");
+        CheckKeyPolynomialBasis(equivalentA.back(), expectedBasis,
+                                "Relin2 BV nonzero-digit equivalent-pointer positive control");
+        bvKey->SetAVector(std::move(equivalentA));
+
+        const auto* cacheIdentityBeforePositive = &evaluationKeys;
+        const auto* vectorIdentityBeforePositive = &generatedRow->second;
+        const auto keyIdentityBeforePositive = generatedRow->second.front();
+        const auto keyContextBeforePositive = bvKey->GetCryptoContext();
+        const auto keyTagBeforePositive = bvKey->GetKeyTag();
+        const auto tensorBeforePositive = SnapshotTensor(tensor);
+        const auto keyABeforePositive =
+            SnapshotKeyVector(bvKey->GetAVector(), "Relin2 BV nonzero-digit entry-basis positive A");
+        const auto keyBBeforePositive =
+            SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV nonzero-digit entry-basis positive B");
+        CheckPassesCurrentScaffoldOrCompletes(
+            [&] { (void)module.Relin2(tensor); },
+            "Relin2 BV nonzero-digit equivalent-pointer entry basis");
+        CheckTensorUnchanged(tensor, tensorBeforePositive,
+                             "Relin2 BV nonzero-digit equivalent-pointer positive control");
+        CheckKeyVectorUnchanged(bvKey->GetAVector(), keyABeforePositive,
+                                "Relin2 BV nonzero-digit entry-basis positive A");
+        CheckKeyVectorUnchanged(bvKey->GetBVector(), keyBBeforePositive,
+                                "Relin2 BV nonzero-digit entry-basis positive B");
+        const auto currentPositiveRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBeforePositive && evaluationKeys.size() == 1 &&
+                  currentPositiveRow != evaluationKeys.end() &&
+                  &currentPositiveRow->second == vectorIdentityBeforePositive &&
+                  currentPositiveRow->second.size() == 1 &&
+                  currentPositiveRow->second.front().get() == keyIdentityBeforePositive.get(),
+              "Relin2 BV nonzero-digit entry-basis positive control mutated the cache shape or identity");
+        Check(bvKey->GetCryptoContext().get() == keyContextBeforePositive.get(),
+              "Relin2 BV nonzero-digit entry-basis positive control mutated the key context");
+        Check(bvKey->GetKeyTag() == keyTagBeforePositive,
+              "Relin2 BV nonzero-digit entry-basis positive control mutated the key tag");
+
+        auto malformedA = originalA;
+        auto swappedTowers = malformedA.back().GetAllElements();
+        Check(swappedTowers.size() == expectedBasis->GetParams().size() && swappedTowers.size() >= 2,
+              "Relin2 BV nonzero-digit entry-basis negative control must start from complete Q towers");
+        std::swap(swappedTowers[0], swappedTowers[1]);
+        malformedA.back() = DCRTPoly(swappedTowers);
+        const auto wrongBasis = malformedA.back().GetParams();
+        Check(wrongBasis != nullptr && !(*wrongBasis == *expectedBasis) &&
+                  malformedA.back().GetFormat() == Format::EVALUATION &&
+                  malformedA.back().GetAllElements().size() == expectedBasis->GetParams().size() &&
+                  malformedA.back().GetCyclotomicOrder() == expectedBasis->GetCyclotomicOrder(),
+              "Relin2 BV nonzero-digit entry-basis negative control must preserve shape and change only tower order");
+        Check(wrongBasis->GetParams()[0]->GetModulus() == expectedBasis->GetParams()[1]->GetModulus() &&
+                  wrongBasis->GetParams()[0]->GetRootOfUnity() == expectedBasis->GetParams()[1]->GetRootOfUnity() &&
+                  wrongBasis->GetParams()[1]->GetModulus() == expectedBasis->GetParams()[0]->GetModulus() &&
+                  wrongBasis->GetParams()[1]->GetRootOfUnity() == expectedBasis->GetParams()[0]->GetRootOfUnity(),
+              "Relin2 BV nonzero-digit entry-basis negative control must swap the first two declared towers exactly");
+        Check(malformedA.back().GetAllElements()[0].GetModulus() ==
+                  expectedBasis->GetParams()[1]->GetModulus() &&
+                  malformedA.back().GetAllElements()[0].GetRootOfUnity() ==
+                  expectedBasis->GetParams()[1]->GetRootOfUnity() &&
+                  malformedA.back().GetAllElements()[1].GetModulus() ==
+                  expectedBasis->GetParams()[0]->GetModulus() &&
+                  malformedA.back().GetAllElements()[1].GetRootOfUnity() ==
+                  expectedBasis->GetParams()[0]->GetRootOfUnity(),
+              "Relin2 BV nonzero-digit entry-basis negative control must swap the first two actual towers exactly");
+        for (std::size_t index = 2; index < expectedBasis->GetParams().size(); ++index) {
+            Check(wrongBasis->GetParams()[index]->GetCyclotomicOrder() ==
+                      expectedBasis->GetParams()[index]->GetCyclotomicOrder() &&
+                      wrongBasis->GetParams()[index]->GetModulus() ==
+                      expectedBasis->GetParams()[index]->GetModulus() &&
+                      wrongBasis->GetParams()[index]->GetRootOfUnity() ==
+                      expectedBasis->GetParams()[index]->GetRootOfUnity(),
+                  "Relin2 BV nonzero-digit entry-basis negative control changed an unswapped declared tower");
+            Check(malformedA.back().GetAllElements()[index].GetCyclotomicOrder() ==
+                      originalA.back().GetAllElements()[index].GetCyclotomicOrder() &&
+                      malformedA.back().GetAllElements()[index].GetModulus() ==
+                      originalA.back().GetAllElements()[index].GetModulus() &&
+                      malformedA.back().GetAllElements()[index].GetRootOfUnity() ==
+                      originalA.back().GetAllElements()[index].GetRootOfUnity(),
+                  "Relin2 BV nonzero-digit entry-basis negative control changed an unswapped actual tower");
+        }
+        bvKey->SetAVector(std::move(malformedA));
+        Check(bvKey->GetBVector() == originalB &&
+                  bvKey->GetAVector().size() == originalA.size() &&
+                  bvKey->GetAVector().back().GetParams().get() == wrongBasis.get(),
+              "Relin2 BV nonzero-digit entry-basis negative control must alter only the last A entry basis");
+        for (std::size_t index = 0; index + 1 < originalA.size(); ++index) {
+            Check(bvKey->GetAVector()[index] == originalA[index],
+                  "Relin2 BV nonzero-digit entry-basis negative control changed an earlier A entry");
+        }
+
+        const auto* cacheIdentityBeforeNegative = &evaluationKeys;
+        const auto* vectorIdentityBeforeNegative = &generatedRow->second;
+        const auto keyIdentityBeforeNegative = generatedRow->second.front();
+        const auto keyContextBeforeNegative = bvKey->GetCryptoContext();
+        const auto keyTagBeforeNegative = bvKey->GetKeyTag();
+        const auto tensorBeforeNegative = SnapshotTensor(tensor);
+        const auto keyABeforeNegative =
+            SnapshotKeyVector(bvKey->GetAVector(), "Relin2 BV nonzero-digit entry-basis negative A");
+        const auto keyBBeforeNegative =
+            SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV nonzero-digit entry-basis negative B");
+        CheckThrowsExactInvalidArgument(
+            [&] { (void)module.Relin2(tensor); },
+            "DoubleCKKS: Relin2 evaluation key BV entry basis mismatch",
+            "Relin2 BV nonzero-digit evaluation-key entry basis");
+        CheckTensorUnchanged(tensor, tensorBeforeNegative,
+                             "Relin2 BV nonzero-digit entry-basis rejection");
+        CheckKeyVectorUnchanged(bvKey->GetAVector(), keyABeforeNegative,
+                                "Relin2 BV nonzero-digit entry-basis rejection A");
+        CheckKeyVectorUnchanged(bvKey->GetBVector(), keyBBeforeNegative,
+                                "Relin2 BV nonzero-digit entry-basis rejection B");
+        const auto currentNegativeRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBeforeNegative && evaluationKeys.size() == 1 &&
+                  currentNegativeRow != evaluationKeys.end() &&
+                  &currentNegativeRow->second == vectorIdentityBeforeNegative &&
+                  currentNegativeRow->second.size() == 1 &&
+                  currentNegativeRow->second.front().get() == keyIdentityBeforeNegative.get(),
+              "Relin2 BV nonzero-digit entry-basis rejection mutated the cache shape or identity");
+        Check(bvKey->GetCryptoContext().get() == keyContextBeforeNegative.get(),
+              "Relin2 BV nonzero-digit entry-basis rejection mutated the key context");
+        Check(bvKey->GetKeyTag() == keyTagBeforeNegative,
+              "Relin2 BV nonzero-digit entry-basis rejection mutated the key tag");
+    }
+    Check(evaluationKeys.empty(),
+          "Relin2 BV nonzero-digit entry-basis fixture failed to restore the initially empty cache");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -2468,6 +2712,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "key_bv_zero_digit_entry_basis") {
         return &TestBVEvaluationKeyZeroDigitEntryBasis;
+    }
+    if (name == "key_bv_nonzero_digit_entry_basis") {
+        return &TestBVEvaluationKeyNonzeroDigitEntryBasis;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }
