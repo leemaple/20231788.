@@ -1701,6 +1701,152 @@ void TestBVEvaluationKeyZeroDigitALength() {
           "Relin2 BV zero-digit A-length fixture failed to restore the initially empty cache");
 }
 
+void TestBVEvaluationKeyZeroDigitBLength() {
+    auto context = MakeContext(3, 8, lbcrypto::BV, 0);
+    const auto keys = context->KeyGen();
+    auto leftPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    auto rightPlaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{-0.75, 0.125}, 2, 0);
+    const auto leftInput = context->Encrypt(leftPlaintext, keys.publicKey);
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+
+    leftInput->SetMetadataByKey("relin2-bv-zero-digit-b-length-immutability-probe",
+                                std::make_shared<ImmutabilityProbeMetadata>("unchanged"));
+
+    Check(leftInput->GetElements().front().GetAllElements().size() == 4,
+          "Relin2 BV zero-digit B-length fixture must have exactly four full-Q towers");
+
+    DoubleCKKS module(context);
+    const auto left = module.DCP(leftInput);
+    const auto right = module.DCP(rightInput);
+    const auto tensor = module.Tensor2(left, right);
+
+    Check(tensor.GetOrderedModuli().size() == 3,
+          "Relin2 BV zero-digit B-length fixture must have exactly three active Q_l towers");
+    Check(tensor.GetNoiseScaleDegree() == 3,
+          "Relin2 BV zero-digit B-length fixture must have noise-scale degree three");
+    Check(!tensor.GetKeyTag().empty(),
+          "Relin2 BV zero-digit B-length fixture must have a nonempty key tag");
+    Check(keys.secretKey->GetKeyTag() == tensor.GetKeyTag(),
+          "Relin2 BV zero-digit B-length fixture secret key must match the Tensor tag");
+    const auto highMetadata = tensor.GetHigh()->GetMetadataMap();
+    const auto lowMetadata = tensor.GetLow()->GetMetadataMap();
+    Check(highMetadata != nullptr && highMetadata->size() == 1 &&
+              highMetadata->find("relin2-bv-zero-digit-b-length-immutability-probe") != highMetadata->end(),
+          "Relin2 BV zero-digit B-length fixture high ciphertext lost its metadata probe");
+    Check(lowMetadata != nullptr && lowMetadata->size() == 1 &&
+              lowMetadata->find("relin2-bv-zero-digit-b-length-immutability-probe") != lowMetadata->end(),
+          "Relin2 BV zero-digit B-length fixture low ciphertext lost its metadata probe");
+
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
+    Check(parameters != nullptr,
+          "Relin2 BV zero-digit B-length fixture must expose CKKS-RNS parameters");
+    Check(parameters->GetKeySwitchTechnique() == lbcrypto::BV,
+          "Relin2 BV zero-digit B-length fixture must use BV key switching");
+    Check(parameters->GetDigitSize() == 0,
+          "Relin2 BV zero-digit B-length fixture must use digit size zero");
+    const auto expectedBVKeyLength = parameters->GetElementParams()->GetParams().size();
+    Check(expectedBVKeyLength == 4,
+          "Relin2 BV zero-digit B-length fixture must have four full-Q digits");
+
+    auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(evaluationKeys.empty(),
+          "Relin2 BV zero-digit B-length fixture must start with an empty evaluation-key cache");
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeys);
+        context->EvalMultKeyGen(keys.secretKey);
+
+        const auto generatedRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(evaluationKeys.size() == 1 && generatedRow != evaluationKeys.end() &&
+                  generatedRow->second.size() == 1 && generatedRow->second.front() != nullptr,
+              "Relin2 BV zero-digit B-length fixture must generate exactly one evaluation key");
+        const auto bvKey =
+            std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(generatedRow->second.front());
+        Check(bvKey != nullptr,
+              "Relin2 BV zero-digit B-length fixture must use the relinearization-key subtype");
+        Check(bvKey->GetCryptoContext().get() == context.get(),
+              "Relin2 BV zero-digit B-length fixture key must keep the bound context");
+        Check(bvKey->GetKeyTag() == tensor.GetKeyTag(),
+              "Relin2 BV zero-digit B-length fixture key must match the Tensor tag");
+
+        const auto originalA = bvKey->GetAVector();
+        const auto originalB = bvKey->GetBVector();
+        Check(originalA.size() == expectedBVKeyLength && originalB.size() == expectedBVKeyLength,
+              "Relin2 BV zero-digit B-length fixture must start with exact generated A/B lengths");
+
+        const auto* cacheIdentityPositive = &evaluationKeys;
+        const auto* vectorIdentityPositive = &generatedRow->second;
+        const auto keyIdentityPositive = generatedRow->second.front();
+        const auto keyContextPositive = bvKey->GetCryptoContext();
+        const auto keyTagPositive = bvKey->GetKeyTag();
+        const auto keyAPositive = SnapshotKeyVector(bvKey->GetAVector(), "Relin2 BV zero-digit positive A");
+        const auto keyBPositive = SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV zero-digit positive B");
+        const auto tensorPositive = SnapshotTensor(tensor);
+        CheckPassesCurrentScaffoldOrCompletes(
+            [&] { (void)module.Relin2(tensor); },
+            "Relin2 BV zero-digit valid A/B lengths");
+        CheckTensorUnchanged(tensor, tensorPositive,
+                             "Relin2 BV zero-digit B-length positive control");
+        CheckKeyVectorUnchanged(bvKey->GetAVector(), keyAPositive,
+                                "Relin2 BV zero-digit B-length positive A");
+        CheckKeyVectorUnchanged(bvKey->GetBVector(), keyBPositive,
+                                "Relin2 BV zero-digit B-length positive B");
+        const auto positiveRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityPositive && evaluationKeys.size() == 1 &&
+                  positiveRow != evaluationKeys.end() && &positiveRow->second == vectorIdentityPositive &&
+                  positiveRow->second.size() == 1 &&
+                  positiveRow->second.front().get() == keyIdentityPositive.get(),
+              "Relin2 BV zero-digit B-length positive control mutated the cache shape or identity");
+        Check(bvKey->GetCryptoContext().get() == keyContextPositive.get(),
+              "Relin2 BV zero-digit B-length positive control mutated the key context");
+        Check(bvKey->GetKeyTag() == keyTagPositive,
+              "Relin2 BV zero-digit B-length positive control mutated the key tag");
+
+        auto malformedB = originalB;
+        malformedB.pop_back();
+        bvKey->SetBVector(std::move(malformedB));
+        Check(bvKey->GetBVector().size() + 1 == expectedBVKeyLength &&
+                  bvKey->GetBVector().front() == originalB.front() &&
+                  bvKey->GetBVector().back() == originalB[expectedBVKeyLength - 2] &&
+                  bvKey->GetAVector() == originalA,
+              "Relin2 BV zero-digit B-length fixture must shorten only the B vector");
+
+        const auto* cacheIdentityBefore = &evaluationKeys;
+        const auto* vectorIdentityBefore = &generatedRow->second;
+        const auto keyIdentityBefore = generatedRow->second.front();
+        const auto keyContextBefore = bvKey->GetCryptoContext();
+        const auto keyTagBefore = bvKey->GetKeyTag();
+        const auto keyABefore = SnapshotKeyVector(bvKey->GetAVector(), "Relin2 BV zero-digit valid A");
+        const auto keyBBefore = SnapshotKeyVector(bvKey->GetBVector(), "Relin2 BV zero-digit malformed B");
+        const auto tensorBefore = SnapshotTensor(tensor);
+        CheckThrowsExactInvalidArgument(
+            [&] { (void)module.Relin2(tensor); },
+            "DoubleCKKS: Relin2 evaluation key BV B vector length mismatch",
+            "Relin2 BV zero-digit B-vector length");
+        CheckTensorUnchanged(tensor, tensorBefore, "Relin2 BV zero-digit B-length rejection");
+        const auto currentRow = evaluationKeys.find(tensor.GetKeyTag());
+        Check(&evaluationKeys == cacheIdentityBefore && evaluationKeys.size() == 1 &&
+                  currentRow != evaluationKeys.end() && &currentRow->second == vectorIdentityBefore &&
+                  currentRow->second.size() == 1 &&
+                  currentRow->second.front().get() == keyIdentityBefore.get(),
+              "Relin2 BV zero-digit B-length rejection mutated the cache shape or identity");
+        const auto currentBVKey =
+            std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(currentRow->second.front());
+        Check(currentBVKey.get() == bvKey.get(),
+              "Relin2 BV zero-digit B-length rejection changed the concrete key subtype or identity");
+        Check(bvKey->GetCryptoContext().get() == keyContextBefore.get(),
+              "Relin2 BV zero-digit B-length rejection mutated the key context");
+        Check(bvKey->GetKeyTag() == keyTagBefore,
+              "Relin2 BV zero-digit B-length rejection mutated the key tag");
+        CheckKeyVectorUnchanged(bvKey->GetAVector(), keyABefore,
+                                "Relin2 BV zero-digit B-length rejection A");
+        CheckKeyVectorUnchanged(bvKey->GetBVector(), keyBBefore,
+                                "Relin2 BV zero-digit B-length rejection B");
+    }
+    Check(evaluationKeys.empty(),
+          "Relin2 BV zero-digit B-length fixture failed to restore the initially empty cache");
+}
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -1742,6 +1888,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "key_bv_zero_digit_a_length") {
         return &TestBVEvaluationKeyZeroDigitALength;
+    }
+    if (name == "key_bv_zero_digit_b_length") {
+        return &TestBVEvaluationKeyZeroDigitBLength;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }
