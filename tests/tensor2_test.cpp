@@ -426,6 +426,9 @@ void CheckPairUnchanged(const CiphertextPair& pair, const PairSnapshot& before, 
     Check(pair.GetPaperScale().approximateLogicalScalingFactor ==
               before.paperScale.approximateLogicalScalingFactor,
           label + " paper high scale changed");
+    Check(pair.GetPaperScale().approximateRecombinedLogicalScalingFactor ==
+              before.paperScale.approximateRecombinedLogicalScalingFactor,
+          label + " paper recombined scale changed");
     Check(pair.GetRecordedScalingFactor() == before.recordedScalingFactor,
           label + " recorded scaling factor manifest changed");
     Check(pair.GetNoiseScaleDegree() == before.noiseScaleDegree, label + " noise-scale degree manifest changed");

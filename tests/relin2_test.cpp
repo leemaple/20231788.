@@ -1,14 +1,20 @@
 #include "openfhe.h"
 #include "openfhe_2023_1788/double_ckks.h"
 
+#include <boost/multiprecision/cpp_int.hpp>
+
 #include <cmath>
+#include <complex>
+#include <cstddef>
 #include <cstdint>
+#include <exception>
 #include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <typeinfo>
 #include <utility>
 #include <vector>
@@ -386,7 +392,8 @@ DCRTPoly CloneKeyPolynomialWithIndependentParams(const DCRTPoly& source, const s
 CryptoContext<DCRTPoly> MakeContext(std::uint32_t multiplicativeDepth = 3,
                                     std::uint32_t batchSize = 8,
                                     lbcrypto::KeySwitchTechnique keySwitchTechnique = lbcrypto::HYBRID,
-                                    std::uint32_t digitSize = 0) {
+                                    std::uint32_t digitSize = 0,
+                                    std::uint32_t maxRelinSkDeg = 2) {
     lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
     parameters.SetMultiplicativeDepth(multiplicativeDepth);
     parameters.SetScalingModSize(30);
@@ -394,6 +401,7 @@ CryptoContext<DCRTPoly> MakeContext(std::uint32_t multiplicativeDepth = 3,
     parameters.SetScalingTechnique(lbcrypto::FIXEDMANUAL);
     parameters.SetKeySwitchTechnique(keySwitchTechnique);
     parameters.SetDigitSize(digitSize);
+    parameters.SetMaxRelinSkDeg(maxRelinSkDeg);
     parameters.SetSecurityLevel(lbcrypto::HEStd_NotSet);
     parameters.SetRingDim(32);
     parameters.SetBatchSize(batchSize);
@@ -3065,6 +3073,1496 @@ void TestBVEvaluationKeyNonzeroDigitEntryFormat() {
           "Relin2 BV nonzero-digit entry-format fixture failed to restore the initially empty cache");
 }
 
+namespace core_red {
+
+using BigInt = boost::multiprecision::cpp_int;
+using lbcrypto::Ciphertext;
+using lbcrypto::NativeInteger;
+using openfhe_2023_1788::CiphertextPair;
+using openfhe_2023_1788::PaperScaleDescriptor;
+using openfhe_2023_1788::PairLifecycle;
+
+class ProbeMetadata final : public lbcrypto::Metadata {
+public:
+    explicit ProbeMetadata(std::string value) : value_(std::move(value)) {}
+
+    std::shared_ptr<lbcrypto::Metadata> Clone() const override {
+        return std::make_shared<ProbeMetadata>(value_);
+    }
+
+    bool operator==(const lbcrypto::Metadata& metadata) const override {
+        const auto* other = dynamic_cast<const ProbeMetadata*>(&metadata);
+        return other != nullptr && value_ == other->value_;
+    }
+
+private:
+    std::string value_;
+};
+
+struct MetadataSnapshotEntry {
+    std::string key;
+    bool isNull = true;
+    std::shared_ptr<lbcrypto::Metadata> pointerIdentity;
+    std::shared_ptr<lbcrypto::Metadata> deepValue;
+};
+
+struct MetadataSnapshot {
+    lbcrypto::MetadataMap outerMapIdentity;
+    std::vector<MetadataSnapshotEntry> entries;
+};
+
+MetadataSnapshot SnapshotMetadata(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext, const std::string& label) {
+    const auto metadata = ciphertext->GetMetadataMap();
+    Check(metadata != nullptr, label + " metadata map is null");
+    MetadataSnapshot snapshot{metadata, {}};
+    snapshot.entries.reserve(metadata->size());
+    for (const auto& [key, value] : *metadata) {
+        MetadataSnapshotEntry entry;
+        entry.key = key;
+        entry.isNull = (value == nullptr);
+        entry.pointerIdentity = value;
+        if (value) {
+            entry.deepValue = value->Clone();
+            Check(entry.deepValue != nullptr, label + " metadata clone is null");
+        }
+        snapshot.entries.push_back(std::move(entry));
+    }
+    return snapshot;
+}
+
+void CheckMetadataUnchanged(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext, const MetadataSnapshot& expected,
+                            const std::string& label) {
+    const auto metadata = ciphertext->GetMetadataMap();
+    Check(metadata != nullptr, label + " metadata map is null");
+    Check(metadata.get() == expected.outerMapIdentity.get(), label + " metadata outer-map identity changed");
+    Check(metadata->size() == expected.entries.size(), label + " metadata map size changed");
+    auto current = metadata->begin();
+    for (const auto& item : expected.entries) {
+        Check(current != metadata->end(), label + " metadata entry missing");
+        Check(current->first == item.key, label + " metadata key/order changed");
+        Check((current->second == nullptr) == item.isNull, label + " metadata nullness changed");
+        if (!item.isNull) {
+            Check(current->second.get() == item.pointerIdentity.get(), label + " metadata value-pointer identity changed");
+            Check(item.deepValue != nullptr && *(current->second) == *(item.deepValue),
+                  label + " metadata deep value changed");
+        }
+        ++current;
+    }
+    Check(current == metadata->end(), label + " metadata gained trailing entries");
+}
+
+void CheckMetadataValueEquivalent(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext, const MetadataSnapshot& expected,
+                                  const std::string& label) {
+    const auto metadata = ciphertext->GetMetadataMap();
+    Check(metadata != nullptr, label + " metadata map is null");
+    Check(metadata->size() == expected.entries.size(), label + " metadata map size mismatch");
+    auto current = metadata->begin();
+    for (const auto& item : expected.entries) {
+        Check(current != metadata->end(), label + " metadata entry missing");
+        Check(current->first == item.key, label + " metadata key/order mismatch");
+        Check((current->second == nullptr) == item.isNull, label + " metadata nullness mismatch");
+        if (!item.isNull) {
+            Check(item.deepValue != nullptr && *(current->second) == *(item.deepValue),
+                  label + " metadata deep value mismatch");
+        }
+        ++current;
+    }
+    Check(current == metadata->end(), label + " metadata gained trailing entries");
+}
+
+void CheckMetadataShallowAliasExact(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext,
+                                    const MetadataSnapshot& source,
+                                    const std::string& label) {
+    const auto metadata = ciphertext->GetMetadataMap();
+    Check(metadata != nullptr, label + " metadata map is null");
+    Check(metadata.get() != source.outerMapIdentity.get(), label + " metadata outer map aliases its source");
+    Check(metadata->size() == source.entries.size(), label + " metadata map size mismatch");
+    auto current = metadata->begin();
+    for (const auto& item : source.entries) {
+        Check(current != metadata->end(), label + " metadata entry missing");
+        Check(current->first == item.key, label + " metadata key/order mismatch");
+        Check((current->second == nullptr) == item.isNull, label + " metadata nullness mismatch");
+        if (!item.isNull) {
+            Check(current->second.get() == item.pointerIdentity.get(), label + " metadata value did not shallow-alias source");
+            Check(item.deepValue != nullptr && *(current->second) == *(item.deepValue),
+                  label + " metadata deep value mismatch");
+        }
+        ++current;
+    }
+    Check(current == metadata->end(), label + " metadata gained trailing entries");
+}
+
+void CheckMetadataShallowAlias(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext, const MetadataSnapshot& source,
+                               const std::string& forbiddenKey, const std::string& label) {
+    CheckMetadataShallowAliasExact(ciphertext, source, label);
+    const auto metadata = ciphertext->GetMetadataMap();
+    Check(metadata->find(forbiddenKey) == metadata->end(), label + " unexpectedly contains low-only metadata");
+}
+
+BigInt PositiveMod(BigInt value, const BigInt& modulus) {
+    value %= modulus;
+    if (value < 0) {
+        value += modulus;
+    }
+    return value;
+}
+
+BigInt ExtendedGcd(BigInt a, BigInt b, BigInt& x, BigInt& y) {
+    if (b == 0) {
+        x = 1;
+        y = 0;
+        return a;
+    }
+    BigInt nextX;
+    BigInt nextY;
+    const BigInt gcd = ExtendedGcd(b, a % b, nextX, nextY);
+    x = nextY;
+    y = nextX - (a / b) * nextY;
+    return gcd;
+}
+
+BigInt ModInverse(const BigInt& value, const BigInt& modulus) {
+    BigInt x;
+    BigInt y;
+    const BigInt gcd = ExtendedGcd(PositiveMod(value, modulus), modulus, x, y);
+    Check(gcd == 1, "CRT oracle received non-coprime moduli");
+    return PositiveMod(x, modulus);
+}
+
+BigInt Product(const std::vector<BigInt>& values) {
+    BigInt result = 1;
+    for (const auto& value : values) {
+        result *= value;
+    }
+    return result;
+}
+
+BigInt Center(const BigInt& residue, const BigInt& modulus) {
+    BigInt centered = PositiveMod(residue, modulus);
+    if (centered > modulus / 2) {
+        centered -= modulus;
+    }
+    return centered;
+}
+
+BigInt ReconstructCentered(const std::vector<BigInt>& residues, const std::vector<BigInt>& moduli) {
+    const BigInt modulus = Product(moduli);
+    BigInt result = 0;
+    for (std::size_t i = 0; i < moduli.size(); ++i) {
+        const BigInt partial = modulus / moduli[i];
+        result += PositiveMod(residues[i], moduli[i]) * partial * ModInverse(partial, moduli[i]);
+    }
+    return Center(result, modulus);
+}
+
+std::vector<BigInt> GetModuli(const DCRTPoly& polynomial) {
+    std::vector<BigInt> result;
+    for (const auto& tower : polynomial.GetAllElements()) {
+        result.emplace_back(tower.GetModulus().ConvertToInt());
+    }
+    return result;
+}
+
+std::vector<NativeInteger> GetNativeModuli(const DCRTPoly& polynomial) {
+    std::vector<NativeInteger> result;
+    for (const auto& tower : polynomial.GetAllElements()) {
+        result.push_back(tower.GetModulus());
+    }
+    return result;
+}
+
+DCRTPoly ToCoefficient(const DCRTPoly& polynomial) {
+    DCRTPoly result(polynomial);
+    result.SetFormat(Format::COEFFICIENT);
+    return result;
+}
+
+BigInt CoefficientResidue(const DCRTPoly& coefficientPolynomial, std::size_t tower, std::size_t coefficient) {
+    return BigInt(coefficientPolynomial.GetAllElements().at(tower).GetValues().at(coefficient).ConvertToInt());
+}
+
+BigInt ReconstructCoefficient(const DCRTPoly& polynomial, std::size_t coefficient) {
+    const auto coeff = ToCoefficient(polynomial);
+    const auto moduli = GetModuli(coeff);
+    std::vector<BigInt> residues;
+    for (std::size_t tower = 0; tower < moduli.size(); ++tower) {
+        residues.push_back(CoefficientResidue(coeff, tower, coefficient));
+    }
+    return ReconstructCentered(residues, moduli);
+}
+
+std::pair<BigInt, BigInt> DecomposeCentered(const BigInt& value, const BigInt& divisor) {
+    BigInt remainder = PositiveMod(value, divisor);
+    if (remainder > divisor / 2) {
+        remainder -= divisor;
+    }
+    const BigInt quotient = (value - remainder) / divisor;
+    Check(value == divisor * quotient + remainder, "centered DCP identity failed");
+    return {quotient, remainder};
+}
+
+DCRTPoly MakePolynomial(const std::shared_ptr<DCRTPoly::Params>& params, const std::vector<BigInt>& coefficients) {
+    DCRTPoly result(params, Format::COEFFICIENT, true);
+    const std::size_t n = params->GetRingDimension();
+    Check(coefficients.size() == n, "coefficient fixture length mismatch");
+    for (auto& tower : result.GetAllElements()) {
+        const BigInt modulus(tower.GetModulus().ConvertToInt());
+        lbcrypto::NativeVector values(n, tower.GetModulus());
+        for (std::size_t i = 0; i < n; ++i) {
+            values[i] = NativeInteger(PositiveMod(coefficients[i], modulus).convert_to<std::uint64_t>());
+        }
+        tower.SetValues(std::move(values), Format::COEFFICIENT);
+    }
+    result.SetFormat(Format::EVALUATION);
+    return result;
+}
+
+DCRTPoly MakeTowerPolynomial(const std::shared_ptr<DCRTPoly::Params>& params,
+                             const std::vector<std::vector<BigInt>>& coefficients) {
+    DCRTPoly result(params, Format::COEFFICIENT, true);
+    auto& towers = result.GetAllElements();
+    Check(coefficients.size() == towers.size(), "tower fixture count mismatch");
+    const std::size_t n = params->GetRingDimension();
+    for (std::size_t towerIndex = 0; towerIndex < towers.size(); ++towerIndex) {
+        Check(coefficients[towerIndex].size() == n, "tower coefficient fixture length mismatch");
+        const BigInt modulus(towers[towerIndex].GetModulus().ConvertToInt());
+        lbcrypto::NativeVector values(n, towers[towerIndex].GetModulus());
+        for (std::size_t i = 0; i < n; ++i) {
+            values[i] = NativeInteger(PositiveMod(coefficients[towerIndex][i], modulus).convert_to<std::uint64_t>());
+        }
+        towers[towerIndex].SetValues(std::move(values), Format::COEFFICIENT);
+    }
+    result.SetFormat(Format::EVALUATION);
+    return result;
+}
+
+std::vector<BigInt> ComposeSource(const BigInt& divisor, const std::vector<BigInt>& high,
+                                  const std::vector<BigInt>& low) {
+    Check(high.size() == low.size(), "source fixture length mismatch");
+    std::vector<BigInt> result(high.size());
+    for (std::size_t i = 0; i < high.size(); ++i) {
+        result[i] = divisor * high[i] + low[i];
+    }
+    return result;
+}
+
+
+CryptoContext<DCRTPoly> MakeRelinContext(
+    lbcrypto::KeySwitchTechnique technique = lbcrypto::HYBRID,
+    std::uint32_t digitSize = 0,
+    std::uint32_t depth = 3,
+    std::uint32_t maxRelinSkDeg = 2) {
+    return MakeContext(depth, 8, technique, digitSize, maxRelinSkDeg);
+}
+
+struct TensorFixture {
+    CryptoContext<DCRTPoly> context;
+    lbcrypto::KeyPair<DCRTPoly> keys;
+    Ciphertext<DCRTPoly> leftInput;
+    Ciphertext<DCRTPoly> rightInput;
+};
+
+TensorFixture MakeExactTensorFixture(const CryptoContext<DCRTPoly>& context) {
+    TensorFixture fixture;
+    fixture.context = context;
+    fixture.keys = context->KeyGen();
+    const auto plaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.0}, 2, 0);
+    fixture.leftInput = context->Encrypt(plaintext, fixture.keys.publicKey);
+    fixture.rightInput = context->Encrypt(plaintext, fixture.keys.publicKey);
+    const auto params = fixture.leftInput->GetElements().front().GetParams();
+    const std::size_t n = params->GetRingDimension();
+    const auto moduli = GetModuli(fixture.leftInput->GetElements().front());
+    Check(moduli.size() >= 3, "Relin2 exact fixture requires at least three full-basis towers");
+    const BigInt divisor = moduli.back();
+
+    std::vector<BigInt> lh0(n, 0), ll0(n, 0), lh1(n, 0), ll1(n, 0);
+    std::vector<BigInt> rh0(n, 0), rl0(n, 0), rh1(n, 0), rl1(n, 0);
+    lh0[n - 1] = 1;
+    rh0[1] = 1;
+    lh1[0] = -1000003;
+    rh1[0] = 1000033;
+    ll0[2] = 17;
+    rl0[3] = -19;
+    ll1[4] = -23;
+    rl1[5] = 29;
+    fixture.leftInput->SetElements({MakePolynomial(params, ComposeSource(divisor, lh0, ll0)),
+                                    MakePolynomial(params, ComposeSource(divisor, lh1, ll1))});
+    fixture.rightInput->SetElements({MakePolynomial(params, ComposeSource(divisor, rh0, rl0)),
+                                     MakePolynomial(params, ComposeSource(divisor, rh1, rl1))});
+    return fixture;
+}
+
+TensorFixture MakeRepresentativePublicFixture(const CryptoContext<DCRTPoly>& context) {
+    TensorFixture fixture;
+    fixture.context = context;
+    fixture.keys = context->KeyGen();
+    const std::vector<std::complex<double>> leftValues{{1.25, -0.5}, {-2.0, 0.75}, {1.0e-8, -2.0e-8}, {12.5, 3.25}};
+    const std::vector<std::complex<double>> rightValues{{-0.75, 1.0}, {3.5, -1.25}, {-3.0e-8, 1.0e-8}, {7.0, -2.5}};
+    const auto leftPlain = context->MakeCKKSPackedPlaintext(leftValues, 2, 0);
+    const auto rightPlain = context->MakeCKKSPackedPlaintext(rightValues, 2, 0);
+    fixture.leftInput = context->Encrypt(leftPlain, fixture.keys.publicKey);
+    fixture.rightInput = context->Encrypt(rightPlain, fixture.keys.publicKey);
+    return fixture;
+}
+
+std::pair<CiphertextPair, CiphertextPair> MakePairs(TensorFixture& fixture, DoubleCKKS& module) {
+    fixture.leftInput->SetMetadataByKey("relin2-left-input", std::make_shared<ProbeMetadata>("left-input"));
+    fixture.rightInput->SetMetadataByKey("relin2-right-input", std::make_shared<ProbeMetadata>("right-input"));
+    return {module.DCP(fixture.leftInput), module.DCP(fixture.rightInput)};
+}
+
+void TagTensorMetadata(const TensorCiphertextPair& tensor) {
+    auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(tensor.GetHigh());
+    auto low = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(tensor.GetLow());
+    high->SetMetadataByKey("relin2-tensor-high", std::make_shared<ProbeMetadata>("high-source"));
+    low->SetMetadataByKey("relin2-tensor-low", std::make_shared<ProbeMetadata>("low-source"));
+    const auto highMap = high->GetMetadataMap();
+    const auto lowMap = low->GetMetadataMap();
+    Check(highMap != nullptr && lowMap != nullptr, "Tensor metadata provenance fixture has a null map");
+    Check(highMap.get() != lowMap.get(), "Tensor high/low metadata maps unexpectedly alias");
+    Check(highMap->find("relin2-tensor-high") != highMap->end(), "Tensor high provenance metadata missing");
+    Check(highMap->find("relin2-tensor-low") == highMap->end(), "Tensor high unexpectedly contains low-only metadata");
+    Check(lowMap->find("relin2-tensor-low") != lowMap->end(), "Tensor low provenance metadata missing");
+    Check(lowMap->find("relin2-tensor-high") == lowMap->end(), "Tensor low unexpectedly contains high-only metadata");
+}
+
+bool HasNonzeroElement(const DCRTPoly& polynomial) {
+    for (const auto& tower : polynomial.GetAllElements()) {
+        for (std::size_t index = 0; index < tower.GetValues().GetLength(); ++index) {
+            if (tower.GetValues().at(index).ConvertToInt() != 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void CheckNonzeroThreeComponentTensor(const TensorCiphertextPair& tensor,
+                                      const std::string& label) {
+    Check(tensor.GetComponentCount() == 3 &&
+              tensor.GetHigh()->GetElements().size() == 3 &&
+              tensor.GetLow()->GetElements().size() == 3,
+          label + " is not a three-component Tensor");
+    for (std::size_t component = 0; component < 3; ++component) {
+        Check(HasNonzeroElement(tensor.GetHigh()->GetElements()[component]),
+              label + " high component " + std::to_string(component) + " is zero");
+        Check(HasNonzeroElement(tensor.GetLow()->GetElements()[component]),
+              label + " low component " + std::to_string(component) + " is zero");
+    }
+}
+
+struct CiphertextSnapshot {
+    ReadOnlyCiphertext identity;
+    Ciphertext<DCRTPoly> clone;
+    MetadataSnapshot metadata;
+    KeyVectorSnapshot elements;
+};
+
+void CheckCiphertextDeepUnchanged(lbcrypto::ConstCiphertext<DCRTPoly> ciphertext, const CiphertextSnapshot& before,
+                                  const std::string& label) {
+    Check(ciphertext != nullptr && before.identity != nullptr && before.clone != nullptr,
+          label + " ciphertext or snapshot is null");
+    const auto& actualElements = ciphertext->GetElements();
+    const auto& beforeElements = before.clone->GetElements();
+    Check(ciphertext.get() == before.identity.get(), label + " ciphertext identity changed");
+    Check(actualElements.size() == beforeElements.size(), label + " component count changed");
+    for (std::size_t component = 0; component < actualElements.size(); ++component) {
+        Check(actualElements[component].GetFormat() == beforeElements[component].GetFormat(),
+              label + " aggregate DCRT format changed");
+        const auto& actualTowers = actualElements[component].GetAllElements();
+        const auto& beforeTowers = beforeElements[component].GetAllElements();
+        Check(actualTowers.size() == beforeTowers.size(), label + " tower count changed");
+        for (std::size_t tower = 0; tower < actualTowers.size(); ++tower) {
+            Check(actualTowers[tower].GetFormat() == beforeTowers[tower].GetFormat(),
+                  label + " NativePoly tower format changed");
+        }
+    }
+    Check(*ciphertext == *before.clone, label + " ciphertext changed");
+    CheckKeyVectorUnchanged(actualElements, before.elements, label + " elements");
+    CheckMetadataUnchanged(ciphertext, before.metadata, label);
+}
+
+struct TensorSnapshot {
+    CiphertextSnapshot high;
+    CiphertextSnapshot low;
+    const lbcrypto::CryptoContextImpl<DCRTPoly>* contextIdentity;
+    NativeInteger divisor;
+    std::vector<NativeInteger> orderedModuli;
+    std::size_t level;
+    TensorScaleDescriptor tensorScale;
+    double recordedScalingFactor;
+    std::size_t noiseScaleDegree;
+    std::string keyTag;
+    std::uint32_t slots;
+    Format format;
+    std::size_t componentCount;
+};
+
+TensorSnapshot SnapshotTensor(const TensorCiphertextPair& tensor, const std::string& label) {
+    return {{tensor.GetHigh(), tensor.GetHigh()->Clone(), SnapshotMetadata(tensor.GetHigh(), label + " high"),
+             SnapshotKeyVector(tensor.GetHigh()->GetElements(), label + " high elements")},
+            {tensor.GetLow(), tensor.GetLow()->Clone(), SnapshotMetadata(tensor.GetLow(), label + " low"),
+             SnapshotKeyVector(tensor.GetLow()->GetElements(), label + " low elements")},
+            tensor.GetContextIdentity(), tensor.GetDivisor(), tensor.GetOrderedModuli(), tensor.GetLevel(),
+            tensor.GetTensorScale(), tensor.GetRecordedScalingFactor(), tensor.GetNoiseScaleDegree(),
+            tensor.GetKeyTag(), tensor.GetSlots(), tensor.GetFormat(), tensor.GetComponentCount()};
+}
+
+void CheckTensorUnchanged(const TensorCiphertextPair& tensor, const TensorSnapshot& before, const std::string& label) {
+    CheckCiphertextDeepUnchanged(tensor.GetHigh(), before.high, label + " high");
+    CheckCiphertextDeepUnchanged(tensor.GetLow(), before.low, label + " low");
+    Check(tensor.GetContextIdentity() == before.contextIdentity, label + " context manifest changed");
+    Check(tensor.GetDivisor() == before.divisor, label + " divisor manifest changed");
+    Check(tensor.GetOrderedModuli() == before.orderedModuli, label + " basis manifest changed");
+    Check(tensor.GetLevel() == before.level, label + " level manifest changed");
+    Check(tensor.GetTensorScale().approximateHighLogicalScalingFactor ==
+              before.tensorScale.approximateHighLogicalScalingFactor,
+          label + " high logical scale changed");
+    Check(tensor.GetTensorScale().approximateRecombinedLogicalScalingFactor ==
+              before.tensorScale.approximateRecombinedLogicalScalingFactor,
+          label + " recombined logical scale changed");
+    Check(tensor.GetRecordedScalingFactor() == before.recordedScalingFactor, label + " recorded factor changed");
+    Check(tensor.GetNoiseScaleDegree() == before.noiseScaleDegree, label + " degree changed");
+    Check(tensor.GetKeyTag() == before.keyTag, label + " key tag changed");
+    Check(tensor.GetSlots() == before.slots, label + " slots changed");
+    Check(tensor.GetFormat() == before.format, label + " format changed");
+    Check(tensor.GetComponentCount() == before.componentCount, label + " component count changed");
+}
+
+struct PairSnapshot {
+    CiphertextSnapshot high;
+    CiphertextSnapshot low;
+    const lbcrypto::CryptoContextImpl<DCRTPoly>* contextIdentity;
+    NativeInteger divisor;
+    std::vector<NativeInteger> orderedModuli;
+    std::size_t level;
+    PaperScaleDescriptor paperScale;
+    double recordedScalingFactor;
+    std::size_t noiseScaleDegree;
+    PairLifecycle lifecycle;
+    std::string keyTag;
+    std::uint32_t slots;
+    Format format;
+    std::size_t componentCount;
+};
+
+PairSnapshot SnapshotPair(const CiphertextPair& pair, const std::string& label) {
+    return {{pair.GetHigh(), pair.GetHigh()->Clone(), SnapshotMetadata(pair.GetHigh(), label + " high"),
+             SnapshotKeyVector(pair.GetHigh()->GetElements(), label + " high elements")},
+            {pair.GetLow(), pair.GetLow()->Clone(), SnapshotMetadata(pair.GetLow(), label + " low"),
+             SnapshotKeyVector(pair.GetLow()->GetElements(), label + " low elements")},
+            pair.GetContextIdentity(), pair.GetDivisor(), pair.GetOrderedModuli(), pair.GetLevel(),
+            pair.GetPaperScale(), pair.GetRecordedScalingFactor(), pair.GetNoiseScaleDegree(), pair.GetLifecycle(),
+            pair.GetKeyTag(), pair.GetSlots(), pair.GetFormat(), pair.GetComponentCount()};
+}
+
+void CheckPairUnchanged(const CiphertextPair& pair, const PairSnapshot& before, const std::string& label) {
+    CheckCiphertextDeepUnchanged(pair.GetHigh(), before.high, label + " high");
+    CheckCiphertextDeepUnchanged(pair.GetLow(), before.low, label + " low");
+    Check(pair.GetContextIdentity() == before.contextIdentity, label + " context manifest changed");
+    Check(pair.GetDivisor() == before.divisor, label + " divisor manifest changed");
+    Check(pair.GetOrderedModuli() == before.orderedModuli, label + " basis manifest changed");
+    Check(pair.GetLevel() == before.level, label + " level manifest changed");
+    Check(pair.GetPaperScale().inputRecordedScalingFactor == before.paperScale.inputRecordedScalingFactor,
+          label + " input scale changed");
+    Check(pair.GetPaperScale().divisor == before.paperScale.divisor, label + " paper divisor changed");
+    Check(pair.GetPaperScale().approximateLogicalScalingFactor == before.paperScale.approximateLogicalScalingFactor,
+          label + " high logical scale changed");
+    Check(pair.GetPaperScale().approximateRecombinedLogicalScalingFactor ==
+              before.paperScale.approximateRecombinedLogicalScalingFactor,
+          label + " recombined logical scale changed");
+    Check(pair.GetRecordedScalingFactor() == before.recordedScalingFactor, label + " recorded factor changed");
+    Check(pair.GetNoiseScaleDegree() == before.noiseScaleDegree, label + " degree changed");
+    Check(pair.GetLifecycle() == before.lifecycle, label + " lifecycle changed");
+    Check(pair.GetKeyTag() == before.keyTag, label + " key tag changed");
+    Check(pair.GetSlots() == before.slots, label + " slots changed");
+    Check(pair.GetFormat() == before.format, label + " format changed");
+    Check(pair.GetComponentCount() == before.componentCount, label + " component count changed");
+}
+
+struct TowerSnapshot {
+    NativeInteger modulus;
+    NativeInteger root;
+    std::uint32_t cyclotomicOrder;
+    Format format;
+    std::vector<std::uint64_t> values;
+};
+
+struct DcrtSnapshot {
+    Format format;
+    std::vector<TowerSnapshot> towers;
+};
+
+DcrtSnapshot SnapshotDcrt(const DCRTPoly& polynomial) {
+    DcrtSnapshot snapshot{polynomial.GetFormat(), {}};
+    for (const auto& tower : polynomial.GetAllElements()) {
+        TowerSnapshot entry{tower.GetModulus(), tower.GetRootOfUnity(), tower.GetCyclotomicOrder(), tower.GetFormat(), {}};
+        entry.values.reserve(tower.GetValues().GetLength());
+        for (std::size_t i = 0; i < tower.GetValues().GetLength(); ++i) {
+            entry.values.push_back(tower.GetValues().at(i).ConvertToInt());
+        }
+        snapshot.towers.push_back(std::move(entry));
+    }
+    return snapshot;
+}
+
+bool SameDcrtSnapshot(const DcrtSnapshot& left, const DcrtSnapshot& right) {
+    if (left.format != right.format || left.towers.size() != right.towers.size()) {
+        return false;
+    }
+    for (std::size_t i = 0; i < left.towers.size(); ++i) {
+        const auto& a = left.towers[i];
+        const auto& b = right.towers[i];
+        if (a.modulus != b.modulus || a.root != b.root || a.cyclotomicOrder != b.cyclotomicOrder ||
+            a.format != b.format || a.values != b.values) {
+            return false;
+        }
+    }
+    return true;
+}
+
+struct KeyEntrySnapshot {
+    bool isNull = true;
+    const void* pointerIdentity = nullptr;
+    const lbcrypto::CryptoContextImpl<DCRTPoly>* contextIdentity = nullptr;
+    std::string actualTag;
+    std::string concreteSubtype;
+    bool isRelin = false;
+    KeyVectorSnapshot a;
+    KeyVectorSnapshot b;
+};
+
+using DeepKeyRows = std::map<std::string, std::vector<KeyEntrySnapshot>>;
+
+struct DeepKeyCacheSnapshot {
+    const EvalMultKeyMap* mapIdentity;
+    std::map<std::string, const std::vector<lbcrypto::EvalKey<DCRTPoly>>*> rowIdentities;
+    DeepKeyRows rows;
+};
+
+DeepKeyCacheSnapshot SnapshotDeepKeyCache() {
+    const auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    DeepKeyCacheSnapshot result{&cache, {}, {}};
+    for (const auto& [mapTag, row] : cache) {
+        result.rowIdentities[mapTag] = &row;
+        auto& output = result.rows[mapTag];
+        for (const auto& key : row) {
+            KeyEntrySnapshot entry;
+            if (!key) {
+                output.push_back(std::move(entry));
+                continue;
+            }
+            entry.isNull = false;
+            entry.pointerIdentity = key.get();
+            entry.contextIdentity = key->GetCryptoContext().get();
+            entry.actualTag = key->GetKeyTag();
+            entry.concreteSubtype = typeid(*key).name();
+            const auto relin = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(key);
+            if (relin) {
+                entry.isRelin = true;
+                entry.a = SnapshotKeyVector(relin->GetAVector(), "evaluation-key cache A");
+                entry.b = SnapshotKeyVector(relin->GetBVector(), "evaluation-key cache B");
+            }
+            output.push_back(std::move(entry));
+        }
+    }
+    return result;
+}
+
+void CheckDeepKeyCacheMatches(const DeepKeyCacheSnapshot& expected, const std::string& label) {
+    const auto& actual = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(&actual == expected.mapIdentity, label + " cache map identity changed");
+    Check(actual.size() == expected.rows.size(), label + " cache row count changed");
+    auto ai = actual.begin();
+    auto ei = expected.rows.begin();
+    for (; ei != expected.rows.end(); ++ei, ++ai) {
+        Check(ai != actual.end() && ai->first == ei->first, label + " cache row tag changed");
+        Check(&ai->second == expected.rowIdentities.at(ei->first),
+              label + " cache row-vector identity changed");
+        Check(ai->second.size() == ei->second.size(), label + " cache row length changed");
+        for (std::size_t j = 0; j < ei->second.size(); ++j) {
+            const auto& e = ei->second[j];
+            const auto& key = ai->second[j];
+            Check((key == nullptr) == e.isNull, label + " cache nullness changed");
+            if (e.isNull) {
+                continue;
+            }
+            Check(key.get() == e.pointerIdentity, label + " cache pointer identity changed");
+            Check(key->GetCryptoContext().get() == e.contextIdentity, label + " key context identity changed");
+            Check(key->GetKeyTag() == e.actualTag, label + " actual key tag changed");
+            Check(typeid(*key).name() == e.concreteSubtype, label + " concrete key subtype changed");
+            const auto relin = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(key);
+            Check((relin != nullptr) == e.isRelin, label + " relin subtype classification changed");
+            if (relin) {
+                CheckKeyVectorUnchanged(relin->GetAVector(), e.a, label + " A-vector");
+                CheckKeyVectorUnchanged(relin->GetBVector(), e.b, label + " B-vector");
+            }
+        }
+    }
+    Check(ai == actual.end(), label + " cache gained trailing rows");
+}
+
+DCRTPoly RaiseElement(const DCRTPoly& source, const NativeInteger& divisor,
+                      const std::shared_ptr<DCRTPoly::Params>& fullParams) {
+    auto towers = source.GetAllElements();
+    for (auto& tower : towers) {
+        tower *= divisor;
+    }
+    lbcrypto::NativePoly zero(fullParams->GetParams().back(), Format::EVALUATION, true);
+    towers.push_back(std::move(zero));
+    return DCRTPoly(towers);
+}
+
+Ciphertext<DCRTPoly> RaiseHighReference(const TensorCiphertextPair& tensor,
+                                        const CryptoContext<DCRTPoly>& context) {
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
+    Check(parameters != nullptr, "reference context is not CKKS-RNS");
+    auto raised = tensor.GetHigh()->Clone();
+    auto elements = raised->GetElements();
+    for (auto& element : elements) {
+        element = RaiseElement(element, tensor.GetDivisor(), parameters->GetElementParams());
+    }
+    raised->SetElements(std::move(elements));
+    raised->SetLevel(0);
+    return raised;
+}
+
+struct ReferenceRelinPaths {
+    Ciphertext<DCRTPoly> raisedHigh;
+    Ciphertext<DCRTPoly> relinearizedHigh;
+    Ciphertext<DCRTPoly> relinearizedLow;
+};
+
+ReferenceRelinPaths BuildReferenceRelinPaths(const TensorCiphertextPair& tensor,
+                                              const CryptoContext<DCRTPoly>& context) {
+    ReferenceRelinPaths result;
+    result.raisedHigh = RaiseHighReference(tensor, context);
+    lbcrypto::ConstCiphertext<DCRTPoly> raisedConst = result.raisedHigh;
+    result.relinearizedHigh = context->Relinearize(raisedConst);
+    lbcrypto::ConstCiphertext<DCRTPoly> lowConst = tensor.GetLow();
+    result.relinearizedLow = context->Relinearize(lowConst);
+    return result;
+}
+
+void CheckMemberState(lbcrypto::ConstCiphertext<DCRTPoly> member, const TensorCiphertextPair& tensor,
+                      const CryptoContext<DCRTPoly>& context, const MetadataSnapshot& expectedHighMetadata,
+                      const std::string& label) {
+    Check(member != nullptr, label + " is null");
+    Check(member->GetCryptoContext().get() == context.get(), label + " context identity mismatch");
+    Check(member->GetEncodingType() == lbcrypto::CKKS_PACKED_ENCODING, label + " encoding mismatch");
+    Check(member->GetLevel() == 1, label + " level mismatch");
+    Check(member->NumberCiphertextElements() == 2, label + " component count mismatch");
+    Check(member->GetNoiseScaleDeg() == 3, label + " noise-scale degree mismatch");
+    Check(member->GetScalingFactor() == tensor.GetRecordedScalingFactor(), label + " scaling factor mismatch");
+    Check(member->GetKeyTag() == tensor.GetKeyTag(), label + " key tag mismatch");
+    Check(member->GetSlots() == tensor.GetSlots(), label + " slots mismatch");
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
+    Check(parameters != nullptr, label + " missing CKKS parameters");
+    const auto& expectedTowers = parameters->GetElementParams()->GetParams();
+    const auto expectedBasis = tensor.GetLow()->GetElements().front().GetParams();
+    for (std::size_t component = 0; component < member->GetElements().size(); ++component) {
+        const auto& element = member->GetElements()[component];
+        CheckKeyPolynomialBasis(element, expectedBasis,
+                                label + " component " + std::to_string(component));
+        Check(element.GetFormat() == Format::EVALUATION, label + " element format mismatch");
+        Check(GetNativeModuli(element) == tensor.GetOrderedModuli(), label + " ordered basis mismatch");
+        const auto& towers = element.GetAllElements();
+        Check(towers.size() == tensor.GetOrderedModuli().size(), label + " tower count mismatch");
+        for (std::size_t i = 0; i < towers.size(); ++i) {
+            Check(towers[i].GetFormat() == Format::EVALUATION, label + " NativePoly tower format mismatch");
+            Check(towers[i].GetModulus() == expectedTowers[i]->GetModulus(), label + " tower modulus mismatch");
+            Check(towers[i].GetRootOfUnity() == expectedTowers[i]->GetRootOfUnity(), label + " tower root mismatch");
+            Check(towers[i].GetCyclotomicOrder() == expectedTowers[i]->GetCyclotomicOrder(),
+                  label + " tower cyclotomic order mismatch");
+        }
+    }
+    CheckMetadataShallowAlias(member, expectedHighMetadata, "relin2-tensor-low", label);
+}
+
+void CheckResultState(const CiphertextPair& result, const TensorCiphertextPair& tensor,
+                      const CryptoContext<DCRTPoly>& context, const MetadataSnapshot& expectedHighMetadata,
+                      const MetadataSnapshot& expectedLowMetadata) {
+    static_assert(std::is_same_v<decltype(result), const CiphertextPair&>);
+    Check(result.GetLifecycle() == PairLifecycle::ReadyForRS2, "Relin2 lifecycle mismatch");
+    Check(result.GetContextIdentity() == context.get(), "Relin2 context identity mismatch");
+    Check(result.GetDivisor() == tensor.GetDivisor(), "Relin2 divisor mismatch");
+    Check(result.GetKeyTag() == tensor.GetKeyTag(), "Relin2 actual key tag mismatch");
+    Check(result.GetSlots() == tensor.GetSlots(), "Relin2 slots mismatch");
+    Check(result.GetFormat() == Format::EVALUATION, "Relin2 pair format mismatch");
+    Check(result.GetLevel() == 1, "Relin2 pair level mismatch");
+    Check(result.GetComponentCount() == 2, "Relin2 pair component-count manifest mismatch");
+    Check(result.GetNoiseScaleDegree() == 3, "Relin2 pair degree mismatch");
+    Check(result.GetRecordedScalingFactor() == tensor.GetRecordedScalingFactor(), "Relin2 SF_T mismatch");
+    Check(result.GetOrderedModuli() == tensor.GetOrderedModuli(), "Relin2 ordered Q_l manifest mismatch");
+    Check(result.GetPaperScale().inputRecordedScalingFactor == tensor.GetRecordedScalingFactor(),
+          "Relin2 paper recorded factor mismatch");
+    Check(result.GetPaperScale().divisor == tensor.GetDivisor(), "Relin2 paper divisor mismatch");
+    Check(result.GetPaperScale().approximateLogicalScalingFactor ==
+              tensor.GetTensorScale().approximateHighLogicalScalingFactor,
+          "Relin2 copied high logical scale mismatch");
+    Check(result.GetPaperScale().approximateRecombinedLogicalScalingFactor ==
+              tensor.GetTensorScale().approximateRecombinedLogicalScalingFactor,
+          "Relin2 copied recombined logical scale mismatch");
+    Check(result.GetHigh() != nullptr && result.GetLow() != nullptr,
+          "Relin2 result contains a null ciphertext member");
+
+    const auto resultHighMap = result.GetHigh()->GetMetadataMap();
+    const auto resultLowMap = result.GetLow()->GetMetadataMap();
+    Check(resultHighMap != nullptr && resultLowMap != nullptr, "Relin2 result metadata map is null");
+    Check(resultHighMap.get() != resultLowMap.get(), "Relin2 high/low metadata outer maps alias");
+    Check(resultHighMap.get() != expectedHighMetadata.outerMapIdentity.get(),
+          "Relin2 high metadata outer map aliases Tensor high");
+    Check(resultLowMap.get() != expectedHighMetadata.outerMapIdentity.get(),
+          "Relin2 low metadata outer map aliases Tensor high");
+    Check(resultHighMap.get() != expectedLowMetadata.outerMapIdentity.get(),
+          "Relin2 high metadata outer map aliases Tensor low");
+    Check(resultLowMap.get() != expectedLowMetadata.outerMapIdentity.get(),
+          "Relin2 low metadata outer map aliases Tensor low");
+
+    CheckMemberState(result.GetHigh(), tensor, context, expectedHighMetadata, "Relin2 high");
+    CheckMemberState(result.GetLow(), tensor, context, expectedHighMetadata, "Relin2 low");
+}
+
+void CheckExactRelin2Oracle(const TensorCiphertextPair& tensor, const CiphertextPair& actual,
+                            const ReferenceRelinPaths& reference) {
+    Check(actual.GetHigh() != nullptr && actual.GetLow() != nullptr,
+          "Relin2 exact oracle received a null result member");
+    const BigInt divisor(tensor.GetDivisor().ConvertToInt());
+    const std::size_t n = reference.relinearizedHigh->GetElements().front().GetParams()->GetRingDimension();
+    for (std::size_t component = 0; component < 2; ++component) {
+        const auto actualHigh = ToCoefficient(actual.GetHigh()->GetElements().at(component));
+        const auto actualLow = ToCoefficient(actual.GetLow()->GetElements().at(component));
+        const auto relinLow = ToCoefficient(reference.relinearizedLow->GetElements().at(component));
+        const auto moduli = GetModuli(actualHigh);
+        for (std::size_t coefficient = 0; coefficient < n; ++coefficient) {
+            const BigInt source = ReconstructCoefficient(reference.relinearizedHigh->GetElements().at(component),
+                                                         coefficient);
+            const auto decomposition = DecomposeCentered(source, divisor);
+            for (std::size_t tower = 0; tower < moduli.size(); ++tower) {
+                const BigInt w = CoefficientResidue(relinLow, tower, coefficient);
+                Check(CoefficientResidue(actualHigh, tower, coefficient) ==
+                          PositiveMod(decomposition.first, moduli[tower]),
+                      "Relin2 quotient mismatch at component=" + std::to_string(component) +
+                          ",tower=" + std::to_string(tower) + ",coefficient=" + std::to_string(coefficient));
+                Check(CoefficientResidue(actualLow, tower, coefficient) ==
+                          PositiveMod(decomposition.second + w, moduli[tower]),
+                      "Relin2 v+w mismatch at component=" + std::to_string(component) +
+                          ",tower=" + std::to_string(tower) + ",coefficient=" + std::to_string(coefficient));
+            }
+        }
+    }
+}
+
+Ciphertext<DCRTPoly> BuildRcbReference(const ReferenceRelinPaths& reference) {
+    auto expected = reference.relinearizedHigh->Clone();
+    auto elements = expected->GetElements();
+    for (auto& element : elements) {
+        element.DropLastElement();
+    }
+    const auto& low = reference.relinearizedLow->GetElements();
+    Check(elements.size() == low.size(), "RCB reference component mismatch");
+    for (std::size_t i = 0; i < elements.size(); ++i) {
+        elements[i] += low[i];
+    }
+    expected->SetElements(std::move(elements));
+    expected->SetLevel(1);
+    return expected;
+}
+
+void CheckCiphertextExactly(lbcrypto::ConstCiphertext<DCRTPoly> actual, lbcrypto::ConstCiphertext<DCRTPoly> expected,
+                            const std::string& label) {
+    Check(actual->GetCryptoContext().get() == expected->GetCryptoContext().get(), label + " context mismatch");
+    Check(actual->GetEncodingType() == expected->GetEncodingType(), label + " encoding mismatch");
+    Check(actual->GetLevel() == expected->GetLevel(), label + " level mismatch");
+    Check(actual->GetNoiseScaleDeg() == expected->GetNoiseScaleDeg(), label + " degree mismatch");
+    Check(actual->GetScalingFactor() == expected->GetScalingFactor(), label + " factor mismatch");
+    Check(actual->GetKeyTag() == expected->GetKeyTag(), label + " tag mismatch");
+    Check(actual->GetSlots() == expected->GetSlots(), label + " slots mismatch");
+    Check(actual->NumberCiphertextElements() == expected->NumberCiphertextElements(), label + " component mismatch");
+    const auto expectedMetadata = SnapshotMetadata(expected, label + " expected");
+    CheckMetadataValueEquivalent(actual, expectedMetadata, label + " metadata");
+    for (std::size_t component = 0; component < actual->GetElements().size(); ++component) {
+        CheckKeyPolynomialBasis(actual->GetElements().at(component),
+                                expected->GetElements().at(component).GetParams(),
+                                label + " component " + std::to_string(component));
+        const auto a = SnapshotDcrt(actual->GetElements().at(component));
+        const auto e = SnapshotDcrt(expected->GetElements().at(component));
+        Check(SameDcrtSnapshot(a, e), label + " DCRT component mismatch at " + std::to_string(component));
+    }
+}
+
+void CheckPublicRcbReturn(DoubleCKKS& module, const CiphertextPair& pair, const ReferenceRelinPaths& reference) {
+    Check(pair.GetHigh() != nullptr && pair.GetLow() != nullptr,
+          "public RCB oracle received a null pair member");
+    const auto before = SnapshotPair(pair, "ReadyForRS2 before RCB");
+    const auto pairHighMetadata = SnapshotMetadata(pair.GetHigh(), "ReadyForRS2 RCB source high");
+    const auto pairLowMetadata = SnapshotMetadata(pair.GetLow(), "ReadyForRS2 RCB source low");
+    const auto actual = module.RCB(pair);
+    CheckPairUnchanged(pair, before, "ReadyForRS2 after RCB");
+    Check(actual != nullptr, "public RCB return is null");
+    const auto actualMap = actual->GetMetadataMap();
+    Check(actualMap != nullptr, "public RCB return metadata map is null");
+    Check(actualMap.get() != pairHighMetadata.outerMapIdentity.get(),
+          "public RCB return metadata outer map aliases pair high");
+    Check(actualMap.get() != pairLowMetadata.outerMapIdentity.get(),
+          "public RCB return metadata outer map aliases pair low");
+    CheckMetadataShallowAlias(actual, pairHighMetadata, "relin2-tensor-low", "public RCB return metadata");
+    const auto expected = BuildRcbReference(reference);
+    CheckCiphertextExactly(actual, expected, "public RCB return");
+}
+
+
+template <class Result>
+struct CallObservation {
+    std::unique_ptr<Result> result;
+    std::exception_ptr exception;
+};
+
+template <class Function>
+auto ObserveCall(Function&& function)
+    -> CallObservation<std::decay_t<std::invoke_result_t<Function>>> {
+    using Result = std::decay_t<std::invoke_result_t<Function>>;
+    try {
+        return {std::make_unique<Result>(
+                    std::invoke(std::forward<Function>(function))),
+                nullptr};
+    }
+    catch (...) {
+        return {nullptr, std::current_exception()};
+    }
+}
+
+template <class Result>
+Result RequireNormalCompletion(CallObservation<Result>&& observation,
+                               const std::string& label) {
+    if (observation.result) {
+        return std::move(*observation.result);
+    }
+    Check(observation.exception != nullptr,
+          label + " recorded neither a result nor an exception");
+    try {
+        std::rethrow_exception(observation.exception);
+    }
+    catch (const std::logic_error& exception) {
+        if (typeid(exception) == typeid(std::logic_error) &&
+            std::string(exception.what()) == "DoubleCKKS: Relin2 is not implemented") {
+            throw TestFailure(label + " reached the exact terminal Relin2 scaffold");
+        }
+        throw TestFailure(label + " threw an unexpected logic error: " + exception.what());
+    }
+    catch (const std::exception& exception) {
+        throw TestFailure(label + " threw instead of returning normally: " + exception.what());
+    }
+    catch (...) {
+        throw TestFailure(label + " threw a non-standard exception instead of returning normally");
+    }
+}
+
+template <class Result>
+void RequireExactInvalidArgument(const CallObservation<Result>& observation,
+                                 const std::string& expectedMessage,
+                                 const std::string& label) {
+    if (observation.result) {
+        throw TestFailure(label + " did not fail fast");
+    }
+    Check(observation.exception != nullptr,
+          label + " recorded neither a result nor an exception");
+    try {
+        std::rethrow_exception(observation.exception);
+    }
+    catch (const std::invalid_argument& exception) {
+        Check(typeid(exception) == typeid(std::invalid_argument),
+              label + " threw a derived invalid-argument type: " + exception.what());
+        Check(std::string(exception.what()) == expectedMessage,
+              label + " reported an unexpected diagnostic: " + exception.what());
+    }
+    catch (const std::exception& exception) {
+        throw TestFailure(label + " threw the wrong exception type: " + exception.what());
+    }
+    catch (...) {
+        throw TestFailure(label + " threw a non-standard exception");
+    }
+}
+
+template <class Function>
+void CaptureBlockFailure(std::vector<std::string>& failures, const std::string& label,
+                         Function&& function) {
+    try {
+        std::invoke(std::forward<Function>(function));
+    }
+    catch (const std::exception& exception) {
+        failures.push_back(label + ": " + exception.what());
+    }
+    catch (...) {
+        failures.push_back(label + ": non-standard exception");
+    }
+}
+
+void RequireNoBlockFailures(const std::vector<std::string>& failures, const std::string& label) {
+    if (failures.empty()) {
+        return;
+    }
+    std::string message = label + " failed blocks";
+    for (const auto& failure : failures) {
+        message += " | " + failure;
+    }
+    throw TestFailure(message);
+}
+
+void CheckImmediateInputAndCacheInvariance(const TensorCiphertextPair& tensor,
+                                           const TensorSnapshot& tensorBefore,
+                                           const DeepKeyCacheSnapshot& cacheBefore,
+                                           const std::string& label) {
+    std::vector<std::string> failures;
+    CaptureBlockFailure(failures, "Tensor", [&] {
+        CheckTensorUnchanged(tensor, tensorBefore, label + " Tensor");
+    });
+    CaptureBlockFailure(failures, "evaluation-key cache", [&] {
+        CheckDeepKeyCacheMatches(cacheBefore, label + " evaluation-key cache");
+    });
+    RequireNoBlockFailures(failures, label + " immediate invariance");
+}
+
+template <class Function>
+void WithRestoredEvaluationKeyCache(const std::string& label, Function&& function) {
+    auto& evaluationKeyCache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    const auto initialCache = SnapshotDeepKeyCache();
+    Check(initialCache.rows.empty(), label + " requires an initially empty evaluation-key cache");
+
+    std::exception_ptr pending;
+    {
+        ScopedEvalMultKeyMapRestore restore(evaluationKeyCache);
+        try {
+            std::invoke(std::forward<Function>(function));
+        }
+        catch (...) {
+            pending = std::current_exception();
+        }
+    }
+
+    CheckDeepKeyCacheMatches(initialCache, label + " fixture-scope restoration");
+    if (pending) {
+        std::rethrow_exception(pending);
+    }
+}
+
+template <class ArithmeticOracle>
+void CheckIndependentResultOracles(
+    const TensorCiphertextPair& tensor,
+    const CiphertextPair& result,
+    const CryptoContext<DCRTPoly>& context,
+    const MetadataSnapshot& expectedHighMetadata,
+    const MetadataSnapshot& expectedLowMetadata,
+    DoubleCKKS& module,
+    const std::string& label,
+    ArithmeticOracle&& arithmeticOracle) {
+    std::vector<std::string> failures;
+    CaptureBlockFailure(failures, "exact cpp_int (u,v+w) oracle", [&] {
+        const auto reference = BuildReferenceRelinPaths(tensor, context);
+        std::invoke(std::forward<ArithmeticOracle>(arithmeticOracle), reference);
+    });
+    CaptureBlockFailure(failures, "complete ReadyForRS2 state/scale/metadata oracle", [&] {
+        CheckResultState(result, tensor, context, expectedHighMetadata, expectedLowMetadata);
+    });
+    CaptureBlockFailure(failures, "public RCB exactness/non-mutation oracle", [&] {
+        const auto reference = BuildReferenceRelinPaths(tensor, context);
+        CheckPublicRcbReturn(module, result, reference);
+    });
+    RequireNoBlockFailures(failures, label);
+}
+
+void CheckPublicRelinearizationStage(
+    lbcrypto::ConstCiphertext<DCRTPoly> actual,
+    lbcrypto::ConstCiphertext<DCRTPoly> source,
+    const std::shared_ptr<DCRTPoly::Params>& expectedBasis,
+    const TensorCiphertextPair& tensor,
+    std::size_t expectedLevel,
+    const std::string& label) {
+    Check(actual != nullptr && source != nullptr, label + " ciphertext is null");
+    Check(actual.get() != source.get(), label + " ciphertext aliases its source");
+    Check(actual->GetCryptoContext().get() == tensor.GetContextIdentity(),
+          label + " context identity mismatch");
+    Check(actual->GetEncodingType() == source->GetEncodingType(),
+          label + " encoding mismatch");
+    Check(actual->GetLevel() == expectedLevel, label + " level mismatch");
+    Check(actual->NumberCiphertextElements() == 2, label + " component count mismatch");
+    Check(actual->GetNoiseScaleDeg() == tensor.GetNoiseScaleDegree(),
+          label + " noise-scale degree mismatch");
+    Check(actual->GetScalingFactor() == tensor.GetRecordedScalingFactor(),
+          label + " recorded scaling factor mismatch");
+    Check(actual->GetKeyTag() == tensor.GetKeyTag(), label + " key tag mismatch");
+    Check(actual->GetSlots() == tensor.GetSlots(), label + " slots mismatch");
+    Check(expectedBasis != nullptr, label + " expected basis is null");
+    for (std::size_t component = 0; component < actual->GetElements().size(); ++component) {
+        const auto& element = actual->GetElements()[component];
+        CheckKeyPolynomialBasis(element, expectedBasis,
+                                label + " component " + std::to_string(component));
+        Check(element.GetFormat() == Format::EVALUATION,
+              label + " aggregate format is not Evaluation");
+        for (const auto& tower : element.GetAllElements()) {
+            Check(tower.GetFormat() == Format::EVALUATION,
+                  label + " tower format is not Evaluation");
+        }
+    }
+    const auto sourceMetadata = SnapshotMetadata(source, label + " source metadata");
+    CheckMetadataShallowAliasExact(actual, sourceMetadata, label);
+}
+
+void CheckPublicRelinearizationShapes(const ReferenceRelinPaths& reference,
+                                      const TensorCiphertextPair& tensor,
+                                      const std::string& label) {
+    const auto fullBasis = reference.raisedHigh->GetElements().front().GetParams();
+    const auto activePrefixBasis = tensor.GetLow()->GetElements().front().GetParams();
+    CheckPublicRelinearizationStage(reference.relinearizedHigh, reference.raisedHigh,
+                                    fullBasis, tensor, 0,
+                                    label + " full-basis public Relinearize");
+    CheckPublicRelinearizationStage(reference.relinearizedLow, tensor.GetLow(),
+                                    activePrefixBasis, tensor, 1,
+                                    label + " active-prefix public Relinearize");
+    Check(reference.relinearizedHigh->GetMetadataMap().get() !=
+              reference.relinearizedLow->GetMetadataMap().get(),
+          label + " public Relinearize outputs alias metadata outer maps");
+}
+
+void InstallGeneratedEvalKey(TensorFixture& fixture, const std::string& tag) {
+    auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    cache.erase(tag);
+    fixture.context->EvalMultKeyGen(fixture.keys.secretKey);
+    const auto found = cache.find(tag);
+    Check(found != cache.end() && found->second.size() == 1 && found->second.front() != nullptr,
+          "EvalMultKeyGen fixture did not install exactly one index-zero key");
+}
+
+void TestValidArithmeticStateImmutability() {
+    WithRestoredEvaluationKeyCache("valid Relin2", [&] {
+        auto fixture = MakeExactTensorFixture(MakeRelinContext());
+        DoubleCKKS module(fixture.context);
+        auto [left, right] = MakePairs(fixture, module);
+        auto tensor = module.Tensor2(left, right);
+        TagTensorMetadata(tensor);
+        CheckNonzeroThreeComponentTensor(tensor, "valid Relin2 ordinary fixture");
+        InstallGeneratedEvalKey(fixture, tensor.GetKeyTag());
+        const auto expectedHighMetadata = SnapshotMetadata(tensor.GetHigh(), "valid expected high metadata");
+        const auto expectedLowMetadata = SnapshotMetadata(tensor.GetLow(), "valid expected low metadata");
+        const auto tensorBefore = SnapshotTensor(tensor, "valid Tensor");
+        const auto cacheBefore = SnapshotDeepKeyCache();
+
+        auto observation = ObserveCall([&] { return module.Relin2(tensor); });
+        CheckImmediateInputAndCacheInvariance(tensor, tensorBefore, cacheBefore, "valid Relin2");
+        const auto result = RequireNormalCompletion(
+            std::move(observation), "valid Relin2 arithmetic/state fixture");
+
+        CheckIndependentResultOracles(
+            tensor, result, fixture.context, expectedHighMetadata, expectedLowMetadata,
+            module, "valid Relin2", [&](const ReferenceRelinPaths& reference) {
+            CheckExactRelin2Oracle(tensor, result, reference);
+        });
+    });
+}
+
+void InstallControlledBv0Key(const TensorCiphertextPair& tensor,
+                             const CryptoContext<DCRTPoly>& context) {
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
+    Check(parameters != nullptr && parameters->GetKeySwitchTechnique() == lbcrypto::BV &&
+              parameters->GetDigitSize() == 0,
+          "controlled key fixture requires BV digitSize=0");
+    const auto params = parameters->GetElementParams();
+    const std::size_t count = params->GetParams().size();
+    std::vector<DCRTPoly> a(count, DCRTPoly(params, Format::EVALUATION, true));
+    std::vector<DCRTPoly> b(count, DCRTPoly(params, Format::EVALUATION, true));
+    std::vector<BigInt> one(params->GetRingDimension(), 0);
+    one[0] = 1;
+    a[0] = MakePolynomial(params, one);
+    b[0] = MakePolynomial(params, one);
+    auto key = std::make_shared<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(context);
+    key->SetKeyTag(tensor.GetKeyTag());
+    key->SetAVector(std::move(a));
+    key->SetBVector(std::move(b));
+    auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    cache[tensor.GetKeyTag()] = {key};
+}
+
+void InstallControlledTensorValues(const TensorCiphertextPair& tensor) {
+    auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(tensor.GetHigh());
+    auto low = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(tensor.GetLow());
+    const auto params = high->GetElements().front().GetParams();
+    const std::size_t n = params->GetRingDimension();
+    const BigInt divisor(tensor.GetDivisor().ConvertToInt());
+    const BigInt half = divisor / 2;
+    const BigInt q0(params->GetParams().front()->GetModulus().ConvertToInt());
+    const BigInt inverse = ModInverse(divisor, q0);
+
+    DCRTPoly zero(params, Format::EVALUATION, true);
+    std::vector<std::vector<BigInt>> c2Coefficients(
+        params->GetParams().size(), std::vector<BigInt>(n, 0));
+    c2Coefficients[0][0] = PositiveMod(half * inverse, q0);
+    c2Coefficients[0][1] = PositiveMod((half + 1) * inverse, q0);
+    auto c2 = MakeTowerPolynomial(params, c2Coefficients);
+    high->SetElements({zero, zero, c2});
+
+    std::vector<BigInt> low0(n, 0);
+    low0[0] = 7;
+    low0[1] = 11;
+    low->SetElements({MakePolynomial(params, low0), zero, zero});
+}
+
+void CheckControlledWitnesses(const TensorCiphertextPair& tensor,
+                              const CiphertextPair& result,
+                              const ReferenceRelinPaths& reference) {
+    const BigInt divisor(tensor.GetDivisor().ConvertToInt());
+    const BigInt half = divisor / 2;
+    const auto k0 = ToCoefficient(reference.relinearizedHigh->GetElements().at(0) -
+                                  reference.raisedHigh->GetElements().at(0));
+    const auto k1 = ToCoefficient(reference.relinearizedHigh->GetElements().at(1) -
+                                  reference.raisedHigh->GetElements().at(1));
+    const BigInt q0(k0.GetAllElements().front().GetModulus().ConvertToInt());
+    Check(CoefficientResidue(k0, 0, 0) == PositiveMod(half, q0),
+          "fixed K0 witness residue mismatch at component=0,tower=0,coefficient=0");
+    Check(CoefficientResidue(k0, 0, 1) == PositiveMod(half + 1, q0),
+          "fixed K0 carry witness residue mismatch at component=0,tower=0,coefficient=1");
+    Check(CoefficientResidue(k1, 0, 0) == PositiveMod(half, q0),
+          "fixed K1 witness residue mismatch at component=1,tower=0,coefficient=0");
+    Check(CoefficientResidue(k1, 0, 1) == PositiveMod(half + 1, q0),
+          "fixed K1 carry witness residue mismatch at component=1,tower=0,coefficient=1");
+
+    const BigInt source0 = ReconstructCoefficient(reference.relinearizedHigh->GetElements().at(0), 0);
+    const BigInt source1 = ReconstructCoefficient(reference.relinearizedHigh->GetElements().at(0), 1);
+    const auto d0 = DecomposeCentered(source0, divisor);
+    const auto d1 = DecomposeCentered(source1, divisor);
+    Check(d0.first == 0 && d0.second == half,
+          "fixed +half witness mismatch at component=0,coefficient=0");
+    Check(d1.first == 1 && d1.second == -half,
+          "fixed -half/carry witness mismatch at component=0,coefficient=1");
+
+    const auto w = ToCoefficient(reference.relinearizedLow->GetElements().at(0));
+    Check(CoefficientResidue(w, 0, 0) == BigInt(7),
+          "fixed w witness mismatch at component=0,tower=0,coefficient=0");
+    Check(PositiveMod(d0.second, q0) != 0 && CoefficientResidue(w, 0, 0) != 0,
+          "fixed common nonzero v/w witness is not nonzero");
+
+    const auto actualHigh = ToCoefficient(result.GetHigh()->GetElements().at(0));
+    const auto actualLow = ToCoefficient(result.GetLow()->GetElements().at(0));
+    Check(CoefficientResidue(actualHigh, 0, 0) == BigInt(0),
+          "production +half quotient residue mismatch at component=0,tower=0,coefficient=0");
+    Check(CoefficientResidue(actualLow, 0, 0) == PositiveMod(half + 7, q0),
+          "production +half v+w residue mismatch at component=0,tower=0,coefficient=0");
+    Check(CoefficientResidue(actualHigh, 0, 1) == BigInt(1),
+          "production carry quotient residue mismatch at component=0,tower=0,coefficient=1");
+    Check(CoefficientResidue(actualLow, 0, 1) == PositiveMod(-half + 11, q0),
+          "production -half/carry v+w residue mismatch at component=0,tower=0,coefficient=1");
+}
+
+void TestControlledWitnessesAndBoundaries() {
+    WithRestoredEvaluationKeyCache("controlled Relin2", [&] {
+        auto fixture = MakeExactTensorFixture(MakeRelinContext(lbcrypto::BV, 0));
+        DoubleCKKS module(fixture.context);
+        auto [left, right] = MakePairs(fixture, module);
+        auto tensor = module.Tensor2(left, right);
+        TagTensorMetadata(tensor);
+        InstallControlledTensorValues(tensor);
+        InstallControlledBv0Key(tensor, fixture.context);
+        const auto expectedHighMetadata = SnapshotMetadata(tensor.GetHigh(), "controlled expected high metadata");
+        const auto expectedLowMetadata = SnapshotMetadata(tensor.GetLow(), "controlled expected low metadata");
+        const auto tensorBefore = SnapshotTensor(tensor, "controlled Tensor");
+        const auto cacheBefore = SnapshotDeepKeyCache();
+
+        auto observation = ObserveCall([&] { return module.Relin2(tensor); });
+        CheckImmediateInputAndCacheInvariance(tensor, tensorBefore, cacheBefore, "controlled Relin2");
+        const auto result = RequireNormalCompletion(
+            std::move(observation), "controlled Relin2 witnesses fixture");
+
+        CheckIndependentResultOracles(
+            tensor, result, fixture.context, expectedHighMetadata, expectedLowMetadata,
+            module, "controlled Relin2", [&](const ReferenceRelinPaths& reference) {
+                CheckControlledWitnesses(tensor, result, reference);
+                CheckExactRelin2Oracle(tensor, result, reference);
+            });
+    });
+}
+
+void TestRepresentativePublicInput() {
+    WithRestoredEvaluationKeyCache("representative Relin2", [&] {
+        auto fixture = MakeRepresentativePublicFixture(MakeRelinContext());
+        DoubleCKKS module(fixture.context);
+        auto [left, right] = MakePairs(fixture, module);
+        auto tensor = module.Tensor2(left, right);
+        TagTensorMetadata(tensor);
+        InstallGeneratedEvalKey(fixture, tensor.GetKeyTag());
+        const auto expectedHighMetadata = SnapshotMetadata(tensor.GetHigh(), "representative expected high metadata");
+        const auto expectedLowMetadata = SnapshotMetadata(tensor.GetLow(), "representative expected low metadata");
+        const auto tensorBefore = SnapshotTensor(tensor, "representative Tensor");
+        const auto cacheBefore = SnapshotDeepKeyCache();
+
+        auto observation = ObserveCall([&] { return module.Relin2(tensor); });
+        CheckImmediateInputAndCacheInvariance(tensor, tensorBefore, cacheBefore, "representative Relin2");
+        const auto result = RequireNormalCompletion(
+            std::move(observation), "representative public Relin2 fixture");
+
+        CheckIndependentResultOracles(
+            tensor, result, fixture.context, expectedHighMetadata, expectedLowMetadata,
+            module, "representative Relin2", [&](const ReferenceRelinPaths& reference) {
+                CheckExactRelin2Oracle(tensor, result, reference);
+            });
+    });
+}
+
+using RelinKey = std::shared_ptr<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>;
+
+void CheckEvaluationFormat(const DCRTPoly& polynomial, const std::string& label) {
+    Check(polynomial.GetFormat() == Format::EVALUATION, label + " aggregate format is not Evaluation");
+    for (const auto& tower : polynomial.GetAllElements()) {
+        Check(tower.GetFormat() == Format::EVALUATION, label + " tower format is not Evaluation");
+    }
+}
+
+std::vector<RelinKey> GenerateAndValidateRealTwoKeyRow(TensorFixture& fixture,
+                                                       const TensorCiphertextPair& tensor) {
+    const auto parameters = std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(
+        fixture.context->GetCryptoParameters());
+    Check(parameters != nullptr, "real two-key fixture is not CKKS-RNS");
+    Check(parameters->GetMaxRelinSkDeg() == 3,
+          "real two-key fixture did not preserve maxRelinSkDeg=3");
+    Check(parameters->GetKeySwitchTechnique() == lbcrypto::HYBRID,
+          "real two-key fixture is not HYBRID");
+
+    auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(cache.find(tensor.GetKeyTag()) == cache.end(),
+          "real two-key fixture tag was not empty before EvalMultKeysGen");
+    fixture.context->EvalMultKeysGen(fixture.keys.secretKey);
+    const auto row = cache.find(tensor.GetKeyTag());
+    Check(row != cache.end() && row->second.size() == 2,
+          "EvalMultKeysGen did not produce the real ordered two-key row");
+    Check(row->second[0] != nullptr && row->second[1] != nullptr &&
+              row->second[0].get() != row->second[1].get(),
+          "real two-key row entries are null or alias each other");
+
+    std::vector<RelinKey> keys;
+    keys.reserve(2);
+    const auto expectedBasis = parameters->GetParamsQP();
+    const auto expectedLength = static_cast<std::size_t>(parameters->GetNumPartQ());
+    for (std::size_t keyIndex = 0; keyIndex < row->second.size(); ++keyIndex) {
+        const auto key = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(
+            row->second[keyIndex]);
+        Check(key != nullptr, "real two-key row entry has the wrong concrete subtype");
+        Check(key->GetCryptoContext().get() == fixture.context.get(),
+              "real two-key row entry belongs to a different context");
+        Check(key->GetKeyTag() == tensor.GetKeyTag(),
+              "real two-key row entry tag does not match the Tensor tag");
+        Check(key->GetAVector().size() == expectedLength &&
+                  key->GetBVector().size() == expectedLength,
+              "real two-key row entry has an invalid HYBRID A/B length");
+        for (std::size_t entry = 0; entry < key->GetAVector().size(); ++entry) {
+            CheckKeyPolynomialBasis(key->GetAVector()[entry], expectedBasis,
+                                    "real two-key A entry " + std::to_string(keyIndex) + ":" +
+                                        std::to_string(entry));
+            CheckEvaluationFormat(key->GetAVector()[entry],
+                                  "real two-key A entry " + std::to_string(keyIndex) + ":" +
+                                      std::to_string(entry));
+        }
+        for (std::size_t entry = 0; entry < key->GetBVector().size(); ++entry) {
+            CheckKeyPolynomialBasis(key->GetBVector()[entry], expectedBasis,
+                                    "real two-key B entry " + std::to_string(keyIndex) + ":" +
+                                        std::to_string(entry));
+            CheckEvaluationFormat(key->GetBVector()[entry],
+                                  "real two-key B entry " + std::to_string(keyIndex) + ":" +
+                                      std::to_string(entry));
+        }
+        keys.push_back(key);
+    }
+    return keys;
+}
+
+void CheckRealTwoKeyRowIdentity(
+    const std::string& tag,
+    const EvalMultKeyMap* cacheIdentity,
+    const std::vector<lbcrypto::EvalKey<DCRTPoly>>* rowIdentity,
+    const std::vector<const void*>& expectedPointers,
+    const CryptoContext<DCRTPoly>& context,
+    const std::string& label) {
+    auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    const auto row = cache.find(tag);
+    Check(&cache == cacheIdentity && cache.size() == 1 && row != cache.end() &&
+              &row->second == rowIdentity && row->second.size() == expectedPointers.size(),
+          label + " cache map/vector shape or identity changed");
+    for (std::size_t index = 0; index < expectedPointers.size(); ++index) {
+        Check(row->second[index].get() == expectedPointers[index],
+              label + " key pointer/null identity changed at index " + std::to_string(index));
+        if (row->second[index]) {
+            Check(row->second[index]->GetCryptoContext().get() == context.get(),
+                  label + " key context changed at index " + std::to_string(index));
+            Check(row->second[index]->GetKeyTag() == tag,
+                  label + " key tag changed at index " + std::to_string(index));
+        }
+    }
+}
+
+void TestExtraLaterValid() {
+    WithRestoredEvaluationKeyCache("extra-later Relin2", [&] {
+        auto fixture = MakeExactTensorFixture(MakeRelinContext(lbcrypto::HYBRID, 0, 3, 3));
+        DoubleCKKS module(fixture.context);
+        auto [left, right] = MakePairs(fixture, module);
+        auto tensor = module.Tensor2(left, right);
+        TagTensorMetadata(tensor);
+        const auto keys = GenerateAndValidateRealTwoKeyRow(fixture, tensor);
+        auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+        const auto row = cache.find(tensor.GetKeyTag());
+        const auto* cacheIdentity = &cache;
+        const auto* rowIdentity = &row->second;
+        const std::vector<const void*> pointerIdentities{row->second[0].get(), row->second[1].get()};
+        const auto key0ABefore = SnapshotKeyVector(keys[0]->GetAVector(), "real later-key zero A");
+        const auto key0BBefore = SnapshotKeyVector(keys[0]->GetBVector(), "real later-key zero B");
+        const auto key1ABefore = SnapshotKeyVector(keys[1]->GetAVector(), "real later-key one A");
+        const auto key1BBefore = SnapshotKeyVector(keys[1]->GetBVector(), "real later-key one B");
+        const auto expectedHighMetadata = SnapshotMetadata(tensor.GetHigh(), "extra-later expected high metadata");
+        const auto expectedLowMetadata = SnapshotMetadata(tensor.GetLow(), "extra-later expected low metadata");
+        const auto tensorBefore = SnapshotTensor(tensor, "extra-later Tensor");
+        const auto cacheBefore = SnapshotDeepKeyCache();
+
+        auto observation = ObserveCall([&] { return module.Relin2(tensor); });
+        CheckImmediateInputAndCacheInvariance(tensor, tensorBefore, cacheBefore,
+                                              "Relin2 real extra-later-key");
+        CheckKeyVectorUnchanged(keys[0]->GetAVector(), key0ABefore, "real later-key zero A");
+        CheckKeyVectorUnchanged(keys[0]->GetBVector(), key0BBefore, "real later-key zero B");
+        CheckKeyVectorUnchanged(keys[1]->GetAVector(), key1ABefore, "real later-key one A");
+        CheckKeyVectorUnchanged(keys[1]->GetBVector(), key1BBefore, "real later-key one B");
+        CheckRealTwoKeyRowIdentity(tensor.GetKeyTag(), cacheIdentity, rowIdentity, pointerIdentities,
+                                   fixture.context, "Relin2 real extra-later-key");
+        const auto result = RequireNormalCompletion(
+            std::move(observation), "Relin2 real extra-later-key fixture");
+        CheckIndependentResultOracles(
+            tensor, result, fixture.context, expectedHighMetadata, expectedLowMetadata,
+            module, "Relin2 real extra-later-key", [&](const ReferenceRelinPaths& reference) {
+                CheckExactRelin2Oracle(tensor, result, reference);
+            });
+    });
+}
+
+void TestMalformedLaterIgnored() {
+    WithRestoredEvaluationKeyCache("malformed-later Relin2", [&] {
+        auto fixture = MakeExactTensorFixture(MakeRelinContext(lbcrypto::HYBRID, 0, 3, 3));
+        DoubleCKKS module(fixture.context);
+        auto [left, right] = MakePairs(fixture, module);
+        auto tensor = module.Tensor2(left, right);
+        TagTensorMetadata(tensor);
+        const auto keys = GenerateAndValidateRealTwoKeyRow(fixture, tensor);
+        auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+        auto row = cache.find(tensor.GetKeyTag());
+        const auto firstPointer = row->second.front().get();
+        row->second.back() = nullptr;
+        Check(row->second.size() == 2 && row->second.front().get() == firstPointer &&
+                  row->second.back() == nullptr,
+              "malformed later-key fixture changed more than index one nullness");
+        const auto* cacheIdentity = &cache;
+        const auto* rowIdentity = &row->second;
+        const std::vector<const void*> pointerIdentities{firstPointer, nullptr};
+        const auto key0ABefore = SnapshotKeyVector(keys[0]->GetAVector(), "malformed later-key zero A");
+        const auto key0BBefore = SnapshotKeyVector(keys[0]->GetBVector(), "malformed later-key zero B");
+        const auto expectedHighMetadata = SnapshotMetadata(tensor.GetHigh(), "malformed-later expected high metadata");
+        const auto expectedLowMetadata = SnapshotMetadata(tensor.GetLow(), "malformed-later expected low metadata");
+        const auto tensorBefore = SnapshotTensor(tensor, "malformed-later Tensor");
+        const auto cacheBefore = SnapshotDeepKeyCache();
+
+        auto observation = ObserveCall([&] { return module.Relin2(tensor); });
+        CheckImmediateInputAndCacheInvariance(tensor, tensorBefore, cacheBefore,
+                                              "Relin2 malformed-later-key ignored");
+        CheckKeyVectorUnchanged(keys[0]->GetAVector(), key0ABefore, "malformed later-key zero A");
+        CheckKeyVectorUnchanged(keys[0]->GetBVector(), key0BBefore, "malformed later-key zero B");
+        CheckRealTwoKeyRowIdentity(tensor.GetKeyTag(), cacheIdentity, rowIdentity, pointerIdentities,
+                                   fixture.context, "Relin2 malformed-later-key ignored");
+        const auto result = RequireNormalCompletion(
+            std::move(observation), "Relin2 malformed-later-key ignored fixture");
+        CheckIndependentResultOracles(
+            tensor, result, fixture.context, expectedHighMetadata, expectedLowMetadata,
+            module, "Relin2 malformed-later-key ignored", [&](const ReferenceRelinPaths& reference) {
+                CheckExactRelin2Oracle(tensor, result, reference);
+            });
+    });
+}
+
+void TestValidTechnique(lbcrypto::KeySwitchTechnique technique, std::uint32_t digitSize,
+                        const std::string& label) {
+    WithRestoredEvaluationKeyCache(label, [&] {
+        auto fixture = MakeExactTensorFixture(MakeRelinContext(technique, digitSize));
+        DoubleCKKS module(fixture.context);
+        auto [left, right] = MakePairs(fixture, module);
+        auto tensor = module.Tensor2(left, right);
+        TagTensorMetadata(tensor);
+        InstallGeneratedEvalKey(fixture, tensor.GetKeyTag());
+        const auto expectedHighMetadata = SnapshotMetadata(tensor.GetHigh(), label + " expected high metadata");
+        const auto expectedLowMetadata = SnapshotMetadata(tensor.GetLow(), label + " expected low metadata");
+        const auto tensorBefore = SnapshotTensor(tensor, label + " Tensor");
+        const auto cacheBefore = SnapshotDeepKeyCache();
+
+        auto observation = ObserveCall([&] { return module.Relin2(tensor); });
+        CheckImmediateInputAndCacheInvariance(tensor, tensorBefore, cacheBefore, label);
+        const auto result = RequireNormalCompletion(
+            std::move(observation), label + " production Relin2");
+        CheckIndependentResultOracles(
+            tensor, result, fixture.context, expectedHighMetadata, expectedLowMetadata,
+            module, label, [&](const ReferenceRelinPaths& reference) {
+                CheckPublicRelinearizationShapes(reference, tensor, label);
+                CheckExactRelin2Oracle(tensor, result, reference);
+            });
+    });
+}
+
+void TestHybridValidShapes() {
+    TestValidTechnique(lbcrypto::HYBRID, 0, "Relin2 HYBRID valid shapes");
+}
+
+void TestBvZeroDigitValidShapes() {
+    TestValidTechnique(lbcrypto::BV, 0, "Relin2 BV zero-digit valid shapes");
+}
+
+void TestBvNonzeroDigitValidShapes() {
+    TestValidTechnique(lbcrypto::BV, 10, "Relin2 BV nonzero-digit valid shapes");
+}
+
+void TestFirstRecombinedRcbValidation() {
+    auto fixture = MakeExactTensorFixture(MakeRelinContext());
+    DoubleCKKS module(fixture.context);
+    auto pair = module.DCP(fixture.leftInput);
+    Check(pair.GetPaperScale().approximateRecombinedLogicalScalingFactor ==
+              static_cast<long double>(fixture.leftInput->GetScalingFactor()),
+          "DCP recombined logical scale propagation mismatch");
+    auto& scale = const_cast<PaperScaleDescriptor&>(pair.GetPaperScale());
+    scale.approximateRecombinedLogicalScalingFactor *= 2.0L;
+    const auto before = SnapshotPair(pair, "corrupt recombined RCB pair");
+    const auto observation = ObserveCall([&] { return module.RCB(pair); });
+    CheckPairUnchanged(pair, before, "corrupt recombined RCB pair after failure");
+    RequireExactInvalidArgument(
+        observation,
+        "DoubleCKKS: pair recombined logical scale is inconsistent",
+        "ReadyForFirstMult RCB recombined validation");
+}
+
+void TestFirstRecombinedTensor2Validation() {
+    auto fixture = MakeExactTensorFixture(MakeRelinContext());
+    DoubleCKKS module(fixture.context);
+    auto left = module.DCP(fixture.leftInput);
+    auto right = module.DCP(fixture.rightInput);
+    Check(right.GetPaperScale().approximateRecombinedLogicalScalingFactor ==
+              static_cast<long double>(fixture.rightInput->GetScalingFactor()),
+          "Tensor2 recombined-field fixture did not start from the propagated value");
+    auto& scale = const_cast<PaperScaleDescriptor&>(right.GetPaperScale());
+    scale.approximateRecombinedLogicalScalingFactor *= 2.0L;
+    const auto leftBefore = SnapshotPair(left, "Tensor2 left before recombined failure");
+    const auto rightBefore = SnapshotPair(right, "Tensor2 right before recombined failure");
+    const auto observation = ObserveCall([&] { return module.Tensor2(left, right); });
+    CheckPairUnchanged(left, leftBefore, "Tensor2 left after recombined failure");
+    CheckPairUnchanged(right, rightBefore, "Tensor2 right after recombined failure");
+    RequireExactInvalidArgument(
+        observation,
+        "DoubleCKKS: pair recombined logical scale is inconsistent",
+        "Tensor2 recombined field validation");
+}
+
+}  // namespace core_red
+
+
 using TestFunction = void (*)();
 
 TestFunction ResolveTest(const std::string& name) {
@@ -3127,6 +4625,36 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "key_bv_nonzero_digit_entry_format") {
         return &TestBVEvaluationKeyNonzeroDigitEntryFormat;
+    }
+    if (name == "valid_arithmetic_state_immutability") {
+        return &core_red::TestValidArithmeticStateImmutability;
+    }
+    if (name == "controlled_witnesses_and_boundaries") {
+        return &core_red::TestControlledWitnessesAndBoundaries;
+    }
+    if (name == "representative_public_input") {
+        return &core_red::TestRepresentativePublicInput;
+    }
+    if (name == "key_extra_later_valid") {
+        return &core_red::TestExtraLaterValid;
+    }
+    if (name == "key_malformed_later_ignored") {
+        return &core_red::TestMalformedLaterIgnored;
+    }
+    if (name == "hybrid_valid_shapes") {
+        return &core_red::TestHybridValidShapes;
+    }
+    if (name == "bv_zero_digit_valid_shapes") {
+        return &core_red::TestBvZeroDigitValidShapes;
+    }
+    if (name == "bv_nonzero_digit_valid_shapes") {
+        return &core_red::TestBvNonzeroDigitValidShapes;
+    }
+    if (name == "first_recombined_rcb_validation") {
+        return &core_red::TestFirstRecombinedRcbValidation;
+    }
+    if (name == "first_recombined_tensor2_validation") {
+        return &core_red::TestFirstRecombinedTensor2Validation;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }

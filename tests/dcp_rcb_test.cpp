@@ -459,6 +459,9 @@ void TestDcpAndRcbExactOracle() {
     Check(paperScale.approximateLogicalScalingFactor ==
               static_cast<long double>(recordedScale) / divisorBig.convert_to<long double>(),
           "DCP paper logical scale mismatch");
+    Check(paperScale.approximateRecombinedLogicalScalingFactor ==
+              static_cast<long double>(recordedScale),
+          "DCP paper recombined logical scale mismatch");
     Check(divisor.Mod(NativeInteger(2)) == NativeInteger(1), "DCP divisor must be odd");
     Check(pair.GetKeyTag() == keyTag, "DCP pair key tag mismatch");
     Check(pair.GetSlots() == slots, "DCP pair slot-count metadata mismatch");
@@ -493,6 +496,7 @@ void TestDcpAndRcbExactOracle() {
 
     const auto highMetadataBefore = SnapshotMetadata(pair.GetHigh(), "RCB pair high");
     const auto lowMetadataBefore  = SnapshotMetadata(pair.GetLow(), "RCB pair low");
+    const auto paperScaleBefore = pair.GetPaperScale();
     const auto highBefore = pair.GetHigh()->Clone();
     const auto lowBefore  = pair.GetLow()->Clone();
     const auto recombined = module.RCB(pair);
@@ -504,6 +508,14 @@ void TestDcpAndRcbExactOracle() {
     Check(*pair.GetLow() == *lowBefore, "RCB mutated pair low observable ciphertext state");
     CheckMetadataUnchanged(pair.GetHigh(), highMetadataBefore, "RCB pair high");
     CheckMetadataUnchanged(pair.GetLow(), lowMetadataBefore, "RCB pair low");
+    Check(pair.GetPaperScale().inputRecordedScalingFactor ==
+              paperScaleBefore.inputRecordedScalingFactor &&
+              pair.GetPaperScale().divisor == paperScaleBefore.divisor &&
+              pair.GetPaperScale().approximateLogicalScalingFactor ==
+                  paperScaleBefore.approximateLogicalScalingFactor &&
+              pair.GetPaperScale().approximateRecombinedLogicalScalingFactor ==
+                  paperScaleBefore.approximateRecombinedLogicalScalingFactor,
+          "RCB mutated the pair paper-scale descriptor");
     CheckCiphertextMetadata(pair.GetHigh(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
                             "DCP high after RCB");
     CheckCiphertextMetadata(pair.GetLow(), fixture.context, prefixModuli, 1, 2, recordedScale, keyTag, slots,
