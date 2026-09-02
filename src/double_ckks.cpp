@@ -585,6 +585,10 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
         relinearizationKey->GetAVector().size() != static_cast<std::size_t>(parameters_->GetNumPartQ())) {
         Invalid("Relin2 evaluation key HYBRID A vector length mismatch");
     }
+    if (parameters_->GetKeySwitchTechnique() == lbcrypto::HYBRID &&
+        relinearizationKey->GetBVector().size() != static_cast<std::size_t>(parameters_->GetNumPartQ())) {
+        Invalid("Relin2 evaluation key HYBRID B vector length mismatch");
+    }
     throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
 }
 
