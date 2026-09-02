@@ -546,3 +546,20 @@ the critical path until quota recovery; Fable5 is the preferred substitute
 when available, but GitHub Actions and the internal reviews continue without
 waiting on either provider. The next isolated red is the HYBRID B-vector
 length mismatch.
+
+At 2026-09-02 08:28 CST, the HYBRID B-vector-length boundary closed without
+waiting on an external provider. Red `0efab27` generated an exact HYBRID key,
+shortened only B from two entries to one, and produced the intended hosted
+`15/16`; inherited tests, the valid-key positive control, and the accepted A
+diagnostic all remained green. Green `0e240f3` added only the four-line HYBRID
+B-length guard after the A guard. Three source and three evidence reviews
+returned PASS, and hosted Linux built warning-clean, compiled the public API
+contract, and passed exact `16/16` in 0.14 seconds, including immediate
+Tensor/cache/key-pointee/A/B invariance and RAII restoration checks. Both red
+and green evidence passed ZIP, manifest, Gitleaks, targeted-scan, identity, and
+remote-ref gates and are pushed on isolated evidence branches. Intermediate
+Windows jobs were cancelled before any project build and make no project-test
+claim. ZCode remains outside the critical path until quota recovery; Fable5 is
+used as the preferred substitute when available, while GitHub Actions and the
+internal reviews continue without waiting on either provider. The next
+isolated red is a HYBRID entry with the wrong complete `ParamsQP` basis.
