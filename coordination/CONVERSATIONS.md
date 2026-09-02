@@ -528,3 +528,21 @@ targeted-scan, identity, and remote-ref gates and are pushed. Windows jobs were
 cancelled during official toolchain installation and make no project-test
 claim. ZCode and the exhausted local Fable5 launch remained off the critical
 path. The next isolated red is the HYBRID A-vector length mismatch.
+
+At 2026-09-02 08:06 CST, the HYBRID A-vector-length boundary closed on the
+same nonblocking TDD path. Red `b50448f` generated a real public
+`EvalKeyRelinImpl` under an exact HYBRID/`GetNumPartQ()==2` configuration,
+shortened only A from two entries to one, and produced the intended hosted
+`14/15` while inherited behavior and the real-key positive control remained
+green. Green `3645c4e` added only the four-line HYBRID A-length guard after the
+accepted subtype check. Three source and three evidence reviews returned PASS;
+hosted Linux built warning-clean, compiled the public API contract, and passed
+exact `15/15`, including immediate Tensor/cache/key-pointee/A/B invariance and
+RAII restoration checks. Both red and green evidence passed ZIP, manifest,
+Gitleaks, targeted-scan, identity, and remote-ref gates and are pushed on
+isolated evidence branches. Windows jobs were cancelled during official
+toolchain installation and make no project-test claim. ZCode remains outside
+the critical path until quota recovery; Fable5 is the preferred substitute
+when available, but GitHub Actions and the internal reviews continue without
+waiting on either provider. The next isolated red is the HYBRID B-vector
+length mismatch.
