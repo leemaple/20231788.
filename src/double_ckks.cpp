@@ -627,13 +627,16 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
     }
     if (parameters_->GetKeySwitchTechnique() == lbcrypto::BV && parameters_->GetDigitSize() != 0) {
         const auto digitSize = parameters_->GetDigitSize();
-        std::size_t expectedAVectorSize = 0;
+        std::size_t expectedVectorSize = 0;
         for (const auto& towerParameters : parameters_->GetElementParams()->GetParams()) {
             const auto towerBits = towerParameters->GetModulus().GetMSB();
-            expectedAVectorSize += static_cast<std::size_t>((towerBits + digitSize - 1) / digitSize);
+            expectedVectorSize += static_cast<std::size_t>((towerBits + digitSize - 1) / digitSize);
         }
-        if (relinearizationKey->GetAVector().size() != expectedAVectorSize) {
+        if (relinearizationKey->GetAVector().size() != expectedVectorSize) {
             Invalid("Relin2 evaluation key BV A vector length mismatch");
+        }
+        if (relinearizationKey->GetBVector().size() != expectedVectorSize) {
+            Invalid("Relin2 evaluation key BV B vector length mismatch");
         }
     }
     if (parameters_->GetKeySwitchTechnique() == lbcrypto::HYBRID &&
