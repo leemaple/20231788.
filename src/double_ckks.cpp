@@ -652,7 +652,7 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
             Invalid("Relin2 evaluation key BV B vector length mismatch");
         }
     }
-    if (parameters_->GetKeySwitchTechnique() == lbcrypto::BV && parameters_->GetDigitSize() == 0) {
+    if (parameters_->GetKeySwitchTechnique() == lbcrypto::BV) {
         for (const auto& entry : relinearizationKey->GetAVector()) {
             if (!IsInEvaluationFormat(entry)) {
                 Invalid("Relin2 evaluation key BV entry must be in evaluation format");
