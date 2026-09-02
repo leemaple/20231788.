@@ -4560,6 +4560,46 @@ void TestFirstRecombinedTensor2Validation() {
         "Tensor2 recombined field validation");
 }
 
+void TestTensor2RequiresFirstLifecycle() {
+    WithRestoredEvaluationKeyCache("Tensor2 lifecycle Relin2 fixture", [&] {
+        auto fixture = MakeExactTensorFixture(MakeRelinContext());
+        DoubleCKKS module(fixture.context);
+        auto [firstLeft, firstRight] = MakePairs(fixture, module);
+        auto tensor = module.Tensor2(firstLeft, firstRight);
+        InstallGeneratedEvalKey(fixture, tensor.GetKeyTag());
+        const auto readyForRs2 = module.Relin2(tensor);
+        Check(readyForRs2.GetLifecycle() == PairLifecycle::ReadyForRS2,
+              "Tensor2 lifecycle fixture did not construct ReadyForRS2");
+        const auto cacheBefore = SnapshotDeepKeyCache();
+
+        auto checkRejected = [&](const CiphertextPair& left, const CiphertextPair& right,
+                                 const std::string& label) {
+            const auto leftBefore = SnapshotPair(left, label + " left");
+            const auto rightBefore = SnapshotPair(right, label + " right");
+            const auto observation = ObserveCall([&] { return module.Tensor2(left, right); });
+            CheckPairUnchanged(left, leftBefore, label + " left after rejection");
+            CheckPairUnchanged(right, rightBefore, label + " right after rejection");
+            CheckDeepKeyCacheMatches(cacheBefore, label + " evaluation-key cache");
+            RequireExactInvalidArgument(
+                observation,
+                "DoubleCKKS: Tensor2 requires ReadyForFirstMult inputs",
+                label);
+        };
+
+        std::vector<std::string> failures;
+        CaptureBlockFailure(failures, "ReadyForRS2 left operand", [&] {
+            checkRejected(readyForRs2, firstRight, "Tensor2 ReadyForRS2 left operand");
+        });
+        CaptureBlockFailure(failures, "ReadyForRS2 right operand", [&] {
+            checkRejected(firstLeft, readyForRs2, "Tensor2 ReadyForRS2 right operand");
+        });
+        CaptureBlockFailure(failures, "ReadyForRS2 both operands", [&] {
+            checkRejected(readyForRs2, readyForRs2, "Tensor2 ReadyForRS2 both operands");
+        });
+        RequireNoBlockFailures(failures, "Tensor2 ReadyForFirstMult lifecycle guard");
+    });
+}
+
 }  // namespace core_red
 
 
@@ -4655,6 +4695,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "first_recombined_tensor2_validation") {
         return &core_red::TestFirstRecombinedTensor2Validation;
+    }
+    if (name == "tensor2_requires_first_lifecycle") {
+        return &core_red::TestTensor2RequiresFirstLifecycle;
     }
     throw TestFailure("unknown Relin2 test case: " + name);
 }
