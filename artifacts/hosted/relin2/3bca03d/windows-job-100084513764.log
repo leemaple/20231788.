@@ -1,0 +1,1362 @@
+windows-mingw64	Set up job	﻿2026-09-02T00:58:16.9762874Z Current runner version: '2.337.0'
+windows-mingw64	Set up job	2026-09-02T00:58:16.9825147Z ##[group]Runner Image Provisioner
+windows-mingw64	Set up job	2026-09-02T00:58:16.9826486Z Hosted Compute Agent
+windows-mingw64	Set up job	2026-09-02T00:58:16.9827413Z Version: 20260819.586
+windows-mingw64	Set up job	2026-09-02T00:58:16.9828395Z Commit: 3cc4a88dfa507ef76119ad1bb3eccc6378bb2b76
+windows-mingw64	Set up job	2026-09-02T00:58:16.9829615Z Build Date: 2026-08-18T23:20:18Z
+windows-mingw64	Set up job	2026-09-02T00:58:16.9830861Z Worker ID: {6243ace6-f2a4-40ac-978d-e32327d564f8}
+windows-mingw64	Set up job	2026-09-02T00:58:16.9832099Z Azure Region: eastus
+windows-mingw64	Set up job	2026-09-02T00:58:16.9833004Z ##[endgroup]
+windows-mingw64	Set up job	2026-09-02T00:58:16.9835045Z ##[group]Operating System
+windows-mingw64	Set up job	2026-09-02T00:58:16.9836173Z Microsoft Windows Server 2022
+windows-mingw64	Set up job	2026-09-02T00:58:16.9837158Z 10.0.20348
+windows-mingw64	Set up job	2026-09-02T00:58:16.9838031Z Datacenter
+windows-mingw64	Set up job	2026-09-02T00:58:16.9838850Z ##[endgroup]
+windows-mingw64	Set up job	2026-09-02T00:58:16.9839635Z ##[group]Runner Image
+windows-mingw64	Set up job	2026-09-02T00:58:16.9840279Z Image: windows-2022
+windows-mingw64	Set up job	2026-09-02T00:58:16.9840783Z Version: 20260824.284.2
+windows-mingw64	Set up job	2026-09-02T00:58:16.9841774Z Included Software: https://github.com/actions/runner-images/blob/win22/20260824.284/images/windows/Windows2022-Readme.md
+windows-mingw64	Set up job	2026-09-02T00:58:16.9843555Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20260824.284
+windows-mingw64	Set up job	2026-09-02T00:58:16.9844497Z ##[endgroup]
+windows-mingw64	Set up job	2026-09-02T00:58:16.9845483Z ##[group]GITHUB_TOKEN Permissions
+windows-mingw64	Set up job	2026-09-02T00:58:16.9847276Z Contents: read
+windows-mingw64	Set up job	2026-09-02T00:58:16.9847837Z Metadata: read
+windows-mingw64	Set up job	2026-09-02T00:58:16.9848374Z ##[endgroup]
+windows-mingw64	Set up job	2026-09-02T00:58:16.9850412Z Secret source: Actions
+windows-mingw64	Set up job	2026-09-02T00:58:16.9851396Z Prepare workflow directory
+windows-mingw64	Set up job	2026-09-02T00:58:17.0346357Z Prepare all required actions
+windows-mingw64	Set up job	2026-09-02T00:58:17.0395658Z Getting action download info
+windows-mingw64	Set up job	2026-09-02T00:58:17.1854442Z Download action repository 'msys2/setup-msys2@v2' (SHA:66cd2cce69caa17b53920067426061ca1de3a884)
+windows-mingw64	Set up job	2026-09-02T00:58:17.4163557Z Complete job name: windows-mingw64
+windows-mingw64	Check out exact public source commits outside the dotted workspace	﻿2026-09-02T00:58:17.5603824Z ##[group]Run git config --global core.autocrlf false
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5604954Z ^[[36;1mgit config --global core.autocrlf false^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5605738Z ^[[36;1mgit config --global core.eol lf^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5606682Z ^[[36;1mNew-Item -ItemType Directory -Path $env:WINDOWS_ROOT | Out-Null^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5607566Z ^[[36;1m^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5608069Z ^[[36;1mgit init $env:PROJECT_SOURCE^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5609088Z ^[[36;1mgit -C $env:PROJECT_SOURCE remote add origin https://github.com/leemaple/20231788..git^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5610337Z ^[[36;1mgit -C $env:PROJECT_SOURCE fetch --depth 1 origin $env:GITHUB_SHA^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5611150Z ^[[36;1mgit -C $env:PROJECT_SOURCE checkout --detach FETCH_HEAD^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5611951Z ^[[36;1m$projectActual = git -C $env:PROJECT_SOURCE rev-parse HEAD^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5612680Z ^[[36;1mif ($projectActual -ne $env:GITHUB_SHA) {^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5613366Z ^[[36;1m  throw "Project checkout mismatch: $projectActual"^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5614016Z ^[[36;1m}^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5614386Z ^[[36;1m^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5614780Z ^[[36;1mgit init $env:OPENFHE_SOURCE^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5615667Z ^[[36;1mgit -C $env:OPENFHE_SOURCE remote add origin https://github.com/openfheorg/openfhe-development.git^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5616747Z ^[[36;1mgit -C $env:OPENFHE_SOURCE fetch --depth 1 origin $env:OPENFHE_COMMIT^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5617579Z ^[[36;1mgit -C $env:OPENFHE_SOURCE checkout --detach FETCH_HEAD^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5618434Z ^[[36;1mgit -C $env:OPENFHE_SOURCE submodule update --init --recursive --depth 1^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5619145Z ^[[36;1m^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5619700Z ^[[36;1m$projectStatus = @(git -C $env:PROJECT_SOURCE status --porcelain)^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5620432Z ^[[36;1mif ($projectStatus.Count -ne 0) {^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5621133Z ^[[36;1m  throw "Project checkout is dirty: $($projectStatus -join '; ')"^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5621805Z ^[[36;1m}^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5622369Z ^[[36;1m$openfheStatus = @(git -C $env:OPENFHE_SOURCE status --porcelain)^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5623089Z ^[[36;1mif ($openfheStatus.Count -ne 0) {^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5625440Z ^[[36;1m  throw "OpenFHE checkout is dirty: $($openfheStatus -join '; ')"^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.5626149Z ^[[36;1m}^[[0m
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.7439038Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.7440157Z env:
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.7440718Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.7441522Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.7442216Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.7442841Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.7443541Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.7444360Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33577480146-1
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.7445169Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33577480146-1
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:17.7445845Z ##[endgroup]
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:18.6263117Z Initialized empty Git repository in C:/openfhe-2023-1788/cleanroom/.git/
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:19.8679384Z From https://github.com/leemaple/20231788.
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:19.8680883Z  * branch            3bca03d118625b636dffb4491481dcda5995dccd -> FETCH_HEAD
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:20.1376973Z HEAD is now at 3bca03d test: add Relin2 HYBRID entry-basis red
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:20.2453570Z Initialized empty Git repository in C:/openfhe-2023-1788/openfhe-src/.git/
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:21.0144249Z From https://github.com/openfheorg/openfhe-development
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:21.0145363Z  * branch            df495ba2e91739a6dc8f1de254fc5a41155ce504 -> FETCH_HEAD
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:22.0116361Z HEAD is now at df495ba Merge pull request #1130 from openfheorg/dev
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:23.4858941Z Submodule 'third-party/cereal' (https://github.com/openfheorg/cereal.git) registered for path 'third-party/cereal'
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:23.4879721Z Submodule 'third-party/google-benchmark' (https://github.com/google/benchmark.git) registered for path 'third-party/google-benchmark'
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:23.4903018Z Submodule 'third-party/google-test' (https://github.com/google/googletest.git) registered for path 'third-party/google-test'
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:23.4945452Z Submodule 'third-party/gperftools' (https://github.com/gperftools/gperftools.git) registered for path 'third-party/gperftools'
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:23.5461637Z Cloning into 'C:/openfhe-2023-1788/openfhe-src/third-party/cereal'...
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:23.9683368Z Cloning into 'C:/openfhe-2023-1788/openfhe-src/third-party/google-benchmark'...
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:24.3434648Z Cloning into 'C:/openfhe-2023-1788/openfhe-src/third-party/google-test'...
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:24.7343540Z Cloning into 'C:/openfhe-2023-1788/openfhe-src/third-party/gperftools'...
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:25.7878777Z Submodule path 'third-party/cereal': checked out '984e3f194862b17916536b5fade40cba6e47a6fe'
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:26.5407122Z From https://github.com/google/benchmark
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:26.5408719Z  * branch            eddb0241389718a23a42db6af5f0164b6e0139af -> FETCH_HEAD
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:26.9358636Z Submodule path 'third-party/google-benchmark': checked out 'eddb0241389718a23a42db6af5f0164b6e0139af'
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:27.7409611Z From https://github.com/google/googletest
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:27.7410540Z  * branch            52eb8108c5bdec04579160ae17225d66034bd723 -> FETCH_HEAD
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:28.4377833Z Submodule path 'third-party/google-test': checked out '52eb8108c5bdec04579160ae17225d66034bd723'
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:29.4990142Z From https://github.com/gperftools/gperftools
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:29.4991121Z  * branch            83edb60836d87cf1b406e8846b9059c03031e8f5 -> FETCH_HEAD
+windows-mingw64	Check out exact public source commits outside the dotted workspace	2026-09-02T00:58:30.8294069Z Submodule path 'third-party/gperftools': checked out '83edb60836d87cf1b406e8846b9059c03031e8f5'
+windows-mingw64	Install official Windows toolchain	﻿2026-09-02T00:58:31.6795417Z ##[group]Run msys2/setup-msys2@v2
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6795788Z with:
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6795980Z   msystem: MINGW64
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6796194Z   update: true
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6796404Z   cache: false
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6796741Z   install: git make mingw-w64-x86_64-boost mingw-w64-x86_64-cmake mingw-w64-x86_64-gcc
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6797954Z   path-type: minimal
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6798146Z   release: true
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6798343Z   platform-check-severity: fatal
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6798565Z env:
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6798789Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6799143Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6799449Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6799713Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6800014Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6800370Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33577480146-1
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6800827Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33577480146-1
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.6801174Z ##[endgroup]
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:31.8582713Z ##[group]Downloading MSYS2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:32.8322428Z ##[endgroup]
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:32.8323469Z ##[group]Extracting MSYS2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:32.8343862Z [command]C:\hostedtoolcache\windows\msys2-installer\0.0.20260611\x64\base.exe -y
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.2252124Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.2253492Z 7-Zip SFX 25.01 ZS v1.5.7 R4 (x64) : Copyright (c) 1999-2025 Igor Pavlov, 2016-2026 Tino Reichardt, 2022-2026 Sergey G. Brester : 2026-01-10
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.2257938Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.2258837Z Extracting archive: C:\hostedtoolcache\windows\msys2-installer\0.0.20260611\x64\base.exe
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.2259694Z --
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.2260221Z Path = C:\hostedtoolcache\windows\msys2-installer\0.0.20260611\x64\base.exe
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.2260876Z Type = 7z
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.2261048Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.4262236Z   0%
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.4262787Z     
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.6288264Z   0% 1219 - msys64\usr\bin\zforce
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.6288903Z                                  
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.8320468Z   3% 2101 - msys64\usr\lib\terminfo\64\d430-dg-ccc
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:33.8321448Z                                                   
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:34.0347610Z   4% 3136 - msys64\usr\lib\terminfo\70\pcansi-43
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:34.0348242Z                                                 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:34.2401512Z   4% 4083 - msys64\usr\lib\terminfo\77\wyse350-vb
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:34.2402322Z                                                  
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:34.4355454Z   5% 5013 - msys64\usr\share\bash-completion\completions\qrunner
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:34.4356660Z                                                                 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:34.6422925Z   8% 5868 - msys64\usr\share\info\autosprintf.info.gz
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:34.6423668Z                                                      
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:34.8449583Z  21% 6486 - msys64\usr\share\locale\lt\LC_MESSAGES\p11-kit.mo
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:34.8450333Z                                                              
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:35.0488170Z  32% 7100 - msys64\usr\share\man\man1\bsdtar.1.gz
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:35.0489417Z                                                  
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:35.2517959Z  33% 8153 - msys64\usr\share\man\man3\curl_easy_strerror.3.gz
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:35.2518794Z                                                              
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:35.4551437Z  34% 9222 - msys64\usr\share\man\man3\ungetch.3x.gz
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:35.4552173Z                                                    
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:35.6582766Z  42% 10023 - msys64\usr\share\perl5\core_perl\TAP\Parser\Iterator\Array.pm
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:35.6583299Z                                                                           
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:35.8615604Z  44% 10849 - msys64\usr\share\perl5\core_perl\unicore\lib\Scx\Hmnp.pl
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:35.8616284Z                                                                      
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:36.0649064Z  47% 11838 - msys64\usr\share\terminfo\64\diablo1720
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:36.0649763Z                                                     
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:36.2677414Z  47% 12919 - msys64\usr\share\terminfo\73\screen-256color-bce-s
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:36.2678242Z                                                                
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:36.4704410Z  47% 13984 - msys64\usr\share\zoneinfo\America\Araguaina
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:36.4704902Z                                                         
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:36.6735673Z  48% 15047 - msys64\usr\share\zoneinfo\posix\Pacific\Johnston
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:36.6736352Z                                                              
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:36.8784071Z  49% 16027 - msys64\var\lib\pacman\sync\clangarm64.db
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:36.8784631Z                                                      
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.0802424Z  62% 16303 - msys64\usr\bin\msys-idn2-0.dll
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.0802887Z                                            
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.1671625Z  91% 16455 - msys64\usr\bin\uniq.exe
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.1672143Z                                     
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.1672558Z Everything is Ok
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.1692277Z ##[endgroup]
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.1693274Z ##[group]Disable Key Refresh...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.1711851Z ##[endgroup]
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.1729173Z ##[group]Starting MSYS2 for the first time...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.2601482Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'uname' '-a'"
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.3667072Z ^[[1;32mMSYS2 is starting for the first time. Executing the initial setup.^[[1;0m
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.3976352Z Copying skeleton files.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.3977087Z These files are for the users to personalise their msys2 experience.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.3977583Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.3977825Z They will never be overwritten nor automatically updated.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.3978238Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.4380764Z './.bashrc' -> '/home/runneradmin/.bashrc'
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.4526421Z './.bash_profile' -> '/home/runneradmin/.bash_profile'
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.4667284Z './.profile' -> '/home/runneradmin/.profile'
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.5151564Z 'C:\Windows\system32\drivers\etc\hosts' -> '/etc/hosts'
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.5608074Z 'C:\Windows\system32\drivers\etc\protocol' -> '/etc/protocols'
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.6019712Z 'C:\Windows\system32\drivers\etc\services' -> '/etc/services'
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.6431540Z 'C:\Windows\system32\drivers\etc\networks' -> '/etc/networks'
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.8004360Z gpg: /etc/pacman.d/gnupg/trustdb.gpg: trustdb created
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:37.8072802Z gpg: no ultimately trusted keys found
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.1547669Z gpg: starting migration from earlier GnuPG versions
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.2227174Z gpg: porting secret keys from '/etc/pacman.d/gnupg/secring.gpg' to gpg-agent
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.2230236Z gpg: migration succeeded
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.2421579Z ==> Generating pacman master key. This may take some time.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.2589786Z gpg: Generating pacman keyring master key...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.6769983Z gpg: directory '/etc/pacman.d/gnupg/openpgp-revocs.d' created
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.7016284Z gpg: revocation certificate stored as '/etc/pacman.d/gnupg/openpgp-revocs.d/CF6D85338232C34B053020BD750E62CE12E64354.rev'
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.7017265Z gpg: Done
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.7168084Z ==> Updating trust database...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.7529000Z gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.7529811Z gpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:38.8585801Z ==> Appending keys from msys2.gpg...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:39.3720259Z ==> Locally signing trusted keys in keyring...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:39.8485624Z   -> Locally signed 5 keys.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:39.8621553Z ==> Importing owner trust values...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:39.8783699Z gpg: setting ownertrust to 4
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:39.8784197Z gpg: setting ownertrust to 4
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:39.8786693Z gpg: setting ownertrust to 4
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:39.8787059Z gpg: setting ownertrust to 4
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:39.8787313Z gpg: setting ownertrust to 4
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:39.9022696Z ==> Disabling revoked keys in keyring...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.1269276Z   -> Disabled 4 keys.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.1400201Z ==> Updating trust database...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.1743592Z gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.1771600Z gpg: depth: 0  valid:   1  signed:   5  trust: 0-, 0q, 0n, 0m, 0f, 1u
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.1801194Z gpg: depth: 1  valid:   5  signed:   6  trust: 0-, 0q, 0n, 5m, 0f, 0u
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.1813928Z gpg: depth: 2  valid:   3  signed:   2  trust: 3-, 0q, 0n, 0m, 0f, 0u
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.2146159Z pacman-key (pacman) 6.1.0
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.2146938Z Copyright (c) 2010-2024 Pacman Development Team <pacman-dev@lists.archlinux.org>.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.2147386Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.2275423Z This is free software; see the source for copying conditions.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.2276149Z There is NO WARRANTY, to the extent permitted by law.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.4041953Z ^[[1;32mInitial setup complete. MSYS2 is now ready to use.^[[1;0m
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.4183689Z MINGW64_NT-10.0-20348 runnervm0js1w 3.6.9-01d6c708.x86_64 2026-05-24 10:45 UTC x86_64 Msys
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.4228430Z ##[endgroup]
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.4229015Z ##[group]Disable CheckSpace...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.5034125Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'sed' '-i' 's/^CheckSpace/#CheckSpace/g' '/etc/pacman.conf'"
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.6705068Z ##[endgroup]
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.6705687Z ##[group]Updating packages...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:40.7626882Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'pacman' '--noconfirm' '-Syuu' '--overwrite' '*'"
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:41.3834894Z :: Synchronizing package databases...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.2437973Z  clangarm64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.2438549Z  mingw32 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.2438999Z  mingw64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.2439348Z  ucrt64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.2439668Z  clang64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.2439999Z  msys downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.7141461Z :: Starting core system upgrade...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.8942463Z warning: terminate other MSYS2 programs before proceeding
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.8943005Z resolving dependencies...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.8943351Z looking for conflicting packages...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.9046538Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.9046805Z Packages (1) msys2-runtime-3.6.10-3
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.9047076Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.9047198Z Total Download Size:    1.97 MiB
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.9047526Z Total Installed Size:   6.33 MiB
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.9047837Z Net Upgrade Size:      -0.20 MiB
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.9048044Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.9048534Z :: Proceed with installation? [Y/n] 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:43.9049102Z :: Retrieving packages...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:46.4293585Z  msys2-runtime-3.6.10-3-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:46.4294166Z checking keyring...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:46.4890542Z checking package integrity...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:46.6676486Z loading package files...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:46.6701550Z checking for file conflicts...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:46.6724593Z :: Processing package changes...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:46.6725117Z upgrading msys2-runtime...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:46.8271607Z :: To complete this update all MSYS2 processes including this terminal will be closed. Confirm to proceed [Y/n] 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:47.1331964Z ##[endgroup]
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:47.1332420Z ##[group]Killing remaining tasks...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:47.2317917Z [command]C:\Windows\system32\taskkill.exe /F /FI "MODULES eq msys-2.0.dll"
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:47.3573241Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:47.3574060Z INFO: No tasks running with the specified criteria.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:47.3606191Z ##[endgroup]
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:47.3606612Z ##[group]Final system upgrade...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:47.4580008Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'pacman' '--noconfirm' '-Syuu' '--overwrite' '*'"
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:48.1361469Z :: Synchronizing package databases...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:48.9017552Z  clangarm64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:48.9017945Z  mingw32 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:48.9018202Z  mingw64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:48.9019438Z  ucrt64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:48.9019679Z  clang64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:48.9019916Z  msys downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.3279292Z :: Starting core system upgrade...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5147294Z  there is nothing to do
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5147835Z :: Starting full system upgrade...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5457233Z resolving dependencies...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5521228Z looking for conflicting packages...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5651543Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5655220Z Packages (31) bash-completion-2.18.0-1  bsdtar-3.8.9-1  ca-certificates-20260816-1  curl-8.21.0-1  findutils-4.11.0-2  gawk-5.4.1-1  gcc-libs-15.3.0-1  gnupg-2.4.9-3  libcurl-8.21.0-1  libexpat-2.8.3-1  libffi-3.8.0-1  libgnutls-3.8.13-2  libhogweed-4.0-1  libnettle-4.0-1  libnghttp2-1.70.0-1  libnghttp3-1.18.0-1  libngtcp2-1.25.0-1  libopenssl-3.6.4-1  libp11-kit-0.26.5-1  libpsl-0.23.2-1  libsqlite-3.53.4-1  msys2-keyring-1~20260814-1  nano-9.2-1  nettle-4.0-1  openssl-3.6.4-1  p11-kit-0.26.5-1  pacman-contrib-1.10.6-2  perl-5.42.3-1  pinentry-1.3.3-1  tzcode-2026c-1  wget-1.25.0-2
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5658829Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5659021Z Total Download Size:    27.05 MiB
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5659477Z Total Installed Size:  108.42 MiB
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5659923Z Net Upgrade Size:       -1.02 MiB
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5660232Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5660742Z :: Proceed with installation? [Y/n] 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:49.5661289Z :: Retrieving packages...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4362974Z  perl-5.42.3-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4363517Z  pacman-contrib-1.10.6-2-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4363984Z  gnupg-2.4.9-3-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4364418Z  libopenssl-3.6.4-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4364826Z  gawk-5.4.1-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4365203Z  libgnutls-3.8.13-2-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4365595Z  gcc-libs-15.3.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4366018Z  curl-8.21.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4366327Z  wget-1.25.0-2-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4366619Z  libsqlite-3.53.4-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4366909Z  nano-9.2-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4367168Z  openssl-3.6.4-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4367448Z  findutils-4.11.0-2-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4367734Z  p11-kit-0.26.5-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4368038Z  ca-certificates-20260816-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4368348Z  libcurl-8.21.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4368619Z  bsdtar-3.8.9-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4368885Z  tzcode-2026c-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4369184Z  libp11-kit-0.26.5-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4369499Z  bash-completion-2.18.0-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4369802Z  libhogweed-4.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4370081Z  libngtcp2-1.25.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4370364Z  libnettle-4.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4370643Z  nettle-4.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4370908Z  libpsl-0.23.2-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4371187Z  libnghttp3-1.18.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4371696Z  libnghttp2-1.70.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4371989Z  libexpat-2.8.3-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4372269Z  pinentry-1.3.3-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4372573Z  msys2-keyring-1~20260814-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4372871Z  libffi-3.8.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4373128Z checking keyring...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:52.4929078Z checking package integrity...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:56.9761428Z loading package files...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:57.0478938Z checking for file conflicts...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:57.1036494Z :: Running pre-transaction hooks...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:57.1037090Z (1/1) Removing old entries from the info directory file...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:57.2214076Z :: Processing package changes...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:57.2214909Z upgrading bash-completion...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:58.1131632Z upgrading gcc-libs...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:58.1307614Z upgrading libexpat...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:58.1351134Z upgrading libopenssl...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:58.1604448Z upgrading bsdtar...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:58.1694102Z upgrading openssl...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:58.2762213Z upgrading findutils...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:58.3513534Z upgrading libffi...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:58.3617056Z upgrading libp11-kit...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:58.3688398Z upgrading p11-kit...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:58.5294742Z upgrading ca-certificates...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.0816432Z upgrading libnghttp3...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.0876586Z upgrading libngtcp2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.0955256Z upgrading libnghttp2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.1015226Z upgrading libpsl...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.1105466Z upgrading libcurl...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.1169165Z upgrading curl...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.6092056Z upgrading gawk...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.7228811Z upgrading libhogweed...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.7275652Z upgrading libnettle...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.7343445Z upgrading libgnutls...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.7874353Z upgrading libsqlite...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.7970238Z upgrading nettle...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.8051949Z upgrading pinentry...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:58:59.8127232Z upgrading gnupg...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:04.3610898Z ==> Appending keys from msys2.gpg...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:04.8637564Z ==> Updating trust database...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:04.8819852Z gpg: no need for a trustdb check
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:04.9722077Z upgrading msys2-keyring...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:05.5830205Z ==> Appending keys from msys2.gpg...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:06.1265658Z ==> Updating trust database...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:06.1448068Z gpg: next trustdb check due at 2027-02-10
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:06.2452204Z upgrading nano...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:06.3805310Z upgrading pacman-contrib...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:06.4684557Z New optional dependencies for pacman-contrib
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:06.4685207Z     perl: for pacsearch [installed]
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:06.4685717Z     vim: default diff program for pacdiff
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:06.4686189Z upgrading perl...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:08.7258435Z upgrading tzcode...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:10.7283899Z upgrading wget...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:10.8579744Z :: Running post-transaction hooks...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:10.8580149Z (1/1) Updating the info directory file...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:12.5751642Z ##[endgroup]
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:12.5752571Z ##[group]Installing additional packages through pacman...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:12.6648033Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'pacman' '--noconfirm' '-S' '--needed' '--overwrite' '*' 'git' 'make' 'mingw-w64-x86_64-boost' 'mingw-w64-x86_64-cmake' 'mingw-w64-x86_64-gcc'"
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:13.4683087Z resolving dependencies...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:13.4813322Z looking for conflicting packages...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:13.4975801Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:13.4985613Z Packages (89) heimdal-7.8.0-5  heimdal-libs-7.8.0-5  libcbor-0.14.0-2  libedit-20240808_3.1-1  libfido2-1.17.0-1  mingw-w64-x86_64-binutils-2.47-3  mingw-w64-x86_64-boost-libs-1.91.0-3  mingw-w64-x86_64-brotli-1.2.0-1  mingw-w64-x86_64-bzip2-1.0.8-4  mingw-w64-x86_64-c-ares-1.34.8-1  mingw-w64-x86_64-ca-certificates-20260816-1  mingw-w64-x86_64-cppdap-1.65.r11.g6464cd7-1  mingw-w64-x86_64-crt-14.0.0.r302.gd7f3c5201-1  mingw-w64-x86_64-curl-8.21.0-2  mingw-w64-x86_64-expat-2.8.3-1  mingw-w64-x86_64-gcc-libs-16.2.0-3  mingw-w64-x86_64-gettext-runtime-1.0-1  mingw-w64-x86_64-gmp-6.3.0-2  mingw-w64-x86_64-gnutls-3.8.13-3  mingw-w64-x86_64-headers-14.0.0.r302.gd7f3c5201-1  mingw-w64-x86_64-icu-78.3-4  mingw-w64-x86_64-isl-0.28-1  mingw-w64-x86_64-jsoncpp-1.9.8-1  mingw-w64-x86_64-libarchive-3.8.9-5  mingw-w64-x86_64-libb2-0.98.1-3  mingw-w64-x86_64-libffi-3.8.0-1  mingw-w64-x86_64-libiconv-1.19-1  mingw-w64-x86_64-libidn2-2.3.8-4  mingw-w64-x86_64-libpsl-0.21.5-3  mingw-w64-x86_64-libssh2-1.11.1-2  mingw-w64-x86_64-libtasn1-4.21.0-1  mingw-w64-x86_64-libunistring-1.4.2-1  mingw-w64-x86_64-libuv-1.52.1-1  mingw-w64-x86_64-libwinpthread-14.0.0.r302.gd7f3c5201-1  mingw-w64-x86_64-lz4-1.10.0-1  mingw-w64-x86_64-mpc-1.4.1-1  mingw-w64-x86_64-mpfr-4.2.2-3  mingw-w64-x86_64-nettle-4.0-1  mingw-w64-x86_64-nghttp2-1.70.0-1  mingw-w64-x86_64-nghttp3-1.18.0-1  mingw-w64-x86_64-ngtcp2-1.25.0-1  mingw-w64-x86_64-ninja-1.13.2-1  mingw-w64-x86_64-openssl-3.6.4-1  mingw-w64-x86_64-p11-kit-0.26.5-1  mingw-w64-x86_64-pcre2-10.47-1  mingw-w64-x86_64-pkgconf-1~3.0.5-1  mingw-w64-x86_64-rhash-1.4.6-1  mingw-w64-x86_64-tzdata-2026c-1  mingw-w64-x86_64-windows-default-manifest-20260815-1  mingw-w64-x86_64-wineditline-2.208-1  mingw-w64-x86_64-winpthreads-14.0.0.r302.gd7f3c5201-1  mingw-w64-x86_64-xz-5.8.3-1  mingw-w64-x86_64-zlib-1.3.2-2  mingw-w64-x86_64-zstd-1.5.7-2  openssh-10.5p1-2  perl-Authen-SASL-2.2000-1  perl-Clone-0.50-2  perl-Convert-BinHex-1.125-2  perl-Encode-Locale-1.05-2  perl-Error-0.17030-1  perl-File-Listing-6.16-1  perl-HTML-Parser-3.85-1  perl-HTML-Tagset-3.24-1  perl-HTTP-Cookies-6.12-1  perl-HTTP-Daemon-6.17-1  perl-HTTP-Date-6.08-1  perl-HTTP-Message-7.04-1  perl-HTTP-Negotiate-6.01-3  perl-IO-HTML-1.004-2  perl-IO-Socket-SSL-2.099-1  perl-IO-Stringy-2.113-3  perl-LWP-MediaTypes-6.04-2  perl-MIME-tools-5.517-1  perl-MailTools-2.22-1  perl-Net-HTTP-6.24-1  perl-Net-SMTP-SSL-1.04-2  perl-Net-SSLeay-1.96-1  perl-TermReadKey-2.38-8  perl-TimeDate-2.35-1  perl-Try-Tiny-0.32-1  perl-URI-5.36-1  perl-WWW-RobotRules-6.03-1  perl-http-cookiejar-0.014-1  perl-libwww-6.83-2  git-2.55.0-1  make-4.4.1-3  mingw-w64-x86_64-boost-1.91.0-3  mingw-w64-x86_64-cmake-4.4.2-2  mingw-w64-x86_64-gcc-16.2.0-3
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:13.4998023Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:13.4998164Z Total Download Size:    154.18 MiB
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:13.4998429Z Total Installed Size:  1023.08 MiB
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:13.4998607Z 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:13.4998742Z :: Proceed with installation? [Y/n] 
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:13.4999003Z :: Retrieving packages...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6552077Z  mingw-w64-x86_64-gcc-16.2.0-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6552721Z  mingw-w64-x86_64-icu-78.3-4-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6553325Z  mingw-w64-x86_64-boost-1.91.0-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6553870Z  mingw-w64-x86_64-cmake-4.4.2-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6554424Z  mingw-w64-x86_64-openssl-3.6.4-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6554896Z  git-2.55.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6555405Z  mingw-w64-x86_64-headers-14.0.0.r302.gd7f3c5201-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6555985Z  mingw-w64-x86_64-binutils-2.47-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6556528Z  mingw-w64-x86_64-crt-14.0.0.r302.gd7f3c5201-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6557103Z  mingw-w64-x86_64-boost-libs-1.91.0-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6557684Z  mingw-w64-x86_64-gnutls-3.8.13-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6558216Z  mingw-w64-x86_64-libarchive-3.8.9-5-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6558770Z  mingw-w64-x86_64-curl-8.21.0-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6559273Z  mingw-w64-x86_64-isl-0.28-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6559773Z  mingw-w64-x86_64-pcre2-10.47-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6560223Z  openssh-10.5p1-2-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6560721Z  mingw-w64-x86_64-gcc-libs-16.2.0-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6561273Z  mingw-w64-x86_64-libunistring-1.4.2-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6561810Z  heimdal-libs-7.8.0-5-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6562331Z  mingw-w64-x86_64-libiconv-1.19-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6562859Z  mingw-w64-x86_64-zstd-1.5.7-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6563369Z  mingw-w64-x86_64-p11-kit-0.26.5-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6563926Z  mingw-w64-x86_64-gmp-6.3.0-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6564712Z  mingw-w64-x86_64-nettle-4.0-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6565220Z  heimdal-7.8.0-5-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6565630Z  mingw-w64-x86_64-mpfr-4.2.2-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6565993Z  mingw-w64-x86_64-cppdap-1.65.r11.g6464cd7-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6566505Z  make-4.4.1-3-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6566768Z  mingw-w64-x86_64-xz-5.8.3-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6567079Z  mingw-w64-x86_64-brotli-1.2.0-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6567419Z  mingw-w64-x86_64-gettext-runtime-1.0-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6567801Z  mingw-w64-x86_64-ca-certificates-20260816-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6568171Z  mingw-w64-x86_64-c-ares-1.34.8-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6568493Z  mingw-w64-x86_64-libssh2-1.11.1-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6568806Z  mingw-w64-x86_64-ngtcp2-1.25.0-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6569111Z  mingw-w64-x86_64-rhash-1.4.6-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6569421Z  perl-Net-SSLeay-1.96-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6569749Z  mingw-w64-x86_64-tzdata-2026c-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6570084Z  mingw-w64-x86_64-libuv-1.52.1-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6570401Z  mingw-w64-x86_64-jsoncpp-1.9.8-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6570736Z  mingw-w64-x86_64-nghttp2-1.70.0-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6571064Z  mingw-w64-x86_64-libtasn1-4.21.0-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6571381Z  mingw-w64-x86_64-expat-2.8.3-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6571681Z  mingw-w64-x86_64-ninja-1.13.2-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6572006Z  perl-MIME-tools-5.517-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6572311Z  mingw-w64-x86_64-libidn2-2.3.8-4-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6572617Z  mingw-w64-x86_64-lz4-1.10.0-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6572925Z  perl-IO-Socket-SSL-2.099-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6573251Z  mingw-w64-x86_64-pkgconf-1~3.0.5-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6573573Z  mingw-w64-x86_64-nghttp3-1.18.0-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6573882Z  mingw-w64-x86_64-mpc-1.4.1-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6574167Z  perl-libwww-6.83-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6574450Z  mingw-w64-x86_64-zlib-1.3.2-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6574728Z  perl-URI-5.36-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6575015Z  mingw-w64-x86_64-libpsl-0.21.5-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6575337Z  mingw-w64-x86_64-bzip2-1.0.8-4-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6575640Z  libedit-20240808_3.1-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6575914Z  libfido2-1.17.0-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6576214Z  perl-HTML-Parser-3.85-1-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6576521Z  perl-HTTP-Message-7.04-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6576806Z  perl-TimeDate-2.35-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6577113Z  mingw-w64-x86_64-wineditline-2.208-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6577435Z  perl-MailTools-2.22-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6577723Z  mingw-w64-x86_64-libffi-3.8.0-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6578025Z  perl-IO-Stringy-2.113-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6578426Z  mingw-w64-x86_64-winpthreads-14.0.0.r302.gd7f3c5201-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6578913Z  perl-Authen-SASL-2.2000-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6579295Z  mingw-w64-x86_64-libwinpthread-14.0.0.r302.gd7f3c5201-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6579703Z  perl-Convert-BinHex-1.125-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6580008Z  mingw-w64-x86_64-libb2-0.98.1-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6580292Z  libcbor-0.14.0-2-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6580569Z  perl-HTTP-Cookies-6.12-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6580849Z  perl-Net-HTTP-6.24-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6581110Z  perl-Error-0.17030-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6581475Z  perl-TermReadKey-2.38-8-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6581764Z  perl-HTTP-Daemon-6.17-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6582055Z  perl-LWP-MediaTypes-6.04-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6582338Z  perl-Try-Tiny-0.32-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6583362Z  perl-Clone-0.50-2-x86_64 downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6583622Z  perl-IO-HTML-1.004-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6584310Z  perl-WWW-RobotRules-6.03-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6584793Z  perl-http-cookiejar-0.014-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6585290Z  perl-HTTP-Negotiate-6.01-3-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6585761Z  perl-Encode-Locale-1.05-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6586221Z  perl-HTML-Tagset-3.24-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6586686Z  perl-File-Listing-6.16-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6587130Z  perl-HTTP-Date-6.08-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6587573Z  perl-Net-SMTP-SSL-1.04-2-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6588094Z  mingw-w64-x86_64-windows-default-manifest-20260815-1-any downloading...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.6588470Z checking keyring...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:25.7231173Z checking package integrity...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:40.0652006Z loading package files...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:40.4009327Z checking for file conflicts...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:42.8100939Z :: Processing package changes...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:42.8101536Z installing libedit...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:42.8439758Z installing heimdal-libs...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:42.8625968Z installing heimdal...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.5039790Z installing libcbor...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.5069452Z installing libfido2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.5104194Z installing openssh...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.5486162Z installing perl-Error...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.5566398Z installing perl-Authen-SASL...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.5802385Z installing perl-Encode-Locale...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.5862157Z installing perl-HTTP-Date...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.5923359Z installing perl-File-Listing...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.5989397Z installing perl-HTML-Tagset...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.6050038Z installing perl-Clone...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.6103038Z installing perl-IO-HTML...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.6163452Z installing perl-LWP-MediaTypes...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.6233122Z installing perl-URI...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.6895828Z installing perl-HTTP-Message...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.7092359Z installing perl-HTML-Parser...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.7244527Z installing perl-HTTP-Cookies...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.7327991Z installing perl-HTTP-Daemon...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.7376003Z installing perl-http-cookiejar...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.7444744Z installing perl-HTTP-Negotiate...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.7491822Z installing perl-Net-HTTP...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.7600542Z installing perl-WWW-RobotRules...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.7695170Z installing perl-Try-Tiny...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.7772418Z installing perl-libwww...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.8121319Z Optional dependencies for perl-libwww
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.8121934Z     perl-LWP-Protocol-https: for https:// url schemes
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.8122540Z installing perl-TimeDate...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.8793855Z installing perl-MailTools...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.9073179Z installing perl-IO-Stringy...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:43.9211850Z installing perl-Convert-BinHex...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.0582703Z module test... pass.
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.0593162Z installing perl-MIME-tools...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.0995771Z installing perl-Net-SSLeay...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.1994772Z installing perl-IO-Socket-SSL...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.2125970Z installing perl-Net-SMTP-SSL...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.2172168Z installing perl-TermReadKey...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.2252226Z installing git...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.7856102Z Optional dependencies for git
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.7856683Z     python: various helper scripts
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.7857126Z     subversion: git svn
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.7857531Z     aspell: spell checking in git gui
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.7857947Z installing make...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.8186549Z installing mingw-w64-x86_64-libwinpthread...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:44.8234665Z installing mingw-w64-x86_64-tzdata...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:46.5270307Z installing mingw-w64-x86_64-gcc-libs...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:46.5433879Z installing mingw-w64-x86_64-bzip2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:46.5622835Z installing mingw-w64-x86_64-icu...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:46.9138319Z installing mingw-w64-x86_64-libiconv...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:46.9373105Z installing mingw-w64-x86_64-gettext-runtime...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:47.0716640Z installing mingw-w64-x86_64-xz...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:47.2049500Z installing mingw-w64-x86_64-zstd...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:47.2247069Z installing mingw-w64-x86_64-zlib...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:47.2330298Z installing mingw-w64-x86_64-boost-libs...
+windows-mingw64	Install official Windows toolchain	2026-09-02T00:59:47.2773460Z installing mingw-w64-x86_64-boost...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.6053993Z Optional dependencies for mingw-w64-x86_64-boost
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.6055057Z     mingw-w64-x86_64-python: For Boost.Python
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.6055431Z     mingw-w64-x86_64-python-numpy: For Boost.Python (NumPy)
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.6055788Z installing mingw-w64-x86_64-cppdap...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.6303914Z installing mingw-w64-x86_64-c-ares...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.7489109Z installing mingw-w64-x86_64-brotli...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.7705563Z installing mingw-w64-x86_64-libunistring...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.8213136Z installing mingw-w64-x86_64-libidn2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.8503637Z installing mingw-w64-x86_64-libpsl...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.8595759Z installing mingw-w64-x86_64-libtasn1...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.8998712Z installing mingw-w64-x86_64-libffi...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:01.9104410Z installing mingw-w64-x86_64-p11-kit...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:02.1328527Z installing mingw-w64-x86_64-ca-certificates...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:02.7864166Z installing mingw-w64-x86_64-openssl...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:08.4021850Z Optional dependencies for mingw-w64-x86_64-openssl
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:08.4022651Z     mingw-w64-x86_64-ca-certificates [installed]
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:08.4023200Z installing mingw-w64-x86_64-libssh2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:08.5369621Z installing mingw-w64-x86_64-nghttp2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:08.5540210Z installing mingw-w64-x86_64-gmp...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:08.5697676Z installing mingw-w64-x86_64-nettle...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:08.6270756Z installing mingw-w64-x86_64-gnutls...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:09.5964650Z installing mingw-w64-x86_64-ngtcp2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:09.6184970Z installing mingw-w64-x86_64-nghttp3...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:09.6321370Z installing mingw-w64-x86_64-curl...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.0412028Z installing mingw-w64-x86_64-expat...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.0577187Z installing mingw-w64-x86_64-jsoncpp...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.0776136Z installing mingw-w64-x86_64-libb2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.0847162Z installing mingw-w64-x86_64-lz4...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.0994953Z installing mingw-w64-x86_64-wineditline...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.1082402Z installing mingw-w64-x86_64-pcre2...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.3026415Z installing mingw-w64-x86_64-libarchive...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.3854666Z installing mingw-w64-x86_64-libuv...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.4080591Z installing mingw-w64-x86_64-ninja...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.4137303Z installing mingw-w64-x86_64-pkgconf...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.4358862Z installing mingw-w64-x86_64-rhash...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:10.4719500Z installing mingw-w64-x86_64-cmake...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:13.7209456Z Optional dependencies for mingw-w64-x86_64-cmake
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:13.7210183Z     mingw-w64-x86_64-emacs: for cmake emacs mode
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:13.7210717Z installing mingw-w64-x86_64-binutils...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:13.9656880Z installing mingw-w64-x86_64-headers...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:15.4553636Z installing mingw-w64-x86_64-crt...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:16.1092078Z installing mingw-w64-x86_64-isl...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:16.4099158Z installing mingw-w64-x86_64-mpfr...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:16.4335236Z installing mingw-w64-x86_64-mpc...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:16.4409553Z installing mingw-w64-x86_64-windows-default-manifest...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:16.4439196Z installing mingw-w64-x86_64-winpthreads...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:16.4547112Z installing mingw-w64-x86_64-gcc...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:17.7833688Z :: Running post-transaction hooks...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:17.7834170Z (1/1) Updating the info directory file...
+windows-mingw64	Install official Windows toolchain	2026-09-02T01:00:18.0893364Z ##[endgroup]
+windows-mingw64	Report toolchain versions	﻿2026-09-02T01:00:18.1126858Z ##[group]Run cmake --version
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1127247Z ^[[36;1mcmake --version^[[0m
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1127670Z ^[[36;1mg++ --version^[[0m
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1132402Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1132695Z env:
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1132943Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1133315Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1133619Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1133901Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1134212Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1134577Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33577480146-1
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1134982Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33577480146-1
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1135308Z   MSYSTEM: MINGW64
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.1135493Z ##[endgroup]
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.3253862Z cmake version 4.4.2
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.3254183Z 
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.3254616Z CMake suite maintained and supported by Kitware (kitware.com/cmake).
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.3601010Z g++.exe (Rev3, Built by MSYS2 project) 16.2.0
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.3601963Z Copyright (C) 2026 Free Software Foundation, Inc.
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.3602820Z This is free software; see the source for copying conditions.  There is NO
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.3603738Z warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+windows-mingw64	Report toolchain versions	2026-09-02T01:00:18.3604293Z 
+windows-mingw64	Verify OpenFHE provenance	﻿2026-09-02T01:00:18.3789524Z ##[group]Run source="$(cygpath -u "$OPENFHE_SOURCE")"
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3790026Z ^[[36;1msource="$(cygpath -u "$OPENFHE_SOURCE")"^[[0m
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3790376Z ^[[36;1mactual="$(git -C "$source" rev-parse HEAD)"^[[0m
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3790688Z ^[[36;1mtest "$actual" = "$OPENFHE_COMMIT"^[[0m
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3791009Z ^[[36;1mtest -z "$(git -C "$source" status --porcelain)"^[[0m
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3791367Z ^[[36;1mgit -C "$source" submodule status --recursive^[[0m
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3793430Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3793701Z env:
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3793941Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3794317Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3794616Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3794892Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3795193Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3795551Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33577480146-1
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3796001Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33577480146-1
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3796332Z   MSYSTEM: MINGW64
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:18.3796515Z ##[endgroup]
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:19.8887416Z  984e3f194862b17916536b5fade40cba6e47a6fe third-party/cereal (heads/main)
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:20.1116230Z  eddb0241389718a23a42db6af5f0164b6e0139af third-party/google-benchmark (eddb024)
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:20.3310654Z  52eb8108c5bdec04579160ae17225d66034bd723 third-party/google-test (52eb810)
+windows-mingw64	Verify OpenFHE provenance	2026-09-02T01:00:20.4670335Z  83edb60836d87cf1b406e8846b9059c03031e8f5 third-party/gperftools (83edb60)
+windows-mingw64	Configure OpenFHE	﻿2026-09-02T01:00:20.5029009Z ##[group]Run prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5029531Z ^[[36;1mprefix="$(cygpath -u "$OPENFHE_PREFIX")"^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5029865Z ^[[36;1msource="$(cygpath -u "$OPENFHE_SOURCE")"^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5030193Z ^[[36;1mbuild="$(cygpath -u "$OPENFHE_BUILD")"^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5030482Z ^[[36;1mcmake -S "$source" -B "$build" \^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5030752Z ^[[36;1m  -DCMAKE_BUILD_TYPE=Release \^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5031025Z ^[[36;1m  -DCMAKE_INSTALL_PREFIX="$prefix" \^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5031298Z ^[[36;1m  -DBUILD_UNITTESTS=OFF \^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5031542Z ^[[36;1m  -DBUILD_EXAMPLES=OFF \^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5031778Z ^[[36;1m  -DBUILD_BENCHMARKS=OFF \^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5032015Z ^[[36;1m  -DBUILD_EXTRAS=OFF \^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5032240Z ^[[36;1m  -DWITH_OPENMP=ON^[[0m
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5034243Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5034679Z env:
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5034921Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5035356Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5035656Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5035926Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5036245Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5036605Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33577480146-1
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5037038Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33577480146-1
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5037353Z   MSYSTEM: MINGW64
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.5037534Z ##[endgroup]
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:20.9318921Z -- The C compiler identification is GNU 16.2.0
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:21.1145167Z -- The CXX compiler identification is GNU 16.2.0
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:21.1580958Z -- Detecting C compiler ABI info
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:21.5266890Z -- Detecting C compiler ABI info - done
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:21.5601103Z -- Check for working C compiler: D:/a/_temp/msys64/mingw64/bin/cc.exe - skipped
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:21.5605451Z -- Detecting C compile features
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:21.5611367Z -- Detecting C compile features - done
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:21.5965350Z -- Detecting CXX compiler ABI info
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:21.9966947Z -- Detecting CXX compiler ABI info - done
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0316209Z -- Check for working CXX compiler: D:/a/_temp/msys64/mingw64/bin/c++.exe - skipped
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0321437Z -- Detecting CXX compile features
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0329460Z -- Detecting CXX compile features - done
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0502790Z -- Building in Release mode
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0505174Z ***** INSTALL IS AT C:/openfhe-2023-1788/openfhe-install; to change, run cmake with -DCMAKE_INSTALL_PREFIX=/your/path
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0505999Z -- BUILD_UNITTESTS:    OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0506704Z -- BUILD_EXAMPLES:     OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0507260Z -- BUILD_BENCHMARKS:   OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0507749Z -- BUILD_EXTRAS:       OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0508493Z -- BUILD_STATIC:       OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0509025Z -- BUILD_SHARED:       ON
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0509524Z -- GIT_SUBMOD_AUTO:    ON
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0510002Z -- WITH_BE2:           OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0510462Z -- WITH_BE4:           OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0510927Z -- WITH_NTL:           OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0511402Z -- WITH_TCM:           OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0511877Z -- WITH_OPENMP:        ON
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0512363Z -- NATIVE_SIZE:        64
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0512833Z -- CKKS_M_FACTOR:      1
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0513317Z -- WITH_NATIVEOPT:     OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0513788Z -- WITH_COVTEST:       OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0514247Z -- WITH_NOISE_DEBUG:   OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0514725Z -- WITH_REDUCED_NOISE: OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0515199Z -- USE_MACPORTS:       OFF
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0515618Z -- BUILTIN_INFO_AVAILABLE is defined
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0729976Z -- Architecture is x86_64
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.0748739Z -- Looking for sys/types.h
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.4646273Z -- Looking for sys/types.h - found
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.4649154Z -- Looking for stdint.h
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.8243244Z -- Looking for stdint.h - found
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:22.8244632Z -- Looking for stddef.h
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:23.2309786Z -- Looking for stddef.h - found
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:23.2310329Z -- Check size of __int128
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:23.6245861Z -- Check size of __int128 - done
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:23.6248922Z -- Check size of uint64_t
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:23.9996463Z -- Check size of uint64_t - done
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:23.9997380Z -- NATIVEINT is set to 64
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:23.9997855Z -- MATHBACKEND is set to 4
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:23.9998356Z -- MATHBACKEND set to 4. Setting WITH_BE4 to ON
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:25.2026242Z -- Found OpenMP_C: -fopenmp (found version "5.2")
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:25.6093792Z -- Found OpenMP_CXX: -fopenmp (found version "5.2")
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:25.6098159Z -- Found OpenMP: TRUE (found version "5.2")
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:25.6262240Z -- Found Git: D:/a/_temp/msys64/usr/bin/git.exe (found version "2.55.0")
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:25.6262945Z -- Submodule update
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:26.0174400Z Synchronizing submodule url for 'third-party/cereal'
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:26.0472730Z Synchronizing submodule url for 'third-party/google-benchmark'
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:26.0808861Z Synchronizing submodule url for 'third-party/google-test'
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:26.1129133Z Synchronizing submodule url for 'third-party/gperftools'
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:26.6242260Z -- Configuring done (5.9s)
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:26.9157898Z -- Generating done (0.3s)
+windows-mingw64	Configure OpenFHE	2026-09-02T01:00:26.9172674Z -- Build files have been written to: C:/openfhe-2023-1788/openfhe-build-33577480146-1
+windows-mingw64	Build and install OpenFHE	﻿2026-09-02T01:00:26.9437862Z ##[group]Run build="$(cygpath -u "$OPENFHE_BUILD")"
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9438325Z ^[[36;1mbuild="$(cygpath -u "$OPENFHE_BUILD")"^[[0m
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9438641Z ^[[36;1mcmake --build "$build" --parallel 2^[[0m
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9438931Z ^[[36;1mcmake --install "$build"^[[0m
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9440778Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9441145Z env:
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9441381Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9441742Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9442041Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9442312Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9442618Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9442971Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33577480146-1
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9443374Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33577480146-1
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9443681Z   MSYSTEM: MINGW64
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:26.9443889Z ##[endgroup]
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:27.3711283Z -- Copied demoData files
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:27.4212809Z [  0%] Built target third-party
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:27.5503887Z [  1%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/constants-lattice-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:27.5564250Z [  2%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/lattice.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:28.2854834Z [  3%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/stdlatticeparms.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:29.4957410Z [  4%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/trapdoor-dcrtpoly.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:38.5063109Z [  5%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/trapdoor-poly.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:49.0763271Z [  6%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/chebyshev.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:50.0134646Z [  6%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/dftransform.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:51.4758472Z [  7%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/discretegaussiangeneratorgeneric.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:51.8011681Z [  8%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/distributiongenerator.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:52.6564783Z [  9%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintdyn/be4-math-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:53.3312243Z [ 10%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintdyn/mubintvecdyn.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:56.5296377Z [ 11%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintdyn/ubintdyn.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:58.9245817Z [ 12%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintfxd/be2-math-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:59.0387427Z [ 13%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintfxd/mubintvecfxd.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:59.1496739Z [ 14%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintfxd/ubintfxd.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:59.2557661Z [ 15%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintntl/be6-math-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:59.3695503Z [ 15%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintntl/mubintvecntl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:59.4790427Z [ 16%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/bigintntl/ubintntl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:59.5888495Z [ 17%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/intnat/benative-math-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:00:59.9934530Z [ 18%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hal/intnat/mubintvecnat.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:02.7281820Z [ 19%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/hermite.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:04.0064321Z [ 20%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/matrix.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:05.5209366Z [ 21%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/nbtheory2.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:07.2239001Z [ 22%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/blockAllocator/blockAllocator.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:08.0633933Z [ 23%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/blockAllocator/xallocator.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:08.9544773Z [ 24%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/debug.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:09.0157982Z [ 24%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/demangle.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:09.4251323Z [ 25%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/get-call-stack.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:09.5110981Z [ 26%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/hashutil.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:09.8202711Z [ 27%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/inttypes.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:10.2618892Z [ 28%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/memory.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:10.4022226Z [ 29%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/openfhebase64.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:10.6828536Z [ 30%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/parallel.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:10.8064088Z [ 31%] Building C object src/core/CMakeFiles/coreobj.dir/lib/utils/prng/blake2b-ref.c.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:10.8514642Z [ 32%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/prng/blake2engine.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:11.3449258Z [ 34%] Building C object src/core/CMakeFiles/coreobj.dir/lib/utils/prng/blake2xb-ref.c.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:11.5293253Z [ 34%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/utils/utilities.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:12.0191634Z [ 34%] Built target coreobj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:12.1406567Z [ 35%] Linking CXX shared library ../../lib/libOPENFHEcore.dll
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:12.7033949Z [ 35%] Built target OPENFHEcore
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:12.8319406Z [ 36%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/binfhe-base-scheme.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:12.8372260Z [ 37%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/binfhe-constants-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:13.6037032Z [ 38%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/binfhecontext.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:17.9997246Z [ 39%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/lwe-pke.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:18.0766641Z [ 40%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc-cggi.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:20.6730443Z [ 41%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc-dm.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:21.1319623Z [ 41%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc-lmkcdey.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:23.5891722Z [ 42%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-acc.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:24.7035938Z [ 43%] Building CXX object src/binfhe/CMakeFiles/binfheobj.dir/lib/rgsw-cryptoparameters.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:27.1366483Z [ 43%] Built target binfheobj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:27.2586450Z [ 43%] Linking CXX shared library ../../lib/libOPENFHEbinfhe.dll
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:27.5723947Z [ 43%] Built target OPENFHEbinfhe
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:27.7012771Z [ 44%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/ciphertext-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:27.7070672Z [ 45%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/constants-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:29.4476709Z [ 46%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/cryptocontext.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:33.9626356Z [ 47%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/cryptocontextfactory.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:39.7232193Z [ 48%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/cryptoobject-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:42.5879079Z [ 49%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/ckkspackedencoding.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:44.5998501Z [ 50%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/coefpackedencoding.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:47.3625261Z [ 51%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/encodingparams.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:48.7257139Z [ 51%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/packedencoding.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:48.9015863Z [ 52%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/encoding/stringencoding.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:52.9931886Z [ 53%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/globals-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:53.1172682Z [ 54%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/evalkey.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:55.4523277Z [ 55%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/evalkeyrelin.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:01:56.1284082Z [ 56%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/privatekey.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:00.3898165Z [ 57%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/key/publickey.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:00.5452236Z [ 58%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/keyswitch/keyswitch-base.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:03.5213008Z [ 59%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/keyswitch/keyswitch-bv.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:05.3743009Z [ 60%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/keyswitch/keyswitch-hybrid.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:09.1708981Z [ 60%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-cryptoparameters.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:11.0680926Z [ 61%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-leveledshe.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:17.0593480Z [ 62%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-multiparty.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:18.3167037Z [ 63%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-parametergeneration.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:22.8249185Z [ 64%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-pke.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:22.8828946Z [ 65%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bfvrns/bfvrns-scheme.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:28.7465370Z [ 67%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-cryptoparameters.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:29.4162879Z [ 68%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-leveledshe.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:31.9176743Z [ 69%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-multiparty.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:32.5679282Z [ 70%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-parametergeneration.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:36.8197775Z [ 70%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-pke.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:37.4832456Z [ 71%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/bgvrns/bgvrns-scheme.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:41.7152698Z [ 72%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-advancedshe.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:44.1584930Z [ 73%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-cryptoparameters.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:47.3206850Z [ 74%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-fhe.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:49.2831305Z [ 75%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-leveledshe.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:02:55.7406166Z [ 76%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-multiparty.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:02.3372358Z [ 77%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-parametergeneration.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:03.1684689Z [ 78%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-pke.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:06.3053524Z [ 79%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-scheme.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:08.1563571Z [ 79%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-schemeswitching.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:13.0417584Z [ 80%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/ckksrns/ckksrns-utils.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:17.3570062Z [ 81%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/gen-cryptocontext-params-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:18.4725326Z [ 82%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/gen-cryptocontext-params-validation.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:19.6376747Z [ 83%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/scheme-id-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:20.4369064Z [ 84%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/scheme/scheme-swch-params.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:21.7704414Z [ 85%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-advancedshe.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:21.7891428Z [ 86%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-cryptoparameters.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:23.8128710Z [ 87%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-fhe.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:26.7186626Z [ 88%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-leveledshe.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:29.7067298Z [ 88%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-multiparty.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:34.0603690Z [ 89%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-parametergeneration.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:35.8784905Z [ 90%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-pke.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:36.1774344Z [ 91%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-pre.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:41.4028384Z [ 92%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/base-scheme.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:42.0280451Z [ 93%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemebase/rlwe-cryptoparameters-impl.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:44.2954712Z [ 94%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemelet/rlwe-mp.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:48.5613920Z [ 95%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-cryptoparameters.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:50.8828659Z [ 96%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-leveledshe.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:53.8794785Z [ 97%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-multiparty.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:03:56.9434790Z [ 98%] Building CXX object src/pke/CMakeFiles/pkeobj.dir/lib/schemerns/rns-pke.cpp.obj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:02.3385359Z [ 98%] Built target pkeobj
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:02.4730174Z [100%] Linking CXX shared library ../../lib/libOPENFHEpke.dll
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.3008432Z [100%] Built target OPENFHEpke
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4054656Z -- Install configuration: "Release"
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4066950Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/config_core.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4078143Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4086479Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/access.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4094976Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4102926Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives/adapters.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4111538Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives/binary.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4120027Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives/json.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4129583Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives/portable_binary.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4138147Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/archives/xml.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4147744Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/cereal.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4158009Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4165805Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/helpers.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4174336Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/polymorphic_impl.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4184258Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/polymorphic_impl_fwd.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4192383Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/static_object.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4221454Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/traits.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4231536Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/details/util.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4239412Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4247476Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/base64.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4255912Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/LICENSE
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4263692Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4272775Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/allocators.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4281338Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/cursorstreamwrapper.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4289360Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/document.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4299933Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/encodedstream.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4340649Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/encodings.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4349539Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/error
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4358963Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/error/en.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4367198Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/error/error.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4376267Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/filereadstream.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4384537Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/filewritestream.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4392984Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4401128Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4410117Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/biginteger.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4418662Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/diyfp.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4427431Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/dtoa.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4436086Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/ieee754.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4444264Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/itoa.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4452960Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/meta.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4512392Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/pow10.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4520981Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/regex.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4530384Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/stack.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4539499Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/strfunc.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4547683Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/strtod.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4556301Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/internal/swap.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4564534Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/istreamwrapper.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4573065Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/LICENSE
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4581292Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/memorybuffer.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4589550Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/memorystream.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4597832Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4607682Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes/inttypes.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4616521Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes/LICENSE
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4625072Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/msinttypes/stdint.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4634318Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/ostreamwrapper.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4642941Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/pointer.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4653352Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/prettywriter.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4662576Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/rapidjson.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4671684Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/reader.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4682223Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/schema.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4692729Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/stream.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4701669Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/stringbuffer.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4709849Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidjson/writer.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4739737Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4748549Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/license.txt
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4756648Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/manual.html
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4767107Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4777541Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml_iterators.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4786032Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml_print.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4815418Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/external/rapidxml/rapidxml_utils.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4823604Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/macros.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4832280Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/specialize.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4861232Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4869707Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/array.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4877961Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/atomic.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4886279Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/base_class.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4894620Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/bitset.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4903299Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/boost_variant.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4934530Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/chrono.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4942706Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/common.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4951523Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/complex.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4959694Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/concepts
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4967961Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/concepts/pair_associative_container.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4976187Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/deque.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4984324Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/forward_list.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.4992662Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/functional.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5000582Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/list.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5008614Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/map.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5016462Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/memory.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5025734Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/optional.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5033635Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/polymorphic.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5042615Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/queue.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5051513Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/set.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5059400Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/stack.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5067216Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/string.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5075045Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/tuple.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5083463Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/unordered_map.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5091360Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/unordered_set.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5099196Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/utility.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5107092Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/valarray.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5153887Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/variant.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5162135Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/types/vector.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5173543Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/cereal/version.hpp
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5188783Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEcore.dll.a
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5238285Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEcore.dll
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5306613Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5318339Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/constants-lattice.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5326107Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/dgsampling-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5337654Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/dgsampling.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5345619Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/field2n-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5411936Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/field2n.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5423349Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5432395Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/dcrtpoly-interface.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5441241Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5452959Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/dcrtpoly-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5462488Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/dcrtpoly.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5470999Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/ildcrtparams.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5482230Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/ilparams.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5491596Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/poly-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5522960Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/default/poly.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5534120Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/elemparams.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5542199Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/lat-backend.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5571553Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/poly-interface.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5584242Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/hal/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5592104Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/ilelement.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5600164Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/lat-hal.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5607945Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/matrix-lattice-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5619292Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5630126Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/stdlatticeparms.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5638164Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/trapdoor-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5649207Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/trapdoor.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5695485Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/lattice/trapdoorparameters.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5706584Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5714440Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/binaryuniformgenerator-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5722171Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/binaryuniformgenerator.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5735774Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/chebyshev.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5762507Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/dftransform.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5773783Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/discretegaussiangenerator-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5782082Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/discretegaussiangenerator.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5790577Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/discretegaussiangeneratorgeneric.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5801485Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/discreteuniformgenerator-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5809645Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/discreteuniformgenerator.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5851633Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/distrgen.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5859941Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/distributiongenerator.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5868870Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5913911Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/basicint.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5921686Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintbackend.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5930726Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5976835Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn/backenddyn.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5986022Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn/mubintvecdyn.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.5996494Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn/transformdyn-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6063461Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn/transformdyn.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6072489Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintdyn/ubintdyn.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6080956Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6121893Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd/backendfxd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6130682Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd/mubintvecfxd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6141604Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd/transformfxd-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6174522Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd/transformfxd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6183644Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintfxd/ubintfxd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6195025Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6203592Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl/backendntl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6212671Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl/mubintvecntl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6224226Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl/transformntl-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6253876Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl/transformntl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6262938Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/bigintntl/ubintntl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6274036Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/integer.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6282446Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/intnat
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6290867Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/intnat/mubintvecnat.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6302122Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/intnat/transformnat-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6311435Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/intnat/transformnat.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6319822Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/intnat/ubintnat.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6350565Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/nativeintbackend.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6362179Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/transform.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6372320Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hal/vector.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6390517Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/hermite.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6401842Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/math-hal.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6412469Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/math_backends.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6425753Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/matrix-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6434409Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/matrix.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6443044Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/matrixstrassen-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6454700Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/matrixstrassen.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6463148Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/nbtheory-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6471543Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/nbtheory.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6527534Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6535639Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/SAMPLING_README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6543821Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/ternaryuniformgenerator-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6555284Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/math/ternaryuniformgenerator.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6563051Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/openfhecore.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6570535Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6605229Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/testdefs.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6613221Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6620601Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6631779Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/blockAllocator.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6639811Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6647824Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/stl_allocator.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6695788Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xallocator.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6724203Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xlist.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6732781Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xmap.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6743254Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xqueue.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6750902Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xset.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6758874Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xsstream.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6769020Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xstring.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6776702Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/blockAllocator/xvector.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6784270Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/caller_info.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6796415Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/debug.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6804432Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/demangle.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6811956Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/exception.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6842333Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/get-call-stack.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6849964Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/hashutil.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6857448Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/inttypes.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6867253Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/memory.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6874977Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/openfhebase64.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6882463Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/parallel.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6892654Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6900793Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/blake2-impl.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6908415Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/blake2.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6918943Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/blake2engine.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6926764Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/CPPLINT.cfg
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6934163Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/prng.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6964292Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/prng/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6974724Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6982122Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/serial.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.6992494Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/serializable.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7003318Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/sertype.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7010917Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/type_name.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7018599Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/utilities-int.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7028514Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/utils/utilities.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7036584Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/core/version.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7049114Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEpke.dll.a
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7106896Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEpke.dll
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7213205Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7220623Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/ciphertext-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7228512Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/ciphertext-ser.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7238541Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/ciphertext.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7246895Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/constants-defs.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7313234Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/constants.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7321503Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/cryptocontext-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7367714Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/cryptocontext-ser.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7419017Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/cryptocontext.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7444860Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/cryptocontextfactory.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7474665Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/cryptoobject.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7525985Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7570028Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/ckkspackedencoding.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7581004Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/coefpackedencoding.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7590595Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/encodingparams.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7654072Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/encodings.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7664674Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/packedencoding.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7674644Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/plaintext-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7726854Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/plaintext.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7820597Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/plaintextfactory.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7830958Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7838789Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/encoding/stringencoding.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7891976Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/gen-cryptocontext.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7901933Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/globals.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7909775Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7955703Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/evalkey-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7965602Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/evalkey.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.7973662Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/evalkeyrelin-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8016769Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/evalkeyrelin.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8090762Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/key-ser.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8100541Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/key.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8145029Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/keypair.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8189835Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/privatekey-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8197449Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/privatekey.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8205658Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/publickey-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8213422Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/publickey.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8222906Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/key/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8230292Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8238219Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-base.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8246469Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-bv.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8256189Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-hybrid.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8282459Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch/keyswitch-rns.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8290188Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/keyswitch/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8299812Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/metadata-ser.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8307459Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/metadata.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8315718Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/openfhe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8323236Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8332416Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8339631Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8347806Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-advancedshe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8355557Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-cryptoparameters.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8365209Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-fhe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8391398Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-leveledshe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8400005Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-multiparty.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8407775Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-parametergeneration.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8417444Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-pke.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8425735Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-pre.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8433495Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-scheme.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8441025Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/bfvrns-ser.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8452086Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-internal.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8460277Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-params.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8468833Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8476372Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8486426Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-advancedshe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8494714Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-cryptoparameters.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8502752Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-fhe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8531246Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-leveledshe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8541329Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-multiparty.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8549067Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-parametergeneration.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8559563Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-pke.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8568858Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-pre.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8579921Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-scheme.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8588196Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/bgvrns-ser.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8596801Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-internal.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8641656Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-params.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8650335Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8658119Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8667209Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-advancedshe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8678202Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-cryptoparameters.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8686776Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-fhe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8716835Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-leveledshe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8725645Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-multiparty.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8736313Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-parametergeneration.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8744364Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-pke.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8752514Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-pre.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8762084Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-scheme.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8772849Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-schemeswitching.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8781871Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-ser.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8790486Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/ckksrns-utils.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8800277Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-internal.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8810892Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-params.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8819459Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8827600Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/ckksrns/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8836204Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/gen-cryptocontext-params-defaults.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8846875Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/gen-cryptocontext-params-validation.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8872890Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/gen-cryptocontext-params.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8882057Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8889240Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/scheme-id.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8899386Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/scheme-swch-params.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8907934Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/scheme/scheme-utils.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8916071Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8924283Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-advancedshe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8935313Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-cryptoparameters.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8944034Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-fhe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8953204Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-leveledshe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8982663Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-multiparty.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.8993454Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-parametergeneration.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9001494Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-pke.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9009482Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-pre.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9017097Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-scheme.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9056525Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/base-ser.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9064291Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/decrypt-result.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9071898Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemebase/rlwe-cryptoparameters.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9079973Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemelet
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9089607Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemelet/rlwe-mp.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9096917Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9126628Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-advancedshe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9137230Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-cryptoparameters.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9148399Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-fhe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9155997Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-leveledshe.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9209639Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-multiparty.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9218317Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-parametergeneration.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9227935Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-pke.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9235851Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-pre.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9243313Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-scheme.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9250779Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/schemerns/rns-ser.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9261713Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9271602Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/BaseTestCase.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9280266Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/schemeswitching-data-serializer.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9290721Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestCCParams.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9318465Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestCryptoContext.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9327048Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestException.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9335782Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestMetadataTest.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9345740Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestMetadataTestSer.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9353567Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestReadCSVData.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9361183Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestSer.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9369582Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/pke/unittest/utils/UnitTestUtils.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9419605Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEbinfhe.dll.a
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9434882Z -- Installing: C:/openfhe-2023-1788/openfhe-install/lib/libOPENFHEbinfhe.dll
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9456074Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9465090Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/binfhe-base-params.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9474896Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/binfhe-base-scheme.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9516813Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/binfhe-constants.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9547971Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/binfhecontext-ser.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9556148Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/binfhecontext.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9566312Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-ciphertext-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9576068Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-ciphertext.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9584087Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-cryptoparameters.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9593647Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-keypair-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9601363Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-keypair.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9609031Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-keyswitchkey-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9654861Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-keyswitchkey.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9662693Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-pke.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9670904Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-privatekey-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9680746Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-privatekey.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9688894Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-publickey-fwd.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9696465Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/lwe-publickey.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9738241Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/README.md
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9748468Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-acc-cggi.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9775079Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-acc-dm.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9818889Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-acc-lmkcdey.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9826835Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-acc.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9836681Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-acckey.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9879581Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-cryptoparameters.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9888364Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rgsw-evalkey.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9898869Z -- Installing: C:/openfhe-2023-1788/openfhe-install/include/openfhe/binfhe/rlwe-ciphertext.h
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9958783Z -- Installing: C:/openfhe-2023-1788/openfhe-install/CMake/OpenFHEConfig.cmake
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9966394Z -- Installing: C:/openfhe-2023-1788/openfhe-install/CMake/OpenFHEConfigVersion.cmake
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:03.9975117Z -- Installing: C:/openfhe-2023-1788/openfhe-install/CMake/OpenFHETargets.cmake
+windows-mingw64	Build and install OpenFHE	2026-09-02T01:04:04.0006413Z -- Installing: C:/openfhe-2023-1788/openfhe-install/CMake/OpenFHETargets-release.cmake
+windows-mingw64	Configure clean-room project	﻿2026-09-02T01:04:04.0229035Z ##[group]Run prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0229544Z ^[[36;1mprefix="$(cygpath -u "$OPENFHE_PREFIX")"^[[0m
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0229877Z ^[[36;1mbuild="$(cygpath -u "$PROJECT_BUILD")"^[[0m
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0230178Z ^[[36;1mcmake -S . -B "$build" \^[[0m
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0230432Z ^[[36;1m  -DCMAKE_BUILD_TYPE=Debug \^[[0m
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0230696Z ^[[36;1m  -DCMAKE_PREFIX_PATH="$prefix"^[[0m
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0232880Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0233166Z env:
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0233413Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0233782Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0234082Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0234353Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0234658Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0235020Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33577480146-1
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0235439Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33577480146-1
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0235746Z   MSYSTEM: MINGW64
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.0235918Z ##[endgroup]
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.3901683Z -- Building for: Ninja
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.3902069Z -- The CXX compiler identification is GNU 16.2.0
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.4360466Z -- Detecting CXX compiler ABI info
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.8212975Z -- Detecting CXX compiler ABI info - done
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.8540381Z -- Check for working CXX compiler: D:/a/_temp/msys64/mingw64/bin/c++.exe - skipped
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.8545004Z -- Detecting CXX compile features
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.8555019Z -- Detecting CXX compile features - done
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.8844051Z -- Configuring done (0.6s)
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.9170955Z -- Generating done (0.0s)
+windows-mingw64	Configure clean-room project	2026-09-02T01:04:04.9196812Z -- Build files have been written to: C:/openfhe-2023-1788/project-build-33577480146-1
+windows-mingw64	Build warning-clean project	﻿2026-09-02T01:04:04.9455603Z ##[group]Run build="$(cygpath -u "$PROJECT_BUILD")"
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9456091Z ^[[36;1mbuild="$(cygpath -u "$PROJECT_BUILD")"^[[0m
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9456422Z ^[[36;1mcmake --build "$build" --parallel 2^[[0m
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9458798Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9459141Z env:
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9459445Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9459870Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9460226Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9460540Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9460899Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9461307Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33577480146-1
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9461787Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33577480146-1
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9462151Z   MSYSTEM: MINGW64
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:04.9462538Z ##[endgroup]
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:14.9669908Z [1/10] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.obj
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:15.0745631Z [2/10] Linking CXX static library libopenfhe_2023_1788.a
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:18.7588639Z [3/10] Building CXX object CMakeFiles/tensor2_api_contract_test.dir/tests/tensor2_api_contract_test.cpp.obj
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:28.0955297Z [4/10] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.obj
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:37.9218787Z [5/10] Building CXX object CMakeFiles/tensor2_test.dir/tests/tensor2_test.cpp.obj
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:38.1561060Z [6/10] Linking CXX executable dcp_rcb_test.exe
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:38.2459851Z [7/10] Linking CXX executable tensor2_api_contract_test.exe
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:38.4703441Z [8/10] Linking CXX executable tensor2_test.exe
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:46.1072639Z [9/10] Building CXX object CMakeFiles/relin2_test.dir/tests/relin2_test.cpp.obj
+windows-mingw64	Build warning-clean project	2026-09-02T01:04:46.3171913Z [10/10] Linking CXX executable relin2_test.exe
+windows-mingw64	Build Relin2 public API contract	﻿2026-09-02T01:04:46.3379557Z ##[group]Run build="$(cygpath -u "$PROJECT_BUILD")"
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3380059Z ^[[36;1mbuild="$(cygpath -u "$PROJECT_BUILD")"^[[0m
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3380483Z ^[[36;1mcmake --build "$build" --target relin2_api_contract_test --parallel 2^[[0m
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3382444Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3382711Z env:
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3382941Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3383295Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3383591Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3383850Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3384148Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3384497Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33577480146-1
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3384891Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33577480146-1
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3385211Z   MSYSTEM: MINGW64
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:46.3385382Z ##[endgroup]
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:49.8026370Z [1/2] Building CXX object CMakeFiles/relin2_api_contract_test.dir/tests/relin2_api_contract_test.cpp.obj
+windows-mingw64	Build Relin2 public API contract	2026-09-02T01:04:49.8891792Z [2/2] Linking CXX executable relin2_api_contract_test.exe
+windows-mingw64	Run clean-room project tests	﻿2026-09-02T01:04:49.9143745Z ##[group]Run prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9144252Z ^[[36;1mprefix="$(cygpath -u "$OPENFHE_PREFIX")"^[[0m
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9144594Z ^[[36;1mbuild="$(cygpath -u "$PROJECT_BUILD")"^[[0m
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9144937Z ^[[36;1mexport PATH="$prefix/bin:$prefix/lib:$PATH"^[[0m
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9145296Z ^[[36;1mctest --test-dir "$build" --output-on-failure^[[0m
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9147845Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9148118Z env:
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9148347Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9148705Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9149015Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9149283Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9149585Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9149935Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33577480146-1
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9150329Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33577480146-1
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9150665Z   MSYSTEM: MINGW64
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:49.9150835Z ##[endgroup]
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.1383918Z Test project C:/openfhe-2023-1788/project-build-33577480146-1
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.1414945Z       Start  1: dcp_rcb
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.2266425Z  1/17 Test  #1: dcp_rcb ...................................   Passed    0.08 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.2294565Z       Start  2: tensor2_valid_arithmetic_immutability
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.2496866Z  2/17 Test  #2: tensor2_valid_arithmetic_immutability .....   Passed    0.02 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.2500838Z       Start  3: tensor2_result_scale_contract
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.2636439Z  3/17 Test  #3: tensor2_result_scale_contract .............   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.2640124Z       Start  4: tensor2_right_input_validation
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.2761789Z  4/17 Test  #4: tensor2_right_input_validation ............   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.2765565Z       Start  5: tensor2_mutual_compatibility
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.2892522Z  5/17 Test  #5: tensor2_mutual_compatibility ..............   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.2896182Z       Start  6: tensor2_prearithmetic_key_compatibility
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3033318Z  6/17 Test  #6: tensor2_prearithmetic_key_compatibility ...   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3037190Z       Start  7: relin2_tensor_validation_order
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3219929Z  7/17 Test  #7: relin2_tensor_validation_order ............   Passed    0.02 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3224987Z       Start  8: relin2_insufficient_active_basis
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3357922Z  8/17 Test  #8: relin2_insufficient_active_basis ..........   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3361819Z       Start  9: relin2_missing_eval_key
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3497410Z  9/17 Test  #9: relin2_missing_eval_key ...................   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3501037Z       Start 10: relin2_key_empty
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3635470Z 10/17 Test #10: relin2_key_empty ..........................   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3639075Z       Start 11: relin2_key_null_first
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3771886Z 11/17 Test #11: relin2_key_null_first .....................   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3775699Z       Start 12: relin2_key_wrong_context
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3931054Z 12/17 Test #12: relin2_key_wrong_context ..................   Passed    0.02 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.3934513Z       Start 13: relin2_key_wrong_tag
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4072225Z 13/17 Test #13: relin2_key_wrong_tag ......................   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4075682Z       Start 14: relin2_key_wrong_subtype
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4215135Z 14/17 Test #14: relin2_key_wrong_subtype ..................   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4218646Z       Start 15: relin2_key_hybrid_a_length
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4357340Z 15/17 Test #15: relin2_key_hybrid_a_length ................   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4360995Z       Start 16: relin2_key_hybrid_b_length
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4500549Z 16/17 Test #16: relin2_key_hybrid_b_length ................   Passed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4504153Z       Start 17: relin2_key_hybrid_entry_basis
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4646426Z 17/17 Test #17: relin2_key_hybrid_entry_basis .............***Failed    0.01 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4647278Z Relin2 test failure: Relin2 HYBRID evaluation-key entry basis threw the wrong exception type: DoubleCKKS: Relin2 is not implemented
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4647803Z 
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4659720Z 
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4660089Z 94% tests passed, 1 tests failed out of 17
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4660476Z 
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4660633Z Total Test time (real) =   0.33 sec
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4660971Z 
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4661118Z The following tests FAILED:
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4685661Z 	 17 - relin2_key_hybrid_entry_basis (Failed)
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4696410Z Errors while running CTest
+windows-mingw64	Run clean-room project tests	2026-09-02T01:04:50.4793873Z ##[error]Process completed with exit code 8.
+windows-mingw64	Complete job	﻿2026-09-02T01:04:50.4891118Z Cleaning up orphan processes
