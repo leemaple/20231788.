@@ -89,3 +89,4 @@ add_test(NAME relin2_key_hybrid_a_length COMMAND relin2_test key_hybrid_a_length
 add_test(NAME relin2_key_hybrid_b_length COMMAND relin2_test key_hybrid_b_length)
 add_test(NAME relin2_key_hybrid_entry_basis COMMAND relin2_test key_hybrid_entry_basis)
 add_test(NAME relin2_key_hybrid_entry_format COMMAND relin2_test key_hybrid_entry_format)
+add_test(NAME relin2_key_bv_zero_digit_a_length COMMAND relin2_test key_bv_zero_digit_a_length)
