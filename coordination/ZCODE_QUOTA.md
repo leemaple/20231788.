@@ -13,15 +13,15 @@ All Windows and other ZCode/Zima sessions use the same BigModel Coding Plan acco
 | 2026-09-01 11:10 | 1% used / 99% remaining | 2026-09-01 16:04 | 98% used / 2% remaining | 2026-09-02 10:00 | 10% used / 90% remaining | 2026-09-25 10:00 | The shared weekly pool is now effectively exhausted. Dispatch no ZCode work before the weekly reset. Keep Windows experiments on GitHub Actions or direct Windows only after the candidate passes the static gate, and reserve the single terminal-only Fable5 substitution for the first exact same-SHA Linux/Windows-green Relin2 review. |
 | 2026-09-01 17:48 | 0% used / 100% remaining | Not displayed | 100% used / 0% remaining | 2026-09-02 10:00 | 10% used / 90% remaining | 2026-09-25 10:00 | The weekly pool is fully exhausted despite a recovered five-hour window. Dispatch no ZCode work before the weekly reset. Continue Codex/ChatGPT Pro review and use GitHub Actions or direct Windows only after the candidate passes static gates. Re-read the official page after 2026-09-02 10:00 before restoring ZCode allocation. |
 | 2026-09-01 19:16 | 0% used / 100% remaining | Not displayed | 39% used / 61% remaining | 2026-09-02 10:00 | 4% used / 96% remaining | 2026-09-25 10:00 | The official page now reports substantial weekly capacity despite the still-displayed 2026-09-02 reset time. Treat the current page as the operational authority without inferring why the counter fell. Restore one critical-path ZCode allocation, but do not create duplicate work: use the preserved Windows session for the first exact Relin2 same-commit review after static acceptance and keep GitHub Actions/direct Windows for builds. Preserve Fable5 for a concrete unresolved three-party dispute. |
+| 2026-09-02 10:03 | 1% used / 99% remaining | 2026-09-02 15:01 | 1% used / 99% remaining | 2026-09-09 10:00 | 10% used / 90% remaining | 2026-09-25 10:00 | The weekly reset is confirmed and ordinary model capacity is usable. Restore one bounded ZCode/Zima review for the next exact, stable Relin2 boundary; keep GitHub Actions as the Windows build gate, never reuse the quarantined old implementation, and do not let a stalled ZCode session block Codex. Difficult unresolved questions still escalate to terminal-only Fable 5.1 with fallback disabled. |
 
 Source page: `https://bigmodel.cn/coding-plan/personal/usage`
 
-Latest read-only check reused agent-owned project task space 53, separate from
-the active ChatGPT Pro task space 85. The official page reported refresh time
-`2026.09.01 19:16`. Its displayed weekly use fell from 100% to 39% before the
-still-displayed reset time; this log records the observed page state and does
-not infer a provider-side cause. The quota tab remains in task space 53 for
-later read-only rechecks and did not touch the active Pro conversation.
+The latest read-only check used isolated Ego Lite task space 102 and the
+official page refresh time `2026.09.02 10:03`. The page showed the new weekly
+reset boundary and the values recorded above. After readback, task space 102
+was closed; no account token, credential, or browser-state data was read or
+retained.
 
 The existing daily 07:00 project-report heartbeat was updated at 2026-08-31 17:24 CST to include a read-only quota snapshot and allocation recommendation. The app permits only one heartbeat on this task, so the active continuous project Goal—not a duplicate automation—owns later rechecks. The latest reading above came from the freshly refreshed official page.
 
@@ -50,3 +50,11 @@ At 2026-09-02, the user changed future fallback escalation from Fable 5 to the
 latest Fable 5.1 and moved the daily PDF/Telegram report from 07:00 to 07:30
 Asia/Shanghai. This supersedes the older prospective model and heartbeat-time
 wording above without changing any historical receipt or quota reading.
+
+At 2026-09-02 10:03 CST, the displayed weekly reset was confirmed: five-hour
+and weekly usage were each 1%. ZCode/Zima therefore returns to the bounded
+collaboration pool for subsequent exact-boundary review, while GitHub Actions
+continues to own reproducible Windows builds. Quota recovery does not authorize
+reuse of the historical Windows implementation and does not turn ZCode into a
+critical-path blocker. Fable 5.1 remains the prompt escalation for a concrete
+hard question that the ordinary reviewers cannot settle.

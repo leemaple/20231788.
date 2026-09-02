@@ -578,3 +578,13 @@ postchecks. Red evidence `06328f8` and green evidence `02ad1ee` passed ZIP,
 manifest, Gitleaks, targeted-scan, identity, and remote-ref gates and are
 pushed. The next isolated red is HYBRID key-entry format; BV shape and all
 Relin2 arithmetic remain deliberately untouched.
+
+At 2026-09-02 10:03 CST, the logged-in official BigModel usage page confirmed
+the shared weekly reset: five-hour and weekly use were each 1%, with resets at
+15:01 and 2026-09-09 10:00; MCP monthly use was 10%, resetting 2026-09-25
+10:00. ZCode/Zima is restored for one bounded subsequent exact-boundary review
+in a fresh Windows clean-room folder, while GitHub Actions remains the Windows
+build/test authority and any stalled ZCode work remains nonblocking. The
+quarantined historical implementation is still forbidden as input. Difficult
+unresolved questions continue to escalate to terminal-only Fable 5.1, not the
+older Fable 5 model.

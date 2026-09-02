@@ -133,3 +133,23 @@ nonblocking.
 The user also moved the daily standalone PDF report and Telegram Saved Messages
 delivery from 07:00 to 07:30 Asia/Shanghai. The project reporting skill and
 automation own the new schedule.
+
+## 2026-09-02 10:03 ZCode quota restoration
+
+The official BigModel page refreshed at 10:03 and reported 1% five-hour use,
+1% weekly use, and 10% MCP monthly use. The next resets displayed were 15:01,
+2026-09-09 10:00, and 2026-09-25 10:00 respectively. Quota is therefore no
+longer the reason to exclude ZCode.
+
+For the next stable Relin2 boundary, one bounded independent Windows
+ZCode/Zima review may be dispatched after the exact source commit and hosted
+Linux/Windows evidence are fixed. It must use a fresh clean-room folder and
+sanitized exact-commit packet, not the historical implementation session or
+its uncommitted changes. GitHub Actions remains the reproducible Windows build
+and CTest authority. A slow or stalled ZCode task stays off the critical path.
+
+The user's new escalation rule remains separate: a concrete difficult question
+that ordinary source review and tests do not resolve is sent promptly to the
+latest Fable 5.1 through Terminal, with fallback disabled and model identity
+verified. Routine boundaries do not spend a Fable escalation merely because
+ZCode quota is available or unavailable.
