@@ -1,6 +1,7 @@
 #include "openfhe_2023_1788/double_ckks.h"
 
 #include <cmath>
+#include <memory>
 #include <stdexcept>
 #include <utility>
 
@@ -28,6 +29,29 @@ bool SameOrderedModuli(const std::vector<lbcrypto::NativeInteger>& left,
     }
     for (std::size_t index = 0; index < left.size(); ++index) {
         if (left[index] != right[index]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool HasCompleteOrderedBasis(
+    const lbcrypto::DCRTPoly& polynomial,
+    const std::shared_ptr<lbcrypto::ILDCRTParams<lbcrypto::BigInteger>>& expectedBasis) {
+    const auto& actualBasis = polynomial.GetParams();
+    if (!actualBasis || !expectedBasis || !(*actualBasis == *expectedBasis)) {
+        return false;
+    }
+
+    const auto& actualTowers = polynomial.GetAllElements();
+    const auto& expectedTowers = expectedBasis->GetParams();
+    if (actualTowers.size() != expectedTowers.size()) {
+        return false;
+    }
+    for (std::size_t index = 0; index < actualTowers.size(); ++index) {
+        const auto& actualTowerBasis = actualTowers[index].GetParams();
+        if (!actualTowerBasis || !expectedTowers[index] ||
+            !(*actualTowerBasis == *expectedTowers[index])) {
             return false;
         }
     }
@@ -588,6 +612,19 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
     if (parameters_->GetKeySwitchTechnique() == lbcrypto::HYBRID &&
         relinearizationKey->GetBVector().size() != static_cast<std::size_t>(parameters_->GetNumPartQ())) {
         Invalid("Relin2 evaluation key HYBRID B vector length mismatch");
+    }
+    if (parameters_->GetKeySwitchTechnique() == lbcrypto::HYBRID) {
+        const auto expectedBasis = parameters_->GetParamsQP();
+        for (const auto& entry : relinearizationKey->GetAVector()) {
+            if (!HasCompleteOrderedBasis(entry, expectedBasis)) {
+                Invalid("Relin2 evaluation key HYBRID entry basis mismatch");
+            }
+        }
+        for (const auto& entry : relinearizationKey->GetBVector()) {
+            if (!HasCompleteOrderedBasis(entry, expectedBasis)) {
+                Invalid("Relin2 evaluation key HYBRID entry basis mismatch");
+            }
+        }
     }
     throw std::logic_error("DoubleCKKS: Relin2 is not implemented");
 }
