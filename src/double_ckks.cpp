@@ -58,6 +58,18 @@ bool HasCompleteOrderedBasis(
     return true;
 }
 
+bool IsInEvaluationFormat(const lbcrypto::DCRTPoly& polynomial) {
+    if (polynomial.GetFormat() != Format::EVALUATION) {
+        return false;
+    }
+    for (const auto& tower : polynomial.GetAllElements()) {
+        if (tower.GetFormat() != Format::EVALUATION) {
+            return false;
+        }
+    }
+    return true;
+}
+
 }  // namespace
 
 CiphertextPair::CiphertextPair(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high,
@@ -623,6 +635,16 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
         for (const auto& entry : relinearizationKey->GetBVector()) {
             if (!HasCompleteOrderedBasis(entry, expectedBasis)) {
                 Invalid("Relin2 evaluation key HYBRID entry basis mismatch");
+            }
+        }
+        for (const auto& entry : relinearizationKey->GetAVector()) {
+            if (!IsInEvaluationFormat(entry)) {
+                Invalid("Relin2 evaluation key HYBRID entry must be in evaluation format");
+            }
+        }
+        for (const auto& entry : relinearizationKey->GetBVector()) {
+            if (!IsInEvaluationFormat(entry)) {
+                Invalid("Relin2 evaluation key HYBRID entry must be in evaluation format");
             }
         }
     }
