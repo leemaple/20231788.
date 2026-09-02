@@ -1,0 +1,16 @@
+target_kind=ANTHROPIC_AUTH_TOKEN
+target_sha256=c4f2c63ed45f372ef62e56b25dc08342a91c9b5cdee491c28c70cc55a6a429bc
+scanned_output_sha256=cecf245ba36ad685b58d0f8d25eaffadc27bd73b3807b8bbd4d12aa7b7abd166
+scanned_stderr_sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+exact_predicate=byte-exact fixed-string occurrence count across raw JSONL plus stderr
+exact_fixed_string_match_count=0
+high_specificity_pattern_count=3
+high_specificity_pattern_1=(?i)authorization\s*:\s*bearer\s+[^\s"\\]+
+high_specificity_pattern_2=(?i)(?:api[_-]?key|access[_-]?token|refresh[_-]?token|auth[_-]?token)\s*[=:]\s*["']?[^\s,"'}]+
+high_specificity_pattern_3=-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----
+high_specificity_total_match_count=0
+scan_implementation=Python 3 bytes count plus re.findall; secret read from ephemeral auth-only settings without printing
+scan_process_exit=0
+replayability=contemporaneous_non_replayable_after_ephemeral_target_deletion
+evidence_role=supplementary_observation_not_acceptance_evidence
+ephemeral_settings_deleted_after_scan=1
