@@ -814,7 +814,11 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
     return result;
 }
 
-CiphertextPair DoubleCKKS::RS2(const CiphertextPair&) const {
+CiphertextPair DoubleCKKS::RS2(const CiphertextPair& relinearized) const {
+    ValidatePair(relinearized);
+    if (relinearized.lifecycle_ != PairLifecycle::ReadyForRS2) {
+        Invalid("RS2 requires ReadyForRS2 input");
+    }
     throw std::logic_error("DoubleCKKS: RS2 is not implemented");
 }
 

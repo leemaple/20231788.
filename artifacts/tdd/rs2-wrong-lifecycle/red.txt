@@ -1,0 +1,64 @@
+RS2 wrong-lifecycle behavior — retained red evidence
+====================================================
+
+Public behavior
+---------------
+
+Calling `RS2` with a real `ReadyForFirstMult` pair produced through public DCP
+must fail before arithmetic with exact `std::invalid_argument` diagnostic
+`DoubleCKKS: RS2 requires ReadyForRS2 input`, leaving both ciphertexts,
+metadata identities/deep values, and every exposed pair manifest field
+unchanged.
+
+Project branch: agent/codex-rs2-01
+Red source commit: caaae521e43fd0d4d461e31a266d0aee352198fd
+Official OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+GitHub Actions run: https://github.com/leemaple/20231788./actions/runs/33816053481
+Workflow conclusion: failure (intentional behavior red)
+
+On both jobs, the warning-clean default build, Relin2 API contract, and RS2 API
+contract completed successfully. CTest then ran 38 registrations: the 37
+inherited tests passed and only the new public behavior failed. The test did
+not accept the arithmetic scaffold.
+
+Linux runner
+------------
+
+Environment: ubuntu-24.04, GCC 13.3.0.
+Command: `ctest --test-dir build --output-on-failure`
+Exit: 8.
+
+    Start 37: relin2_tensor2_requires_first_lifecycle
+    37/38 Test #37: relin2_tensor2_requires_first_lifecycle ......   Passed    0.02 sec
+          Start 38: rs2_wrong_lifecycle
+    38/38 Test #38: rs2_wrong_lifecycle ..........................***Failed    0.01 sec
+    RS2 test failure: RS2 wrong lifecycle threw the wrong exception type: DoubleCKKS: RS2 is not implemented
+
+    97% tests passed, 1 tests failed out of 38
+    Total Test time (real) =   0.52 sec
+
+    The following tests FAILED:
+         38 - rs2_wrong_lifecycle (Failed)
+    Errors while running CTest
+    Error: Process completed with exit code 8.
+
+Windows runner
+--------------
+
+Environment: windows-2022, MSYS2 MinGW64.
+Command: `ctest --test-dir "$build" --output-on-failure`
+Exit: 8.
+
+    Start 37: relin2_tensor2_requires_first_lifecycle
+    37/38 Test #37: relin2_tensor2_requires_first_lifecycle ......   Passed    0.02 sec
+          Start 38: rs2_wrong_lifecycle
+    38/38 Test #38: rs2_wrong_lifecycle ..........................***Failed    0.01 sec
+    RS2 test failure: RS2 wrong lifecycle threw the wrong exception type: DoubleCKKS: RS2 is not implemented
+
+    97% tests passed, 1 tests failed out of 38
+    Total Test time (real) =   0.91 sec
+
+    The following tests FAILED:
+         38 - rs2_wrong_lifecycle (Failed)
+    Errors while running CTest
+    Error: Process completed with exit code 8.
