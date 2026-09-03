@@ -48,6 +48,12 @@ target_link_libraries(tensor2_api_contract_test PRIVATE openfhe_2023_1788)
 add_executable(relin2_api_contract_test EXCLUDE_FROM_ALL tests/relin2_api_contract_test.cpp)
 target_link_libraries(relin2_api_contract_test PRIVATE openfhe_2023_1788)
 
+# Compile-only public API contract. It is intentionally excluded from the
+# default build and is not a CTest entry, so this red-first seam is compiled
+# explicitly by CI before the production API exists.
+add_executable(rs2_api_contract_test EXCLUDE_FROM_ALL tests/rs2_api_contract_test.cpp)
+target_link_libraries(rs2_api_contract_test PRIVATE openfhe_2023_1788)
+
 add_executable(tensor2_test tests/tensor2_test.cpp)
 target_link_libraries(tensor2_test PRIVATE openfhe_2023_1788)
 
@@ -59,6 +65,7 @@ if(MSVC)
     target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
     target_compile_options(tensor2_api_contract_test PRIVATE /W4 /WX)
     target_compile_options(relin2_api_contract_test PRIVATE /W4 /WX)
+    target_compile_options(rs2_api_contract_test PRIVATE /W4 /WX)
     target_compile_options(tensor2_test PRIVATE /W4 /WX)
     target_compile_options(relin2_test PRIVATE /W4 /WX)
 else()
@@ -66,6 +73,7 @@ else()
     target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(tensor2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(relin2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(rs2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(tensor2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(relin2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
