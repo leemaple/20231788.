@@ -122,3 +122,5 @@ add_test(NAME relin2_first_recombined_rcb_validation COMMAND relin2_test first_r
 add_test(NAME relin2_first_recombined_tensor2_validation COMMAND relin2_test first_recombined_tensor2_validation)
 add_test(NAME relin2_tensor2_requires_first_lifecycle COMMAND relin2_test tensor2_requires_first_lifecycle)
 add_test(NAME rs2_wrong_lifecycle COMMAND rs2_test wrong_lifecycle)
+add_test(NAME rs2_valid_arithmetic_state_immutability
+         COMMAND rs2_test valid_arithmetic_state_immutability)
