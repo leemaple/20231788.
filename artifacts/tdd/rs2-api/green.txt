@@ -1,0 +1,52 @@
+RS2 public API contract — retained compile-green evidence
+========================================================
+
+Project branch: agent/codex-rs2-01
+Green source commit: 7629f446517413a3ae65551e7efe51b74fd70f00
+Official OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+GitHub Actions run: https://github.com/leemaple/20231788./actions/runs/33815219310
+Workflow conclusion: success
+
+Observed minimal production change
+----------------------------------
+
+- Added terminal enum value `PairLifecycle::RefreshRequired`.
+- Added exact public signature
+  `CiphertextPair DoubleCKKS::RS2(const CiphertextPair&) const`.
+- Added a linkable body that throws the explicit terminal scaffold
+  `DoubleCKKS: RS2 is not implemented`.
+
+No RS2 validation, arithmetic, rescale, result state, or precision behavior is
+claimed by this compile-level green.
+
+Linux runner
+------------
+
+Environment: ubuntu-24.04, GCC 13.3.0, CMake 3.31.6.
+
+    cmake --build build --parallel 2
+    # success with warning flags including -Wall -Wextra -Wpedantic -Werror
+
+    cmake --build build --target rs2_api_contract_test --parallel 2
+    [ 50%] Built target openfhe_2023_1788
+    [100%] Built target rs2_api_contract_test
+
+    ctest --test-dir build --output-on-failure
+    100% tests passed, 0 tests failed out of 37
+    Total Test time (real) = 0.45 sec
+
+Windows runner
+--------------
+
+Environment: windows-2022, MSYS2 MinGW64, C++17 warning flags including
+`-Wall -Wextra -Wpedantic -Werror`.
+
+    cmake --build "$build" --parallel 2
+    # success
+
+    cmake --build "$build" --target rs2_api_contract_test --parallel 2
+    # success
+
+    ctest --test-dir "$build" --output-on-failure
+    100% tests passed out of 37
+    Total Test time (real) = 0.80 sec
