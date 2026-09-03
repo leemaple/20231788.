@@ -18,6 +18,7 @@ using ReadOnlyCiphertext = std::shared_ptr<const lbcrypto::CiphertextImpl<lbcryp
 enum class PairLifecycle : std::uint8_t {
     ReadyForFirstMult,
     ReadyForRS2,
+    RefreshRequired,
 };
 
 struct PaperScaleDescriptor final {
@@ -142,6 +143,7 @@ public:
     CiphertextPair DCP(const ReadOnlyCiphertext& ciphertext) const;
     TensorCiphertextPair Tensor2(const CiphertextPair& left, const CiphertextPair& right) const;
     CiphertextPair Relin2(const TensorCiphertextPair& tensor) const;
+    CiphertextPair RS2(const CiphertextPair& relinearized) const;
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> RCB(const CiphertextPair& pair) const;
 
 private:

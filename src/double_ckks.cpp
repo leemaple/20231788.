@@ -814,6 +814,10 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
     return result;
 }
 
+CiphertextPair DoubleCKKS::RS2(const CiphertextPair&) const {
+    throw std::logic_error("DoubleCKKS: RS2 is not implemented");
+}
+
 lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {
     ValidatePair(pair);
 
