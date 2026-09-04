@@ -90,3 +90,31 @@ No Mac OpenFHE/project build, crypto or benchmark occurred. Full paper repeated
 eight-square40/60/h128 experiment, usable client precision I/O and statistics/
 performance/security remain open. Repeated Mult2 Pro and Pair external review
 continue in their own tasks; neither was stopped, refreshed or resubmitted.
+
+## Actual post-merge acceptance
+The previously pending gate is now OBSERVED GREEN for exact merge
+23a5f3a5455134ecb617f7332937b6ef10c93e1b, run33880254416 attempt1.
+Linux101046903332: focused1/1 in0.34s, full55/55 in1.25s.
+Windows101046903472: focused1/1 in0.23s, full55/55 in2.49s.
+Both default warning-clean builds and all five explicit API targets succeed.
+These are actual new combined-source results, not the source-branch results.
+
+The independent hosted audit is INTEGRATION_PRECISION_HOSTED_AUDIT.md;
+its four log/JSON payload sizes and SHA256 values were separately recomputed
+by the main agent. The main agent also refetched the GitHub run/jobs, checked
+the exact commit/attempt/terminal success, matched all55 actual ordered test
+names to frozen CMake on each host, and independently parsed all16 first-Mult2
+slot/delta decimal records as BigInt rationals. Every record satisfies<=2^-80
+and its actual q_div*q_l equals the printed exact scale denominator.
+Eight precursor observations were not counted as first-Mult2 samples.
+The independent auditor separately recomputed all four new fixed-key BV
+certificates and eight ordinary execution certificates; its exact scope and
+retained outputs are in the audit. This paragraph does not claim the main
+agent re-executed that entire BV arithmetic audit or any cryptographic test.
+
+Worst observed slot error1.4088305861352399284724768998723593326671e-27;
+worst product-delta error8.3694990687530140705216742335760923715162e-28.
+The unchanged N64 functional/high-precision scope is accepted after merge.
+All full-paper, repeated-operation, shipping-I/O and deferred guard limits
+above remain open. Only evidence/this receipt were added after the tested
+merge; no source, test, threshold, CI setting or Mac build was changed.

@@ -1,0 +1,641 @@
+2026-09-04T13:50:32.1270143Z ##[group]Run cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+2026-09-04T13:50:32.1270835Z cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+2026-09-04T13:50:32.1307359Z shell: /usr/bin/bash -e {0}
+2026-09-04T13:50:32.1307613Z env:
+2026-09-04T13:50:32.1307886Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T13:50:32.1308338Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T13:50:32.1308729Z ##[endgroup]
+2026-09-04T13:50:32.3187723Z -- The CXX compiler identification is GNU 13.3.0
+2026-09-04T13:50:32.3410956Z -- Detecting CXX compiler ABI info
+2026-09-04T13:50:32.4394092Z -- Detecting CXX compiler ABI info - done
+2026-09-04T13:50:32.4569266Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2026-09-04T13:50:32.4576743Z -- Detecting CXX compile features
+2026-09-04T13:50:32.4586166Z -- Detecting CXX compile features - done
+2026-09-04T13:50:32.4706751Z -- Configuring done (0.3s)
+2026-09-04T13:50:32.5004594Z -- Generating done (0.0s)
+2026-09-04T13:50:32.5007623Z -- Build files have been written to: /home/runner/work/20231788./20231788./build
+2026-09-04T13:50:32.5068675Z ##[group]Run test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+2026-09-04T13:50:32.5069112Z test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+2026-09-04T13:50:32.5069753Z printf 'PROJECT_SOURCE_COMMIT=%s GITHUB_RUN_ID=%s GITHUB_RUN_ATTEMPT=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+2026-09-04T13:50:32.5104914Z shell: /usr/bin/bash -e {0}
+2026-09-04T13:50:32.5105170Z env:
+2026-09-04T13:50:32.5105444Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T13:50:32.5105936Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T13:50:32.5106317Z ##[endgroup]
+2026-09-04T13:50:32.5174717Z PROJECT_SOURCE_COMMIT=23a5f3a5455134ecb617f7332937b6ef10c93e1b GITHUB_RUN_ID=33880254416 GITHUB_RUN_ATTEMPT=1
+2026-09-04T13:50:32.5199848Z ##[group]Run cmake --build build --parallel 2
+2026-09-04T13:50:32.5200215Z cmake --build build --parallel 2
+2026-09-04T13:50:32.5231923Z shell: /usr/bin/bash -e {0}
+2026-09-04T13:50:32.5232187Z env:
+2026-09-04T13:50:32.5232450Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T13:50:32.5233223Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T13:50:32.5233613Z ##[endgroup]
+2026-09-04T13:50:32.5434996Z [  3%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+2026-09-04T13:50:40.1432176Z [  7%] Linking CXX static library libopenfhe_2023_1788.a
+2026-09-04T13:50:40.8918349Z [  7%] Built target openfhe_2023_1788
+2026-09-04T13:50:40.8987880Z [ 10%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+2026-09-04T13:50:40.8989723Z [ 14%] Building CXX object CMakeFiles/tensor2_api_contract_test.dir/tests/tensor2_api_contract_test.cpp.o
+2026-09-04T13:50:43.4721817Z [ 17%] Linking CXX executable tensor2_api_contract_test
+2026-09-04T13:50:43.5622412Z [ 17%] Built target tensor2_api_contract_test
+2026-09-04T13:50:43.5691510Z [ 21%] Building CXX object CMakeFiles/pair_add_test.dir/tests/pair_add_test.cpp.o
+2026-09-04T13:50:51.2089044Z [ 25%] Linking CXX executable pair_add_test
+2026-09-04T13:50:51.3171700Z [ 25%] Built target pair_add_test
+2026-09-04T13:50:51.3240583Z [ 28%] Building CXX object CMakeFiles/pair_sub_test.dir/tests/pair_sub_test.cpp.o
+2026-09-04T13:50:55.6936283Z [ 32%] Linking CXX executable dcp_rcb_test
+2026-09-04T13:50:55.8148535Z [ 32%] Built target dcp_rcb_test
+2026-09-04T13:50:55.8219394Z [ 35%] Building CXX object CMakeFiles/pair_arithmetic_test.dir/tests/pair_arithmetic_test.cpp.o
+2026-09-04T13:50:58.9128093Z [ 39%] Linking CXX executable pair_sub_test
+2026-09-04T13:50:59.0194979Z [ 39%] Built target pair_sub_test
+2026-09-04T13:50:59.0264448Z [ 42%] Building CXX object CMakeFiles/tensor2_test.dir/tests/tensor2_test.cpp.o
+2026-09-04T13:51:10.4985578Z [ 46%] Linking CXX executable pair_arithmetic_test
+2026-09-04T13:51:10.6230705Z [ 46%] Built target pair_arithmetic_test
+2026-09-04T13:51:10.6299562Z [ 50%] Building CXX object CMakeFiles/relin2_test.dir/tests/relin2_test.cpp.o
+2026-09-04T13:51:11.3515374Z [ 53%] Linking CXX executable tensor2_test
+2026-09-04T13:51:11.4639803Z [ 53%] Built target tensor2_test
+2026-09-04T13:51:11.4709668Z [ 57%] Building CXX object CMakeFiles/rs2_test.dir/tests/rs2_test.cpp.o
+2026-09-04T13:51:25.1783191Z [ 60%] Linking CXX executable rs2_test
+2026-09-04T13:51:25.2992072Z [ 60%] Built target rs2_test
+2026-09-04T13:51:25.3061709Z [ 64%] Building CXX object CMakeFiles/mult2_test.dir/tests/mult2_test.cpp.o
+2026-09-04T13:51:32.9088862Z [ 67%] Linking CXX executable mult2_test
+2026-09-04T13:51:33.0172283Z [ 67%] Built target mult2_test
+2026-09-04T13:51:33.0254228Z [ 71%] Building CXX object CMakeFiles/mult2_e2e_oracle_test.dir/tests/mult2_e2e_oracle_test.cpp.o
+2026-09-04T13:51:35.7135183Z [ 75%] Linking CXX executable relin2_test
+2026-09-04T13:51:35.8515029Z [ 75%] Built target relin2_test
+2026-09-04T13:51:35.8594356Z [ 78%] Building CXX object CMakeFiles/precision_dcp_rcb_contract_test.dir/tests/precision_dcp_rcb_contract_test.cpp.o
+2026-09-04T13:51:47.5587477Z [ 82%] Linking CXX executable mult2_e2e_oracle_test
+2026-09-04T13:51:47.6781442Z [ 82%] Built target mult2_e2e_oracle_test
+2026-09-04T13:51:47.6851432Z [ 85%] Building CXX object CMakeFiles/precision_first_mult2_contract_test.dir/tests/precision_first_mult2_contract_test.cpp.o
+2026-09-04T13:51:51.9105480Z [ 89%] Building CXX object CMakeFiles/precision_dcp_rcb_contract_test.dir/tests/precision_dcp_rcb_fixture.cpp.o
+2026-09-04T13:52:04.0845921Z [ 92%] Linking CXX executable precision_dcp_rcb_contract_test
+2026-09-04T13:52:04.2229792Z [ 92%] Built target precision_dcp_rcb_contract_test
+2026-09-04T13:52:04.2252130Z [ 96%] Building CXX object CMakeFiles/precision_first_mult2_contract_test.dir/tests/precision_dcp_rcb_fixture.cpp.o
+2026-09-04T13:52:16.0163833Z [100%] Linking CXX executable precision_first_mult2_contract_test
+2026-09-04T13:52:16.1561091Z [100%] Built target precision_first_mult2_contract_test
+2026-09-04T13:52:16.1644935Z ##[group]Run cmake --build build --target relin2_api_contract_test --parallel 2
+2026-09-04T13:52:16.1645955Z cmake --build build --target relin2_api_contract_test --parallel 2
+2026-09-04T13:52:16.1687791Z shell: /usr/bin/bash -e {0}
+2026-09-04T13:52:16.1688048Z env:
+2026-09-04T13:52:16.1688324Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T13:52:16.1688774Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T13:52:16.1689159Z ##[endgroup]
+2026-09-04T13:52:16.2007191Z [ 50%] Built target openfhe_2023_1788
+2026-09-04T13:52:16.2073083Z [ 75%] Building CXX object CMakeFiles/relin2_api_contract_test.dir/tests/relin2_api_contract_test.cpp.o
+2026-09-04T13:52:18.6760838Z [100%] Linking CXX executable relin2_api_contract_test
+2026-09-04T13:52:18.7367199Z [100%] Built target relin2_api_contract_test
+2026-09-04T13:52:18.7443586Z ##[group]Run cmake --build build --target rs2_api_contract_test --parallel 2
+2026-09-04T13:52:18.7444579Z cmake --build build --target rs2_api_contract_test --parallel 2
+2026-09-04T13:52:18.7497760Z shell: /usr/bin/bash -e {0}
+2026-09-04T13:52:18.7498186Z env:
+2026-09-04T13:52:18.7498642Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T13:52:18.7499418Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T13:52:18.7500148Z ##[endgroup]
+2026-09-04T13:52:18.7802672Z [ 50%] Built target openfhe_2023_1788
+2026-09-04T13:52:18.7869588Z [ 75%] Building CXX object CMakeFiles/rs2_api_contract_test.dir/tests/rs2_api_contract_test.cpp.o
+2026-09-04T13:52:21.2407108Z [100%] Linking CXX executable rs2_api_contract_test
+2026-09-04T13:52:21.3011287Z [100%] Built target rs2_api_contract_test
+2026-09-04T13:52:21.3073493Z ##[group]Run cmake --build build --target precision_first_mult2_contract_test --parallel 2
+2026-09-04T13:52:21.3074190Z cmake --build build --target precision_first_mult2_contract_test --parallel 2
+2026-09-04T13:52:21.3074893Z ctest --test-dir build --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
+2026-09-04T13:52:21.3110560Z shell: /usr/bin/bash -e {0}
+2026-09-04T13:52:21.3110811Z env:
+2026-09-04T13:52:21.3111072Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T13:52:21.3111517Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T13:52:21.3111897Z ##[endgroup]
+2026-09-04T13:52:21.3395187Z [ 40%] Built target openfhe_2023_1788
+2026-09-04T13:52:21.3655115Z [100%] Built target precision_first_mult2_contract_test
+2026-09-04T13:52:22.2644237Z Internal ctest changing into directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:22.2645682Z UpdateCTestConfiguration  from :/home/runner/work/20231788./20231788./build/DartConfiguration.tcl
+2026-09-04T13:52:22.3714282Z UpdateCTestConfiguration  from :/home/runner/work/20231788./20231788./build/DartConfiguration.tcl
+2026-09-04T13:52:22.3767165Z Test project /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:22.3772689Z Constructing a list of tests
+2026-09-04T13:52:22.4113372Z Done constructing a list of tests
+2026-09-04T13:52:22.4114100Z Updating test list for fixtures
+2026-09-04T13:52:22.4114610Z Added 0 tests to meet fixture requirements
+2026-09-04T13:52:22.4902240Z Checking test dependency graph...
+2026-09-04T13:52:22.4903298Z Checking test dependency graph end
+2026-09-04T13:52:22.5093233Z test 3
+2026-09-04T13:52:22.5094138Z     Start 3: precision_first_mult2_high_precision_contract
+2026-09-04T13:52:22.5094514Z
+2026-09-04T13:52:22.5094904Z 3: Test command: /home/runner/work/20231788./20231788./build/precision_first_mult2_contract_test
+2026-09-04T13:52:22.5095678Z 3: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:22.5165820Z 3: Test timeout computed to be: 10000000
+2026-09-04T13:52:22.6820474Z 3: test=precision_first_mult2_high_precision_contract trial=0 claim_scope=first-Mult2-diagnostic-only security_level=HEStd_NotSet(diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 input_scale_numerator=2^100 final_logical_scale_numerator=2^200 final_logical_scale_denominator=1267650600226646386227681786497 q_div=1125899906843009 q_l=1125899906840833 input_product_centered_headroom_bits=160 output_centered_headroom_bits=210 coefficient_error_numerator=175447876885670583728960403717690 coefficient_error_denominator=1267650600226646386227681786497 frozen_abs_tolerance=2^-80 product_delta_error=4.4016287932359729554264695625914003275127e-28 max_slot_error=7.6005375173294334991758280937053788051502e-28
+2026-09-04T13:52:22.6825984Z 3: test=precision_first_mult2_high_precision_contract trial=1 claim_scope=first-Mult2-diagnostic-only security_level=HEStd_NotSet(diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 input_scale_numerator=2^100 final_logical_scale_numerator=2^200 final_logical_scale_denominator=1267650600226646386227681786497 q_div=1125899906843009 q_l=1125899906840833 input_product_centered_headroom_bits=160 output_centered_headroom_bits=210 coefficient_error_numerator=106999097998503335004014623268480 coefficient_error_denominator=1267650600226646386227681786497 frozen_abs_tolerance=2^-80 product_delta_error=4.0404830357717233411520312802920470754788e-28 max_slot_error=5.8431626150534080235527217357684690344979e-28
+2026-09-04T13:52:22.6831327Z 3: test=precision_first_mult2_high_precision_contract trial=2 claim_scope=first-Mult2-diagnostic-only security_level=HEStd_NotSet(diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 input_scale_numerator=2^100 final_logical_scale_numerator=2^200 final_logical_scale_denominator=1267650600226646386227681786497 q_div=1125899906843009 q_l=1125899906840833 input_product_centered_headroom_bits=160 output_centered_headroom_bits=210 coefficient_error_numerator=167333259113727863962311420439503 coefficient_error_denominator=1267650600226646386227681786497 frozen_abs_tolerance=2^-80 product_delta_error=1.7412282910009173512204025603905106296975e-28 max_slot_error=1.4088305861352399284724768998723593326671e-27
+2026-09-04T13:52:22.6836629Z 3: test=precision_first_mult2_high_precision_contract trial=3 claim_scope=first-Mult2-diagnostic-only security_level=HEStd_NotSet(diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 input_scale_numerator=2^100 final_logical_scale_numerator=2^200 final_logical_scale_denominator=1267650600226646386227681786497 q_div=1125899906843009 q_l=1125899906840833 input_product_centered_headroom_bits=160 output_centered_headroom_bits=210 coefficient_error_numerator=86964126130005638662604860665145 coefficient_error_denominator=1267650600226646386227681786497 frozen_abs_tolerance=2^-80 product_delta_error=1.6167162235650635588376162389464231524792e-28 max_slot_error=3.3509118104797438512410670243042612067500e-28
+2026-09-04T13:52:22.6839370Z 3: precision_first_mult2_high_precision_contract=PASS
+2026-09-04T13:52:22.6839830Z 1/1 Test #3: precision_first_mult2_high_precision_contract ...   Passed    0.17 sec
+2026-09-04T13:52:22.7175965Z
+2026-09-04T13:52:22.7176372Z The following tests passed:
+2026-09-04T13:52:22.7176867Z 	precision_first_mult2_high_precision_contract
+2026-09-04T13:52:22.7177142Z
+2026-09-04T13:52:22.7177277Z 100% tests passed, 0 tests failed out of 1
+2026-09-04T13:52:22.7177519Z
+2026-09-04T13:52:22.7177638Z Total Test time (real) =   0.34 sec
+2026-09-04T13:52:22.7736627Z ##[group]Run ctest --test-dir build --verbose --output-on-failure
+2026-09-04T13:52:22.7737163Z ctest --test-dir build --verbose --output-on-failure
+2026-09-04T13:52:22.7772462Z shell: /usr/bin/bash -e {0}
+2026-09-04T13:52:22.7772712Z env:
+2026-09-04T13:52:22.7773338Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T13:52:22.7773782Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T13:52:22.7774157Z ##[endgroup]
+2026-09-04T13:52:22.7841310Z Internal ctest changing into directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:22.7842398Z UpdateCTestConfiguration  from :/home/runner/work/20231788./20231788./build/DartConfiguration.tcl
+2026-09-04T13:52:22.7843842Z UpdateCTestConfiguration  from :/home/runner/work/20231788./20231788./build/DartConfiguration.tcl
+2026-09-04T13:52:22.7844780Z Test project /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:22.7845365Z Constructing a list of tests
+2026-09-04T13:52:22.7854032Z Done constructing a list of tests
+2026-09-04T13:52:22.7854531Z Updating test list for fixtures
+2026-09-04T13:52:22.7855007Z Added 0 tests to meet fixture requirements
+2026-09-04T13:52:22.7855976Z Checking test dependency graph...
+2026-09-04T13:52:22.7856456Z Checking test dependency graph end
+2026-09-04T13:52:22.7856874Z test 1
+2026-09-04T13:52:22.7857186Z       Start  1: dcp_rcb
+2026-09-04T13:52:22.7857415Z
+2026-09-04T13:52:22.7857729Z 1: Test command: /home/runner/work/20231788./20231788./build/dcp_rcb_test
+2026-09-04T13:52:22.7858400Z 1: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:22.7858763Z 1: Test timeout computed to be: 10000000
+2026-09-04T13:52:22.8051913Z 1: DCP/RCB independent-oracle tests passed
+2026-09-04T13:52:22.8056406Z  1/55 Test  #1: dcp_rcb .........................................   Passed    0.02 sec
+2026-09-04T13:52:22.8058575Z test 2
+2026-09-04T13:52:22.8059062Z       Start  2: precision_dcp_rcb_high_precision_contract
+2026-09-04T13:52:22.8059490Z
+2026-09-04T13:52:22.8059970Z 2: Test command: /home/runner/work/20231788./20231788./build/precision_dcp_rcb_contract_test
+2026-09-04T13:52:22.8060619Z 2: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:22.8061006Z 2: Test timeout computed to be: 10000000
+2026-09-04T13:52:22.8609240Z 2: test=precision_dcp_rcb_high_precision_contract trial=0 security_level=HEStd_NotSet(functional-diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 scale_bits=100 q_div=1125899906843009 active_modulus_bits=356 maximum_coefficient_bits=98 approximate_headroom_bits=258 delta_error=1.8270135583820509679195770026949196988758e-28 max_slot_error=2.9861103301650242328120284749996805980829e-28
+2026-09-04T13:52:22.8614175Z 2: test=precision_dcp_rcb_high_precision_contract trial=1 security_level=HEStd_NotSet(functional-diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 scale_bits=100 q_div=1125899906843009 active_modulus_bits=356 maximum_coefficient_bits=98 approximate_headroom_bits=258 delta_error=2.4299491530571554845555354554359533688378e-28 max_slot_error=4.1543734544947894107016076143925018743709e-28
+2026-09-04T13:52:22.8617462Z 2: test=precision_dcp_rcb_high_precision_contract trial=2 security_level=HEStd_NotSet(functional-diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 scale_bits=100 q_div=1125899906843009 active_modulus_bits=356 maximum_coefficient_bits=98 approximate_headroom_bits=258 delta_error=7.7649716569557179760104376502995950038503e-29 max_slot_error=3.2525917544085292605465955282344694770602e-28
+2026-09-04T13:52:22.8620646Z 2: test=precision_dcp_rcb_high_precision_contract trial=3 security_level=HEStd_NotSet(functional-diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 scale_bits=100 q_div=1125899906843009 active_modulus_bits=356 maximum_coefficient_bits=98 approximate_headroom_bits=258 delta_error=1.7626536537512861662800518514547356162605e-28 max_slot_error=5.1308316892823673556969749687473074071754e-28
+2026-09-04T13:52:22.8622333Z 2: precision_dcp_rcb_high_precision_contract=PASS
+2026-09-04T13:52:22.8623172Z  2/55 Test  #2: precision_dcp_rcb_high_precision_contract .......   Passed    0.06 sec
+2026-09-04T13:52:22.8623587Z test 3
+2026-09-04T13:52:22.8623844Z       Start  3: precision_first_mult2_high_precision_contract
+2026-09-04T13:52:22.8624096Z
+2026-09-04T13:52:22.8624372Z 3: Test command: /home/runner/work/20231788./20231788./build/precision_first_mult2_contract_test
+2026-09-04T13:52:22.8624895Z 3: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:22.8625246Z 3: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.0346026Z 3: test=precision_first_mult2_high_precision_contract trial=0 claim_scope=first-Mult2-diagnostic-only security_level=HEStd_NotSet(diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 input_scale_numerator=2^100 final_logical_scale_numerator=2^200 final_logical_scale_denominator=1267650600226646386227681786497 q_div=1125899906843009 q_l=1125899906840833 input_product_centered_headroom_bits=160 output_centered_headroom_bits=210 coefficient_error_numerator=138064477153872882148486990044224 coefficient_error_denominator=1267650600226646386227681786497 frozen_abs_tolerance=2^-80 product_delta_error=7.6834072114498857693063111697656943217661e-29 max_slot_error=3.2818705874514137893603103376161374495232e-28
+2026-09-04T13:52:23.0352567Z 3: test=precision_first_mult2_high_precision_contract trial=1 claim_scope=first-Mult2-diagnostic-only security_level=HEStd_NotSet(diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 input_scale_numerator=2^100 final_logical_scale_numerator=2^200 final_logical_scale_denominator=1267650600226646386227681786497 q_div=1125899906843009 q_l=1125899906840833 input_product_centered_headroom_bits=160 output_centered_headroom_bits=210 coefficient_error_numerator=102251744165091950634009429133603 coefficient_error_denominator=1267650600226646386227681786497 frozen_abs_tolerance=2^-80 product_delta_error=5.2674108157122415387359884423659699469153e-29 max_slot_error=6.5397881599300125224563620720677851753128e-28
+2026-09-04T13:52:23.0357948Z 3: test=precision_first_mult2_high_precision_contract trial=2 claim_scope=first-Mult2-diagnostic-only security_level=HEStd_NotSet(diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 input_scale_numerator=2^100 final_logical_scale_numerator=2^200 final_logical_scale_denominator=1267650600226646386227681786497 q_div=1125899906843009 q_l=1125899906840833 input_product_centered_headroom_bits=160 output_centered_headroom_bits=210 coefficient_error_numerator=151039067956076450504382138202893 coefficient_error_denominator=1267650600226646386227681786497 frozen_abs_tolerance=2^-80 product_delta_error=8.3694990687530140705216742335760923715162e-28 max_slot_error=8.2492096097533011681644552125018785126643e-28
+2026-09-04T13:52:23.0363181Z 3: test=precision_first_mult2_high_precision_contract trial=3 claim_scope=first-Mult2-diagnostic-only security_level=HEStd_NotSet(diagnostic-only) key_switch=HYBRID ckks_data_type=COMPLEX N=64 batch=16 depth=7 scaling_mod_size=50 first_mod_size=55 input_scale_numerator=2^100 final_logical_scale_numerator=2^200 final_logical_scale_denominator=1267650600226646386227681786497 q_div=1125899906843009 q_l=1125899906840833 input_product_centered_headroom_bits=160 output_centered_headroom_bits=210 coefficient_error_numerator=119741245404360386832977827083754 coefficient_error_denominator=1267650600226646386227681786497 frozen_abs_tolerance=2^-80 product_delta_error=4.7812711415383217687952390266656858032140e-28 max_slot_error=5.4442720953236657502135143408641839430640e-28
+2026-09-04T13:52:23.0366132Z 3: precision_first_mult2_high_precision_contract=PASS
+2026-09-04T13:52:23.0366629Z  3/55 Test  #3: precision_first_mult2_high_precision_contract ...   Passed    0.17 sec
+2026-09-04T13:52:23.0367036Z test 4
+2026-09-04T13:52:23.0367240Z       Start  4: pair_add_runtime_behavior
+2026-09-04T13:52:23.0367567Z
+2026-09-04T13:52:23.0367754Z 4: Test command: /home/runner/work/20231788./20231788./build/pair_add_test
+2026-09-04T13:52:23.0368216Z 4: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.0368578Z 4: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.0397992Z 4: pair Add runtime behavior passed
+2026-09-04T13:52:23.0401866Z  4/55 Test  #4: pair_add_runtime_behavior .......................   Passed    0.00 sec
+2026-09-04T13:52:23.0403317Z test 5
+2026-09-04T13:52:23.0403671Z       Start  5: pair_sub_runtime_behavior
+2026-09-04T13:52:23.0404154Z
+2026-09-04T13:52:23.0404468Z 5: Test command: /home/runner/work/20231788./20231788./build/pair_sub_test
+2026-09-04T13:52:23.0405087Z 5: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.0405465Z 5: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.0445665Z 5: pair Sub runtime behavior passed
+2026-09-04T13:52:23.0449535Z  5/55 Test  #5: pair_sub_runtime_behavior .......................   Passed    0.00 sec
+2026-09-04T13:52:23.0450868Z test 6
+2026-09-04T13:52:23.0451260Z       Start  6: pair_arithmetic_controlled_oracle
+2026-09-04T13:52:23.0451631Z
+2026-09-04T13:52:23.0452140Z 6: Test command: /home/runner/work/20231788./20231788./build/pair_arithmetic_test "controlled_oracle"
+2026-09-04T13:52:23.0453031Z 6: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.0453410Z 6: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.0890225Z 6: pair-arithmetic case passed: controlled_oracle
+2026-09-04T13:52:23.0894423Z  6/55 Test  #6: pair_arithmetic_controlled_oracle ...............   Passed    0.04 sec
+2026-09-04T13:52:23.0895833Z test 7
+2026-09-04T13:52:23.0896296Z       Start  7: pair_arithmetic_public_lifecycles_keyless
+2026-09-04T13:52:23.0896712Z
+2026-09-04T13:52:23.0897310Z 7: Test command: /home/runner/work/20231788./20231788./build/pair_arithmetic_test "public_lifecycles_keyless"
+2026-09-04T13:52:23.0898363Z 7: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.0898983Z 7: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.1404553Z 7: pair-arithmetic case passed: public_lifecycles_keyless
+2026-09-04T13:52:23.1409038Z  7/55 Test  #7: pair_arithmetic_public_lifecycles_keyless .......   Passed    0.05 sec
+2026-09-04T13:52:23.1410712Z test 8
+2026-09-04T13:52:23.1411312Z       Start  8: pair_arithmetic_compatibility_rejections
+2026-09-04T13:52:23.1411573Z
+2026-09-04T13:52:23.1411943Z 8: Test command: /home/runner/work/20231788./20231788./build/pair_arithmetic_test "compatibility_rejections"
+2026-09-04T13:52:23.1413239Z 8: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.1413891Z 8: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.1598197Z 8: pair-arithmetic case passed: compatibility_rejections
+2026-09-04T13:52:23.1601926Z  8/55 Test  #8: pair_arithmetic_compatibility_rejections ........   Passed    0.02 sec
+2026-09-04T13:52:23.1603649Z test 9
+2026-09-04T13:52:23.1604066Z       Start  9: tensor2_valid_arithmetic_immutability
+2026-09-04T13:52:23.1604310Z
+2026-09-04T13:52:23.1604648Z 9: Test command: /home/runner/work/20231788./20231788./build/tensor2_test "valid_arithmetic_immutability"
+2026-09-04T13:52:23.1605285Z 9: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.1605654Z 9: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.1677225Z 9: Tensor2 case passed: valid_arithmetic_immutability
+2026-09-04T13:52:23.1680652Z  9/55 Test  #9: tensor2_valid_arithmetic_immutability ...........   Passed    0.01 sec
+2026-09-04T13:52:23.1682068Z test 10
+2026-09-04T13:52:23.1682470Z       Start 10: tensor2_result_scale_contract
+2026-09-04T13:52:23.1683063Z
+2026-09-04T13:52:23.1683830Z 10: Test command: /home/runner/work/20231788./20231788./build/tensor2_test "result_scale_contract"
+2026-09-04T13:52:23.1684804Z 10: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.1685453Z 10: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.1723746Z 10: Tensor2 case passed: result_scale_contract
+2026-09-04T13:52:23.1727610Z 10/55 Test #10: tensor2_result_scale_contract ...................   Passed    0.00 sec
+2026-09-04T13:52:23.1729252Z test 11
+2026-09-04T13:52:23.1729699Z       Start 11: tensor2_right_input_validation
+2026-09-04T13:52:23.1730136Z
+2026-09-04T13:52:23.1730789Z 11: Test command: /home/runner/work/20231788./20231788./build/tensor2_test "right_input_validation"
+2026-09-04T13:52:23.1731571Z 11: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.1732020Z 11: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.1768791Z 11: Tensor2 case passed: right_input_validation
+2026-09-04T13:52:23.1772609Z 11/55 Test #11: tensor2_right_input_validation ..................   Passed    0.00 sec
+2026-09-04T13:52:23.1774280Z test 12
+2026-09-04T13:52:23.1774681Z       Start 12: tensor2_mutual_compatibility
+2026-09-04T13:52:23.1775043Z
+2026-09-04T13:52:23.1775574Z 12: Test command: /home/runner/work/20231788./20231788./build/tensor2_test "mutual_compatibility"
+2026-09-04T13:52:23.1776349Z 12: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.1776716Z 12: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.1814778Z 12: Tensor2 case passed: mutual_compatibility
+2026-09-04T13:52:23.1818287Z 12/55 Test #12: tensor2_mutual_compatibility ....................   Passed    0.00 sec
+2026-09-04T13:52:23.1820021Z test 13
+2026-09-04T13:52:23.1820461Z       Start 13: tensor2_prearithmetic_key_compatibility
+2026-09-04T13:52:23.1820734Z
+2026-09-04T13:52:23.1821065Z 13: Test command: /home/runner/work/20231788./20231788./build/tensor2_test "prearithmetic_key_compatibility"
+2026-09-04T13:52:23.1822068Z 13: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.1822695Z 13: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.1861776Z 13: Tensor2 case passed: prearithmetic_key_compatibility
+2026-09-04T13:52:23.1866056Z 13/55 Test #13: tensor2_prearithmetic_key_compatibility .........   Passed    0.00 sec
+2026-09-04T13:52:23.1867327Z test 14
+2026-09-04T13:52:23.1867713Z       Start 14: relin2_tensor_validation_order
+2026-09-04T13:52:23.1868072Z
+2026-09-04T13:52:23.1868584Z 14: Test command: /home/runner/work/20231788./20231788./build/relin2_test "tensor_validation_order"
+2026-09-04T13:52:23.1869549Z 14: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.1870151Z 14: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.1914757Z 14: Relin2 case passed: tensor_validation_order
+2026-09-04T13:52:23.1915751Z 14/55 Test #14: relin2_tensor_validation_order ..................   Passed    0.00 sec
+2026-09-04T13:52:23.1916557Z test 15
+2026-09-04T13:52:23.1917002Z       Start 15: relin2_insufficient_active_basis
+2026-09-04T13:52:23.1917525Z
+2026-09-04T13:52:23.1918271Z 15: Test command: /home/runner/work/20231788./20231788./build/relin2_test "insufficient_active_basis"
+2026-09-04T13:52:23.1919245Z 15: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.1919902Z 15: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.1956522Z 15: Relin2 case passed: insufficient_active_basis
+2026-09-04T13:52:23.1960539Z 15/55 Test #15: relin2_insufficient_active_basis ................   Passed    0.00 sec
+2026-09-04T13:52:23.1961868Z test 16
+2026-09-04T13:52:23.1962219Z       Start 16: relin2_missing_eval_key
+2026-09-04T13:52:23.1962538Z
+2026-09-04T13:52:23.1963145Z 16: Test command: /home/runner/work/20231788./20231788./build/relin2_test "missing_eval_key"
+2026-09-04T13:52:23.1964117Z 16: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.1964730Z 16: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2002698Z 16: Relin2 case passed: missing_eval_key
+2026-09-04T13:52:23.2006668Z 16/55 Test #16: relin2_missing_eval_key .........................   Passed    0.00 sec
+2026-09-04T13:52:23.2008146Z test 17
+2026-09-04T13:52:23.2008508Z       Start 17: relin2_key_empty
+2026-09-04T13:52:23.2009043Z
+2026-09-04T13:52:23.2009439Z 17: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_empty"
+2026-09-04T13:52:23.2010424Z 17: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2010857Z 17: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2049113Z 17: Relin2 case passed: key_empty
+2026-09-04T13:52:23.2053355Z 17/55 Test #17: relin2_key_empty ................................   Passed    0.00 sec
+2026-09-04T13:52:23.2054810Z test 18
+2026-09-04T13:52:23.2055157Z       Start 18: relin2_key_null_first
+2026-09-04T13:52:23.2055462Z
+2026-09-04T13:52:23.2055867Z 18: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_null_first"
+2026-09-04T13:52:23.2056797Z 18: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2057410Z 18: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2095314Z 18: Relin2 case passed: key_null_first
+2026-09-04T13:52:23.2099199Z 18/55 Test #18: relin2_key_null_first ...........................   Passed    0.00 sec
+2026-09-04T13:52:23.2100496Z test 19
+2026-09-04T13:52:23.2100887Z       Start 19: relin2_key_wrong_context
+2026-09-04T13:52:23.2101231Z
+2026-09-04T13:52:23.2101681Z 19: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_wrong_context"
+2026-09-04T13:52:23.2102625Z 19: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2103315Z 19: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2237164Z 19: Relin2 case passed: key_wrong_context
+2026-09-04T13:52:23.2241549Z 19/55 Test #19: relin2_key_wrong_context ........................   Passed    0.01 sec
+2026-09-04T13:52:23.2242731Z test 20
+2026-09-04T13:52:23.2243290Z       Start 20: relin2_key_wrong_tag
+2026-09-04T13:52:23.2243607Z
+2026-09-04T13:52:23.2244043Z 20: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_wrong_tag"
+2026-09-04T13:52:23.2244965Z 20: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2245599Z 20: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2285077Z 20: Relin2 case passed: key_wrong_tag
+2026-09-04T13:52:23.2289080Z 20/55 Test #20: relin2_key_wrong_tag ............................   Passed    0.00 sec
+2026-09-04T13:52:23.2290293Z test 21
+2026-09-04T13:52:23.2290643Z       Start 21: relin2_key_wrong_subtype
+2026-09-04T13:52:23.2290963Z
+2026-09-04T13:52:23.2291419Z 21: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_wrong_subtype"
+2026-09-04T13:52:23.2292338Z 21: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2293341Z 21: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2386875Z 21: Relin2 case passed: key_wrong_subtype
+2026-09-04T13:52:23.2390761Z 21/55 Test #21: relin2_key_wrong_subtype ........................   Passed    0.01 sec
+2026-09-04T13:52:23.2392410Z test 22
+2026-09-04T13:52:23.2392961Z       Start 22: relin2_key_hybrid_a_length
+2026-09-04T13:52:23.2393226Z
+2026-09-04T13:52:23.2393514Z 22: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_hybrid_a_length"
+2026-09-04T13:52:23.2394333Z 22: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2394965Z 22: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2435554Z 22: Relin2 case passed: key_hybrid_a_length
+2026-09-04T13:52:23.2439184Z 22/55 Test #22: relin2_key_hybrid_a_length ......................   Passed    0.00 sec
+2026-09-04T13:52:23.2440743Z test 23
+2026-09-04T13:52:23.2441091Z       Start 23: relin2_key_hybrid_b_length
+2026-09-04T13:52:23.2441423Z
+2026-09-04T13:52:23.2441897Z 23: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_hybrid_b_length"
+2026-09-04T13:52:23.2442662Z 23: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2443342Z 23: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2483232Z 23: Relin2 case passed: key_hybrid_b_length
+2026-09-04T13:52:23.2487337Z 23/55 Test #23: relin2_key_hybrid_b_length ......................   Passed    0.00 sec
+2026-09-04T13:52:23.2488588Z test 24
+2026-09-04T13:52:23.2488962Z       Start 24: relin2_key_hybrid_entry_basis
+2026-09-04T13:52:23.2489307Z
+2026-09-04T13:52:23.2489799Z 24: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_hybrid_entry_basis"
+2026-09-04T13:52:23.2490760Z 24: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2491377Z 24: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2537093Z 24: Relin2 case passed: key_hybrid_entry_basis
+2026-09-04T13:52:23.2541239Z 24/55 Test #24: relin2_key_hybrid_entry_basis ...................   Passed    0.01 sec
+2026-09-04T13:52:23.2542477Z test 25
+2026-09-04T13:52:23.2543092Z       Start 25: relin2_key_hybrid_entry_format
+2026-09-04T13:52:23.2543474Z
+2026-09-04T13:52:23.2543988Z 25: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_hybrid_entry_format"
+2026-09-04T13:52:23.2544952Z 25: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2545584Z 25: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2592068Z 25: Relin2 case passed: key_hybrid_entry_format
+2026-09-04T13:52:23.2596723Z 25/55 Test #25: relin2_key_hybrid_entry_format ..................   Passed    0.01 sec
+2026-09-04T13:52:23.2598214Z test 26
+2026-09-04T13:52:23.2598623Z       Start 26: relin2_key_bv_zero_digit_a_length
+2026-09-04T13:52:23.2599012Z
+2026-09-04T13:52:23.2599548Z 26: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_bv_zero_digit_a_length"
+2026-09-04T13:52:23.2600382Z 26: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2600775Z 26: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2639255Z 26: Relin2 case passed: key_bv_zero_digit_a_length
+2026-09-04T13:52:23.2644093Z 26/55 Test #26: relin2_key_bv_zero_digit_a_length ...............   Passed    0.00 sec
+2026-09-04T13:52:23.2645175Z test 27
+2026-09-04T13:52:23.2645560Z       Start 27: relin2_key_bv_zero_digit_b_length
+2026-09-04T13:52:23.2645946Z
+2026-09-04T13:52:23.2646477Z 27: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_bv_zero_digit_b_length"
+2026-09-04T13:52:23.2647074Z 27: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2647458Z 27: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2686441Z 27: Relin2 case passed: key_bv_zero_digit_b_length
+2026-09-04T13:52:23.2690205Z 27/55 Test #27: relin2_key_bv_zero_digit_b_length ...............   Passed    0.00 sec
+2026-09-04T13:52:23.2691656Z test 28
+2026-09-04T13:52:23.2692078Z       Start 28: relin2_key_bv_nonzero_digit_a_length
+2026-09-04T13:52:23.2692470Z
+2026-09-04T13:52:23.2693280Z 28: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_bv_nonzero_digit_a_length"
+2026-09-04T13:52:23.2694268Z 28: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2694903Z 28: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2750399Z 28: Relin2 case passed: key_bv_nonzero_digit_a_length
+2026-09-04T13:52:23.2754638Z 28/55 Test #28: relin2_key_bv_nonzero_digit_a_length ............   Passed    0.01 sec
+2026-09-04T13:52:23.2756048Z test 29
+2026-09-04T13:52:23.2756575Z       Start 29: relin2_key_bv_nonzero_digit_b_length
+2026-09-04T13:52:23.2757045Z
+2026-09-04T13:52:23.2757775Z 29: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_bv_nonzero_digit_b_length"
+2026-09-04T13:52:23.2771259Z 29: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2771764Z 29: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2807085Z 29: Relin2 case passed: key_bv_nonzero_digit_b_length
+2026-09-04T13:52:23.2811087Z 29/55 Test #29: relin2_key_bv_nonzero_digit_b_length ............   Passed    0.01 sec
+2026-09-04T13:52:23.2812315Z test 30
+2026-09-04T13:52:23.2812745Z       Start 30: relin2_key_bv_zero_digit_entry_basis
+2026-09-04T13:52:23.2813427Z
+2026-09-04T13:52:23.2813781Z 30: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_bv_zero_digit_entry_basis"
+2026-09-04T13:52:23.2815130Z 30: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2815747Z 30: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2854632Z 30: Relin2 case passed: key_bv_zero_digit_entry_basis
+2026-09-04T13:52:23.2858564Z 30/55 Test #30: relin2_key_bv_zero_digit_entry_basis ............   Passed    0.00 sec
+2026-09-04T13:52:23.2859981Z test 31
+2026-09-04T13:52:23.2860417Z       Start 31: relin2_key_bv_nonzero_digit_entry_basis
+2026-09-04T13:52:23.2860829Z
+2026-09-04T13:52:23.2861458Z 31: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_bv_nonzero_digit_entry_basis"
+2026-09-04T13:52:23.2862245Z 31: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2862621Z 31: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2909123Z 31: Relin2 case passed: key_bv_nonzero_digit_entry_basis
+2026-09-04T13:52:23.2913362Z 31/55 Test #31: relin2_key_bv_nonzero_digit_entry_basis .........   Passed    0.01 sec
+2026-09-04T13:52:23.2914781Z test 32
+2026-09-04T13:52:23.2915214Z       Start 32: relin2_key_bv_zero_digit_entry_format
+2026-09-04T13:52:23.2915619Z
+2026-09-04T13:52:23.2916196Z 32: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_bv_zero_digit_entry_format"
+2026-09-04T13:52:23.2917047Z 32: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2917440Z 32: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.2957473Z 32: Relin2 case passed: key_bv_zero_digit_entry_format
+2026-09-04T13:52:23.2961182Z 32/55 Test #32: relin2_key_bv_zero_digit_entry_format ...........   Passed    0.00 sec
+2026-09-04T13:52:23.2962758Z test 33
+2026-09-04T13:52:23.2963472Z       Start 33: relin2_key_bv_nonzero_digit_entry_format
+2026-09-04T13:52:23.2963860Z
+2026-09-04T13:52:23.2964359Z 33: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_bv_nonzero_digit_entry_format"
+2026-09-04T13:52:23.2965447Z 33: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.2966076Z 33: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.3012279Z 33: Relin2 case passed: key_bv_nonzero_digit_entry_format
+2026-09-04T13:52:23.3017058Z 33/55 Test #33: relin2_key_bv_nonzero_digit_entry_format ........   Passed    0.01 sec
+2026-09-04T13:52:23.3018425Z test 34
+2026-09-04T13:52:23.3018884Z       Start 34: relin2_valid_arithmetic_state_immutability
+2026-09-04T13:52:23.3019318Z
+2026-09-04T13:52:23.3019976Z 34: Test command: /home/runner/work/20231788./20231788./build/relin2_test "valid_arithmetic_state_immutability"
+2026-09-04T13:52:23.3020808Z 34: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.3021194Z 34: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.3486592Z 34: Relin2 case passed: valid_arithmetic_state_immutability
+2026-09-04T13:52:23.3490304Z 34/55 Test #34: relin2_valid_arithmetic_state_immutability ......   Passed    0.05 sec
+2026-09-04T13:52:23.3491936Z test 35
+2026-09-04T13:52:23.3492398Z       Start 35: relin2_controlled_witnesses_and_boundaries
+2026-09-04T13:52:23.3493064Z
+2026-09-04T13:52:23.3493696Z 35: Test command: /home/runner/work/20231788./20231788./build/relin2_test "controlled_witnesses_and_boundaries"
+2026-09-04T13:52:23.3494506Z 35: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.3494885Z 35: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.3544868Z 35: Relin2 case passed: controlled_witnesses_and_boundaries
+2026-09-04T13:52:23.3548735Z 35/55 Test #35: relin2_controlled_witnesses_and_boundaries ......   Passed    0.01 sec
+2026-09-04T13:52:23.3550428Z test 36
+2026-09-04T13:52:23.3551067Z       Start 36: relin2_representative_public_input
+2026-09-04T13:52:23.3551480Z
+2026-09-04T13:52:23.3552087Z 36: Test command: /home/runner/work/20231788./20231788./build/relin2_test "representative_public_input"
+2026-09-04T13:52:23.3553006Z 36: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.3553562Z 36: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.3801000Z 36: Relin2 case passed: representative_public_input
+2026-09-04T13:52:23.3805373Z 36/55 Test #36: relin2_representative_public_input ..............   Passed    0.03 sec
+2026-09-04T13:52:23.3806720Z test 37
+2026-09-04T13:52:23.3807073Z       Start 37: relin2_key_extra_later_valid
+2026-09-04T13:52:23.3807401Z
+2026-09-04T13:52:23.3807876Z 37: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_extra_later_valid"
+2026-09-04T13:52:23.3808465Z 37: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.3808844Z 37: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.4118303Z 37: Relin2 case passed: key_extra_later_valid
+2026-09-04T13:52:23.4122380Z 37/55 Test #37: relin2_key_extra_later_valid ....................   Passed    0.03 sec
+2026-09-04T13:52:23.4124418Z test 38
+2026-09-04T13:52:23.4124795Z       Start 38: relin2_key_malformed_later_ignored
+2026-09-04T13:52:23.4125180Z
+2026-09-04T13:52:23.4125638Z 38: Test command: /home/runner/work/20231788./20231788./build/relin2_test "key_malformed_later_ignored"
+2026-09-04T13:52:23.4126281Z 38: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.4126658Z 38: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.4338331Z 38: Relin2 case passed: key_malformed_later_ignored
+2026-09-04T13:52:23.4342496Z 38/55 Test #38: relin2_key_malformed_later_ignored ..............   Passed    0.02 sec
+2026-09-04T13:52:23.4344395Z test 39
+2026-09-04T13:52:23.4344764Z       Start 39: relin2_hybrid_valid_shapes
+2026-09-04T13:52:23.4345091Z
+2026-09-04T13:52:23.4345525Z 39: Test command: /home/runner/work/20231788./20231788./build/relin2_test "hybrid_valid_shapes"
+2026-09-04T13:52:23.4346152Z 39: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.4346540Z 39: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.4656161Z 39: Relin2 case passed: hybrid_valid_shapes
+2026-09-04T13:52:23.4660250Z 39/55 Test #39: relin2_hybrid_valid_shapes ......................   Passed    0.03 sec
+2026-09-04T13:52:23.4661920Z test 40
+2026-09-04T13:52:23.4662336Z       Start 40: relin2_bv_zero_digit_valid_shapes
+2026-09-04T13:52:23.4662716Z
+2026-09-04T13:52:23.4663476Z 40: Test command: /home/runner/work/20231788./20231788./build/relin2_test "bv_zero_digit_valid_shapes"
+2026-09-04T13:52:23.4664389Z 40: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.4664778Z 40: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.4719126Z 40: Relin2 case passed: bv_zero_digit_valid_shapes
+2026-09-04T13:52:23.4723439Z 40/55 Test #40: relin2_bv_zero_digit_valid_shapes ...............   Passed    0.01 sec
+2026-09-04T13:52:23.4725315Z test 41
+2026-09-04T13:52:23.4725749Z       Start 41: relin2_bv_nonzero_digit_valid_shapes
+2026-09-04T13:52:23.4726150Z
+2026-09-04T13:52:23.4726707Z 41: Test command: /home/runner/work/20231788./20231788./build/relin2_test "bv_nonzero_digit_valid_shapes"
+2026-09-04T13:52:23.4727529Z 41: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.4727912Z 41: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.4790695Z 41: Relin2 case passed: bv_nonzero_digit_valid_shapes
+2026-09-04T13:52:23.4794932Z 41/55 Test #41: relin2_bv_nonzero_digit_valid_shapes ............   Passed    0.01 sec
+2026-09-04T13:52:23.4796854Z test 42
+2026-09-04T13:52:23.4797365Z       Start 42: relin2_first_recombined_rcb_validation
+2026-09-04T13:52:23.4797867Z
+2026-09-04T13:52:23.4798926Z 42: Test command: /home/runner/work/20231788./20231788./build/relin2_test "first_recombined_rcb_validation"
+2026-09-04T13:52:23.4799789Z 42: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.4800174Z 42: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.4859266Z 42: Relin2 case passed: first_recombined_rcb_validation
+2026-09-04T13:52:23.4863315Z 42/55 Test #42: relin2_first_recombined_rcb_validation ..........   Passed    0.01 sec
+2026-09-04T13:52:23.4864787Z test 43
+2026-09-04T13:52:23.4865207Z       Start 43: relin2_first_recombined_tensor2_validation
+2026-09-04T13:52:23.4865603Z
+2026-09-04T13:52:23.4866079Z 43: Test command: /home/runner/work/20231788./20231788./build/relin2_test "first_recombined_tensor2_validation"
+2026-09-04T13:52:23.4866735Z 43: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.4867101Z 43: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.4906035Z 43: Relin2 case passed: first_recombined_tensor2_validation
+2026-09-04T13:52:23.4909731Z 43/55 Test #43: relin2_first_recombined_tensor2_validation ......   Passed    0.00 sec
+2026-09-04T13:52:23.4911401Z test 44
+2026-09-04T13:52:23.4911852Z       Start 44: relin2_tensor2_requires_first_lifecycle
+2026-09-04T13:52:23.4912248Z
+2026-09-04T13:52:23.4913045Z 44: Test command: /home/runner/work/20231788./20231788./build/relin2_test "tensor2_requires_first_lifecycle"
+2026-09-04T13:52:23.4913870Z 44: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.4914259Z 44: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.4970873Z 44: Relin2 case passed: tensor2_requires_first_lifecycle
+2026-09-04T13:52:23.4974931Z 44/55 Test #44: relin2_tensor2_requires_first_lifecycle .........   Passed    0.01 sec
+2026-09-04T13:52:23.4976489Z test 45
+2026-09-04T13:52:23.4976866Z       Start 45: rs2_wrong_lifecycle
+2026-09-04T13:52:23.4977175Z
+2026-09-04T13:52:23.4977591Z 45: Test command: /home/runner/work/20231788./20231788./build/rs2_test "wrong_lifecycle"
+2026-09-04T13:52:23.4978477Z 45: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.4978872Z 45: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.5015655Z 45: RS2 case passed: wrong_lifecycle
+2026-09-04T13:52:23.5019176Z 45/55 Test #45: rs2_wrong_lifecycle .............................   Passed    0.00 sec
+2026-09-04T13:52:23.5020955Z test 46
+2026-09-04T13:52:23.5021280Z       Start 46: rs2_valid_arithmetic_state_immutability
+2026-09-04T13:52:23.5021518Z
+2026-09-04T13:52:23.5021846Z 46: Test command: /home/runner/work/20231788./20231788./build/rs2_test "valid_arithmetic_state_immutability"
+2026-09-04T13:52:23.5022489Z 46: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.5023196Z 46: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.5225372Z 46: RS2 case passed: valid_arithmetic_state_immutability
+2026-09-04T13:52:23.5229352Z 46/55 Test #46: rs2_valid_arithmetic_state_immutability .........   Passed    0.02 sec
+2026-09-04T13:52:23.5230620Z test 47
+2026-09-04T13:52:23.5230970Z       Start 47: rs2_mixed_tower_format
+2026-09-04T13:52:23.5231280Z
+2026-09-04T13:52:23.5231747Z 47: Test command: /home/runner/work/20231788./20231788./build/rs2_test "mixed_tower_format"
+2026-09-04T13:52:23.5232388Z 47: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.5233062Z 47: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.5337224Z 47: RS2 case passed: mixed_tower_format
+2026-09-04T13:52:23.5341066Z 47/55 Test #47: rs2_mixed_tower_format ..........................   Passed    0.01 sec
+2026-09-04T13:52:23.5343087Z test 48
+2026-09-04T13:52:23.5343376Z       Start 48: rs2_untouched_public_pipeline
+2026-09-04T13:52:23.5343596Z
+2026-09-04T13:52:23.5343892Z 48: Test command: /home/runner/work/20231788./20231788./build/rs2_test "untouched_public_pipeline"
+2026-09-04T13:52:23.5344492Z 48: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.5344894Z 48: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.5556447Z 48: RS2 case passed: untouched_public_pipeline
+2026-09-04T13:52:23.5560181Z 48/55 Test #48: rs2_untouched_public_pipeline ...................   Passed    0.02 sec
+2026-09-04T13:52:23.5561690Z test 49
+2026-09-04T13:52:23.5562084Z       Start 49: rs2_declared_basis_mismatch
+2026-09-04T13:52:23.5562437Z
+2026-09-04T13:52:23.5563166Z 49: Test command: /home/runner/work/20231788./20231788./build/rs2_test "declared_basis_mismatch"
+2026-09-04T13:52:23.5564251Z 49: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.5564651Z 49: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.6277579Z 49: RS2 case passed: declared_basis_mismatch
+2026-09-04T13:52:23.6282237Z 49/55 Test #49: rs2_declared_basis_mismatch .....................   Passed    0.07 sec
+2026-09-04T13:52:23.6284293Z test 50
+2026-09-04T13:52:23.6284713Z       Start 50: rs2_terminal_rejections
+2026-09-04T13:52:23.6285103Z
+2026-09-04T13:52:23.6285590Z 50: Test command: /home/runner/work/20231788./20231788./build/rs2_test "terminal_rejections"
+2026-09-04T13:52:23.6286382Z 50: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.6286792Z 50: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.6407339Z 50: RS2 case passed: terminal_rejections
+2026-09-04T13:52:23.6411613Z 50/55 Test #50: rs2_terminal_rejections .........................   Passed    0.01 sec
+2026-09-04T13:52:23.6413274Z test 51
+2026-09-04T13:52:23.6413680Z       Start 51: mult2_composition_contract
+2026-09-04T13:52:23.6414077Z
+2026-09-04T13:52:23.6414843Z 51: Test command: /home/runner/work/20231788./20231788./build/mult2_test "composition_contract"
+2026-09-04T13:52:23.6416015Z 51: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.6416760Z 51: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.6479917Z 51: security_level=HEStd_NotSet(functional-only) ring_dimension=64 batch_size=16 scaling_mod_size=30 first_mod_size=35 multiplicative_depth=7 key_switch=HYBRID secret_key_dist=UNIFORM_TERNARY ckks_data_type=REAL active_Q_l_towers=7 q_div=1073741953 q_l=1073741441 ratio_2^(2p)/(q_div*q_l)=1.00000023655603276 frozen_decoded_abs_tolerance=0.00100000000000000002 measured_max_logical_slot_error=1.01830169435546125e-08
+2026-09-04T13:52:23.6482516Z 51/55 Test #51: mult2_composition_contract ......................   Passed    0.01 sec
+2026-09-04T13:52:23.6484389Z test 52
+2026-09-04T13:52:23.6484779Z       Start 52: mult2_e2e_hybrid_real
+2026-09-04T13:52:23.6485103Z
+2026-09-04T13:52:23.6485577Z 52: Test command: /home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test "hybrid_real"
+2026-09-04T13:52:23.6486457Z 52: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.6486839Z 52: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.7413487Z 52: [RELIN2-EXECUTION] q_div=1073741953 q_l=1073741441 ordinary_combined_relin_execution_error=21 pair_relin_execution_error=36 high_path_relin_error=20 low_path_relin_error=20 execution_relin2_triangle_bound=40 paper_additivity_residual=25 paper_additivity_execution_observed=true secret_h=47 input_Q_l=52656049226897061758347970843194892279389197066160739197584863617 oracle_basis_agreement=true
+2026-09-04T13:52:23.7423544Z 52: case=hybrid_real security_level=HEStd_NotSet(functional-only) key_switch=HYBRID secret_key_dist=UNIFORM_TERNARY ckks_data_type=REAL selected_ring_dimension=64 actual_N=64 batch_size=16 host_vector_length=8 encoding_noise_scale_degree=2 encoding_level=0 scaling_technique=FIXEDMANUAL digit_size=0 max_relin_sk_deg=2 scaling_mod_size=30 first_mod_size=35 multiplicative_depth=7 active_Q_l_towers=7 Q_l_bits=215 preselection_required_bits=174 selection_reserve_bits=32 q_div=1073741953 q_l=1073741441 ratio_2^(2p)/(q_div*q_l)=1.00000023655603276 descriptor_ratio=1.00000023655603276 M_high=107367067 M_low=6477972559 secret_h=47 ordinary_combined_relin_execution_error=21 pair_relin_execution_error=36 high_path_relin_error=20 low_path_relin_error=20 execution_relin2_triangle_bound=40 paper_additivity_residual=25 paper_additivity_execution_observed=true execution_certificate=PER_PATH_CONDITIONAL conservative_E_Relin_available=false universal_theorem_gate=UNPROVED execution_nonwrap_left=850593472997851976738995150851078440 execution_nonwrap_right_Q_l_over_2=26328024613448530879173985421597446139694598533080369598792431808 coefficient_error=118344633414937609947/1152921231876374273 execution_bound=5426748664036062406912/2305842463752748546 fixed_key_bv_bound_available=false frozen_decoded_abs_tolerance=0.00100000000000000002 measured_recorded_bias_error=5.40182081704143613e-09 measured_logical_slot_error=5.40181954028495781e-09
+2026-09-04T13:52:23.7428973Z 52/55 Test #52: mult2_e2e_hybrid_real ...........................   Passed    0.09 sec
+2026-09-04T13:52:23.7429377Z test 53
+2026-09-04T13:52:23.7429585Z       Start 53: mult2_e2e_hybrid_complex
+2026-09-04T13:52:23.7429766Z
+2026-09-04T13:52:23.7430070Z 53: Test command: /home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test "hybrid_complex"
+2026-09-04T13:52:23.7430628Z 53: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.7430992Z 53: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.8864465Z 53: [RELIN2-EXECUTION] q_div=1073741953 q_l=1073741441 ordinary_combined_relin_execution_error=13 pair_relin_execution_error=24 high_path_relin_error=14 low_path_relin_error=14 execution_relin2_triangle_bound=28 paper_additivity_residual=14 paper_additivity_execution_observed=true secret_h=41 input_Q_l=52656049226897061758347970843194892279389197066160739197584863617 oracle_basis_agreement=true
+2026-09-04T13:52:23.8875204Z 53: case=hybrid_complex security_level=HEStd_NotSet(functional-only) key_switch=HYBRID secret_key_dist=UNIFORM_TERNARY ckks_data_type=COMPLEX selected_ring_dimension=64 actual_N=64 batch_size=16 host_vector_length=8 encoding_noise_scale_degree=2 encoding_level=0 scaling_technique=FIXEDMANUAL digit_size=0 max_relin_sk_deg=2 scaling_mod_size=30 first_mod_size=35 multiplicative_depth=7 active_Q_l_towers=7 Q_l_bits=215 preselection_required_bits=174 selection_reserve_bits=32 q_div=1073741953 q_l=1073741441 ratio_2^(2p)/(q_div*q_l)=1.00000023655603276 descriptor_ratio=1.00000023655603276 M_high=88152831 M_low=5368709760 secret_h=41 ordinary_combined_relin_execution_error=13 pair_relin_execution_error=24 high_path_relin_error=14 low_path_relin_error=14 execution_relin2_triangle_bound=28 paper_additivity_residual=14 paper_additivity_execution_observed=true execution_certificate=PER_PATH_CONDITIONAL conservative_E_Relin_available=false universal_theorem_gate=UNPROVED execution_nonwrap_left=573393011691547678730303673501581404 execution_nonwrap_right_Q_l_over_2=26328024613448530879173985421597446139694598533080369598792431808 coefficient_error=114714828548215576228/1152921231876374273 execution_bound=3737772386150202241634/2305842463752748546 fixed_key_bv_bound_available=false frozen_decoded_abs_tolerance=0.00100000000000000002 measured_recorded_bias_error=1.32248404267857168e-09 measured_logical_slot_error=1.32248372959238032e-09
+2026-09-04T13:52:23.8880510Z 53/55 Test #53: mult2_e2e_hybrid_complex ........................   Passed    0.14 sec
+2026-09-04T13:52:23.8880911Z test 54
+2026-09-04T13:52:23.8881113Z       Start 54: mult2_e2e_bv_real
+2026-09-04T13:52:23.8881281Z
+2026-09-04T13:52:23.8881546Z 54: Test command: /home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test "bv_real"
+2026-09-04T13:52:23.8882065Z 54: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.8882425Z 54: Test timeout computed to be: 10000000
+2026-09-04T13:52:23.9613878Z 54: [RELIN2-EXECUTION] q_div=1073741953 q_l=1073741441 ordinary_combined_relin_execution_error=218086105597 pair_relin_execution_error=317722723744 high_path_relin_error=285984274526 low_path_relin_error=280658952900 execution_relin2_triangle_bound=566643227426 paper_additivity_residual=358629745529 paper_additivity_execution_observed=false secret_h=42 input_Q_l=52656049226897061758347970843194892279389197066160739197584863617 oracle_basis_agreement=true
+2026-09-04T13:52:23.9625583Z 54: case=bv_real security_level=HEStd_NotSet(functional-only) key_switch=BV secret_key_dist=UNIFORM_TERNARY ckks_data_type=REAL selected_ring_dimension=64 actual_N=64 batch_size=16 host_vector_length=8 encoding_noise_scale_degree=2 encoding_level=0 scaling_technique=FIXEDMANUAL digit_size=0 max_relin_sk_deg=2 scaling_mod_size=30 first_mod_size=35 multiplicative_depth=7 active_Q_l_towers=7 Q_l_bits=215 preselection_required_bits=174 selection_reserve_bits=32 q_div=1073741953 q_l=1073741441 ratio_2^(2p)/(q_div*q_l)=1.00000023655603276 descriptor_ratio=1.00000023655603276 M_high=107367068 M_low=6442451718 secret_h=42 ordinary_combined_relin_execution_error=218086105597 pair_relin_execution_error=317722723744 high_path_relin_error=285984274526 low_path_relin_error=280658952900 execution_relin2_triangle_bound=566643227426 paper_additivity_residual=358629745529 paper_additivity_execution_observed=false execution_certificate=PER_PATH_CONDITIONAL conservative_E_Relin_available=false universal_theorem_gate=UNPROVED execution_nonwrap_left=850593488318278752370303898809146402 execution_nonwrap_right_Q_l_over_2=26328024613448530879173985421597446139694598533080369598792431808 coefficient_error=320798215355556496771/1152921231876374273 execution_bound=6579096394073344294767/2305842463752748546 fixed_key_bv_bound_available=true fixed_key_bv_bound_status=CANDIDATE_FIXED_KEY_CIPHERTEXT_UNIFORM_CONDITIONAL_ON_CENTERED_DIGIT_LIFT fixed_key_bv_noise_scale=1 fixed_key_bv_active_rows=7 fixed_key_bv_raised_high_q_div_digit=ZERO fixed_key_bv_row_residual_norms=3,3,2,2,2,2,2 fixed_key_bv_per_path_raw_bound=3745211265024 fixed_key_bv_pair_raw_bound=7490422530048 fixed_key_bv_integer_lift_nonwrap=true fixed_key_bv_conservative_nonwrap_left=850593488318278752370310822588449024 fixed_key_bv_conservative_bound=21447801015149992896299/2305842463752748546 fixed_key_bv_final_integer_lift=1701186976636578952541621814324734251<56539009134152591222370164266759140395695978104921302317938424343356224001 fixed_key_bv_unconditional_gaussian_key_bound=false fixed_key_bv_universal_theorem_gate=UNPROVED centered_digit_boundary_probe=PASSED frozen_decoded_abs_tolerance=0.00100000000000000002 measured_recorded_bias_error=1.04079652674116119e-08 measured_logical_slot_error=1.04079628110431699e-08
+2026-09-04T13:52:23.9633977Z 54/55 Test #54: mult2_e2e_bv_real ...............................   Passed    0.07 sec
+2026-09-04T13:52:23.9634386Z test 55
+2026-09-04T13:52:23.9634581Z       Start 55: mult2_e2e_bv_complex
+2026-09-04T13:52:23.9634756Z
+2026-09-04T13:52:23.9635038Z 55: Test command: /home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test "bv_complex"
+2026-09-04T13:52:23.9635571Z 55: Working Directory: /home/runner/work/20231788./20231788./build
+2026-09-04T13:52:23.9635936Z 55: Test timeout computed to be: 10000000
+2026-09-04T13:52:24.0355475Z 55: [RELIN2-EXECUTION] q_div=1073741953 q_l=1073741441 ordinary_combined_relin_execution_error=174706293082 pair_relin_execution_error=287408359981 high_path_relin_error=188556402955 low_path_relin_error=147616619538 execution_relin2_triangle_bound=336173022493 paper_additivity_residual=346818571789 paper_additivity_execution_observed=false secret_h=47 input_Q_l=52656049226897061758347970843194892279389197066160739197584863617 oracle_basis_agreement=true
+2026-09-04T13:52:24.0366191Z 55: case=bv_complex security_level=HEStd_NotSet(functional-only) key_switch=BV secret_key_dist=UNIFORM_TERNARY ckks_data_type=COMPLEX selected_ring_dimension=64 actual_N=64 batch_size=16 host_vector_length=8 encoding_noise_scale_degree=2 encoding_level=0 scaling_technique=FIXEDMANUAL digit_size=0 max_relin_sk_deg=2 scaling_mod_size=30 first_mod_size=35 multiplicative_depth=7 active_Q_l_towers=7 Q_l_bits=215 preselection_required_bits=174 selection_reserve_bits=32 q_div=1073741953 q_l=1073741441 ratio_2^(2p)/(q_div*q_l)=1.00000023655603276 descriptor_ratio=1.00000023655603276 M_high=88152833 M_low=5368709756 secret_h=47 ordinary_combined_relin_execution_error=174706293082 pair_relin_execution_error=287408359981 high_path_relin_error=188556402955 low_path_relin_error=147616619538 execution_relin2_triangle_bound=336173022493 paper_additivity_residual=346818571789 paper_additivity_execution_observed=false execution_certificate=PER_PATH_CONDITIONAL conservative_E_Relin_available=false universal_theorem_gate=UNPROVED execution_nonwrap_left=573393037709679058102052614245728093 execution_nonwrap_right_Q_l_over_2=26328024613448530879173985421597446139694598533080369598792431808 coefficient_error=275666269864648691849/1152921231876374273 execution_bound=4466616063418865643370/2305842463752748546 fixed_key_bv_bound_available=true fixed_key_bv_bound_status=CANDIDATE_FIXED_KEY_CIPHERTEXT_UNIFORM_CONDITIONAL_ON_CENTERED_DIGIT_LIFT fixed_key_bv_noise_scale=1 fixed_key_bv_active_rows=7 fixed_key_bv_raised_high_q_div_digit=ZERO fixed_key_bv_row_residual_norms=2,3,2,2,3,3,2 fixed_key_bv_per_path_raw_bound=2714419113984 fixed_key_bv_pair_raw_bound=5428838227968 fixed_key_bv_integer_lift_nonwrap=true fixed_key_bv_conservative_nonwrap_left=573393037709679058102057706910933568 fixed_key_bv_conservative_bound=15403032630822611228720/2305842463752748546 fixed_key_bv_final_integer_lift=1146786075419373519236735378756639920<56539009134152591222370164266759140395695978104921302317938424343356224001 fixed_key_bv_unconditional_gaussian_key_bound=false fixed_key_bv_universal_theorem_gate=UNPROVED centered_digit_boundary_probe=PASSED frozen_decoded_abs_tolerance=0.00100000000000000002 measured_recorded_bias_error=1.32248357418726906e-09 measured_logical_slot_error=1.32248326110116538e-09
+2026-09-04T13:52:24.0375712Z 55/55 Test #55: mult2_e2e_bv_complex ............................   Passed    0.07 sec
+2026-09-04T13:52:24.0376030Z
+2026-09-04T13:52:24.0376147Z 100% tests passed, 0 tests failed out of 55
+2026-09-04T13:52:24.0376345Z
+2026-09-04T13:52:24.0376447Z Total Test time (real) =   1.25 sec
+2026-09-04T13:52:24.0416359Z ##[group]Run cmake --build build --target mult2_api_contract_test --parallel 2
+2026-09-04T13:52:24.0416970Z cmake --build build --target mult2_api_contract_test --parallel 2
+2026-09-04T13:52:24.0452142Z shell: /usr/bin/bash -e {0}
+2026-09-04T13:52:24.0452389Z env:
+2026-09-04T13:52:24.0452656Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T13:52:24.0453363Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T13:52:24.0453751Z ##[endgroup]
+2026-09-04T13:52:24.0744992Z [ 50%] Built target openfhe_2023_1788
+2026-09-04T13:52:24.0812109Z [ 75%] Building CXX object CMakeFiles/mult2_api_contract_test.dir/tests/mult2_api_contract_test.cpp.o
+2026-09-04T13:52:26.5625234Z [100%] Linking CXX executable mult2_api_contract_test
+2026-09-04T13:52:26.6245444Z [100%] Built target mult2_api_contract_test
+2026-09-04T13:52:26.6306437Z ##[group]Run cmake --build build --target add_api_contract_test --parallel 2
+2026-09-04T13:52:26.6307000Z cmake --build build --target add_api_contract_test --parallel 2
+2026-09-04T13:52:26.6341397Z shell: /usr/bin/bash -e {0}
+2026-09-04T13:52:26.6341646Z env:
+2026-09-04T13:52:26.6341915Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T13:52:26.6342368Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T13:52:26.6342904Z ##[endgroup]
+2026-09-04T13:52:26.6630654Z [ 50%] Built target openfhe_2023_1788
+2026-09-04T13:52:26.6697714Z [ 75%] Building CXX object CMakeFiles/add_api_contract_test.dir/tests/add_api_contract_test.cpp.o
+2026-09-04T13:52:29.1026272Z [100%] Linking CXX executable add_api_contract_test
+2026-09-04T13:52:29.1658799Z [100%] Built target add_api_contract_test
+2026-09-04T13:52:29.1734624Z ##[group]Run cmake --build build --target sub_api_contract_test --parallel 2
+2026-09-04T13:52:29.1735592Z cmake --build build --target sub_api_contract_test --parallel 2
+2026-09-04T13:52:29.1786820Z shell: /usr/bin/bash -e {0}
+2026-09-04T13:52:29.1787245Z env:
+2026-09-04T13:52:29.1787699Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T13:52:29.1788482Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T13:52:29.1789146Z ##[endgroup]
+2026-09-04T13:52:29.2091042Z [ 50%] Built target openfhe_2023_1788
+2026-09-04T13:52:29.2158999Z [ 75%] Building CXX object CMakeFiles/sub_api_contract_test.dir/tests/sub_api_contract_test.cpp.o
+2026-09-04T13:52:31.6671080Z [100%] Linking CXX executable sub_api_contract_test
+2026-09-04T13:52:31.7285889Z [100%] Built target sub_api_contract_test
+2026-09-04T13:52:31.7398483Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
