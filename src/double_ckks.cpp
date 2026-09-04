@@ -654,6 +654,112 @@ void DoubleCKKS::ValidateTensorResult(const TensorCiphertextPair& pair) const {
                        pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, 3, "Tensor2", "Tensor2 low");
 }
 
+CiphertextPair DoubleCKKS::Add(const CiphertextPair& left, const CiphertextPair& right) const {
+    ValidatePair(left);
+    ValidatePair(right);
+    ValidatePairCompatibility(left, right, "Add");
+
+    // Match the upstream ciphertext Add policy without invoking a convenience
+    // operation that may align levels or scales: clone each corresponding left
+    // member, retain its metadata provenance, and update only its DCRT values.
+    auto high = left.high_->Clone();
+    auto low = left.low_->Clone();
+    auto& highElements = high->GetElements();
+    auto& lowElements = low->GetElements();
+    const auto& rightHighElements = right.high_->GetElements();
+    const auto& rightLowElements = right.low_->GetElements();
+    for (std::size_t index = 0; index < highElements.size(); ++index) {
+        highElements[index] += rightHighElements[index];
+        lowElements[index] += rightLowElements[index];
+    }
+
+    CiphertextPair result(std::move(high), std::move(low), left.contextIdentity_, left.divisor_,
+                          left.orderedModuli_, left.level_, left.paperScale_,
+                          left.recordedScalingFactor_, left.noiseScaleDegree_, left.lifecycle_,
+                          left.keyTag_, left.slots_, left.format_, left.componentCount_);
+    ValidatePair(result);
+    return result;
+}
+
+CiphertextPair DoubleCKKS::Sub(const CiphertextPair& left, const CiphertextPair& right) const {
+    ValidatePair(left);
+    ValidatePair(right);
+    ValidatePairCompatibility(left, right, "Sub");
+
+    // As for Add, clone the corresponding left member so metadata provenance
+    // is explicit and no convenience operation can hide scale/level alignment.
+    auto high = left.high_->Clone();
+    auto low = left.low_->Clone();
+    auto& highElements = high->GetElements();
+    auto& lowElements = low->GetElements();
+    const auto& rightHighElements = right.high_->GetElements();
+    const auto& rightLowElements = right.low_->GetElements();
+    for (std::size_t index = 0; index < highElements.size(); ++index) {
+        highElements[index] -= rightHighElements[index];
+        lowElements[index] -= rightLowElements[index];
+    }
+
+    CiphertextPair result(std::move(high), std::move(low), left.contextIdentity_, left.divisor_,
+                          left.orderedModuli_, left.level_, left.paperScale_,
+                          left.recordedScalingFactor_, left.noiseScaleDegree_, left.lifecycle_,
+                          left.keyTag_, left.slots_, left.format_, left.componentCount_);
+    ValidatePair(result);
+    return result;
+}
+
+void DoubleCKKS::ValidatePairCompatibility(const CiphertextPair& left, const CiphertextPair& right,
+                                           const char* operationName) const {
+    const std::string operation(operationName);
+    if (left.contextIdentity_ != right.contextIdentity_) {
+        Invalid(operation + " input contexts do not match");
+    }
+    if (left.lifecycle_ != right.lifecycle_) {
+        Invalid(operation + " input lifecycles do not match");
+    }
+    if (left.divisor_ != right.divisor_) {
+        Invalid(operation + " input divisors do not match");
+    }
+    if (!SameOrderedModuli(left.orderedModuli_, right.orderedModuli_)) {
+        Invalid(operation + " input ordered RNS bases do not match");
+    }
+    if (left.level_ != right.level_) {
+        Invalid(operation + " input levels do not match");
+    }
+    if (left.recordedScalingFactor_ != right.recordedScalingFactor_) {
+        Invalid(operation + " input recorded scaling factors do not match");
+    }
+    if (left.noiseScaleDegree_ != right.noiseScaleDegree_) {
+        Invalid(operation + " input noise-scale degrees do not match");
+    }
+    if (left.paperScale_.inputRecordedScalingFactor !=
+        right.paperScale_.inputRecordedScalingFactor) {
+        Invalid(operation + " input paper recorded scaling factors do not match");
+    }
+    if (left.paperScale_.divisor != right.paperScale_.divisor) {
+        Invalid(operation + " input paper divisors do not match");
+    }
+    if (left.paperScale_.approximateLogicalScalingFactor !=
+        right.paperScale_.approximateLogicalScalingFactor) {
+        Invalid(operation + " input logical scaling factors do not match");
+    }
+    if (left.paperScale_.approximateRecombinedLogicalScalingFactor !=
+        right.paperScale_.approximateRecombinedLogicalScalingFactor) {
+        Invalid(operation + " input recombined logical scaling factors do not match");
+    }
+    if (left.keyTag_ != right.keyTag_) {
+        Invalid(operation + " input key tags do not match");
+    }
+    if (left.slots_ != right.slots_) {
+        Invalid(operation + " input slots do not match");
+    }
+    if (left.format_ != right.format_) {
+        Invalid(operation + " input formats do not match");
+    }
+    if (left.componentCount_ != right.componentCount_) {
+        Invalid(operation + " input component counts do not match");
+    }
+}
+
 TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const CiphertextPair& right) const {
     ValidatePair(left);
     ValidatePair(right);

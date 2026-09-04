@@ -141,6 +141,8 @@ public:
     explicit DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context);
 
     CiphertextPair DCP(const ReadOnlyCiphertext& ciphertext) const;
+    CiphertextPair Add(const CiphertextPair& left, const CiphertextPair& right) const;
+    CiphertextPair Sub(const CiphertextPair& left, const CiphertextPair& right) const;
     TensorCiphertextPair Tensor2(const CiphertextPair& left, const CiphertextPair& right) const;
     CiphertextPair Relin2(const TensorCiphertextPair& tensor) const;
     CiphertextPair RS2(const CiphertextPair& relinearized) const;
@@ -150,6 +152,8 @@ public:
 private:
     void ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const;
     void ValidatePair(const CiphertextPair& pair) const;
+    void ValidatePairCompatibility(const CiphertextPair& left, const CiphertextPair& right,
+                                   const char* operationName) const;
     void ValidateTensorCompatibility(const CiphertextPair& left, const CiphertextPair& right) const;
     void ValidateTensorResult(const TensorCiphertextPair& pair) const;
     std::pair<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>, lbcrypto::Ciphertext<lbcrypto::DCRTPoly>>

@@ -58,6 +58,24 @@ target_link_libraries(rs2_api_contract_test PRIVATE openfhe_2023_1788)
 add_executable(mult2_api_contract_test EXCLUDE_FROM_ALL tests/mult2_api_contract_test.cpp)
 target_link_libraries(mult2_api_contract_test PRIVATE openfhe_2023_1788)
 
+# Red-first API seam, explicitly compiled after the existing runtime suite.
+add_executable(add_api_contract_test EXCLUDE_FROM_ALL tests/add_api_contract_test.cpp)
+target_link_libraries(add_api_contract_test PRIVATE openfhe_2023_1788)
+
+# Deliberate Sub API red, compiled explicitly after the accepted runtime suite.
+add_executable(sub_api_contract_test EXCLUDE_FROM_ALL tests/sub_api_contract_test.cpp)
+target_link_libraries(sub_api_contract_test PRIVATE openfhe_2023_1788)
+
+add_executable(pair_add_test tests/pair_add_test.cpp)
+target_link_libraries(pair_add_test PRIVATE openfhe_2023_1788)
+
+add_executable(pair_sub_test tests/pair_sub_test.cpp)
+target_link_libraries(pair_sub_test PRIVATE openfhe_2023_1788)
+
+# Independent integer/CRT oracle at the public pair Add/Sub and RCB seams.
+add_executable(pair_arithmetic_test tests/pair_arithmetic_test.cpp)
+target_link_libraries(pair_arithmetic_test PRIVATE openfhe_2023_1788)
+
 add_executable(tensor2_test tests/tensor2_test.cpp)
 target_link_libraries(tensor2_test PRIVATE openfhe_2023_1788)
 
@@ -80,6 +98,11 @@ if(MSVC)
     target_compile_options(relin2_api_contract_test PRIVATE /W4 /WX)
     target_compile_options(rs2_api_contract_test PRIVATE /W4 /WX)
     target_compile_options(mult2_api_contract_test PRIVATE /W4 /WX)
+    target_compile_options(add_api_contract_test PRIVATE /W4 /WX)
+    target_compile_options(sub_api_contract_test PRIVATE /W4 /WX)
+    target_compile_options(pair_add_test PRIVATE /W4 /WX)
+    target_compile_options(pair_sub_test PRIVATE /W4 /WX)
+    target_compile_options(pair_arithmetic_test PRIVATE /W4 /WX)
     target_compile_options(tensor2_test PRIVATE /W4 /WX)
     target_compile_options(relin2_test PRIVATE /W4 /WX)
     target_compile_options(rs2_test PRIVATE /W4 /WX)
@@ -92,6 +115,11 @@ else()
     target_compile_options(relin2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(rs2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(mult2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(add_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(sub_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(pair_add_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(pair_sub_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(pair_arithmetic_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(tensor2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(relin2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(rs2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
@@ -101,6 +129,13 @@ endif()
 
 enable_testing()
 add_test(NAME dcp_rcb COMMAND dcp_rcb_test)
+add_test(NAME pair_add_runtime_behavior COMMAND pair_add_test)
+add_test(NAME pair_sub_runtime_behavior COMMAND pair_sub_test)
+add_test(NAME pair_arithmetic_controlled_oracle COMMAND pair_arithmetic_test controlled_oracle)
+add_test(NAME pair_arithmetic_public_lifecycles_keyless
+         COMMAND pair_arithmetic_test public_lifecycles_keyless)
+add_test(NAME pair_arithmetic_compatibility_rejections
+         COMMAND pair_arithmetic_test compatibility_rejections)
 add_test(NAME tensor2_valid_arithmetic_immutability COMMAND tensor2_test valid_arithmetic_immutability)
 add_test(NAME tensor2_result_scale_contract COMMAND tensor2_test result_scale_contract)
 add_test(NAME tensor2_right_input_validation COMMAND tensor2_test right_input_validation)
