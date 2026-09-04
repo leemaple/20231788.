@@ -32,3 +32,39 @@ At creation of this record the consolidation commit, its fresh CI run and defaul
 - README and this ledger passed scoped whitespace checks; all 16 local Markdown links checked by the independent reviewer exist. The whole imported history emits whitespace warnings in retained raw logs and patches; those archival bytes are intentionally not reformatted, and no clean whole-history whitespace result is claimed.
 - The candidate branch is absent from the existing push trigger allowlist. Therefore push alone will not start its regression: use the existing `workflow_dispatch` and verify the returned run's actual source SHA. This does not dispatch the historical `fb862a3` workflow.
 - The canonical worktree still has only its pre-existing report changes. No source/test implementation or unconfirmed test seam was added in this consolidation.
+
+## Actual merge and hosted closure — 2026-09-05
+
+Merge `4ecbd972429884489918d9f82dfc3fe9f702ef4a` was committed with the exact
+two parents above and pushed to the isolated candidate branch; remote SHA
+matched. The existing workflow was dispatched exactly once at
+2026-09-04T15:58:50Z, yielding
+[run33892550947](https://github.com/leemaple/20231788./actions/runs/33892550947),
+attempt1, exact head `4ecbd972`. It completed successfully at
+2026-09-04T16:07:19Z (Sep5 00:07:19 Asia/Shanghai).
+
+- Linux101087474806: precision1/1 (0.24s), Pair2/2 (0.17s), full57/57 (1.32s).
+- Windows101087474933: precision1/1 (0.26s), Pair2/2 (0.19s), full57/57 (2.49s).
+- The independent [hosted audit](DEFAULT_MAINLINE_HOSTED_AUDIT.md) verified
+  all actual names/commands, workflow stages, source IDs and certificates.
+  Root independently re-read authoritative run state, verified both raw-log
+  hashes/source markers, 120 total CTest occurrences, all16 exact rational
+  first-Mult2 error records, 8 distinct-from-first precursor occurrences,
+  8 Pair occurrences and 4 fixed-key BV records. Root's bounded BigInt checks
+  rederived decimal thresholds, divisor products, triangle/nonwrap/error
+  inequalities and BV row-norm bounds; all passed. Counts are execution
+  occurrences, not claims of globally unique inputs or keys.
+- Linux reused the pristine upstream install cache; its two upstream build
+  steps were skipped. Windows built pristine OpenFHE. Both built/tested the
+  project on the hosted runner. No build or cryptographic run occurred on Mac.
+- Raw logs and the audit index remain unchanged under
+  `artifacts/tdd/default-mainline-consolidation/33892550947/`. The two precise
+  `.log` paths are deliberately tracked despite the existing generic ignore
+  rule; no ignore rule or archived whitespace is changed.
+
+This acceptance follow-up changes only README/ledger/evidence. Default
+promotion is the remaining Git operation: recheck the remote old head and
+canonical report hashes, fast-forward to this descendant, verify preservation,
+then normal push. No force push, report staging, CI rerun or unreviewed source
+is authorized by this record. Actual promotion outcome must be recorded after
+execution rather than inferred from this plan.
