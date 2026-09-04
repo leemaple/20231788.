@@ -645,6 +645,10 @@ void DoubleCKKS::ValidateTensorResult(const TensorCiphertextPair& pair) const {
                        pair.recordedScalingFactor_, pair.keyTag_, pair.slots_, 3, "Tensor2", "Tensor2 low");
 }
 
+CiphertextPair DoubleCKKS::Add(const CiphertextPair&, const CiphertextPair&) const {
+    throw std::logic_error("DoubleCKKS: Add is not implemented");
+}
+
 TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const CiphertextPair& right) const {
     ValidatePair(left);
     ValidatePair(right);

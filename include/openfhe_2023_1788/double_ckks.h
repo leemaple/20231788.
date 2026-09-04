@@ -141,6 +141,7 @@ public:
     explicit DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context);
 
     CiphertextPair DCP(const ReadOnlyCiphertext& ciphertext) const;
+    CiphertextPair Add(const CiphertextPair& left, const CiphertextPair& right) const;
     TensorCiphertextPair Tensor2(const CiphertextPair& left, const CiphertextPair& right) const;
     CiphertextPair Relin2(const TensorCiphertextPair& tensor) const;
     CiphertextPair RS2(const CiphertextPair& relinearized) const;
