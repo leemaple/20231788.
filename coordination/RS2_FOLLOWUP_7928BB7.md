@@ -48,9 +48,16 @@ MCP monthly16% used /84% remaining (reset2026-09-25 10:00).
 All ZCode sessions share this quota. No quota reset was redeemed. One bounded
 static follow-up dispatched; no zero-quota retry or weekly90% violation.
 
-## Pending execution and limits
-Deep-snapshot source21c13fd run33837174597; prime-role source7928bb7
-run33837253564. Collect terminal job logs before closing F3/F4/F9.
+## Executed coverage and remaining limits
+Deep-snapshot source21c13fd run33837174597 completed success: Linux43/43
+(0.50s), Windows43/43 (1.02s). Prime-role source7928bb7 run33837253564 also
+completed success: Linux43/43 (0.60s), Windows43/43 (1.01s). Warning and API
+builds passed on both; complete project configure/build/CTest sections are
+retained in artifacts/tdd/rs2-deep-immutability/green.txt and
+artifacts/tdd/rs2-prime-role-witness/green.txt. These results arrived after the
+packet was prepared; live external reviews were not interrupted to resend them.
+F3/F4/F9 runtime coverage is now verified in the exercised cases. Independent
+follow-up verdicts and any requested production-mutation experiments remain pending.
 The actual production source remains68d0d98 plus prior implementation; latest
 changes are coverage extensions, not fabricated new red-green implementation.
 No decoded multiplication, non-wrap theorem acceptance or53/106-bit claim.

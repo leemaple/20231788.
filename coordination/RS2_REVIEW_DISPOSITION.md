@@ -76,3 +76,24 @@ not a local OpenFHE checkout.
 
 These definitions remove the missing wrapper-source inference; the exact runtime
 CRT/metadata tests remain necessary evidence for the exercised parameter regimes.
+
+## Follow-up coverage execution (after packet preparation)
+
+F3/F4: source21c13fd3636d6ec9aa9f2a8ae5938e6a427b3d2a, run33837174597
+completed success: Linux43/43 (0.50s), Windows43/43 (1.02s). Both warning/API
+builds passed. Retained-cache own/unrelated rows and every snapshotted A/B
+native value/parameter field passed unchanged; existing input/result snapshots
+now include by-value parameter and native-format evidence.
+
+F9: source7928bb7634baa3603daf32806d70bd790938a353, run33837253564
+completed success: Linux43/43 (0.60s), Windows43/43 (1.01s), warning/API
+builds passed. The deterministic incorrect-divisor quotient comparison and
+low-correction comparison both discriminate within the exercised fixture.
+
+The earlier table records status when the review packet was built; these
+terminal results supersede its hosted-execution-pending entries. Full sections
+are in artifacts/tdd/rs2-deep-immutability/green.txt and
+artifacts/tdd/rs2-prime-role-witness/green.txt. Pro and local ZCode received the
+complete7928bb7 packet once; follow-up verdicts remain pending. No executed
+production mutation, exhaustive parameter-corruption safety, decoded accuracy
+or full-project acceptance is claimed from these43 tests.
