@@ -27,7 +27,7 @@ Observed 2026-09-04, Asia/Shanghai. This is an active handoff, not completed imp
 - Same verified source packet, plus the narrowly scoped brief; read-only terminal invocation. No browser Fable, no fallback model.
 - CLI selected `claude-fable-5-1`, effort `high`, $5 maximum, safe/restricted mode, strict empty MCP, only Read, no session persistence. Init emitted model `claude-fable-5-1`, session `43517920-82af-4378-83d9-a93c083811d0`; execution handle `13844`.
 - Visible-text/model/result log (thinking content excluded): `/private/tmp/mult2-pro-handoff.sL0Vg8/terminal-visible.jsonl`.
-- Status at this checkpoint: running; no usable final decision yet. Do not infer completion from the init identity alone.
+- Terminal outcome: failed before model inference. Handle `13844` exited 1 with `403 Request not allowed`, `is_error: true`, `terminal_reason: api_error`, zero input/output tokens, zero cost, and an empty `modelUsage`. The init selected-model string is not evidence of a successful Fable 5.1 consultation. No mathematical decision was returned; no retry or alternate model is silently substituted. Pro and executable evidence continue.
 
 ## ZCode quota recovered
 
