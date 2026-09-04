@@ -128,3 +128,21 @@ Job identity/head/run and API-step outcomes are retained in
 coordination/evidence/pair-mult2-composition/add-linux-cdc4711.json.
 Windows job101013240269 remained live on this same source when observed;
 no Windows result is inferred. Stage2 remains unapplied until that outcome.
+
+## Stage1 GREEN confirmed on both platforms
+Run33869933158 completed SUCCESS at the exact frozen cdc4711840c2d6bb7c390e8597d730ae335ee34e.
+Windows job101013240269 completed20:00:01 Asia/Shanghai2026-09-04.
+Its default warning build, all5 explicit API targets and both CTest steps PASS.
+Focused Add1/1 (case0.09s,total0.10s), full54/54,total2.19s.
+Actual54 unique names independently match unchanged current CMake; two genuine
+Add certificates are present for its separate focused/full executions.
+Retained full project configure/build/focused/full/API section:
+artifacts/tdd/pair-mult2-composition/add-windows.txt,62048bytes,
+SHA256 6dd616701d0ff0f5c4f0f7b6024b553347238f43f975591d64f7634bad7f7d0e.
+Only ANSI/CR/trailing whitespace normalized. Metadata and records are retained
+in coordination/evidence/pair-mult2-composition/add-windows-cdc4711.json.
+The original Pro stage1 CMake/test hashes remain unchanged. No first-outcome
+failure, threshold tuning, production patch or fake red was introduced.
+This satisfies the stage1 execution boundary; the original archived stage2 may
+now be applied unchanged, then frozen and observed separately. It does not
+establish the still-unapplied Sub composition or high-precision/repeated use.
