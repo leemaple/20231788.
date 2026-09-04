@@ -185,3 +185,20 @@ first hosted result is pending; do not manufacture a missing-behavior red or cal
 the newly registered44-test suite passed. Real COMPLEX lifecycle coverage and
 negative-order/compatibility witnesses remain subsequent independent slices.
 No local OpenFHE compilation or cryptographic execution occurred.
+
+## Controlled CRT regression observed on both hosts
+
+Source d4419afcd0818d3b122e91f57f0b1c43da8cbe32, run
+https://github.com/leemaple/20231788./actions/runs/33843650508:
+Linux100930842605:44/44,0.57s; Windows100930842388:44/44,1.35s.
+The newly registered pair_arithmetic_controlled_oracle passed in0.04s and0.33s
+respectively. Both warning-as-error/default builds and explicit Relin2/RS2/Add/Sub
+API targets passed. Complete project log sections are retained under
+artifacts/tdd/pair-controlled-oracle/. ANSI/CR and trailing whitespace only were
+normalized; numerical values and actual outcomes are unchanged.
+
+This is the first actual execution of the additional exact coefficient/CRT
+coverage, not a new production red-green cycle. It does not cover the unintegrated
+public-lifecycle keyless matrix or malformed-operand matrix, genuine canonical
+precision, repeated multiplication, or merged later-RS2 fixes. Those remain
+explicit next boundaries; no missing coverage is inferred from44 green tests.
