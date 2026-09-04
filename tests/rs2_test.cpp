@@ -667,6 +667,36 @@ void TestValidArithmeticStateImmutability() {
     lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
 }
 
+void TestMixedTowerFormat() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    context->EvalMultKeyGen(keys.secretKey);
+    const auto plaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    DoubleCKKS module(context);
+    const auto left = module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    const auto right = module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    const auto tensor = module.Tensor2(left, right);
+
+    for (const bool corruptHigh : {true, false}) {
+        const auto input = module.Relin2(tensor);
+        auto member = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(
+            corruptHigh ? input.GetHigh() : input.GetLow());
+        auto& element = member->GetElements().at(0);
+        element.GetAllElements().at(0).SetFormat(Format::COEFFICIENT);
+        Check(element.GetFormat() == Format::EVALUATION,
+              "RS2 mixed-format fixture changed the aggregate format");
+        Check(element.GetAllElements().at(0).GetFormat() == Format::COEFFICIENT,
+              "RS2 mixed-format fixture did not corrupt an individual tower");
+        const auto before = SnapshotPair(input, "RS2 mixed-format input");
+        const std::string memberName = corruptHigh ? "pair high" : "pair low";
+        CheckThrowsInvalidArgument(
+            [&] { (void)module.RS2(input); },
+            "DoubleCKKS: " + memberName + " tower must be in evaluation format");
+        CheckPairUnchanged(input, before, "RS2 mixed-format input after rejection");
+    }
+    lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -680,6 +710,9 @@ int main(int argc, char** argv) {
         }
         else if (name == "valid_arithmetic_state_immutability") {
             TestValidArithmeticStateImmutability();
+        }
+        else if (name == "mixed_tower_format") {
+            TestMixedTowerFormat();
         }
         else {
             throw TestFailure("unknown RS2 case: " + name);
