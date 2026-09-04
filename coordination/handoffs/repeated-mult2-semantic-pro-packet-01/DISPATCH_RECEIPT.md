@@ -51,18 +51,22 @@ performed on the Mac while preparing this packet.
 
 ## External dispatch
 
-Status: `PREPARED_NOT_SENT`.
+Status: `SENT_RUNNING`.
 
 The target is the existing ChatGPT Pro conversation `Repeated Mult2 Design and
 TDD`, URL
 `https://chatgpt.com/c/6a9ac2d5-5c3c-83ec-8ba4-9ca45239118c`.
-Record the exact send time and visible running/accepted state here after the
-single upload and submission. Do not refresh, interrupt, duplicate or resend a
-long-running response.
+Do not refresh, interrupt, duplicate or resend its long-running response.
 
 At 2026-09-05 06:10 Asia/Shanghai, the verified ZIP was uploaded into that
 conversation and the exact frozen dispatch prompt was placed in the composer.
 The attachment name is visible, the prompt matches `DISPATCH_PROMPT.md` after
 browser whitespace normalization (SHA-256
 `34005e0a3689a89786969e55cbe3cc87bd4b2569b8ff9c3ce2746b450e682cad`),
-and the `Send prompt` control is visible. It has not been clicked.
+and the `Send prompt` control was visible before submission.
+
+Submitted once at 2026-09-05 06:42:26 Asia/Shanghai. Immediately afterward the
+composer was empty, the attachment was no longer a draft, the submitted message
+visibly contained the expected ZIP filename, and the page showed `Pro thinking`
+with `Stop answering`. This proves the task was accepted and running; it does
+not prove that the attachment was parsed, code was produced, or any test passed.
