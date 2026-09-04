@@ -187,3 +187,5 @@ add_test(NAME mult2_e2e_bv_real COMMAND mult2_e2e_oracle_test bv_real)
 add_test(NAME mult2_e2e_bv_complex COMMAND mult2_e2e_oracle_test bv_complex)
 add_test(NAME mult2_pair_add_input_hybrid_complex
          COMMAND mult2_e2e_oracle_test pair_add_input_hybrid_complex)
+add_test(NAME mult2_pair_sub_input_hybrid_complex
+         COMMAND mult2_e2e_oracle_test pair_sub_input_hybrid_complex)

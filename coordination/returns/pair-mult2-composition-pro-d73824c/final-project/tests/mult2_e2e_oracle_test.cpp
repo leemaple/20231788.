@@ -1174,6 +1174,7 @@ void RunCase(const std::string& caseName,
 
 enum class PairInputOperation {
     Add,
+    Sub,
 };
 
 CiphertextPair ComposeFirstMultInput(const DoubleCKKS& module,
@@ -1182,6 +1183,9 @@ CiphertextPair ComposeFirstMultInput(const DoubleCKKS& module,
                                      PairInputOperation operation) {
     if (operation == PairInputOperation::Add) {
         return module.Add(left, right);
+    }
+    if (operation == PairInputOperation::Sub) {
+        return module.Sub(left, right);
     }
     throw TestFailure("unsupported pair-input arithmetic operation");
 }
@@ -1192,6 +1196,10 @@ BigInt ExpectedPairInputCoefficient(const BigInt& left,
                                     PairInputOperation operation) {
     if (operation == PairInputOperation::Add) {
         const BigInt materialized = BigInt(left + right);
+        return Center(materialized, modulus);
+    }
+    if (operation == PairInputOperation::Sub) {
+        const BigInt materialized = BigInt(left - right);
         return Center(materialized, modulus);
     }
     throw TestFailure("unsupported pair-input arithmetic oracle operation");
@@ -1232,6 +1240,9 @@ void CheckFrozenPairHostArithmetic(
         std::complex<double> materialized;
         if (operation == PairInputOperation::Add) {
             materialized = left[slot] + right[slot];
+        }
+        else if (operation == PairInputOperation::Sub) {
+            materialized = left[slot] - right[slot];
         }
         else {
             throw TestFailure("unsupported frozen host arithmetic operation");
@@ -1517,6 +1528,28 @@ std::vector<std::complex<double>> FrozenPairSumTimesMultiplierValues() {
             {0.015625, 0.015625}};
 }
 
+std::vector<std::complex<double>> FrozenPairDifferenceValues() {
+    return {{0.0625, -0.09375},
+            {-0.375, 0.1875},
+            {0.0, -0.0625},
+            {0.09375, 0.0},
+            {-0.1875, -0.375},
+            {std::ldexp(1.0, -19), -3.0 * std::ldexp(1.0, -22)},
+            {0.25, -0.03125},
+            {-0.0625, 0.1875}};
+}
+
+std::vector<std::complex<double>> FrozenPairDifferenceTimesMultiplierValues() {
+    return {{-0.00390625, 0.03125},
+            {-0.0703125, -0.0234375},
+            {0.0, 0.0078125},
+            {0.0, -0.0234375},
+            {-0.09375, -0.0703125},
+            {19.0 * std::ldexp(1.0, -24), std::ldexp(1.0, -23)},
+            {-0.0234375, 0.06640625},
+            {-0.015625, 0.046875}};
+}
+
 void RunSelectedCase(const std::string& name) {
     const std::vector<double> realLeft{
         0.0, std::ldexp(1.0, -20), -std::ldexp(1.0, -20), 0.125,
@@ -1569,6 +1602,16 @@ void RunSelectedCase(const std::string& name) {
             name, PairInputOperation::Add, left, right, multiplier, sum, product);
         return;
     }
+    if (name == "pair_sub_input_hybrid_complex") {
+        const auto left = FrozenPairLeftValues();
+        const auto right = FrozenPairRightValues();
+        const auto multiplier = FrozenPairMultiplierValues();
+        const auto difference = FrozenPairDifferenceValues();
+        const auto product = FrozenPairDifferenceTimesMultiplierValues();
+        RunPairArithmeticInputCase(
+            name, PairInputOperation::Sub, left, right, multiplier, difference, product);
+        return;
+    }
     throw TestFailure("unknown Mult2 end-to-end case: " + name);
 }
 
@@ -1578,7 +1621,7 @@ int main(int argc, char** argv) {
     if (argc != 2) {
         std::cerr << "usage: mult2_e2e_oracle_test "
                      "hybrid_real|hybrid_complex|bv_real|bv_complex|"
-                     "pair_add_input_hybrid_complex\n";
+                     "pair_add_input_hybrid_complex|pair_sub_input_hybrid_complex\n";
         return 2;
     }
 
