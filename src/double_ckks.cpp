@@ -332,6 +332,9 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
         }
         const auto& towers = element.GetAllElements();
         for (std::size_t index = 0; index < towers.size(); ++index) {
+            if (towers[index].GetFormat() != Format::EVALUATION) {
+                Invalid(std::string(label) + " tower must be in evaluation format");
+            }
             if (towers[index].GetRootOfUnity() != expectedTowerParameters[index]->GetRootOfUnity() ||
                 towers[index].GetCyclotomicOrder() != expectedTowerParameters[index]->GetCyclotomicOrder()) {
                 Invalid(std::string(label) + " tower parameters do not match the bound context");

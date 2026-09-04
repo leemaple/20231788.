@@ -200,14 +200,14 @@ void CheckThrowsInvalidArgument(Function&& function, const std::string& expected
     }
     catch (const std::invalid_argument& exception) {
         Check(exception.what() == expectedMessage,
-              "RS2 wrong-lifecycle diagnostic mismatch: " + std::string(exception.what()));
+              "RS2 rejection diagnostic mismatch: " + std::string(exception.what()));
         threw = true;
     }
     catch (const std::exception& exception) {
-        throw TestFailure("RS2 wrong lifecycle threw the wrong exception type: " +
+        throw TestFailure("RS2 rejection threw the wrong exception type: " +
                           std::string(exception.what()));
     }
-    Check(threw, "RS2 wrong lifecycle did not fail fast");
+    Check(threw, "RS2 invalid input did not fail fast");
 }
 
 BigInt PositiveMod(BigInt value, const BigInt& modulus) {
