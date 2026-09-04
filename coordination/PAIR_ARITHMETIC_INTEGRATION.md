@@ -237,3 +237,18 @@ pending; no local compilation/crypto, precision, universal theorem, repeated
 multiplication or merged-branch acceptance is claimed. Owner Codex: preserve
 any actual failure and investigate before changing assertions; otherwise retain
 both-host logs, then proceed to negative contracts and independent final review.
+
+## Public lifecycle/keyless regression observed on both hosts
+
+Sourceaf35784e540d556a3af231f8f1a7bd374c49649d, run
+https://github.com/leemaple/20231788./actions/runs/33850393475:
+Linux10095161767045/45,0.53s; Windows10095161786545/45,1.65s.
+The added pair_arithmetic_public_lifecycles_keyless case passed in0.04s and0.34s
+respectively. Warning-clean default and explicit Relin2/RS2/Add/Sub API builds
+passed on BOTH hosts. Complete project configure/build/CTest/API sections are
+retained under artifacts/tdd/pair-public-lifecycles/. Only ANSI/CR/trailing
+whitespace were normalized. The committed test SHA256 is
+c680b795858edbc914d9fa1b08e7ab813a3d7db4e10a0665308cc87eb65a2034.
+This closes the first hosted execution of this additional regression boundary;
+no new production behavior, high-precision acceptance, repeated multiplication
+or full hidden-state immutability proof is inferred. No Mac crypto/build ran.
