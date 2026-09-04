@@ -40,3 +40,13 @@ Task brief: coordination/tasks/FIRST_MULT2_PRECISION_FINAL_REVIEW_E482362.md.
 Expected output: dedicated-folder output/REVIEW.md and output/MANIFEST.sha256.
 OwnerCodex will verify input immutability, read complete return, reconcile all
 findings against source/logs, and archive exact bytes before acceptance.
+
+## Completed return, 2026-09-04
+Review completed (UI Worked20m41s); exact original416-line return and sidecar
+are archived under coordination/returns/first-mult2-precision-zcode-final-e482362/.
+Input119-file immutability and root task wrapper were independently verified.
+The main agent accepted the narrow diagnostic after correcting six classes of
+review-prose inaccuracies; see FIRST_MULT2_PRECISION_ZCODE_FINAL_DISPOSITION.md.
+P0/P1=0, P2=5 with explicit dispositions; automated stale-cache guard remains
+due at the next precision integration boundary. This supersedes the historical
+LIVE status above without changing its original dispatch evidence.
