@@ -4,6 +4,7 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -368,7 +369,8 @@ std::vector<BigInt> BoundaryValues(const BigInt& droppedModulus,
     return result;
 }
 
-CryptoContext<DCRTPoly> MakeContext() {
+CryptoContext<DCRTPoly> MakeContext(
+    lbcrypto::KeySwitchTechnique keySwitchTechnique = lbcrypto::HYBRID) {
     lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
     parameters.SetMultiplicativeDepth(3);
     parameters.SetScalingModSize(30);
@@ -377,6 +379,8 @@ CryptoContext<DCRTPoly> MakeContext() {
     parameters.SetSecurityLevel(lbcrypto::HEStd_NotSet);
     parameters.SetRingDim(32);
     parameters.SetBatchSize(8);
+    parameters.SetKeySwitchTechnique(keySwitchTechnique);
+    parameters.SetDigitSize(0);
 
     auto context = lbcrypto::GenCryptoContext(parameters);
     context->Enable(lbcrypto::PKE);
@@ -533,7 +537,8 @@ void CheckResultState(const CiphertextPair& result,
 
 void CheckExactArithmeticOracle(DoubleCKKS& module,
                                 const CiphertextPair& input,
-                                const CiphertextPair& result) {
+                                const CiphertextPair& result,
+                                bool requireLowCorrectionWitness = true) {
     const BigInt divisor(input.GetDivisor().ConvertToInt());
     const auto sourceModuli = GetModuli(input.GetHigh()->GetElements().front());
     const auto targetModuli = GetModuli(result.GetHigh()->GetElements().front());
@@ -604,8 +609,10 @@ void CheckExactArithmeticOracle(DoubleCKKS& module,
             }
         }
     }
-    Check(differsFromDirectLowRescale,
-          "RS2 witnesses do not distinguish the required two-RS construction from RS(low)");
+    if (requireLowCorrectionWitness) {
+        Check(differsFromDirectLowRescale,
+              "RS2 witnesses do not distinguish the required two-RS construction from RS(low)");
+    }
 }
 
 void TestWrongLifecycle() {
@@ -667,6 +674,58 @@ void TestValidArithmeticStateImmutability() {
     lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
 }
 
+void TestUntouchedPublicPipeline() {
+    const std::vector<std::complex<double>> leftValues{
+        {0.25, 0.0}, {-0.125, 0.0}, {0.0, 0.0}, {0.0, 0.25},
+        {0.125, -0.0625}, {-0.25, 0.125}, {0x1p-20, -0x1p-21}, {-0x1p-18, 0.0}};
+    const std::vector<std::complex<double>> rightValues{
+        {-0.5, 0.0}, {0.25, 0.0}, {0.125, 0.0625}, {0.0, -0.125},
+        {-0.25, 0.125}, {0.0625, 0.25}, {-0x1p-19, 0x1p-20}, {0.0, 0.0}};
+
+    for (const auto technique : {lbcrypto::HYBRID, lbcrypto::BV}) {
+        auto context = MakeContext(technique);
+        const auto keys = context->KeyGen();
+        context->EvalMultKeyGen(keys.secretKey);
+        const auto leftInput = context->Encrypt(
+            context->MakeCKKSPackedPlaintext(leftValues, 2, 0), keys.publicKey);
+        const auto rightInput = context->Encrypt(
+            context->MakeCKKSPackedPlaintext(rightValues, 2, 0), keys.publicKey);
+        const auto leftInputBefore = SnapshotCiphertext(leftInput, "public left ciphertext");
+        const auto rightInputBefore = SnapshotCiphertext(rightInput, "public right ciphertext");
+        DoubleCKKS module(context);
+        const auto left = module.DCP(leftInput);
+        const auto right = module.DCP(rightInput);
+        const auto leftBefore = SnapshotPair(left, "public left pair");
+        const auto rightBefore = SnapshotPair(right, "public right pair");
+        const auto tensor = module.Tensor2(left, right);
+        const auto relinearized = module.Relin2(tensor);
+        const auto before = SnapshotPair(relinearized, "untouched RS2 input");
+
+        // RS2 needs no evaluation key after the genuine Relin2 boundary.
+        const auto keyTag = keys.secretKey->GetKeyTag();
+        Check(!keyTag.empty(), "public pipeline key tag must not be empty");
+        lbcrypto::CryptoContextImpl<DCRTPoly>::ClearEvalMultKeys(keyTag);
+        const auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+        Check(evaluationKeys.find(keyTag) == evaluationKeys.end(),
+              "public pipeline did not remove its evaluation key");
+        const auto evaluationKeysBefore = evaluationKeys;
+
+        const auto result = module.RS2(relinearized);
+        CheckResultState(result, relinearized, before, context);
+        // Every coefficient is checked; the fixed controlled fixture separately
+        // guarantees shortcut discrimination without depending on encryption randomness.
+        CheckExactArithmeticOracle(module, relinearized, result, false);
+        CheckPairUnchanged(relinearized, before, "untouched RS2 input");
+        CheckPairUnchanged(left, leftBefore, "public left pair");
+        CheckPairUnchanged(right, rightBefore, "public right pair");
+        CheckCiphertextUnchanged(leftInput, leftInputBefore, "public left ciphertext");
+        CheckCiphertextUnchanged(rightInput, rightInputBefore, "public right ciphertext");
+        Check(evaluationKeys == evaluationKeysBefore,
+              "keyless RS2 or RCB changed the evaluation-key cache");
+        lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
+    }
+}
+
 void TestMixedTowerFormat() {
     auto context = MakeContext();
     const auto keys = context->KeyGen();
@@ -713,6 +772,9 @@ int main(int argc, char** argv) {
         }
         else if (name == "mixed_tower_format") {
             TestMixedTowerFormat();
+        }
+        else if (name == "untouched_public_pipeline") {
+            TestUntouchedPublicPipeline();
         }
         else {
             throw TestFailure("unknown RS2 case: " + name);
