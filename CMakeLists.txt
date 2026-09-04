@@ -143,3 +143,6 @@ add_test(NAME rs2_valid_arithmetic_state_immutability
 
 add_test(NAME mult2_composition_contract COMMAND mult2_test composition_contract)
 add_test(NAME mult2_e2e_hybrid_real COMMAND mult2_e2e_oracle_test hybrid_real)
+add_test(NAME mult2_e2e_hybrid_complex COMMAND mult2_e2e_oracle_test hybrid_complex)
+add_test(NAME mult2_e2e_bv_real COMMAND mult2_e2e_oracle_test bv_real)
+add_test(NAME mult2_e2e_bv_complex COMMAND mult2_e2e_oracle_test bv_complex)

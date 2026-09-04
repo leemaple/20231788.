@@ -53,3 +53,26 @@ Next owner Codex: inspect the exact hosted first result; preserve any failure
 before deciding a minimal correction. Do not tune thresholds to fit output.
 Then advance the other supported key-switch/data-type cases and negative cases,
 and submit the verified arithmetic boundary for independent review.
+
+## Observed first certificate on both hosts
+
+Source d4140714f8d0c1a9057235f60ee8b81095f82653, run33839291805:
+https://github.com/leemaple/20231788./actions/runs/33839291805
+Linux job100918101982:41/41,0.45s; Windows job100918101847:41/41,0.71s.
+Both warning-clean builds and explicit Relin2/RS2/Mult2 API targets passed.
+Raw project/verbose-test sections are retained in artifacts/tdd/mult2-coefficient-oracle/.
+
+Both used7 active towers, Q_l215bits, q_div1073741953 and q_l1073741441;
+logical/recorded ratio1.00000023655603276. Independent coefficient error and
+execution-specific bound/non-wrap checks passed. Linux observed corrected
+logical-slot max error1.70335388852251439e-08; Windows9.57152870503796827e-09.
+These are two random-key executions of the frozen real functional fixture,
+not a reproducible seeded cryptographic distribution or a guaranteed precision
+bound. The first composition test uses a different key and prints different
+error values; do not conflate it with the new coefficient-oracle certificate.
+Conservative E_Relin remains unavailable, universal_theorem_gate=UNPROVED.
+
+Next coverage boundary registers the same audited independent oracle for
+HYBRID/COMPLEX and BV digit0 REAL/COMPLEX. No production implementation or
+threshold changes; this extends the parameter/data-type matrix of the already
+red-green Mult2 seam. New matrix execution remains pending.
