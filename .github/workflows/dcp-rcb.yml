@@ -98,6 +98,9 @@ jobs:
       - name: Build Add public API contract
         run: cmake --build build --target add_api_contract_test --parallel 2
 
+      - name: Build Sub public API contract
+        run: cmake --build build --target sub_api_contract_test --parallel 2
+
   windows-mingw64:
     runs-on: windows-2022
     timeout-minutes: 60
@@ -242,3 +245,10 @@ jobs:
         run: |
           build="$(cygpath -u "$PROJECT_BUILD")"
           cmake --build "$build" --target add_api_contract_test --parallel 2
+
+      - name: Build Sub public API contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target sub_api_contract_test --parallel 2
