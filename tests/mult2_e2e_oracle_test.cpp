@@ -720,6 +720,13 @@ ArithmeticCertificate CheckIndependentArithmetic(
           "independent plaintext ring dimensions differ");
     const BigInt n(ringDimension);
     const BigInt h(hammingWeight);
+    std::cout << "[DEBUG-mult2-bv-bound]"
+              << " q_div=" << qDiv << " q_l=" << qL
+              << " empirical_E_Relin=" << empiricalRelinError
+              << " empirical_pair_relin_error=" << empiricalPairRelinError
+              << " secret_h=" << hammingWeight
+              << " input_Q_l=" << qLProduct
+              << " oracle_basis_agreement=true\n";
     Check(empiricalPairRelinError <= empiricalRelinError + h,
           "pair relinearization error exceeded empirical E_Relin + h");
     const BigInt inputEnvelope = mHigh * qDiv + mLow;
@@ -1048,4 +1055,3 @@ int main(int argc, char** argv) {
         return 1;
     }
 }
-
