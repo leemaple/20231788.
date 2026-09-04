@@ -27,7 +27,7 @@ matched. Return directory Gitleaks8.30.1 scan found no secrets.
 | F6: only first element/tower corrupted | Accurately scoped partial fixture coverage; no claim that every corruption position was executed. | Codex |
 | F7: dotted repository URL | Already verified from actual fetch/push and CI; no change. | Codex |
 | F8: minimal tower boundary | Existing deliberate boundary retained; no automatic relaxation. | Codex |
-| F9: prime-role mutation evidence | Do not conflate metadata-swap rejection with mathematical quotient discrimination. Current controlled oracle checks two prime roles, but an explicit q_div-v-q_l quotient witness and executed production mutations remain future coverage. | Codex |
+| F9: prime-role mutation evidence | Added deterministic positive/negative half-boundary coefficients for the smaller of q_div and q_l, with an independent incorrect-q_div quotient comparison required to differ in an actual output residue. Hosted execution pending. This is mathematical witness coverage, not a metadata-swap test or an executed production mutation; production mutation execution remains unclaimed. | Codex |
 
 ## Codex disagreement: declared versus actual RNS basis
 

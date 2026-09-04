@@ -549,8 +549,15 @@ void InstallControlledValues(const CiphertextPair& pair) {
     highElements.reserve(2);
     lowElements.reserve(2);
     for (std::size_t component = 0; component < 2; ++component) {
-        const auto highValues = BoundaryValues(droppedModulus, sourceModulus, ringDimension,
-                                               component * 5);
+        auto highValues = BoundaryValues(droppedModulus, sourceModulus, ringDimension,
+                                         component * 5);
+        Check(divisor != droppedModulus, "RS2 prime-role fixture requires distinct primes");
+        // At the smaller odd prime's first upper-half integer, rounding gives
+        // one for that divisor and zero for the larger prime (and -1/0 below).
+        // Keep the full 21-entry boundary set in the preceding coefficients.
+        const BigInt smallerPrime = divisor < droppedModulus ? divisor : droppedModulus;
+        highValues[ringDimension - 2] = smallerPrime / 2 + 1;
+        highValues[ringDimension - 1] = -(smallerPrime / 2 + 1);
         const auto recombinedValues = BoundaryValues(droppedModulus, sourceModulus, ringDimension,
                                                      component * 7 + 3);
         std::vector<BigInt> lowValues(ringDimension);
@@ -678,7 +685,7 @@ void CheckResultState(const CiphertextPair& result,
 void CheckExactArithmeticOracle(DoubleCKKS& module,
                                 const CiphertextPair& input,
                                 const CiphertextPair& result,
-                                bool requireLowCorrectionWitness = true) {
+                                bool requireControlledWitnesses = true) {
     const BigInt divisor(input.GetDivisor().ConvertToInt());
     const auto sourceModuli = GetModuli(input.GetHigh()->GetElements().front());
     const auto targetModuli = GetModuli(result.GetHigh()->GetElements().front());
@@ -709,6 +716,7 @@ void CheckExactArithmeticOracle(DoubleCKKS& module,
           "RS2 public RCB recorded scaling factor mismatch");
 
     bool differsFromDirectLowRescale = false;
+    bool differsFromDivisorQuotient = false;
     for (std::size_t component = 0; component < 2; ++component) {
         const auto inputHigh = ToCoefficient(input.GetHigh()->GetElements().at(component));
         const auto inputLow = ToCoefficient(input.GetLow()->GetElements().at(component));
@@ -727,6 +735,9 @@ void CheckExactArithmeticOracle(DoubleCKKS& module,
             const BigInt expectedLow = rescaledRecombined - divisor * rescaledHigh;
             const BigInt directLowRescale =
                 RescaleCentered(low, sourceModulus, droppedModulus);
+            // Deliberately incorrect comparison model: divide by q_div, not
+            // the consumed active prime q_l. This is not a production mutation.
+            const BigInt wrongDivisorQuotient = RescaleCentered(high, sourceModulus, divisor);
 
             for (std::size_t tower = 0; tower < targetModuli.size(); ++tower) {
                 const BigInt expectedHighResidue = PositiveMod(rescaledHigh, targetModuli[tower]);
@@ -746,12 +757,17 @@ void CheckExactArithmeticOracle(DoubleCKKS& module,
                 if (expectedLowResidue != PositiveMod(directLowRescale, targetModuli[tower])) {
                     differsFromDirectLowRescale = true;
                 }
+                if (expectedHighResidue != PositiveMod(wrongDivisorQuotient, targetModuli[tower])) {
+                    differsFromDivisorQuotient = true;
+                }
             }
         }
     }
-    if (requireLowCorrectionWitness) {
+    if (requireControlledWitnesses) {
         Check(differsFromDirectLowRescale,
               "RS2 witnesses do not distinguish the required two-RS construction from RS(low)");
+        Check(differsFromDivisorQuotient,
+              "RS2 witnesses do not distinguish division by q_l from division by q_div");
     }
 }
 
