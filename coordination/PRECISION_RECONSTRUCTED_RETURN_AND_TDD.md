@@ -223,3 +223,55 @@ ONLY tests/precision_dcp_rcb_fixture.cpp to the reviewed fresh2^100 construction
 with its three same Format namespace corrections. Contract/header/CMake/CI
 remain exactly bound by precision-runtime-contract-e38764a.json. No precision
 green or new four-trial result is claimed before its new hosted execution.
+
+## Fixture-only GREEN confirmed on both hosts
+
+Observation: 2026-09-04 18:49 Asia/Shanghai. Exact tested/pushed source:
+bd141806bd1e0b1dad80c7ad47bfd92fc334db55, run33864080896:
+https://github.com/leemaple/20231788./actions/runs/33864080896
+Linux job100994829226 SUCCESS,54/54,1.19s total; precision case0.05s.
+Windows job100994829374 SUCCESS,54/54,1.98s total; precision case0.06s.
+Both default warning builds and all five explicit Relin2/RS2/Mult2/Add/Sub
+public API build steps SUCCESS. Linux reused the provenance-verified pristine
+install cache; Windows configured and built the pinned upstream source.
+No Mac project build or cryptographic test was run.
+
+Codex independently parsed each actual54-case result against current CMake:
+exact unique-name closure, every case PASS. Each host actually logged trials
+0,1,2,3 with fresh keys and the final precision-contract PASS. All16 slots and
+the delta are checked at each trial by the unchanged positive2^-80 gate.
+The largest observed delta error across eight trials is
+5.9416098364710929682297021517222122255998e-28 (Windows trial2);
+the largest observed all-slot error is
+5.0925606891564857369051272102149462810231e-28 (Windows trial2).
+These are sampled diagnostic absolute errors, not universal precision bounds.
+Every trial records N64,batch16,scale_bits100,q_div1125899906843009,
+356 active-modulus bits,98 maximum centered-coefficient bits and258 approximate
+headroom bits. Security remains HEStd_NotSet(functional-diagnostic-only).
+
+Retained complete project build/CTest/API log sections:
+- artifacts/tdd/precision-dcp-rcb/green-linux.txt
+  SHA256 2fb529a2893a639bc3acfafa6c958490ba1b062e79c8a2f65d6b36af437fa591
+- artifacts/tdd/precision-dcp-rcb/green-windows.txt
+  SHA256 e1aa380ece42b92c427f712d152f41315942ce8c509603958fb9a565e621c6c8
+New retained logs normalize ANSI escapes/CR/trailing whitespace only.
+No historical log was rewritten. Parsed trial values are also retained in
+coordination/evidence/precision-dcp-rcb/dual-platform-green-bd141806.json.
+
+Rechecked on disk: contract/header/CMake/workflow hashes match the runtime-RED
+freeze exactly. The GREEN fixture matches4bcd633c...96 and the source commit
+changes ONLY tests/precision_dcp_rcb_fixture.cpp. Original53 tests, production
+source, API, constants, positive assertions and thresholds were not loosened.
+This closes the hosted runtime-red/fixture-only-green experiment for the
+DCP-to-RCB precursor. Independent final review remains required. It does NOT
+establish first Mult2 precision, repeated-use/refresh, production lossless I/O,
+Table3 reproduction, security, performance or full project completion.
+
+Next critical path: supply this exact current source and full evidence to Pro
+for an independent precursor audit plus a first-Mult2 high-precision tracer
+bullet. Freeze its independent oracle/inputs/tolerance before hosted execution;
+if existing production already passes a new regression, report first-observed
+GREEN rather than manufacturing a missing-feature RED. Independently review
+with available ZCode while Pro's BV premise task continues uninterrupted.
+The preceding observation turn yielded new Windows completion evidence and
+changed the next action from waiting to recording/reviewing the dual GREEN.
