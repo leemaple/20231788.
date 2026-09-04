@@ -75,3 +75,15 @@ small evidence-bound commits. Pro: current final precursor audit + next
 first-Mult2 draft. ZCode: independent precursor audit. Neither live agent is
 to be interrupted or resent. No user decision is currently required.
 This records dispatched tasks, not completed review or future precision success.
+
+## ZCode review received and reconciled, 2026-09-04 19:32-19:37
+The task is now titled OpenFHE Precision Review Q1-Q6 Audit; native UI confirms
+completion (25m14s,07:26PM) and unchanged GLM-5.3/Max. Full original review and
+manifest are retained in coordination/returns/precision-zcode-c9ee28d/.
+See coordination/ZCODE_PRECISION_PRECURSOR_DISPOSITION.md for the complete
+receipt, hash verification and disposition of every finding. In particular,
+F-1's unsigned-remainder allegation is DISPROVED by pinned SwitchModulus source
+and existing centered-boundary coefficient tests, not adopted as a code change.
+F-2's current Linux run binding was independently re-fetched and byte-matched;
+the label and future stale-cache guard nits have named follow-up owners.
+The separate Pro first-Mult2 task remains live and was not interrupted.
