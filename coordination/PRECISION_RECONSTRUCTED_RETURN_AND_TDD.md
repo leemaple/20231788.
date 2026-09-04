@@ -170,3 +170,36 @@ Do not call the old delivered aggregate byte-identical to the corrected candidat
 Hosted verification must still reach the original frozen positive2^-80 assertion
 before precision RED is accepted, then fixture-only green must preserve this
 corrected contract hash.
+
+## Genuine runtime RED observed on Linux
+
+Corrected source e38764ab16bc638182d95ff259943eee0987d537 was pushed and
+remote SHA matched. Run33863067661, Linux job100991676478: warning-clean
+default build and explicit Relin2/RS2 API builds passed. CTest actually ran54
+cases:53 passed; ONLY precision_dcp_rcb_high_precision_contract failed,0.95s
+total. At trial0 the unchanged positive delta2^-80 assertion reported
+1.44371708012868399100616073892039201145429249341635e-15.
+This is the intended lossy-fixture RED, not a production DCP/RCB defect.
+Control flow reached that gate after the monomial, input-collapse, metadata,
+basis, lifecycle and centered-coefficient-headroom checks. The failure stops
+trial0; no four-trial RED result or all-slot positive pass is implied.
+
+Complete project build/CTest log retained at
+artifacts/tdd/precision-dcp-rcb/red-linux.txt.
+Codex parsed actual54 names against CMake: exact closure, original53 PASS,
+only the new contract FAIL. The first parser missed spaces before Passed;
+correcting that parser (not any log/test) produced the exact54-case check.
+Mult2/Add/Sub explicit API steps occur after CTest and are skipped on this
+failing run; their success is not claimed. Windows remained in its original
+same-SHA warning build when this partial record was written.
+The runtime-red freeze is recorded in
+coordination/handoffs/precision-runtime-contract-e38764a.json.
+
+The archived proposal's old BV42/44 statements describe its original supplied
+baseline, not this current combined suite. Its suggested dependency that a
+future first-Mult2 precision experiment wait for BV resolution is not adopted:
+a HYBRID first-Mult2 experiment can proceed independently while BV is reviewed.
+Full paper6.3 remains the destination: approximately100-bit scale, eight
+repeated squarings, approximately81.8-bit reported error for t=2, ordered
+40-bit Div/60-bit Mult moduli and stated secure parameters. This small p50/50
+DCP/RCB tracer bullet does not establish those endpoints.
