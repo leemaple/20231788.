@@ -82,3 +82,63 @@ precision, repeated multiplication, conservative E_Relin or universal theorem.
 
 Owner Codex: retain probe CI, reconcile the backend proof gap, obtain the next
 independent reviewer at a tested boundary; precision Pro is a separate live task.
+
+## Observed Linux probe, Windows still live
+
+Source2936b5b5ac485fd528c41cb12577b50d38c2be57,
+https://github.com/leemaple/20231788./actions/runs/33844736013,
+Linux100934063985:42/44,0.93s. Only the two original BV assertions fail;
+all preceding coefficientwise high+low path identities passed in all4 cases.
+No path, basis or independent exact-arithmetic regression failed. Warning/default
+and Relin2/RS2 API targets passed; later Mult2 API step was skipped after red.
+
+BV REAL: ordinary E179278841604, pair206139699899, high180585569748,
+low244286890828, triangle424872460576, exact residual256624272918, h41.
+BV COMPLEX: ordinary E175017062761, pair264268905321, high163197013779,
+low265247037367, triangle428444051146, exact residual283467857424, h44.
+Both exact residuals exceed h while the independent path identities agree.
+HYBRID REAL residual9/h38 and COMPLEX residual16/h42 stayed within h for these
+executions only. Raw project sections retained in mult2-bv-path-probe/linux.txt.
+
+This observed result supports the backend-to-proof gap for these executions;
+it does not prove all production behavior, a conservative bound or precision.
+Windows100934063875 is still live building pristine OpenFHE. Patch0002 remains
+unapplied until both-host probe adjudication. No job cancellation/restart.
+
+## Windows terminal probe and conditional-certificate decision
+
+The same run33844736013 is now terminal on both platforms. Windows100934063875:
+42/44,1.19s, same two original BV assertions; every new coefficientwise high+low
+path identity passed. Warning/default and Relin2/RS2 APIs passed; later Mult2 API
+was skipped after red. Raw project sections saved BEFORE candidate edits.
+
+Windows BV REAL: ordinary187089566090, pair252147500187, high201960661565,
+low209725412505, triangle411686074070, residual287762848148, h43.
+Windows BV COMPLEX: ordinary207005538868, pair269853904025, high206666010309,
+low254774839099, triangle461440849408, residual383325805072, h47.
+HYBRID residuals16/h43 and19/h44 stayed within h for these executions.
+
+Codex independently reread pinned paper text280-312 and690-775, official
+base-leveledshe.cpp:319-340, keyswitch-bv.cpp:49-103/245-277,
+dcrtpoly-impl.h:230-250 and production Relin2's actual raised-high/low calls.
+BV CRT digits and noisy key rows do not justify the paper's single-rounding
+near-additivity transfer. Both-host probes discriminate this from a demonstrated
+wrapper composition defect. A conservative backend/domain theorem remains OPEN.
+
+Only after retaining those probes, candidate0002 is accepted for hosted TESTING:
+replace the invalid cross-execution sample bound with independent per-path
+triangle/error and non-wrap checks, retain the exact residual as a reported proof
+gap, and keep all44 named cases, vectors, parameters and1e-3 tolerance intact.
+The same-input coefficient identities and exact arithmetic regressions remain
+mandatory. No production file changes. The temporary debug prefix will be renamed
+to a permanent RELIN2-EXECUTION certificate label; numerical checks are unchanged.
+This is a corrected execution-test contract, NOT proof that the old inequality
+passed, a precision result, a universal paper proof, or full project completion.
+Conditional green execution and independent final review remain pending.
+
+Candidate after the diagnostic-label rename, before commit:
+tests/mult2_e2e_oracle_test.cpp SHA256
+b27c15ceb2ab886077701187cd9700d89aad9bf8feb3904cd0dfccd1c78e1b26.
+Retained probe logs SHA256: Linux
+a626b5f12e66a618952390492fdc6f42dea6d4d6412bda5887102cecfa79c180;
+Windows045f1c7faa8e5a2635aa4746b00dfd42e112a3d44bd7750c2950fc9191889f4a.

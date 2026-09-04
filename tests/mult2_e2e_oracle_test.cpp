@@ -875,10 +875,10 @@ ArithmeticCertificate CheckIndependentArithmetic(
           "independent plaintext ring dimensions differ");
     const BigInt n(ringDimension);
     const BigInt h(hammingWeight);
-    std::cout << "[DEBUG-mult2-bv-bound]"
+    std::cout << "[RELIN2-EXECUTION]"
               << " q_div=" << qDiv << " q_l=" << qL
-              << " empirical_E_Relin=" << empiricalRelinError
-              << " empirical_pair_relin_error=" << empiricalPairRelinError
+              << " ordinary_combined_relin_execution_error=" << empiricalRelinError
+              << " pair_relin_execution_error=" << empiricalPairRelinError
               << " high_path_relin_error=" << pathCertificate.highPathError
               << " low_path_relin_error=" << pathCertificate.lowPathError
               << " execution_relin2_triangle_bound=" << pathCertificate.triangleBound
@@ -888,11 +888,18 @@ ArithmeticCertificate CheckIndependentArithmetic(
               << " secret_h=" << hammingWeight
               << " input_Q_l=" << qLProduct
               << " oracle_basis_agreement=true\n";
-    Check(empiricalPairRelinError <= empiricalRelinError + h,
-          "pair relinearization error exceeded empirical E_Relin + h");
+    // A single ordinary Relinearize execution on the recombined Tensor is
+    // not a universal E_Relin and does not, without a backend-specific
+    // near-additivity argument, bound the two different Relin2 paths. The
+    // accepting execution certificate instead uses the independent
+    // high/low public-path errors above. This remains conditional on this exact
+    // key, ciphertexts, basis, and OpenFHE execution; it is not Theorem 4.8's
+    // universal gate.
+    Check(empiricalPairRelinError <= pathCertificate.triangleBound,
+          "Relin2 pair error exceeded the independent per-path execution bound");
     const BigInt inputEnvelope = mHigh * qDiv + mLow;
     const BigInt nonWrapLeft =
-        n * inputEnvelope * inputEnvelope + empiricalRelinError + h;
+        n * inputEnvelope * inputEnvelope + pathCertificate.triangleBound;
     Check(BigInt(2) * nonWrapLeft < qLProduct,
           "execution-specific non-wrap witness failed");
 
@@ -917,12 +924,15 @@ ArithmeticCertificate CheckIndependentArithmetic(
     }
     const BigInt coefficientErrorDenominator = qDiv * qL;
 
-    // This is the paper's expression with E_Relin instantiated by the measured
-    // error of this exact staged execution. It is an empirical certificate only;
-    // it is not a conservative universal E_Relin proof.
+    // Execution-only analogue of the corrected Theorem 4.8 expression. The
+    // Relin2 term is bounded by errors measured on the independently constructed
+    // high and low ordinary-Relinearize paths, not by the result error being
+    // accepted and not by assuming that the separate combined call bounds
+    // those paths. The final (h+1)/2 term
+    // remains the RS2 rounding term. No universal E_Relin is claimed.
     const BigInt empiricalBoundNumerator =
         BigInt(2) * n * mLow * mLow +
-        BigInt(2) * qDiv * (empiricalRelinError + h) +
+        BigInt(2) * qDiv * pathCertificate.triangleBound +
         qDiv * qL * (h + 1);
     const BigInt empiricalBoundDenominator = BigInt(2) * qDiv * qL;
     Check(BigInt(2) * coefficientErrorNumerator <= empiricalBoundNumerator,
@@ -1060,8 +1070,9 @@ void PrintCertificate(const std::string& caseName,
               << " M_high=" << arithmetic.mHigh
               << " M_low=" << arithmetic.mLow
               << " secret_h=" << arithmetic.secretHammingWeight
-              << " empirical_E_Relin=" << arithmetic.empiricalRelinError
-              << " empirical_pair_relin_error=" << arithmetic.empiricalPairRelinError
+              << " ordinary_combined_relin_execution_error="
+              << arithmetic.empiricalRelinError
+              << " pair_relin_execution_error=" << arithmetic.empiricalPairRelinError
               << " high_path_relin_error=" << arithmetic.highPathRelinError
               << " low_path_relin_error=" << arithmetic.lowPathRelinError
               << " execution_relin2_triangle_bound="
@@ -1069,13 +1080,14 @@ void PrintCertificate(const std::string& caseName,
               << " paper_additivity_residual=" << arithmetic.paperAdditivityResidual
               << " paper_additivity_execution_observed="
               << (arithmetic.paperAdditivityExecutionObserved ? "true" : "false")
+              << " execution_certificate=PER_PATH_CONDITIONAL"
               << " conservative_E_Relin_available=false"
               << " universal_theorem_gate=UNPROVED"
               << " execution_nonwrap_left=" << arithmetic.nonWrapLeft
               << " execution_nonwrap_right_Q_l_over_2=" << arithmetic.qLProduct / 2
               << " coefficient_error=" << arithmetic.coefficientErrorNumerator
               << '/' << arithmetic.coefficientErrorDenominator
-              << " empirical_bound=" << arithmetic.empiricalBoundNumerator
+              << " execution_bound=" << arithmetic.empiricalBoundNumerator
               << '/' << arithmetic.empiricalBoundDenominator
               << " frozen_decoded_abs_tolerance=" << kLogicalDecodedAbsoluteTolerance
               << " measured_recorded_bias_error=" << slots.maximumRecordedBiasError
