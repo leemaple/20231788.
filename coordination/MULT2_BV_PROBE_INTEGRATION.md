@@ -142,3 +142,35 @@ b27c15ceb2ab886077701187cd9700d89aad9bf8feb3904cd0dfccd1c78e1b26.
 Retained probe logs SHA256: Linux
 a626b5f12e66a618952390492fdc6f42dea6d4d6412bda5887102cecfa79c180;
 Windows045f1c7faa8e5a2635aa4746b00dfd42e112a3d44bd7750c2950fc9191889f4a.
+
+## Observed conditional-certificate green on both hosts
+
+Source9bf86cb53a1bbae3a3627fe5efc385d2a29c89ce was committed, pushed and matched
+the exact remote branch SHA. Run33846077283:
+https://github.com/leemaple/20231788./actions/runs/33846077283.
+Linux100938151001 completed44/44 in0.61s; Windows100938151165 completed44/44
+in1.19s. Warning-clean default builds and explicit Relin2/RS2/Mult2 public API
+builds passed on BOTH hosts. Full project configure/build/verbose CTest/API
+sections are retained in artifacts/tdd/mult2-bv-execution-certificate/.
+Only ANSI escapes, CR and trailing whitespace were normalized in those logs.
+No Mac compilation or cryptographic execution occurred.
+
+All4 cases on each host passed independent per-path coefficient identities,
+conditional Relin2 triangle checks, non-wrap witness, exact coefficient bound
+and the unchanged1e-3 decoded functional tolerance. Measured logical slot errors
+for hybrid-real/hybrid-complex/BV-real/BV-complex respectively:
+Linux9.25118193162433045e-9/1.32248359349893081e-9/
+5.54800003160771382e-9/1.32248299847503142e-9;
+Windows7.33531704127932116e-9/1.32248366412317951e-9/
+9.79875793138441814e-9/1.3224837343895053e-9.
+These fixed-vector binary64 functional measurements are NOT target precision.
+
+Both new BV executions on each host again print
+paper_additivity_execution_observed=false; conservative_E_Relin_available=false
+and universal_theorem_gate=UNPROVED remain explicit for all cases. The earlier
+original-bound red and diagnostic red remain retained, not relabelled green.
+This completes the hosted execution check of the corrected conditional test
+contract, NOT a production bug fix, universal theorem or project completion.
+Independent third-seat review of this boundary remains pending; precision Pro
+follow-up is separately live. The previous goal continuation is PROGRESS:
+source/test evidence and a verified pushed commit changed authoritative state.
