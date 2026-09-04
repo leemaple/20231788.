@@ -213,6 +213,205 @@ void AddModInPlace(std::vector<BigInt>& accumulator,
     }
 }
 
+struct FixedKeyBvBound {
+    std::size_t ringDimension;
+    std::size_t activeRows;
+    std::vector<BigInt> activeModuli;
+    std::vector<BigInt> rowResidualNorms;
+    BigInt qLProduct;
+    BigInt qDiv;
+    BigInt noiseScale;
+    BigInt perPathRawBound;
+    BigInt pairRawBound;
+};
+
+void CheckBvCenteredDigitLiftBoundaryProbe(
+    const lbcrypto::PrivateKey<DCRTPoly>& secretKey) {
+    Check(secretKey != nullptr, "BV centered-digit probe received a null secret key");
+    DCRTPoly probe = ToCoefficient(secretKey->GetPrivateElement());
+    Check(probe.GetAllElements().size() >= 2,
+          "BV centered-digit probe requires Q_l followed by q_div");
+    probe.DropLastElement();
+
+    auto& towers = probe.GetAllElements();
+    const std::size_t ringDimension = probe.GetParams()->GetRingDimension();
+    Check(ringDimension >= 4, "BV centered-digit probe requires four coefficients");
+    for (auto& tower : towers) {
+        const BigInt modulus(tower.GetModulus().ConvertToInt());
+        Check(modulus % 2 == 1, "BV centered-digit probe requires odd RNS moduli");
+        const BigInt half = modulus / 2;
+        lbcrypto::NativeVector values(ringDimension, tower.GetModulus());
+        for (std::size_t coefficient = 0; coefficient < ringDimension; ++coefficient) {
+            values[coefficient] = NativeInteger(0);
+        }
+        values[0] = NativeInteger(0);
+        values[1] = NativeInteger(half.convert_to<std::uint64_t>());
+        values[2] = NativeInteger((half + 1).convert_to<std::uint64_t>());
+        values[3] = NativeInteger((modulus - 1).convert_to<std::uint64_t>());
+        tower.SetValues(std::move(values), Format::COEFFICIENT);
+    }
+
+    const auto digits = probe.CRTDecompose(0);
+    Check(digits.size() == towers.size(),
+          "BV digitSize=0 decomposition did not return one digit per active tower");
+    for (std::size_t sourceTower = 0; sourceTower < digits.size(); ++sourceTower) {
+        const BigInt sourceModulus(towers[sourceTower].GetModulus().ConvertToInt());
+        const BigInt sourceHalf = sourceModulus / 2;
+        std::vector<BigInt> expectedLift(ringDimension, 0);
+        expectedLift[1] = sourceHalf;
+        expectedLift[2] = -sourceHalf;
+        expectedLift[3] = -1;
+
+        const DCRTPoly digit = ToCoefficient(digits[sourceTower]);
+        Check(digit.GetAllElements().size() == towers.size(),
+              "BV centered-digit probe changed the active basis");
+        for (std::size_t targetTower = 0; targetTower < towers.size(); ++targetTower) {
+            const BigInt targetModulus(
+                digit.GetAllElements().at(targetTower).GetModulus().ConvertToInt());
+            const auto actual = TowerResidues(digit, targetTower);
+            Check(actual.size() == ringDimension,
+                  "BV centered-digit probe changed the ring dimension");
+            for (std::size_t coefficient = 0; coefficient < ringDimension; ++coefficient) {
+                Check(actual[coefficient] ==
+                          PositiveMod(expectedLift[coefficient], targetModulus),
+                      "BV digitSize=0 decomposition does not preserve the centered source-tower lift");
+            }
+        }
+    }
+}
+
+FixedKeyBvBound BuildFixedKeyBvBound(
+    const CryptoContext<DCRTPoly>& context,
+    const lbcrypto::PrivateKey<DCRTPoly>& secretKey) {
+    Check(context != nullptr && secretKey != nullptr,
+          "fixed-key BV bound received a null context or key");
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(
+            context->GetCryptoParameters());
+    Check(parameters != nullptr &&
+              parameters->GetKeySwitchTechnique() == lbcrypto::BV &&
+              parameters->GetDigitSize() == 0,
+          "fixed-key BV bound requires the BV digitSize=0 backend");
+
+    const auto fullParameters = parameters->GetElementParams();
+    Check(fullParameters != nullptr && fullParameters->GetParams().size() >= 2,
+          "fixed-key BV bound requires Q_l followed by q_div");
+    const std::size_t fullRows = fullParameters->GetParams().size();
+    const std::size_t activeRows = fullRows - 1;
+    const DCRTPoly secret = ToCoefficient(secretKey->GetPrivateElement());
+    Check(secret.GetAllElements().size() == fullRows,
+          "fixed-key BV bound secret-key basis differs from the full basis");
+    const std::size_t ringDimension = secret.GetParams()->GetRingDimension();
+
+    std::vector<BigInt> activeModuli;
+    activeModuli.reserve(activeRows);
+    for (std::size_t tower = 0; tower < activeRows; ++tower) {
+        activeModuli.emplace_back(
+            secret.GetAllElements().at(tower).GetModulus().ConvertToInt());
+    }
+    const BigInt qLProduct = Product(activeModuli);
+    const BigInt qDiv(
+        secret.GetAllElements().at(activeRows).GetModulus().ConvertToInt());
+    for (const auto& modulus : activeModuli) {
+        BigInt inverseCoefficient;
+        BigInt unusedCoefficient;
+        Check(ExtendedGcd(qDiv, modulus, inverseCoefficient,
+                          unusedCoefficient) == 1,
+              "q_div is not a unit in an active BV source tower");
+    }
+
+    const auto& evaluationKeys =
+        lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    const auto keyRow = evaluationKeys.find(secretKey->GetKeyTag());
+    Check(keyRow != evaluationKeys.end() && keyRow->second.size() == 1 &&
+              keyRow->second.front() != nullptr,
+          "fixed-key BV bound requires exactly one evaluation-multiplication key");
+    const auto relinearizationKey =
+        std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(
+            keyRow->second.front());
+    Check(relinearizationKey != nullptr,
+          "fixed-key BV bound received the wrong evaluation-key subtype");
+    Check(relinearizationKey->GetAVector().size() == fullRows &&
+              relinearizationKey->GetBVector().size() == fullRows,
+          "fixed-key BV bound received the wrong number of BV rows");
+    const auto keyABefore = relinearizationKey->GetAVector();
+    const auto keyBBefore = relinearizationKey->GetBVector();
+
+    std::vector<std::vector<BigInt>> secretResidues(activeRows);
+    std::vector<std::vector<BigInt>> secretSquaredResidues(activeRows);
+    for (std::size_t tower = 0; tower < activeRows; ++tower) {
+        secretResidues[tower] = TowerResidues(secret, tower);
+        Check(secretResidues[tower].size() == ringDimension,
+              "fixed-key BV bound secret coefficient shape mismatch");
+        secretSquaredResidues[tower] = NegacyclicProductMod(
+            secretResidues[tower], secretResidues[tower], activeModuli[tower]);
+    }
+
+    std::vector<BigInt> rowResidualNorms;
+    rowResidualNorms.reserve(activeRows);
+    BigInt perPathRawBound = 0;
+    for (std::size_t row = 0; row < activeRows; ++row) {
+        DCRTPoly a = relinearizationKey->GetAVector().at(row);
+        DCRTPoly b = relinearizationKey->GetBVector().at(row);
+        Check(a.GetAllElements().size() == fullRows &&
+                  b.GetAllElements().size() == fullRows,
+              "fixed-key BV row is not on the full key basis");
+        a.DropLastElements(fullRows - activeRows);
+        b.DropLastElements(fullRows - activeRows);
+        a = ToCoefficient(a);
+        b = ToCoefficient(b);
+        Check(GetModuli(a) == activeModuli && GetModuli(b) == activeModuli,
+              "fixed-key BV row restriction did not produce Q_l");
+
+        std::vector<std::vector<BigInt>> residuals(
+            ringDimension, std::vector<BigInt>(activeRows, 0));
+        for (std::size_t tower = 0; tower < activeRows; ++tower) {
+            const auto aResidues = TowerResidues(a, tower);
+            const auto bResidues = TowerResidues(b, tower);
+            const auto aTimesSecret = NegacyclicProductMod(
+                aResidues, secretResidues[tower], activeModuli[tower]);
+            for (std::size_t coefficient = 0;
+                 coefficient < ringDimension; ++coefficient) {
+                const BigInt gadget = row == tower
+                                          ? secretSquaredResidues[tower][coefficient]
+                                          : BigInt(0);
+                residuals[coefficient][tower] = PositiveMod(
+                    bResidues[coefficient] + aTimesSecret[coefficient] - gadget,
+                    activeModuli[tower]);
+            }
+        }
+
+        BigInt rowNorm = 0;
+        for (const auto& coefficientResidues : residuals) {
+            rowNorm = Max(rowNorm,
+                          Abs(ReconstructCentered(coefficientResidues, activeModuli)));
+        }
+        rowResidualNorms.push_back(rowNorm);
+        Check(activeModuli[row] % 2 == 1,
+              "fixed-key BV bound requires odd active RNS moduli");
+        const BigInt centeredDigitBound = activeModuli[row] / 2;
+        perPathRawBound += BigInt(ringDimension) * centeredDigitBound * rowNorm;
+    }
+
+    const BigInt pairRawBound = BigInt(2) * perPathRawBound;
+    Check(relinearizationKey->GetAVector() == keyABefore &&
+              relinearizationKey->GetBVector() == keyBBefore,
+          "fixed-key BV oracle mutated the evaluation key");
+
+    // KeySwitchGen gives b_i + a_i*s - G_i(s^2) = -ns*e_i modulo
+    // the key basis. The measured row residuals above therefore already contain
+    // the noise-scale factor; multiplying them by ns again would double count it.
+    return {ringDimension,
+            activeRows,
+            std::move(activeModuli),
+            std::move(rowResidualNorms),
+            qLProduct,
+            qDiv,
+            BigInt(parameters->GetNoiseScale()),
+            perPathRawBound,
+            pairRawBound};
+}
+
 struct DecryptionOracleResult {
     std::vector<BigInt> coefficients;
     std::vector<BigInt> moduli;
@@ -385,6 +584,32 @@ Ciphertext<DCRTPoly> DropFinalTowerReference(
     result->SetElements(std::move(elements));
     result->SetLevel(source->GetLevel() + 1);
     return result;
+}
+
+void CheckBvRelin2DigitDomains(
+    const TensorCiphertextPair& tensor,
+    const CryptoContext<DCRTPoly>& context) {
+    auto raisedHigh = RaiseTensorHighReference(tensor, context);
+    Check(raisedHigh->GetElements().size() == 3 &&
+              tensor.GetLow()->GetElements().size() == 3,
+          "BV Relin2 digit-domain witness requires three-component paths");
+
+    const auto highDigits = raisedHigh->GetElements().at(2).CRTDecompose(0);
+    const auto lowDigits = tensor.GetLow()->GetElements().at(2).CRTDecompose(0);
+    Check(highDigits.size() == tensor.GetOrderedModuli().size() + 1,
+          "raised-high BV decomposition did not include the full basis");
+    Check(lowDigits.size() == tensor.GetOrderedModuli().size(),
+          "low BV decomposition did not use the Q_l prefix basis");
+
+    const DCRTPoly finalHighDigit = ToCoefficient(highDigits.back());
+    for (std::size_t tower = 0;
+         tower < finalHighDigit.GetAllElements().size(); ++tower) {
+        const auto residues = TowerResidues(finalHighDigit, tower);
+        for (const auto& residue : residues) {
+            Check(residue == 0,
+                  "the appended zero q_div tower did not eliminate the final BV digit");
+        }
+    }
 }
 
 struct RelinPathExecutionCertificate {
@@ -959,6 +1184,87 @@ ArithmeticCertificate CheckIndependentArithmetic(
             coefficientErrorDenominator};
 }
 
+struct FixedKeyBvApplication {
+    bool available;
+    BigInt conservativeNonWrapLeft;
+    BigInt conservativeBoundNumerator;
+    BigInt conservativeBoundDenominator;
+    BigInt finalIntegerLiftNumerator;
+    BigInt finalIntegerLiftRight;
+};
+
+FixedKeyBvApplication CheckFixedKeyBvApplication(
+    const FixedKeyBvBound* fixedKeyBound,
+    const CiphertextPair& input,
+    const ArithmeticCertificate& arithmetic) {
+    if (fixedKeyBound == nullptr) {
+        return {false, 0, 0, 1, 0, 1};
+    }
+
+    Check(input.GetOrderedModuli().size() == fixedKeyBound->activeModuli.size(),
+          "fixed-key BV bound/input basis length mismatch");
+    for (std::size_t tower = 0;
+         tower < fixedKeyBound->activeModuli.size(); ++tower) {
+        Check(BigInt(input.GetOrderedModuli()[tower].ConvertToInt()) ==
+                  fixedKeyBound->activeModuli[tower],
+              "fixed-key BV bound/input ordered basis mismatch");
+    }
+    Check(arithmetic.ringDimension == fixedKeyBound->ringDimension &&
+              arithmetic.qLProduct == fixedKeyBound->qLProduct &&
+              arithmetic.qDiv == fixedKeyBound->qDiv,
+          "fixed-key BV bound does not match the exercised ring or basis");
+    Check(fixedKeyBound->perPathRawBound < arithmetic.qLProduct / 2,
+          "fixed-key BV per-path bound is only the trivial centered modular bound");
+    Check(fixedKeyBound->pairRawBound < arithmetic.qLProduct / 2,
+          "fixed-key BV pair bound cannot establish a unique integer lift");
+    Check(arithmetic.highPathRelinError <= fixedKeyBound->perPathRawBound,
+          "raised-high BV error exceeded the fixed-key ciphertext-uniform bound");
+    Check(arithmetic.lowPathRelinError <= fixedKeyBound->perPathRawBound,
+          "low BV error exceeded the fixed-key ciphertext-uniform bound");
+    Check(arithmetic.empiricalPairRelinError <= fixedKeyBound->pairRawBound,
+          "Relin2 pair error exceeded the fixed-key ciphertext-uniform bound");
+
+    const BigInt n(arithmetic.ringDimension);
+    const BigInt h(arithmetic.secretHammingWeight);
+    const BigInt inputEnvelope =
+        arithmetic.mHigh * arithmetic.qDiv + arithmetic.mLow;
+    const BigInt conservativeNonWrapLeft =
+        n * inputEnvelope * inputEnvelope + fixedKeyBound->pairRawBound;
+    Check(BigInt(2) * conservativeNonWrapLeft < arithmetic.qLProduct,
+          "fixed-key BV conservative non-wrap witness failed");
+
+    // Directly bounding the two actual BV key-switch paths bypasses Lemma 4.4's
+    // three-rounding near-additivity residual, so no extra +h belongs in the
+    // Relin2 term. The final (h+1)/2 is retained as the independent RS2 term.
+    const BigInt conservativeBoundNumerator =
+        BigInt(2) * n * arithmetic.mLow * arithmetic.mLow +
+        BigInt(2) * arithmetic.qDiv * fixedKeyBound->pairRawBound +
+        arithmetic.qDiv * arithmetic.qL * (h + 1);
+    const BigInt conservativeBoundDenominator =
+        BigInt(2) * arithmetic.qDiv * arithmetic.qL;
+    Check(BigInt(2) * arithmetic.coefficientErrorNumerator <=
+              conservativeBoundNumerator,
+          "independent coefficient error exceeded the fixed-key BV conservative expression");
+
+    // To compare centered output coefficients with an ordinary integer/rational
+    // target after RS2, the target magnitude plus the conservative error must
+    // remain below Q_{l-1}/2. With denominator 2*q_div*q_l this is exactly
+    //   2*N*(M_high*q_div+M_low)^2 + bound_numerator < q_div*Q_l.
+    const BigInt finalIntegerLiftNumerator =
+        BigInt(2) * n * inputEnvelope * inputEnvelope +
+        conservativeBoundNumerator;
+    const BigInt finalIntegerLiftRight = arithmetic.qDiv * arithmetic.qLProduct;
+    Check(finalIntegerLiftNumerator < finalIntegerLiftRight,
+          "fixed-key BV final centered output lacks a unique intended integer lift");
+
+    return {true,
+            conservativeNonWrapLeft,
+            conservativeBoundNumerator,
+            conservativeBoundDenominator,
+            finalIntegerLiftNumerator,
+            finalIntegerLiftRight};
+}
+
 struct SlotCertificate {
     long double ratio;
     double maximumRecordedBiasError;
@@ -1030,6 +1336,8 @@ void PrintCertificate(const std::string& caseName,
                       std::size_t hostVectorLength,
                       const CiphertextPair& input,
                       const ArithmeticCertificate& arithmetic,
+                      const FixedKeyBvBound* fixedKeyBound,
+                      const FixedKeyBvApplication& fixedKeyApplication,
                       const SlotCertificate& slots) {
     const long double requestedRatio =
         std::ldexp(1.0L, 2 * static_cast<int>(kScalingModSize)) /
@@ -1089,7 +1397,44 @@ void PrintCertificate(const std::string& caseName,
               << '/' << arithmetic.coefficientErrorDenominator
               << " execution_bound=" << arithmetic.empiricalBoundNumerator
               << '/' << arithmetic.empiricalBoundDenominator
-              << " frozen_decoded_abs_tolerance=" << kLogicalDecodedAbsoluteTolerance
+              << " fixed_key_bv_bound_available="
+              << (fixedKeyApplication.available ? "true" : "false");
+    if (fixedKeyApplication.available) {
+        Check(fixedKeyBound != nullptr,
+              "fixed-key BV application lost its bound descriptor");
+        std::cout
+            << " fixed_key_bv_bound_status="
+               "CANDIDATE_FIXED_KEY_CIPHERTEXT_UNIFORM_CONDITIONAL_ON_CENTERED_DIGIT_LIFT"
+            << " fixed_key_bv_noise_scale=" << fixedKeyBound->noiseScale
+            << " fixed_key_bv_active_rows=" << fixedKeyBound->activeRows
+            << " fixed_key_bv_raised_high_q_div_digit=ZERO"
+            << " fixed_key_bv_row_residual_norms=";
+        for (std::size_t row = 0;
+             row < fixedKeyBound->rowResidualNorms.size(); ++row) {
+            if (row != 0) {
+                std::cout << ',';
+            }
+            std::cout << fixedKeyBound->rowResidualNorms[row];
+        }
+        std::cout
+            << " fixed_key_bv_per_path_raw_bound="
+            << fixedKeyBound->perPathRawBound
+            << " fixed_key_bv_pair_raw_bound=" << fixedKeyBound->pairRawBound
+            << " fixed_key_bv_integer_lift_nonwrap=true"
+            << " fixed_key_bv_conservative_nonwrap_left="
+            << fixedKeyApplication.conservativeNonWrapLeft
+            << " fixed_key_bv_conservative_bound="
+            << fixedKeyApplication.conservativeBoundNumerator << '/'
+            << fixedKeyApplication.conservativeBoundDenominator
+            << " fixed_key_bv_final_integer_lift="
+            << fixedKeyApplication.finalIntegerLiftNumerator << '<'
+            << fixedKeyApplication.finalIntegerLiftRight
+            << " fixed_key_bv_unconditional_gaussian_key_bound=false"
+            << " fixed_key_bv_universal_theorem_gate=UNPROVED"
+            << " centered_digit_boundary_probe=PASSED";
+    }
+    std::cout << " frozen_decoded_abs_tolerance="
+              << kLogicalDecodedAbsoluteTolerance
               << " measured_recorded_bias_error=" << slots.maximumRecordedBiasError
               << " measured_logical_slot_error=" << slots.maximumLogicalError
               << '\n';
@@ -1127,6 +1472,15 @@ void RunCase(const std::string& caseName,
     Check(keys.good(), "key generation failed");
     context->EvalMultKeyGen(keys.secretKey);
 
+    std::unique_ptr<FixedKeyBvBound> fixedKeyBvBound;
+    if (technique == lbcrypto::BV) {
+        // This key-only certificate is frozen before plaintext construction,
+        // encryption, Tensor2, Relin2, or observation of any path error.
+        CheckBvCenteredDigitLiftBoundaryProbe(keys.secretKey);
+        fixedKeyBvBound = std::make_unique<FixedKeyBvBound>(
+            BuildFixedKeyBvBound(context, keys.secretKey));
+    }
+
     const auto leftPlaintext = context->MakeCKKSPackedPlaintext(
         leftValues, kEncodingNoiseScaleDegree, kEncodingLevel);
     const auto rightPlaintext = context->MakeCKKSPackedPlaintext(
@@ -1150,6 +1504,9 @@ void RunCase(const std::string& caseName,
     // remains the candidate under test; neither staged ciphertext is used as an
     // arithmetic expected value.
     const auto tensor = module.Tensor2(left, right);
+    if (fixedKeyBvBound != nullptr) {
+        CheckBvRelin2DigitDomains(tensor, context);
+    }
     const auto relinearized = module.Relin2(tensor);
     const auto stagedResult = module.RS2(relinearized);
     const auto result = module.Mult2(left, right);
@@ -1166,10 +1523,13 @@ void RunCase(const std::string& caseName,
 
     const auto arithmetic = CheckIndependentArithmetic(
         left, right, tensor, relinearized, result, keys.secretKey, context);
+    const auto fixedKeyApplication = CheckFixedKeyBvApplication(
+        fixedKeyBvBound.get(), left, arithmetic);
     const auto slots = CheckDecodedSlots(
         result, arithmetic.qL, expected, context, keys.secretKey, module);
-    PrintCertificate(
-        caseName, technique, dataType, expected.size(), left, arithmetic, slots);
+    PrintCertificate(caseName, technique, dataType, expected.size(), left,
+                     arithmetic, fixedKeyBvBound.get(), fixedKeyApplication,
+                     slots);
 }
 
 void RunSelectedCase(const std::string& name) {
