@@ -95,3 +95,87 @@ remain on this shared pool; no reset credit was redeemed and no task was sent
 for the quota check. Continue normal bounded ZCode review routing while quota
 remains available, preserving the existing single live BV audit. Windows input
 delivery is a separate unresolved operational limitation, not a quota shortage.
+
+## Completed return and independent integrity verification
+
+At about 16:08 CST, the exact native task "Static audit of LOCAL-REVIEW-TASK per
+TASK.md" showed "Worked for 20m38s", both output files and no Stop control.
+This is the authorized LOCAL static fallback, not a Windows review. Its actual
+UI model was GLM-5.3 Max; the report identifies builtin:bigmodel-coding-plan/GLM-5.3.
+It is neither Fable 5.1 nor Pro. No successful Fable review is inferred.
+
+Returned output/REVIEW.md: 333 lines, 25928 bytes, SHA256
+408106b4e3075e298f2a53cdf6396ec3dce5e9b0a7c52ee8fa33657fbc22ca45.
+Returned output/MANIFEST.sha256: 66 lines, SHA256
+dc655fa753df02f0a347be7f8b44861f6688415f41b65578529bf157de712457.
+Both originals are retained verbatim under
+coordination/returns/mult2-bv-zcode-4e6cce5/. Its manifest paths refer to the
+reviewer's original dedicated folder, not paths relative to this archive copy.
+
+Codex read all 333 report lines and the full manifest. Independently verified:
+the original input ZIP still has its stated size/hash; extracted SOURCE-MANIFEST
+is byte-identical to the manifest inside that ZIP; all 58 payload sizes/hashes
+match; exact extracted closure is 59 regular files; all 61 noncomment returned
+manifest entries (ZIP, review and 59 inputs) match. Gitleaks 8.30.1 output scan
+found zero leaks. The first verification command had a Codex JavaScript syntax
+error before verification; the corrected command then completed all checks.
+No input mutation, project build or cryptographic test was performed locally.
+
+## Finding reconciliation (Codex disposition, not edits to the original review)
+
+The returned verdict is PASS_WITH_GAPS for the execution-specific certificate,
+not acceptance of the paper goal. Codex accepts that scoped verdict and retains
+the open proof, precision and repeated-multiplication obligations. No new
+production change is justified by this static return alone.
+
+F-1: retain the missing-1/q_div reading as a documented algebraic inference,
+NOT an author-confirmed erratum. No author contact or external message occurred.
+F-2: conservative backend/domain E_Relin remains OPEN. Q4's proposed formula
+is a research lead, not an established bound to paste into a test. A bound using
+observed evaluation-key error polynomials can be a priori over ciphertexts for
+that fixed key if its exact domains and derivation hold; it is not an
+unconditional finite bound over all Gaussian keys. Raised-high/full-basis and
+low/prefix domains, active digits, noise factor, centered lifting, any wrap and
+tail assumptions must be derived explicitly. The added +h in Q4's suggested
+test must likewise be justified, not adopted on authority.
+F-3/F-4: agree with the already recorded historical Pro norm-equivalence and
+printed-field-name corrections; preserve the originals.
+F-5: provenance unavailable in the static reviewer seat was correctly labeled
+there; Codex's prior Git/hosted/Gitleaks checks and the new independent hash
+checks above supply their separate evidence, not fabricated reviewer access.
+F-6: an optional diagnostic is not implemented. Its boundary-wrap explanation
+is not promoted to a general proof; the actual frozen final coefficient check
+remains mandatory and the certificate remains execution-specific.
+
+Additional corrections to the review's own prose:
+
+- Q1's "42 non-BV cases" must read "the remaining 42 cases": other registered
+  unit tests also exercise BV. A failure pattern does not classify every other
+  test as non-BV.
+- Q1/Q2's claims that any wrapper defect must break the identity, or no mismatch
+  survives, are too broad. Exact identities discriminate the exercised values
+  and the separately enumerated metadata checks; they are not exhaustive proof
+  of all possible inputs, wrapper defects or hidden state.
+- Q2's "coefficient errors ~1e-10 of the bound" is false. Codex independently
+  parsed the retained rational coefficient_error and execution_bound fields
+  using integer arithmetic. The ratios (truncated to nine decimal places) are:
+
+  | Host | HYBRID real | HYBRID complex | BV real | BV complex |
+  |---|---:|---:|---:|---:|
+  | Linux | 0.062293038 | 0.069762247 | 0.062452194 | 0.114661269 |
+  | Windows | 0.065968299 | 0.041105726 | 0.118246011 | 0.095366372 |
+
+  These come from run 33846077283's archived green logs, not a new execution.
+  All are below one, but none supports the review's 1e-10 claim. Slot error
+  and coefficient-bound ratio are different quantities and cannot be mixed.
+- Q3's aside that any aliasing would break the triangle bound loudly is false.
+  For Q=101, centered inputs 40 and 40 wrap to -21, yet 21 <= 40+40. The centered
+  modular triangle bound itself is valid; an independent non-wrap condition is
+  needed for the intended integer-lift interpretation and final product proof.
+  Do not treat passing the triangle test alone as evidence that wrap cannot occur.
+
+Next bounded design question for the completed BV Pro conversation: independently
+adjudicate the fixed-key conservative bound and its proof/test contract with the
+complete earlier inputs, Pro return, ZCode return and this correction record.
+Do not lower thresholds or claim a universal theorem from the conditional green.
+The separate precision Pro follow-up is still live and must not be interrupted.
