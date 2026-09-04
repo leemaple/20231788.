@@ -19,3 +19,24 @@ The module interface includes the invariants callers must know: pristine OpenFHE
 Private DCRT tower-copying, signed-remainder construction, tensor loops, metadata helpers, and key-switch plumbing are implementation details, not test seams. Tests may use independent plaintext/big-integer/CRT adapters only to compute expected results; they must not call implementation helpers or reproduce their algorithm.
 
 Each vertical slice must retain its first failing output before the smallest implementation change is written.
+
+## Confirmed repeated/client seam — 2026-09-05
+
+The user answered that the reviewers may confirm the proposed interface as
+reasonable and should continue. Codex accepts it: it preserves the paper's
+evaluation model, keeps secret material client-side, hides basis-family routing
+from the caller, and exposes behavior rather than implementation helpers. This
+confirms the following end-to-end seam without requiring Pro's suggested token:
+
+- client-owned setup, high-precision input encryption and final decryption;
+- evaluator-only repeated use of the same public `Mult2` interface, first for a
+  genuine two-operation tracer and ultimately all eight paper squarings;
+- no evaluator secret-key access, intermediate decryption, re-encryption,
+  bootstrapping, or Section 6.2 refresh substitution;
+- implementation-owned immutable context/key-family, basis, level and exact
+  scale transitions, with observable state validation at the public seam.
+
+The concrete C++ types may be kept minimal by the implementation and reviewed
+for KISS/YAGNI. Tests observe only this confirmed behavior. The second-operation
+test is the first new RED slice; eight operations, high-precision client I/O and
+paper parameters follow as vertical slices rather than being claimed by it.

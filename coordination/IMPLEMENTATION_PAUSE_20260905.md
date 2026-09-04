@@ -43,3 +43,11 @@ After user confirmation, record its actual wording, reconcile the already
 identified profile/phase corrections with Pro against the current tested
 baseline, then execute a genuine second-Mult2 RED-to-GREEN slice on hosted
 Linux/Windows. Do not adopt the old rejection/shape probe as semantic success.
+
+## Resumed — 2026-09-05
+
+The user replied that the reviewers may confirm the interface as reasonable
+and should continue. Codex judged the proposed split reasonable and recorded
+the resulting end-to-end seam in `coordination/TEST_SEAMS.md`. This resolves the
+only pause condition. It does not itself authorize a success claim: new behavior
+must still follow RED-to-GREEN and hosted verification.
