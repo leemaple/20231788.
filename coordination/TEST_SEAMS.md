@@ -40,3 +40,31 @@ The concrete C++ types may be kept minimal by the implementation and reviewed
 for KISS/YAGNI. Tests observe only this confirmed behavior. The second-operation
 test is the first new RED slice; eight operations, high-precision client I/O and
 paper parameters follow as vertical slices rather than being claimed by it.
+
+## Confirmed fixed-Q h=128 client setup seam — 2026-09-05
+
+The user delegated routine technical decisions to the reviewers and asked that
+work continue without another confirmation round. After the pinned-source and
+algebra reviews recorded in `PAPER_H128_SETUP_CANDIDATE_B_DECISION.md`, Codex
+accepts one narrow client-owned public seam:
+
+- `CreateFixedQH128ClientKeyPair(context)` accepts an already finalized CKKS
+  context and returns a fresh matching OpenFHE private/public key pair whose
+  secret has exactly 128 signed ternary coefficients;
+- the adapter composes the official h-aware DCRT sampler, fresh key objects and
+  public scheme `EncryptZeroCore` primitive; it does not implement RLWE itself,
+  build or mutate contexts, use the debugging-only multiparty helper, or retain
+  a secret on the evaluator side;
+- the first vertical slice is an N=256 fixed-Q diagnostic. Tests observe the
+  public adapter, returned public key getters and official Encrypt/Decrypt plus
+  ordinary EvalMult compatibility. They also cover the frozen profile's
+  fail-fast rejection cases and task-owned tag isolation;
+- paper N=32768, shared-secret projection across basis families, specialized
+  repeated Mult2, h-aware security analysis and 1000-trial evidence remain
+  later gates. Passing the diagnostic must not be described as any of those.
+
+The implementation may choose the smallest declaration shape consistent with
+this behavior. Secret coefficients may be inspected only inside the independent
+test oracle and must never be printed or committed as evidence. The exact
+diagnostic parameters, literals, tolerance and expected missing-API failure are
+frozen before the RED commit and may not change in GREEN.
