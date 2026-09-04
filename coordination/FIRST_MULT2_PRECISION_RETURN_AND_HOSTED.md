@@ -119,3 +119,36 @@ evidence/PRECURSOR_NAMESPACE_DIFF.txt's raw context lines, and the original
 patch's raw context lines. Those four exact archival/evidence paths retain
 their bytes. The scoped staged check excludes only those four paths; active
 CMake/C++/workflow and every other staged file are still checked.
+
+## First hosted observation: Linux GREEN, Windows not yet accepted
+Frozen/pushed source47907783a6141d0174da79eae264d779fc598f28, remote exact
+SHA verified. Run33873114880:
+https://github.com/leemaple/20231788./actions/runs/33873114880
+Linux job101023587797 completed20:33:05 Asia/Shanghai2026-09-04 SUCCESS.
+Warning-clean default build, all5 explicit API builds, focused new target
+build/CTest1/1 (case0.17s,total0.28s), and full55/55 (total1.03s) PASS.
+Codex independently matched all55 actual names to current CMake in order.
+This is FIRST-OBSERVED GREEN; no post-observation code/oracle/threshold edit.
+
+Both focused and full invocations emitted trials0-3:8 actual fresh-key samples.
+All16 slots and the distinguishing product delta passed <=2^-80 each time.
+Worst observed max-slot error:
+1.6696072195146116607129673424340031160212e-27;
+worst product-delta error:
+1.6958307879080880932103073456218202834178e-27.
+Both occur in focused trial3. All8 records retain input-product headroom160
+and output headroom210 (diagnostic, not universal). Actualq_div1125899906843009,
+q_l1125899906840833, denominator1267650600226646386227681786497;
+exact final scale numerator2^200. New source/run markers are present and match
+the authoritative job metadata.
+
+Full project log:
+artifacts/tdd/precision-first-mult2/first-observed-linux.txt,
+65962bytes, SHA256
+300e7d3075164fb18191dacabb67a9d96ded9a0c0b44835a5cc9daec3aac3de6.
+Metadata, steps, all55 names and all8 records:
+coordination/evidence/first-mult2-precision/first-observed-linux-4790778.json.
+Only ANSI/CR/trailing whitespace normalized. Windows job101023588186 was
+last observed live; no Windows success or extra sample is inferred.
+Full repeated-use/paper-parameter/security/production-codec acceptance and
+independent review of this new precision patch still remain open.
