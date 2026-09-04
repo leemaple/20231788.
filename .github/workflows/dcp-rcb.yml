@@ -86,6 +86,11 @@ jobs:
           -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
 
+      - name: Record clean-room run provenance
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          printf 'PROJECT_SOURCE_COMMIT=%s GITHUB_RUN_ID=%s GITHUB_RUN_ATTEMPT=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+
       - name: Build warning-clean project
         run: cmake --build build --parallel 2
 
@@ -94,6 +99,11 @@ jobs:
 
       - name: Build RS2 public API contract
         run: cmake --build build --target rs2_api_contract_test --parallel 2
+
+      - name: Run focused first-Mult2 precision contract
+        run: |
+          cmake --build build --target precision_first_mult2_contract_test --parallel 2
+          ctest --test-dir build --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
 
       - name: Run clean-room project tests
         run: ctest --test-dir build --verbose --output-on-failure
@@ -215,6 +225,13 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_PREFIX_PATH="$prefix"
 
+      - name: Record clean-room run provenance
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          printf 'PROJECT_SOURCE_COMMIT=%s GITHUB_RUN_ID=%s GITHUB_RUN_ATTEMPT=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+
       - name: Build warning-clean project
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
@@ -235,6 +252,16 @@ jobs:
         run: |
           build="$(cygpath -u "$PROJECT_BUILD")"
           cmake --build "$build" --target rs2_api_contract_test --parallel 2
+
+      - name: Run focused first-Mult2 precision contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          cmake --build "$build" --target precision_first_mult2_contract_test --parallel 2
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
 
       - name: Run clean-room project tests
         shell: msys2 {0}
