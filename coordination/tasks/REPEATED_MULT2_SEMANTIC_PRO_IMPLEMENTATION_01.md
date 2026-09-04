@@ -355,10 +355,11 @@ Return one downloadable ZIP plus a SHA256 sidecar. It must contain:
 - a closure manifest with every payload path, byte size, SHA256, origin and
   source commit, plus package-integrity notes.
 
-The project source is the tracked `80d771c` snapshot, while this task is a
-separate untracked handoff overlay prepared afterward. Record the task's own
-payload hash/origin in the handoff manifest; never mislabel it as a tracked blob
-from `80d771c`.
+The implementation source is the tracked `80d771c` snapshot, while this task is
+a separate handoff overlay prepared afterward and may be tracked only by a
+later documentation-only dispatch commit. Record the task's own payload
+hash/origin in the handoff manifest; never mislabel it as a blob from `80d771c`
+or as an implementation-source change.
 
 Verify in a scratch copy that RED applies to exact `80d771c`, GREEN applies only
 after RED, the replay tree equals every returned complete file byte-for-byte,
