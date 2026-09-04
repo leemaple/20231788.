@@ -9,9 +9,11 @@
 #include <cstdint>
 #include <functional>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -62,11 +64,147 @@ struct MetadataEntrySnapshot {
     std::shared_ptr<lbcrypto::Metadata> deepValue;
 };
 
+// Copy pointed-to parameter fields and every native value. Ciphertext::Clone
+// alone can share parameter objects and therefore mask an in-place mutation.
+using NativeParameterSnapshot =
+    std::tuple<const void*, std::uint32_t, NativeInteger, NativeInteger>;
+
+struct PolynomialSnapshot {
+    const void* parameterIdentity;
+    std::uint32_t cyclotomicOrder;
+    lbcrypto::BigInteger modulus;
+    lbcrypto::BigInteger root;
+    Format format;
+    std::vector<NativeParameterSnapshot> declaredParameters;
+    std::vector<NativeParameterSnapshot> actualParameters;
+    std::vector<Format> towerFormats;
+    std::vector<std::vector<NativeInteger>> towerValues;
+};
+
+PolynomialSnapshot SnapshotPolynomial(const DCRTPoly& polynomial) {
+    const auto& parameters = polynomial.GetParams();
+    Check(parameters != nullptr, "snapshot aggregate parameters are null");
+    PolynomialSnapshot result{parameters.get(), parameters->GetCyclotomicOrder(),
+                              parameters->GetModulus(), parameters->GetRootOfUnity(),
+                              polynomial.GetFormat(), {}, {}, {}, {}};
+    for (const auto& towerParameters : parameters->GetParams()) {
+        Check(towerParameters != nullptr, "snapshot declared tower parameters are null");
+        result.declaredParameters.emplace_back(
+            towerParameters.get(), towerParameters->GetCyclotomicOrder(),
+            towerParameters->GetModulus(), towerParameters->GetRootOfUnity());
+    }
+    for (const auto& tower : polynomial.GetAllElements()) {
+        Check(tower.GetParams() != nullptr, "snapshot actual tower parameters are null");
+        result.actualParameters.emplace_back(tower.GetParams().get(), tower.GetCyclotomicOrder(),
+                                             tower.GetModulus(), tower.GetRootOfUnity());
+        result.towerFormats.push_back(tower.GetFormat());
+        std::vector<NativeInteger> values;
+        values.reserve(tower.GetLength());
+        for (std::size_t index = 0; index < tower.GetLength(); ++index) {
+            values.push_back(tower.GetValues()[index]);
+        }
+        result.towerValues.push_back(std::move(values));
+    }
+    return result;
+}
+
+using PolynomialVectorSnapshot = std::vector<PolynomialSnapshot>;
+
+PolynomialVectorSnapshot SnapshotPolynomials(const std::vector<DCRTPoly>& polynomials) {
+    PolynomialVectorSnapshot result;
+    result.reserve(polynomials.size());
+    for (const auto& polynomial : polynomials) {
+        result.push_back(SnapshotPolynomial(polynomial));
+    }
+    return result;
+}
+
+void CheckPolynomialsUnchanged(const std::vector<DCRTPoly>& polynomials,
+                               const PolynomialVectorSnapshot& before,
+                               const std::string& label) {
+    Check(polynomials.size() == before.size(), label + " polynomial count changed");
+    for (std::size_t index = 0; index < polynomials.size(); ++index) {
+        const auto current = SnapshotPolynomial(polynomials[index]);
+        const auto& expected = before[index];
+        Check(current.parameterIdentity == expected.parameterIdentity,
+              label + " aggregate parameter identity changed");
+        Check(current.cyclotomicOrder == expected.cyclotomicOrder &&
+                  current.modulus == expected.modulus && current.root == expected.root,
+              label + " aggregate parameter value changed");
+        Check(current.format == expected.format, label + " aggregate format changed");
+        Check(current.declaredParameters == expected.declaredParameters,
+              label + " declared tower parameters changed");
+        Check(current.actualParameters == expected.actualParameters,
+              label + " actual tower parameters changed");
+        Check(current.towerFormats == expected.towerFormats, label + " native tower format changed");
+        Check(current.towerValues == expected.towerValues, label + " native tower value changed");
+    }
+}
+
+struct EvaluationKeySnapshot {
+    const void* identity;
+    const void* contextIdentity;
+    std::string keyTag;
+    PolynomialVectorSnapshot a;
+    PolynomialVectorSnapshot b;
+};
+
+struct EvaluationKeyRowSnapshot {
+    const void* identity;
+    std::vector<EvaluationKeySnapshot> keys;
+};
+
+using EvaluationKeyCacheSnapshot = std::map<std::string, EvaluationKeyRowSnapshot>;
+
+EvaluationKeyCacheSnapshot SnapshotEvaluationKeyCache() {
+    EvaluationKeyCacheSnapshot result;
+    for (const auto& [tag, row] : lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys()) {
+        EvaluationKeyRowSnapshot rowSnapshot{&row, {}};
+        for (const auto& key : row) {
+            const auto relin = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(key);
+            // These fixtures generate genuine evaluation keys, not malformed or
+            // arbitrary-subtype cache entries. Fail if that premise changes.
+            Check(relin != nullptr, "snapshot requires a non-null relinearization key");
+            rowSnapshot.keys.push_back({key.get(), key->GetCryptoContext().get(), key->GetKeyTag(),
+                                        SnapshotPolynomials(relin->GetAVector()),
+                                        SnapshotPolynomials(relin->GetBVector())});
+        }
+        result.emplace(tag, std::move(rowSnapshot));
+    }
+    return result;
+}
+
+void CheckEvaluationKeyCacheUnchanged(const EvaluationKeyCacheSnapshot& before) {
+    const auto& current = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(current.size() == before.size(), "evaluation-key cache row count changed");
+    for (const auto& [tag, expected] : before) {
+        const auto entry = current.find(tag);
+        Check(entry != current.end(), "evaluation-key cache tag disappeared");
+        const auto& row = entry->second;
+        Check(&row == expected.identity, "evaluation-key row identity changed");
+        Check(row.size() == expected.keys.size(), "evaluation-key row length changed");
+        for (std::size_t index = 0; index < row.size(); ++index) {
+            const auto& key = row[index];
+            const auto& keyBefore = expected.keys[index];
+            Check(key != nullptr && key.get() == keyBefore.identity,
+                  "evaluation-key identity changed");
+            const auto relin = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(key);
+            Check(relin != nullptr, "evaluation-key subtype changed");
+            Check(key->GetCryptoContext().get() == keyBefore.contextIdentity &&
+                      key->GetKeyTag() == keyBefore.keyTag,
+                  "evaluation-key context or tag changed");
+            CheckPolynomialsUnchanged(relin->GetAVector(), keyBefore.a, "evaluation-key A");
+            CheckPolynomialsUnchanged(relin->GetBVector(), keyBefore.b, "evaluation-key B");
+        }
+    }
+}
+
 struct CiphertextSnapshot {
     ReadOnlyCiphertext identity;
     Ciphertext<DCRTPoly> clone;
     lbcrypto::MetadataMap metadataIdentity;
     std::vector<MetadataEntrySnapshot> metadata;
+    PolynomialVectorSnapshot polynomials;
 };
 
 CiphertextSnapshot SnapshotCiphertext(const ReadOnlyCiphertext& ciphertext,
@@ -75,7 +213,8 @@ CiphertextSnapshot SnapshotCiphertext(const ReadOnlyCiphertext& ciphertext,
     const auto metadata = ciphertext->GetMetadataMap();
     Check(metadata != nullptr, label + " metadata map is null");
 
-    CiphertextSnapshot snapshot{ciphertext, ciphertext->Clone(), metadata, {}};
+    CiphertextSnapshot snapshot{ciphertext, ciphertext->Clone(), metadata, {},
+                                 SnapshotPolynomials(ciphertext->GetElements())};
     snapshot.metadata.reserve(metadata->size());
     for (const auto& [key, value] : *metadata) {
         Check(value != nullptr, label + " metadata value is null");
@@ -93,6 +232,7 @@ void CheckCiphertextUnchanged(const ReadOnlyCiphertext& ciphertext,
           label + " ciphertext or snapshot is null");
     Check(ciphertext.get() == before.identity.get(), label + " ciphertext identity changed");
     Check(*ciphertext == *before.clone, label + " ciphertext value changed");
+    CheckPolynomialsUnchanged(ciphertext->GetElements(), before.polynomials, label);
 
     const auto metadata = ciphertext->GetMetadataMap();
     Check(metadata != nullptr, label + " metadata map is null");
@@ -661,15 +801,21 @@ void TestValidArithmeticStateImmutability() {
 
     InstallControlledValues(relinearized);
     const PairSnapshot before = SnapshotPair(relinearized, "RS2 valid input");
-    const auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
-    const auto evaluationKeysBefore = evaluationKeys;
+    const auto unrelatedKeys = context->KeyGen();
+    context->EvalMultKeyGen(unrelatedKeys.secretKey);
+    Check(unrelatedKeys.secretKey->GetKeyTag() != keys.secretKey->GetKeyTag(),
+          "retained-cache fixture requires a distinct unrelated key tag");
+    const auto evaluationKeysBefore = SnapshotEvaluationKeyCache();
+    Check(evaluationKeysBefore.count(keys.secretKey->GetKeyTag()) == 1 &&
+              evaluationKeysBefore.count(unrelatedKeys.secretKey->GetKeyTag()) == 1,
+          "retained-cache fixture is missing its own or unrelated key row");
 
     const CiphertextPair result = module.RS2(relinearized);
     CheckPairUnchanged(relinearized, before, "RS2 valid input");
-    Check(evaluationKeys == evaluationKeysBefore,
-          "RS2 mutated the process-wide evaluation-key cache");
+    CheckEvaluationKeyCacheUnchanged(evaluationKeysBefore);
     CheckResultState(result, relinearized, before, context);
     CheckExactArithmeticOracle(module, relinearized, result);
+    CheckEvaluationKeyCacheUnchanged(evaluationKeysBefore);
 
     lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
 }
