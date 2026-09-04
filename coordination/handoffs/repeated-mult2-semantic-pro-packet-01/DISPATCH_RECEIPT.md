@@ -70,3 +70,11 @@ composer was empty, the attachment was no longer a draft, the submitted message
 visibly contained the expected ZIP filename, and the page showed `Pro thinking`
 with `Stop answering`. This proves the task was accepted and running; it does
 not prove that the attachment was parsed, code was produced, or any test passed.
+
+At 2026-09-05 06:48 Asia/Shanghai, the existing thread heartbeat
+`2023-1788-openfhe-07-00-pdf` was updated rather than duplicated. It remains
+active, preserves the idempotent daily 07:30 PDF/Telegram branch, and checks the
+implementation continuation at minutes 10, 30 and 50 of each hour. While Pro is
+thinking or CI is healthy and pending it stays quiet; after a real return it
+performs receipt gates, staged RED then GREEN Git/Actions evidence, and review
+without requiring another user message.
