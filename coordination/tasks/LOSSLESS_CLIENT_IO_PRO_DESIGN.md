@@ -17,6 +17,16 @@ Pin df495ba2e91739a6dc8f1de254fc5a41155ce504, pristine OpenFHE1.5.0.
 Current complete source/test/build and relevant ledgers are provided; never
 assume access to a local repo, hidden environment, previous chat or agent.
 Verify archive/provenance/hash closure before assuming any supplied claim.
+Read PRODUCTION_IO_API_MAIN_DISPOSITION.md and the author's fresh recheck
+alongside the original source audit. The fresh recheck is by the same source
+researcher, not an independent third-party endorsement. The original audit's
+"always Decode" phrase means the CKKS path after a valid decryption result;
+invalid results return early. All official source files needed for the I/O
+and repeated-operation source questions are supplied with the exact pin.
+
+The required exact Fable5.1 terminal path twice returned403 before inference,
+with no usable response or model tokens. No other model is being represented
+as Fable5.1. This task proceeds with Pro/Codex and available ZCode reviews.
 
 This is DESIGN DECISION ONLY at this stage. New public client-I/O test seams
 have not been confirmed with the user. Do not author implementation/test
@@ -111,6 +121,12 @@ pin/public behavior; no fork, hidden API, const_cast or shared context mutation.
    correct operation/state. Do not freeze a conflicting new scale type before
    considering the repeated-Mult2 design dependency described below.
 5. Derive canonical transform/order and partial/full slot behavior.
+   Ordinary Decode extracts strided coefficients using gap=Nh/slots, whereas
+   the current independent Horner oracle evaluates ALL N coefficients. Under
+   partial packing, encryption noise need not be confined to that stride;
+   do not silently identify the two observations. State whether the proposed
+   interface returns full canonical values or an explicit partial projection,
+   and how N64/batch16 diagnostics relate to paper full N/2-slot semantics.
    Existing direct Horner is independent test evidence atN64, but a full
    N32768*16384 coefficient-by-slot loop is not a viable default production
    path for1000 paper runs. Give a defensible O(NlogN)/O(slotslogslots)
