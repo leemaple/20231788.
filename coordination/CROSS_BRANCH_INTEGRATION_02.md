@@ -79,3 +79,29 @@ The independent Pair review, high-precision public behavior and repeated-use
 boundary remain open. Owner Codex: verify combined hosted run, retain exact logs,
 then submit a complete sanitized combined snapshot for independent Pair review.
 No user decision is required for this reversible in-scope step.
+
+## Combined execution observed green on both hosts
+
+Exact merge d73824c2d382013c3aadbd7cb29c57008e839714, run
+https://github.com/leemaple/20231788./actions/runs/33854419062:
+Linux job 100964299802: 53/53, 0.68s;
+Windows job 100964299593: 53/53, 2.27s.
+Both warning-clean default builds and explicit Relin2/RS2/Mult2/Add/Sub API
+targets passed. The new rejection matrix passed in 0.01s and 0.09s respectively.
+The run's exact head_sha and every named build/test step conclusion were checked.
+Complete project configure/build/CTest/API sections are retained under
+artifacts/tdd/all-seams-combined/, normalized only for ANSI/CR/trailing spaces.
+No failed case, threshold, vector, parameter or warning was suppressed.
+
+Pre-commit Gitleaks 8.30.1 scans inspected about 552.78KB of staged textual
+changes and 1.04MB of the incoming Pro return with archive depth 2, zero leaks.
+The original Pro ZIP still has SHA256
+735dea4e6c164ced95c2829ea8eb5316201eb900fd5d77b1aad171e94e2676c4.
+These were actual static checks, followed by actual hosted execution above;
+no project or OpenFHE build/crypto ran on the Mac.
+
+This certifies this combined functional regression boundary only. Independent
+final Pair review is still pending, and high precision, repeated multiplication,
+conservative BV E_Relin and secure paper-scale performance remain open.
+Retained BV output still explicitly labels the per-path certificate conditional
+and the universal theorem unproved. Passing 53 tests does not close those gaps.
