@@ -7,6 +7,7 @@ on:
       - agent/codex-tensor2-01
       - agent/codex-relin2-01
       - agent/codex-rs2-01
+      - codex/pair-arithmetic-01
       - cleanroom/reimplement-mult2-20260831
   workflow_dispatch:
 
@@ -93,6 +94,9 @@ jobs:
 
       - name: Run clean-room project tests
         run: ctest --test-dir build --output-on-failure
+
+      - name: Build Add public API contract
+        run: cmake --build build --target add_api_contract_test --parallel 2
 
   windows-mingw64:
     runs-on: windows-2022
@@ -231,3 +235,10 @@ jobs:
           build="$(cygpath -u "$PROJECT_BUILD")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
           ctest --test-dir "$build" --output-on-failure
+
+      - name: Build Add public API contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target add_api_contract_test --parallel 2
