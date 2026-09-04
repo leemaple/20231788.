@@ -146,3 +146,42 @@ Codex rechecked the pinned official base-leveledshe.cpp:594-617 and
 dcrtpoly-impl.h:402-407 subtraction paths. No test/vector/tolerance change,
 EvalSub convenience call, rescale, key access, catch or hidden normalization.
 Runtime green is pending; no Mac compile or crypto execution occurred.
+
+## Sub arithmetic red-green closed on both hosts
+
+Observed 2026-09-04 14:15 CST. Runtime red934a095 run33842680856:
+Windows100928002268 completed42/43,1.23s, with only the unchanged missing-Sub
+exception. The project configure/build/test section is retained as
+pair-sub-runtime/red-windows.txt. It was not canceled or rerun.
+
+Green c3e68844a213ce68b69da8e56a312c511b4dce7f, run
+https://github.com/leemaple/20231788./actions/runs/33842934325:
+Linux100928737964:43/43,0.49s; Windows100928738258:43/43,0.99s.
+Warning-as-error/default and explicit Relin2/RS2/Add/Sub API builds all passed.
+Both exact project log sections are retained under pair-sub-runtime/green-*.
+The red revision's literal difference(1.5,-3.5,7.5), finite checks and1e-6
+tolerance were unchanged. This closes first Sub behavior, not full precision.
+
+## Controlled coefficient coverage: first execution pending
+
+Next isolated test slice integrates Pro patch09's754-line controlled CRT oracle,
+not its later lifecycle/negative matrix or unrelated production code. It exercises
+public Add/Sub and RCB on test-owned controlled coefficient fixtures. Thirteen
+signed boundary witnesses include zero, both signs, centered half-modulus wraps,
+reverse operands, self-add and self-subtract. Expected coefficients come from
+independent cpp_int CRT and integer arithmetic, not production DCRT operators.
+Each component and native tower is checked, alongside the enumerated snapshots
+and metadata provenance. No claim is made for every hidden context/parameter field.
+
+Codex found patch09 calls HasNonzeroValue but does not yet define it; the complete
+returned final file defines it later. That small inspected helper is included now
+to make this slice self-contained. ExpectedArithmetic's Boost conditional was
+replaced with explicit materialized BigInt return branches as preflight advised.
+These are static integration corrections, NOT observed compiler-red evidence.
+No production arithmetic or existing test/vector/threshold was changed.
+
+This is added regression coverage of already red-green Add/Sub behavior. Its
+first hosted result is pending; do not manufacture a missing-behavior red or call
+the newly registered44-test suite passed. Real COMPLEX lifecycle coverage and
+negative-order/compatibility witnesses remain subsequent independent slices.
+No local OpenFHE compilation or cryptographic execution occurred.
