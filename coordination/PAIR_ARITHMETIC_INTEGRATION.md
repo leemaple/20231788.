@@ -108,3 +108,18 @@ Next runtime slice will use Pro's explicit plaintext vectors(2.25,-1.5,4.0) and
 with a frozen functional1e-6 absolute tolerance and finite output guard before
 any arithmetic green. The returned shape-only test is insufficient on its own.
 Only after actual runtime red is saved may the inspected minimal Sub body land.
+
+## API Linux green and the next runtime red test
+
+Source43f6c469896a7945456d15230e53dd1e03791b04, run33842361373:
+Linux100927075374 succeeded with42/42,0.63s, warning/default and all explicit
+Relin2/RS2/Add/Sub API targets passing. Retained in pair-sub-api/green-linux.txt.
+Windows100927075540 is still genuinely live building pristine OpenFHE; no
+cancellation or restart. The workflow has no cancel-in-progress setting.
+
+The runtime Sub test now follows the declared next slice: Pro patch07's public
+fixture and state checks, plus the independent literal host difference and
+finite checks described above. The unnecessary nested scaffold/invalid-input
+catch was omitted; the top-level test harness reports unexpected failures.
+No Sub production body was changed. Expected43 tests with only the new runtime
+case failing at DoubleCKKS: Sub is not implemented. Actual runtime red pending.
