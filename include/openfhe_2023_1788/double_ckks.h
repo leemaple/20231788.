@@ -144,6 +144,7 @@ public:
     TensorCiphertextPair Tensor2(const CiphertextPair& left, const CiphertextPair& right) const;
     CiphertextPair Relin2(const TensorCiphertextPair& tensor) const;
     CiphertextPair RS2(const CiphertextPair& relinearized) const;
+    CiphertextPair Mult2(const CiphertextPair& left, const CiphertextPair& right) const;
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> RCB(const CiphertextPair& pair) const;
 
 private:

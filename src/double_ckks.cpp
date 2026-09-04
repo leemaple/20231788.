@@ -994,6 +994,10 @@ CiphertextPair DoubleCKKS::RS2(const CiphertextPair& relinearized) const {
     return result;
 }
 
+CiphertextPair DoubleCKKS::Mult2(const CiphertextPair&, const CiphertextPair&) const {
+    throw std::logic_error("DoubleCKKS: Mult2 is not implemented");
+}
+
 lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {
     ValidatePair(pair);
 
