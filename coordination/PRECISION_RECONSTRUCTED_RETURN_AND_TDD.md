@@ -203,3 +203,23 @@ Full paper6.3 remains the destination: approximately100-bit scale, eight
 repeated squarings, approximately81.8-bit reported error for t=2, ordered
 40-bit Div/60-bit Mult moduli and stated secure parameters. This small p50/50
 DCP/RCB tracer bullet does not establish those endpoints.
+
+## Genuine runtime RED confirmed on both hosts
+
+Run33863067661 completed at exact e38764ab16bc638182d95ff259943eee0987d537.
+Windows job100991676407 also passed warning-clean build and explicit Relin2/
+RS2 API builds. Its full54-case CTest has original53 PASS and only the precision
+contract FAIL, total2.03s. The unchanged trial0 delta2^-80 assertion reports
+1.44371708012915718138302173730655083622918985218763e-15.
+Full project configure/build/CTest section retained in
+artifacts/tdd/precision-dcp-rcb/red-windows.txt.
+The exact54-name closure and lone expected failure were independently checked
+against active CMake on BOTH logs. Later Mult2/Add/Sub API targets are skipped
+after the intended failing CTest, not reported green. Linux used its verified
+pristine install cache; Windows actually built the pinned upstream dependency.
+
+This satisfies the runtime-red precondition. The next code commit may change
+ONLY tests/precision_dcp_rcb_fixture.cpp to the reviewed fresh2^100 construction,
+with its three same Format namespace corrections. Contract/header/CMake/CI
+remain exactly bound by precision-runtime-contract-e38764a.json. No precision
+green or new four-trial result is claimed before its new hosted execution.
