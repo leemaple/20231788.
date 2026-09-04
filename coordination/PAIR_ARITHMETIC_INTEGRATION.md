@@ -69,3 +69,19 @@ clone corresponding left high/low, direct matching DCRT additions, validated
 manifest copy, no key access/rescale/alignment or production catch. Compatible
 state checks precede cloning/arithmetic. After this red, the proposed minimal
 body and its narrow compatibility check will be integrated; green is PENDING.
+
+## Terminal runtime red/green on both hosts
+
+Red e22a2e1, run33839675559: Windows job100919225336 confirms41/42,
+same sole missing Add scaffold failure,1.01s. Warning/default and Relin2/RS2
+API targets passed; the later Add API step was skipped after expected red.
+Green a7681c2f02fe51dca80c9be51420788db9bde99c, run33839950608:
+https://github.com/leemaple/20231788./actions/runs/33839950608
+Linux100920033485:42/42,0.34s; Windows100920033616:42/42,0.98s.
+Warning/default plus explicit Relin2/RS2/Add API targets all passed. All three
+additional project-log sections are retained under artifacts/tdd/pair-add-runtime/.
+The exact same literal host-sum test/threshold passed after the minimal Add
+implementation; no test was weakened. This is the first Add behavior slice,
+not yet the full coefficient/lifecycle/negative matrix or independent final review.
+Next owner Codex: Sub API red, scaffold, independent literal subtraction runtime
+red/green; then returned exact coefficient/lifecycle/negative coverage.
