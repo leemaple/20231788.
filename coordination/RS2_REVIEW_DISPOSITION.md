@@ -51,8 +51,10 @@ acceptance of this defect.
 Minimal fix `68d0d985d3c17b7b3d1095f9142e38c0937544ad` constructs the expected
 active prefix by copying pristine full parameters and dropping only the consumed
 parameter suffix, then compares each declared parameter basis before arithmetic.
-The prior per-tower diagnostics are preserved. Run33835813969: Linux passed;
-Windows pending at this checkpoint. This does not claim exhaustive null-child
+The prior per-tower diagnostics are preserved. Run33835813969 completed success
+on both platforms: Linux42/42 (0.46s), Windows42/42 (1.06s), warning and API builds
+passed. Full green sections are retained alongside the red logs. Both high/low
+malformed members are now exercised in green. This does not claim exhaustive null-child
 parameter corruption or deep immutability coverage. Source review follow-up is
 still required for this validation addition.
 
