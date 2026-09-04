@@ -673,9 +673,29 @@ CiphertextPair DoubleCKKS::Add(const CiphertextPair& left, const CiphertextPair&
 }
 
 CiphertextPair DoubleCKKS::Sub(const CiphertextPair& left, const CiphertextPair& right) const {
-    (void)left;
-    (void)right;
-    throw std::logic_error("DoubleCKKS: Sub is not implemented");
+    ValidatePair(left);
+    ValidatePair(right);
+    ValidatePairCompatibility(left, right, "Sub");
+
+    // As for Add, clone the corresponding left member so metadata provenance
+    // is explicit and no convenience operation can hide scale/level alignment.
+    auto high = left.high_->Clone();
+    auto low = left.low_->Clone();
+    auto& highElements = high->GetElements();
+    auto& lowElements = low->GetElements();
+    const auto& rightHighElements = right.high_->GetElements();
+    const auto& rightLowElements = right.low_->GetElements();
+    for (std::size_t index = 0; index < highElements.size(); ++index) {
+        highElements[index] -= rightHighElements[index];
+        lowElements[index] -= rightLowElements[index];
+    }
+
+    CiphertextPair result(std::move(high), std::move(low), left.contextIdentity_, left.divisor_,
+                          left.orderedModuli_, left.level_, left.paperScale_,
+                          left.recordedScalingFactor_, left.noiseScaleDegree_, left.lifecycle_,
+                          left.keyTag_, left.slots_, left.format_, left.componentCount_);
+    ValidatePair(result);
+    return result;
 }
 
 void DoubleCKKS::ValidatePairCompatibility(const CiphertextPair& left, const CiphertextPair& right,

@@ -123,3 +123,26 @@ finite checks described above. The unnecessary nested scaffold/invalid-input
 catch was omitted; the top-level test harness reports unexpected failures.
 No Sub production body was changed. Expected43 tests with only the new runtime
 case failing at DoubleCKKS: Sub is not implemented. Actual runtime red pending.
+
+## Sub API both-host green; actual runtime red before arithmetic
+
+API source43f6c46 run33842361373 is now completed success on both platforms:
+Windows100927075540:42/42,0.99s; all explicit API targets and warning build passed.
+Windows project sections are retained under pair-sub-api/green-windows.txt.
+
+Runtime-red source934a0950790eeb872f2c4ecb22ab37d1ffeaaafa,
+run https://github.com/leemaple/20231788./actions/runs/33842680856:
+Linux100928002005 completed42/43,0.44s; only pair_sub_runtime_behavior failed
+with pair Sub unexpected exception: DoubleCKKS: Sub is not implemented.
+The warning/default and Relin2/RS2 API steps passed; later Add/Sub API targets
+were skipped after the expected runtime red, not relabelled passed.
+Complete project sections were retained in pair-sub-runtime/red-linux.txt before
+editing the production body. Windows100928002268 remains live and is not stopped.
+
+After genuine red, Pro patch08's minimal body is now integrated: validate both
+pairs and their mutual compatibility, clone corresponding left members, subtract
+matching DCRT components, copy the validated manifest and validate the result.
+Codex rechecked the pinned official base-leveledshe.cpp:594-617 and
+dcrtpoly-impl.h:402-407 subtraction paths. No test/vector/tolerance change,
+EvalSub convenience call, rescale, key access, catch or hidden normalization.
+Runtime green is pending; no Mac compile or crypto execution occurred.
