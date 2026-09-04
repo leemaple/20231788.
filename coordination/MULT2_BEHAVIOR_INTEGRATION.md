@@ -35,3 +35,19 @@ scaling). The exact integral fixture in MULT2_SCALE_ALGEBRA_CHECK.md remains the
 stronger independent illustration. This is not an author-confirmed erratum.
 The existing RS2 branch's later validation fixes/coverage must be reconciled
 before main integration; they are not present in this Mult2 source baseline.
+
+## Observed runtime red and minimal production change
+
+Red commit30d6d0ecefadfd0d524411de39f5ed016ddc08bc, run33838194537,
+Linux job100914915018: default warning build and Relin2/RS2 API targets succeeded;
+39 inherited tests passed, only mult2_composition_contract failed at
+DoubleCKKS: Mult2 is not implemented. Total0.47s, CTest exit8. Full relevant
+sections captured in artifacts/tdd/mult2-behavior/red-linux.txt before writing
+the implementation. The later Mult2 API step was skipped after the expected
+runtime failure; its independent earlier API evidence remains applicable.
+Windows red job100914915298 remains in progress; it was not restarted/cancelled.
+
+After that verified runtime red, the scaffold was replaced only by the exact
+Pro composition return RS2(Relin2(Tensor2(left, right))). No upstream algorithm,
+test vector, tolerance or correction factor was changed. Candidate-green hosted
+execution is pending; no successful multiplication result is claimed yet.

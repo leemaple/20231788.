@@ -994,8 +994,8 @@ CiphertextPair DoubleCKKS::RS2(const CiphertextPair& relinearized) const {
     return result;
 }
 
-CiphertextPair DoubleCKKS::Mult2(const CiphertextPair&, const CiphertextPair&) const {
-    throw std::logic_error("DoubleCKKS: Mult2 is not implemented");
+CiphertextPair DoubleCKKS::Mult2(const CiphertextPair& left, const CiphertextPair& right) const {
+    return RS2(Relin2(Tensor2(left, right)));
 }
 
 lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {
