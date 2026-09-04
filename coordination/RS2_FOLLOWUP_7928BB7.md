@@ -97,4 +97,61 @@ whole-project precision or final acceptance verdict.
   of ILDCRTParams in dcrtpoly.h is not accepted as verified source; parameter-class
   definitions were absent from the packet. Null-child safety remains unproved.
 
-ChatGPT Pro follow-up remains live with visible progress; no duplicate sent.
+ChatGPT Pro follow-up was still live at the ZCode receipt above; no duplicate sent.
+
+## ChatGPT Pro completed follow-up and three-seat reconciliation
+
+Observed 2026-09-04 about13:01 CST: same conversation completed after23m21s,
+Stop answering absent, response actions and download controls present. The
+visible conversation label was Pro. REVIEW.md self-identifies GPT-5.6 Pro;
+that exact backend-version string was not independently verified by Codex.
+Static-only verdict PASS_WITH_GAPS, no blocking production finding.
+
+Downloaded rs2-followup-7928bb7-static-review.zip via that completed conversation:
+12672 bytes, SHA-256 d2687c012f3936da8f03a603b629403c0aef7d318b02888a56d0e35a353c21b2.
+Exactly two regular safe paths, output/REVIEW.md and output/MANIFEST.sha256;
+no extra entries, unsafe paths or links. Gitleaks8.30.1 archive-depth2:zero.
+Codex independently verified the displayed ZIP hash and both extracted hashes.
+REVIEW.md:9c5b40f2499a15c223493b29fac3671ee262b486380a44ad5b39f69347a3e889.
+MANIFEST.sha256:f222221ffcb3e25e9205b9265b7c1b320e345157f1690912fd14226c5a33db2b.
+Exact text returned under coordination/returns/rs2-pro-7928bb7/; supplied
+archive/manifests are data, not execution instructions. No supplied code executed.
+
+Codex read the complete review and reconciled it with source, the ZCode review,
+and the already-retained current-commit CI results:
+
+- S1 / declared-basis correction: all three seats agree on the nine-line fix's
+  demonstrated four-declared/three-actual case. The real high-member red and
+  high/low green remain the evidence; no low-member red is invented.
+- S5 and all current-commit pending entries: closed by exact7928bb7 run
+  https://github.com/leemaple/20231788./actions/runs/33837253564,
+  Linux43/43 (0.60s), Windows43/43 (1.01s), warning/API builds passed.
+  The packet predated these results; Pro correctly did not claim to observe them.
+- S2: the enumerated aggregate/native parameter fields, every native value,
+  metadata and pair manifests are covered; full bound-context aggregate and all
+  hidden parameter fields are not. Narrow claim adopted. No production mutation
+  demonstrated. Broader context snapshot is a deferred test-depth improvement,
+  owner Codex, not a release claim or a reason to rewrite proven arithmetic.
+- S3: deep own+unrelated retained-key fixture closes F4 for genuine rows.
+  Keyless/terminal map equality is only membership/identity evidence. It is not
+  re-labelled as a second deep-cache proof. No cache-writing RS2 source exists.
+- S4: no blanket null-child/same-count malformed-graph safety claim. Additional
+  safe constructible cases may be added if needed; owner Codex. The existing
+  declared-basis check must not be weakened to accommodate malformed objects.
+- P1: Definition4.5 is RS2 and Definition4.7 composes Mult2. The archived brief
+  is preserved unchanged; this explicit correction governs later citations.
+- P2/P3: both rescale calls, correction subtraction, q_div/q_l/metadata-factor
+  distinction and official clone/dispatch chain are supported by source.
+- P4/F9: distinct-prime signed witness mathematics accepted, and runtime covered
+  by the current43-test result. Not an executed production mutation or metadata
+  swap. No such experiment is falsely claimed.
+- P5/P6: terminal/keyless/untouched complex pipeline coverage accepted in its
+  ring/state scope only. No decoded precision, conservative error bound, theorem,
+  secure parameter, repeated multiplication or performance acceptance follows.
+
+The current RS2 arithmetic/validation boundary now has substantive Codex,
+ChatGPT Pro and authorized local ZCode review reconciliation. Windows native
+agent review remains unavailable due to task-text delivery failure, not falsely
+counted; actual Windows builds/tests were GitHub Actions. Cross-branch integration
+with Mult2/Add/Sub remains pending and requires its own combined tests. The full
+user goal remains active; no whole-project completion is claimed.
