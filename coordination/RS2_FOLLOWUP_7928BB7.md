@@ -1,0 +1,56 @@
+# RS2 follow-up review 7928bb7
+
+Observed 2026-09-04, Asia/Shanghai. Pending external verdicts; no final acceptance.
+Previous goal work changed source/tests and retained real CI evidence (progress).
+This continuation closed terminal coverage43/43 on both hosts, extended deep value
+snapshots and prime-role discrimination, pushed each commit, and dispatched the
+new review boundary.
+
+## Exact sanitized handoff
+Source 7928bb7634baa3603daf32806d70bd790938a353, agent/codex-rs2-01, clean when archived.
+Archive /private/tmp/rs2-followup.LIDyYj/rs2-followup-7928bb7.zip, 957646 bytes.
+SHA-256 467328d94f7d00a798e922db23cdd7a9245e65c577d3ec5017e0e84f6c05640d.
+35 payload files plus manifest; all22 project files byte-match git show at the
+source commit; relevant diff byte-matches Git. Six original official references
+and paper hashes match the verified prior manifest; three additional dispatcher
+references match pinned official Git blob IDs recorded in the disposition.
+No old implementation, local modified OpenFHE, dependencies, build products,
+browser/runtime state or credentials were included.
+Gitleaks8.30.1: source stage, archive-depth2 scan and fresh re-extraction all0
+findings. Excluded filename/symlink inspection0; fresh manifest closure exact.
+Archive listing inspected before either delivery.
+
+## ChatGPT Pro
+Conversation: https://chatgpt.com/c/6a99fcad-7c08-83ec-98f6-8230f6277b8c
+Title: 完成 RS2 工程审计.
+Existing response was completed (Stop absent, response actions present).
+One new follow-up submitted at12:38 CST, with ZIP and full7758-character prompt.
+Composer normalized readback matched; ZIP card ready, Pro selector visible.
+After submission: composer empty and Stop answering present. No duplicate or
+interruption; other live Mult2/Add/Sub conversations were not modified.
+Prompt/packet are complete; old conversation memory is not a dependency.
+
+## ZCode
+Dedicated folder /Users/lifeng/Documents/20231788-openfhe-zcode-rs2-followup-20260904.
+This uses the authorized local ZCode static-review fallback, not a Windows run:
+prior Windows task text entry could not be delivered. No Mac build authorized.
+Visible model GLM-5.3, effort Max. Short ASCII task readback verified before Send.
+Submitted once at about12:40 CST; UI showed the dedicated folder, Working for1s,
+and Stop. It must first read LOCAL-REVIEW-TASK.md, verify the archive and TASK.md,
+then write only output/REVIEW.md and output/MANIFEST.sha256.
+No source, CI, credential, unrelated project or outbound-message authority granted.
+
+## Quota at this boundary
+Official logged-in https://bigmodel.cn/coding-plan/personal/usage, browser task122.
+Page refresh2026.09.04 12:22: five-hour6% used /94% remaining (reset15:29);
+weekly63% used /37% remaining (reset2026-09-09 10:00);
+MCP monthly16% used /84% remaining (reset2026-09-25 10:00).
+All ZCode sessions share this quota. No quota reset was redeemed. One bounded
+static follow-up dispatched; no zero-quota retry or weekly90% violation.
+
+## Pending execution and limits
+Deep-snapshot source21c13fd run33837174597; prime-role source7928bb7
+run33837253564. Collect terminal job logs before closing F3/F4/F9.
+The actual production source remains68d0d98 plus prior implementation; latest
+changes are coverage extensions, not fabricated new red-green implementation.
+No decoded multiplication, non-wrap theorem acceptance or53/106-bit claim.
