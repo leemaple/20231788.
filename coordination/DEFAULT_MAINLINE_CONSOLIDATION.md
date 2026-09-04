@@ -68,3 +68,42 @@ canonical report hashes, fast-forward to this descendant, verify preservation,
 then normal push. No force push, report staging, CI rerun or unreviewed source
 is authorized by this record. Actual promotion outcome must be recorded after
 execution rather than inferred from this plan.
+
+## Actual default promotion — 2026-09-05 00:26 Asia/Shanghai
+
+The canonical default branch `cleanroom/reimplement-mult2-20260831` was
+fast-forwarded from `1f765462d8cfb20c36fc10a95913c630eec8fa35` to
+`7b41e1cdadd407736b757f662fddceccd2d67c99` using `git merge --ff-only`.
+An ordinary explicit-ref push succeeded; `git ls-remote` then returned the
+same full SHA for the remote default branch. Observation completed by
+2026-09-04T16:26:55Z. No reset, force push, stash, report staging or CI dispatch
+was used.
+
+Before promotion, root and an independent Codex reviewer verified that:
+
+- the old default is an ancestor of the candidate, whose direct parent is
+  the exact tested merge `4ecbd972429884489918d9f82dfc3fe9f702ef4a`;
+- candidate source, headers, tests, CMake, all workflows and `.gitignore`
+  are byte-identical to that tested merge;
+- all tracked report paths are unchanged between the old and new default;
+- the candidate worktree is clean and both original hosted logs are tracked
+  at their recorded hashes.
+
+Root enumerated and hashed every existing file under the two untracked daily
+report directories plus the modified delivery log before and after the
+fast-forward. All six byte counts and SHA-256 values were identical:
+
+| Existing report path | Bytes | Unchanged SHA-256 |
+| --- | ---: | --- |
+| `reports/daily/2026-09-03/2023-1788-openfhe-daily-2026-09-03.md` | 14143 | `04b464f89e5577735fa5cc54cc98c2aa6bb5f5781575bb2df9597ea3f0698a90` |
+| `reports/daily/2026-09-03/2023-1788-openfhe-daily-2026-09-03.pdf` | 303692 | `963af65db78d262ca74821ef4e4887db37abf2bfe2d6d3a2d913603686f141ac` |
+| `reports/daily/2026-09-04/2023-1788-openfhe-daily-2026-09-04.md` | 15689 | `1a268a740b34b1e048187117b90a2b85cb62f08fcd10d2db27d389a70923eccd` |
+| `reports/daily/2026-09-04/2023-1788-openfhe-daily-2026-09-04.pdf` | 256360 | `3ca7a95189aa15c3c2a17769455fbb7ee2951dab1fb0aa3e50deb9b6432dc647` |
+| `reports/daily/2026-09-04/build_report.py` | 5220 | `2ed7fd852dcbc48ca3a9ebfb27326ce2bee01b5837a823bdf5020d9c87f49ef6` |
+| `reports/delivery-log.md` | 2099 | `1c5e2c57160fabb68e47f4b666be6eb79708eb8075c54fb826ca196ed144c799` |
+
+The index was empty after the fast-forward. Those existing report changes
+remain unstaged/untracked; they are not part of this promotion or its factual
+follow-up. The default now carries the hosted-tested first-Mult2 baseline and
+retained evidence, not the unimplemented repeated-Mult2, high-precision I/O or
+h128 proposals. The full paper goal remains incomplete.
