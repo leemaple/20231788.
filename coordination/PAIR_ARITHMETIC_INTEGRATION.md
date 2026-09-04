@@ -52,3 +52,20 @@ cases, negative matrix, ZCode/Pro/Codex reconciliation and cross-branch merge
 remain pending. Do not apply the12 returned patches wholesale or claim their
 selected-tree identity is the entire repository. The later RS2 declared-basis
 fix and Mult2 are not yet present in this isolated branch.
+
+## Observed runtime red before production edit
+
+Source e22a2e1fb343731ca89cc0ea2e6444e7988bdc5e, run33839675559,
+Linux job100919225214 completed the expected runtime red:41/42 passed,
+only pair_add_runtime_behavior failed with
+pair Add unexpected exception: DoubleCKKS: Add is not implemented.
+Warning/default and Relin2/RS2 API builds passed; CTest exit8,0.56s.
+Raw sections saved in artifacts/tdd/pair-add-runtime/red-linux.txt before any
+production Add edit. Windows job100919225336 is still live; not restarted.
+The independent literal expected sum is frozen in the red revision.
+
+Codex has inspected the complete minimal Add patch and existing ValidatePair:
+clone corresponding left high/low, direct matching DCRT additions, validated
+manifest copy, no key access/rescale/alignment or production catch. Compatible
+state checks precede cloning/arithmetic. After this red, the proposed minimal
+body and its narrow compatibility check will be integrated; green is PENDING.

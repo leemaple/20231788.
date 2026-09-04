@@ -150,6 +150,8 @@ public:
 private:
     void ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const;
     void ValidatePair(const CiphertextPair& pair) const;
+    void ValidatePairCompatibility(const CiphertextPair& left, const CiphertextPair& right,
+                                   const char* operationName) const;
     void ValidateTensorCompatibility(const CiphertextPair& left, const CiphertextPair& right) const;
     void ValidateTensorResult(const TensorCiphertextPair& pair) const;
     std::pair<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>, lbcrypto::Ciphertext<lbcrypto::DCRTPoly>>
