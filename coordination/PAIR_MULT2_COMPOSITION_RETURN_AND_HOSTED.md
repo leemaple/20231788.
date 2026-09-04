@@ -109,3 +109,22 @@ The isolated BV final review and Pro high-precision first-Mult2 task remain live
 This p30,N64,HEStd_NotSet,1e-3 diagnostic is NOT high precision, repeated
 multiplication, universal BV error proof, paper-scale security/performance or
 the complete paper reproduction.
+
+## Stage1 first observation: Linux GREEN; Windows still live
+Frozen/pushed source cdc4711840c2d6bb7c390e8597d730ae335ee34e,
+remote SHA verified. Run33869933158:
+https://github.com/leemaple/20231788./actions/runs/33869933158
+Linux job101013240028 completed SUCCESS at19:53:56 Asia/Shanghai.
+Default warnings-as-errors, all5 explicit API builds and both CTest steps pass.
+Focused Add:1/1 (case0.05s, total0.52s); full suite54/54,total0.51s.
+Codex independently matched all54 unique actual names against current CMake;
+the new Add case produced distinct certificate records in focused and full runs.
+Original53 names preserved; this is FIRST-OBSERVED GREEN, not fabricated RED.
+Full project configure/build/focused/full/API log retained as
+artifacts/tdd/pair-mult2-composition/add-linux.txt,58414bytes,
+SHA256 f09918a5b810ccaa00bb8dea1fb2490c45e6c0b66a2c2eebc427ec68e60ab34d.
+Only ANSI/CR/trailing whitespace normalized in this new retained section.
+Job identity/head/run and API-step outcomes are retained in
+coordination/evidence/pair-mult2-composition/add-linux-cdc4711.json.
+Windows job101013240269 remained live on this same source when observed;
+no Windows result is inferred. Stage2 remains unapplied until that outcome.
