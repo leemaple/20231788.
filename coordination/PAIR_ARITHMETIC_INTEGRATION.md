@@ -252,3 +252,39 @@ c680b795858edbc914d9fa1b08e7ab813a3d7db4e10a0665308cc87eb65a2034.
 This closes the first hosted execution of this additional regression boundary;
 no new production behavior, high-precision acceptance, repeated multiplication
 or full hidden-state immutability proof is inferred. No Mac crypto/build ran.
+
+## Compatibility/malformed-operand regression: first hosted execution pending
+
+Observed 2026-09-04. Baseline 01c9a7f46996e160745868bde8e3590b79331a6d
+was clean before this slice. Codex read the complete returned Pro patch 0011,
+the current validators and the corresponding official plaintext constructor.
+Only tests and their single CTest registration are changed; production remains
+untouched. This is additional regression coverage of the already recorded
+Add/Sub red-green behavior, not an invented new missing-feature red.
+
+The matrix checks exact invalid_argument diagnostics for genuine lifecycle,
+key-tag, slot-count and context incompatibilities; deliberately corrupted
+test-owned pair descriptors and member metadata; per-native-tower format;
+and left/right validation order. Add and Sub must preserve both operand
+snapshots on every rejection. Enumerated context parameters and evaluation-key
+cache values are checked at the end, not every hidden library field. Catching
+exceptions is confined to the test harness to verify the promised failure type
+and message; unexpected exceptions fail the test.
+
+Two static fixture corrections to the Pro patch precede the first execution:
+(1) the valid slot mismatch uses separately encoded genuine eight-slot and
+four-slot plaintexts (the public constructor's explicit slots argument), not
+an eight-slot ciphertext relabeled as seven; both operands independently pass
+DCP/RCB before the Add/Sub mismatch check; (2) the left-before-right witness
+now also makes the right descriptor invalid with a DIFFERENT exact diagnostic,
+so a right-first validator cannot accidentally pass that ordering test.
+Malformed cases mutate only test-owned objects; no production mutable factory
+or public seam was introduced. These are reviewed preflight changes, not
+observed compiler or runtime failures.
+
+All previous 45 registrations/vectors/thresholds remain unchanged; the new
+pair_arithmetic_compatibility_rejections entry brings this branch to 46 cases.
+First hosted result is pending. No Mac compilation/crypto, full precision,
+repeated multiplication, universal error-bound or combined-branch acceptance
+is claimed. Any actual failure must be retained and diagnosed before editing
+expectations. Owner: Codex integration, followed by independent static review.

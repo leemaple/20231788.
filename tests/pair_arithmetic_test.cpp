@@ -989,6 +989,301 @@ void TestPublicLifecyclesAndKeyIndependence() {
     lbcrypto::CryptoContextImpl<DCRTPoly>::ClearEvalMultKeys(guardTag);
 }
 
+template <class Function>
+void CheckExactInvalidArgument(Function&& function,
+                               const std::string& expectedMessage,
+                               const std::string& label) {
+    bool threw = false;
+    try {
+        std::invoke(std::forward<Function>(function));
+    }
+    catch (const std::invalid_argument& exception) {
+        Check(exception.what() == expectedMessage,
+              label + " diagnostic mismatch: " + std::string(exception.what()));
+        threw = true;
+    }
+    catch (const std::exception& exception) {
+        throw TestFailure(label + " threw the wrong exception type: " + exception.what());
+    }
+    Check(threw, label + " did not reject");
+}
+
+void CheckBothRejectWithoutMutation(DoubleCKKS& module,
+                                    const CiphertextPair& left,
+                                    const CiphertextPair& right,
+                                    const std::string& addMessage,
+                                    const std::string& subMessage,
+                                    const std::string& label) {
+    const auto leftBefore = SnapshotPair(left, label + " left");
+    const auto rightBefore = SnapshotPair(right, label + " right");
+    CheckExactInvalidArgument([&] { (void)module.Add(left, right); }, addMessage,
+                              label + " Add");
+    CheckPairUnchanged(left, leftBefore, label + " left after Add rejection");
+    CheckPairUnchanged(right, rightBefore, label + " right after Add rejection");
+    CheckExactInvalidArgument([&] { (void)module.Sub(left, right); }, subMessage,
+                              label + " Sub");
+    CheckPairUnchanged(left, leftBefore, label + " left after Sub rejection");
+    CheckPairUnchanged(right, rightBefore, label + " right after Sub rejection");
+}
+
+void TestCompatibilityAndMalformedRejections() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    context->EvalMultKeyGen(keys.secretKey);
+    const auto plaintext =
+        context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5, 0.75}, 2, 0);
+    DoubleCKKS module(context);
+    const auto makePair = [&]() {
+        return module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    };
+
+    const auto firstForLifecycle = makePair();
+    const auto otherFirst = makePair();
+    const auto readyForLifecycle =
+        module.Relin2(module.Tensor2(otherFirst, otherFirst));
+    (void)module.RCB(firstForLifecycle);
+    (void)module.RCB(readyForLifecycle);
+
+    auto secondKeys = context->KeyGen();
+    const auto secondKeyPair =
+        module.DCP(context->Encrypt(plaintext, secondKeys.publicKey));
+    const auto primaryKeyPair = makePair();
+    (void)module.RCB(primaryKeyPair);
+    (void)module.RCB(secondKeyPair);
+    Check(primaryKeyPair.GetKeyTag() != secondKeyPair.GetKeyTag(),
+          "key-tag rejection fixture did not create distinct key tags");
+
+    const auto slotLeftInput = context->Encrypt(plaintext, keys.publicKey);
+    const auto fourSlotPlaintext = context->MakeCKKSPackedPlaintext(
+        std::vector<double>{0.25, -0.5, 0.75}, 2, 0, nullptr, 4);
+    const auto slotRightInput = context->Encrypt(fourSlotPlaintext, keys.publicKey);
+    Check(slotLeftInput->GetSlots() == 8 && slotRightInput->GetSlots() == 4,
+          "slot rejection fixture must use genuine eight-slot and four-slot encodings");
+    const auto slotLeft = module.DCP(slotLeftInput);
+    const auto slotRight = module.DCP(slotRightInput);
+    (void)module.RCB(slotLeft);
+    (void)module.RCB(slotRight);
+    Check(slotLeft.GetSlots() != slotRight.GetSlots(),
+          "slot rejection fixture did not create distinct slot counts");
+
+    auto foreignContext = MakeContext(lbcrypto::HYBRID, 4);
+    Check(foreignContext.get() != context.get(),
+          "foreign-context rejection fixture must use a distinct CryptoContext identity");
+    const auto foreignKeys = foreignContext->KeyGen();
+    DoubleCKKS foreignModule(foreignContext);
+    const auto foreignPair = foreignModule.DCP(
+        foreignContext->Encrypt(
+            foreignContext->MakeCKKSPackedPlaintext(std::vector<double>{-0.25, 0.5}, 2, 0),
+            foreignKeys.publicKey));
+    const auto localPairForForeign = makePair();
+
+    const auto contextBefore = SnapshotContextParameters(context, "rejection context");
+    const auto foreignContextBefore = SnapshotContextParameters(foreignContext, "foreign rejection context");
+    const auto keyCache = SnapshotEvalKeyCache();
+
+    CheckBothRejectWithoutMutation(
+        module, firstForLifecycle, readyForLifecycle,
+        "DoubleCKKS: Add input lifecycles do not match",
+        "DoubleCKKS: Sub input lifecycles do not match", "mixed lifecycle");
+    CheckBothRejectWithoutMutation(
+        module, primaryKeyPair, secondKeyPair,
+        "DoubleCKKS: Add input key tags do not match",
+        "DoubleCKKS: Sub input key tags do not match", "genuine key-tag mismatch");
+    CheckBothRejectWithoutMutation(
+        module, slotLeft, slotRight,
+        "DoubleCKKS: Add input slots do not match",
+        "DoubleCKKS: Sub input slots do not match", "genuine slot mismatch");
+    CheckBothRejectWithoutMutation(
+        module, localPairForForeign, foreignPair,
+        "DoubleCKKS: pair belongs to a different context",
+        "DoubleCKKS: pair belongs to a different context", "foreign right context");
+
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto& divisor = const_cast<NativeInteger&>(right.GetDivisor());
+        divisor += NativeInteger(2);
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair divisor does not match the bound context",
+            "DoubleCKKS: pair divisor does not match the bound context",
+            "right divisor manifest corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto& moduli = const_cast<std::vector<NativeInteger>&>(right.GetOrderedModuli());
+        moduli.front() += NativeInteger(2);
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair ordered RNS basis does not match its level",
+            "DoubleCKKS: pair ordered RNS basis does not match its level",
+            "right ordered-basis manifest corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto& scale = const_cast<PaperScaleDescriptor&>(right.GetPaperScale());
+        scale.inputRecordedScalingFactor *= 2.0;
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair paper-scale descriptor is inconsistent",
+            "DoubleCKKS: pair paper-scale descriptor is inconsistent",
+            "right paper-recorded scale corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto& scale = const_cast<PaperScaleDescriptor&>(right.GetPaperScale());
+        scale.divisor += NativeInteger(2);
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair paper-scale descriptor is inconsistent",
+            "DoubleCKKS: pair paper-scale descriptor is inconsistent",
+            "right paper divisor corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto& scale = const_cast<PaperScaleDescriptor&>(right.GetPaperScale());
+        scale.approximateLogicalScalingFactor *= 2.0L;
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair paper-scale descriptor is inconsistent",
+            "DoubleCKKS: pair paper-scale descriptor is inconsistent",
+            "right logical scale corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto& scale = const_cast<PaperScaleDescriptor&>(right.GetPaperScale());
+        scale.approximateRecombinedLogicalScalingFactor *= 2.0L;
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair recombined logical scale is inconsistent",
+            "DoubleCKKS: pair recombined logical scale is inconsistent",
+            "right recombined logical scale corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(right.GetHigh());
+        high->SetLevel(0);
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair high level does not match its pair state",
+            "DoubleCKKS: pair high level does not match its pair state",
+            "right member level corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto low = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(right.GetLow());
+        low->SetNoiseScaleDeg(1);
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair low noise-scale degree does not match its pair state",
+            "DoubleCKKS: pair low noise-scale degree does not match its pair state",
+            "right member degree corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto low = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(right.GetLow());
+        low->SetScalingFactor(low->GetScalingFactor() * 2.0);
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair low recorded scaling factor does not match its pair state",
+            "DoubleCKKS: pair low recorded scaling factor does not match its pair state",
+            "right member recorded-scale corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto& keyTag = const_cast<std::string&>(right.GetKeyTag());
+        keyTag = "corrupt-pair-manifest-tag";
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair high key tag does not match its pair state",
+            "DoubleCKKS: pair high key tag does not match its pair state",
+            "right key-tag manifest corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(right.GetHigh());
+        high->SetSlots(high->GetSlots() + 1);
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair high slots do not match its pair state",
+            "DoubleCKKS: pair high slots do not match its pair state",
+            "right member slots corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto low = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(right.GetLow());
+        low->SetEncodingType(lbcrypto::PACKED_ENCODING);
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair low must use CKKS packed encoding metadata",
+            "DoubleCKKS: pair low must use CKKS packed encoding metadata",
+            "right member encoding corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(right.GetHigh());
+        high->GetElements().push_back(high->GetElements().front());
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair high must contain exactly two RLWE components",
+            "DoubleCKKS: pair high must contain exactly two RLWE components",
+            "right member component-count corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto low = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(right.GetLow());
+        low->GetElements().at(0).GetAllElements().at(0).SetFormat(Format::COEFFICIENT);
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair low tower must be in evaluation format",
+            "DoubleCKKS: pair low tower must be in evaluation format",
+            "right member tower-format corruption");
+    }
+    {
+        auto left = makePair();
+        auto right = secondKeyPair;
+        auto& scale = const_cast<PaperScaleDescriptor&>(right.GetPaperScale());
+        scale.approximateLogicalScalingFactor *= 2.0L;
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair paper-scale descriptor is inconsistent",
+            "DoubleCKKS: pair paper-scale descriptor is inconsistent",
+            "right validation precedes mutual key-tag compatibility");
+    }
+    {
+        auto left = makePair();
+        auto right = makePair();
+        auto& scale = const_cast<PaperScaleDescriptor&>(left.GetPaperScale());
+        scale.approximateRecombinedLogicalScalingFactor *= 2.0L;
+        auto& rightScale = const_cast<PaperScaleDescriptor&>(right.GetPaperScale());
+        rightScale.approximateLogicalScalingFactor *= 2.0L;
+        CheckBothRejectWithoutMutation(
+            module, left, right,
+            "DoubleCKKS: pair recombined logical scale is inconsistent",
+            "DoubleCKKS: pair recombined logical scale is inconsistent",
+            "left validation precedes right validation and compatibility");
+    }
+
+    CheckContextParametersUnchanged(context, contextBefore, "rejection context");
+    CheckContextParametersUnchanged(foreignContext, foreignContextBefore,
+                                    "foreign rejection context");
+    CheckEvalKeyCacheUnchanged(keyCache, "rejection evaluation-key cache");
+    lbcrypto::CryptoContextImpl<DCRTPoly>::ClearEvalMultKeys(keys.secretKey->GetKeyTag());
+}
+
 // Test-owned controlled coefficients check exact modular arithmetic, not slot precision.
 void TestControlledOracleAndAliases() {
     auto context = MakeContext();
@@ -1078,6 +1373,9 @@ TestFunction ResolveTest(const std::string& name) {
     }
     if (name == "public_lifecycles_keyless") {
         return &TestPublicLifecyclesAndKeyIndependence;
+    }
+    if (name == "compatibility_rejections") {
+        return &TestCompatibilityAndMalformedRejections;
     }
     throw TestFailure("unknown pair-arithmetic test case: " + name);
 }
