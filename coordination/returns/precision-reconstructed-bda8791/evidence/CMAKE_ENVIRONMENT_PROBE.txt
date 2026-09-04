@@ -1,0 +1,27 @@
+COMMAND: cmake -S <reconstructed-green-project> -B <external-temp> -DCMAKE_BUILD_TYPE=Debug
+NOTE: No CMAKE_PREFIX_PATH was supplied; this probes whether pristine OpenFHE is installed in the review container default search path.
+-- The CXX compiler identification is GNU 14.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Error at CMakeLists.txt:9 (find_package):
+  Could not find a package configuration file provided by "OpenFHE"
+  (requested version 1.5.0) with any of the following names:
+
+    OpenFHEConfig.cmake
+    openfhe-config.cmake
+
+  Add the installation prefix of "OpenFHE" to CMAKE_PREFIX_PATH or set
+  "OpenFHE_DIR" to a directory containing one of the above files.  If
+  "OpenFHE" provides a separate development package or SDK, be sure it has
+  been installed.
+
+
+-- Configuring incomplete, errors occurred!
+CMAKE_CONFIGURE_EXIT=1
+OPENFHE_ENVIRONMENT=NOT_FOUND_BY_CMAKE
+CANDIDATE_BUILD=NOT_EXECUTED
+CRYPTO_RUNTIME=NOT_EXECUTED
+CTEST=NOT_EXECUTED
