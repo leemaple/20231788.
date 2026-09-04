@@ -82,3 +82,22 @@ nor a runtime test result. The preserved files are:
 - artifacts/tdd/rs2-public-pipeline/green.txt
 - artifacts/tdd/rs2-terminal-rejections/green.txt
 - coordination/returns/rs2-pro-7928bb7/REVIEW.md
+
+## Combined boundary observed green on both hosts
+
+Exact merge source 1e2487fb0539d4659e953ef232020bb800968f8e, run
+https://github.com/leemaple/20231788./actions/runs/33851712076:
+Linux job 100955780944: 48/48, 0.78s;
+Windows job 100955781223: 48/48, 1.34s.
+Warning-clean default and explicit Relin2/RS2/Mult2 public API builds all passed
+on both hosts. The run head_sha was independently checked against the merge.
+Complete project configure/build/CTest/API log sections are retained under
+artifacts/tdd/rs2-mult2-combined/. ANSI/CR/trailing whitespace only normalized;
+no numerical or outcome text altered. No local compilation/crypto was run.
+
+This closes the first combined RS2-validation plus Mult2 regression boundary.
+It does NOT add Add/Sub, a high-precision encoder/decoder, repeated multiplication
+or a conservative backend-specific E_Relin. The observed BV cases still carry
+PER_PATH_CONDITIONAL and UNPROVED labels; green is not full-paper acceptance.
+ZCode's separate static return has since completed and is being reconciled in
+the Mult2 worktree; this run does not substitute for that independent review.
