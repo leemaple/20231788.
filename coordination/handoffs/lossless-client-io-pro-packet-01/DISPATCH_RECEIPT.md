@@ -57,7 +57,7 @@ was performed on the Mac while preparing this packet.
 
 ## External dispatch
 
-Status: `PREPARED_NOT_SENT`.
+Status: `SENT_RUNNING`.
 
 Target: existing ChatGPT Pro conversation `Design Client IO Seam`, URL
 `https://chatgpt.com/c/6a9ad753-af90-83ec-9062-0fc671f64197`.
@@ -65,6 +65,21 @@ Target: existing ChatGPT Pro conversation `Design Client IO Seam`, URL
 The exact frozen dispatch prompt is `DISPATCH_PROMPT.md`: 3,576 bytes,
 SHA-256
 `900f215cfdb6ea2e860600cba775dd78f9db7101ebed57fe022584cbeb4d9110`.
-The single-send browser evidence will be recorded here after submission. Until
-that evidence exists, this receipt does not claim that ChatGPT Pro received,
-parsed, or started the assignment.
+
+On 2026-09-05, before submission, the target page had no `Stop answering`
+control and the prior design response was complete. Both the exact ZIP and its
+sidecar were uploaded. The draft visibly listed both filenames, the composer
+contained the complete frozen prompt, and its text matched after ordinary
+browser Unicode-whitespace normalization; the normalized text SHA-256 was
+`b151d1f1a376780bc569b7328cb37b5d16f5b58bee8048cd1ef56014f0c5729a`.
+The `Send prompt` control was enabled.
+
+The task was submitted exactly once immediately before the verification
+recorded at 2026-09-05 07:18:23 Asia/Shanghai. Immediately afterward the
+composer was empty, neither attachment remained in the draft form, the page
+visibly contained the ZIP and sidecar filenames plus the prompt's opening text,
+and the page showed `Pro thinking` with one `Stop answering` control. This
+proves that the assignment was accepted and running; it does not prove that the
+archive was parsed, code was produced, any patch applies, or any test passed.
+
+Do not refresh, interrupt, duplicate, or resend this long-running response.
