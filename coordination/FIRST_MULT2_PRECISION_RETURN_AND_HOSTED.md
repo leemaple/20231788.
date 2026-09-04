@@ -152,3 +152,39 @@ Only ANSI/CR/trailing whitespace normalized. Windows job101023588186 was
 last observed live; no Windows success or extra sample is inferred.
 Full repeated-use/paper-parameter/security/production-codec acceptance and
 independent review of this new precision patch still remain open.
+
+## Final hosted observation: BOTH platforms GREEN
+Windows job101023588186 completed2026-09-04 20:39:26 Asia/Shanghai SUCCESS;
+run33873114880 is now completed/success at the same frozen source4790778.
+Warning-clean default build, all5 public API builds, focused1/1 (case and
+total0.25s), full55/55 (total2.30s) PASS. Codex matched all55 actual names
+and order to current CMake; source/run/attempt markers match job metadata.
+The preceding Windows-pending paragraph is historical, superseded here.
+
+Windows emitted8 actual fresh-key records,4 focused plus4 full. All slots and
+the distinguishing delta passed the unchanged <=2^-80 contract. Windows worst
+max-slot error1.1983491464553656560716630483927336252837e-27 (full trial2);
+worst delta4.5596134479312013030922868162011951012964e-28 (focused trial3).
+The observed headroom160/210 and exact divisors/scale denominator match Linux.
+Across the TWO completed hosts there are16 fresh-key samples, not a1000-trial
+paper reproduction and not a universal/probabilistic error guarantee.
+Overall worst max-slot1.6696072195146116607129673424340031160212e-27 and
+worst delta1.6958307879080880932103073456218202834178e-27 remain Linux values.
+This establishes first-Mult2 high precision for TWO nontrivial lossless
+operands in the frozen diagnostic, not merely DCP/RCB roundtrip precision.
+
+Windows project log:
+artifacts/tdd/precision-first-mult2/first-observed-windows.txt,
+69843bytes, SHA256 4b1cdda58b2800bcb54b9653cb4b3bcb20c336d7b80787cf09120ee94c6a98f2.
+Full metadata, all55 cases and8 records:
+coordination/evidence/first-mult2-precision/first-observed-windows-4790778.json.
+Normalization is ANSI/CR/trailing whitespace only, as with Linux.
+No source/vector/threshold/fixture changes occurred after either observation.
+Final independent review, production lossless I/O, repeated lifecycle and
+the complete paper parameter/experiment/security boundaries remain pending.
+
+Shared ZCode quota read-only observation via authenticated ego-browser:
+2026-09-04 20:46:35CST, page last refresh20:46;5-hour0% used (reset time
+not displayed), weekly70% resets2026-09-09 10:00, MCP monthly16% resets
+2026-09-25 10:00. All ZCode instances share this quota. Local static fallback
+is available for the next independent review; no quota reset was redeemed.
