@@ -1,0 +1,38 @@
+DCP/RCB CI bootstrap failure — not TDD red evidence
+
+Observed: 2026-08-31 18:03 CST (Asia/Shanghai)
+Project commit: 45239d419e12cc419764deba45066a78d50e0db3
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GCC
+Run: https://github.com/leemaple/20231788./actions/runs/33380305068
+Failed command: cmake --build .ci/openfhe-build --parallel 2
+Exit code: 2
+
+Classification: runner/build-pipeline failure. The project compile and public DCP/RCB test were never reached, so this is explicitly not retained as the first red test.
+
+Relevant failed-step output:
+
+-- Copied demoData files
+[  0%] Built target third-party
+[  1%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/constants-lattice-impl.cpp.o
+[  2%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/lattice.cpp.o
+[  3%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/stdlatticeparms.cpp.o
+In file included from /home/runner/work/20231788./20231788./.ci/openfhe-src/src/core/lib/lattice/lattice.cpp:53:
+/home/runner/work/20231788./20231788./.ci/openfhe-src/src/core/include/lattice/hal/default/dcrtpoly-impl.h: In instantiation of ‘void lbcrypto::DCRTPolyImpl<VecType>::SwitchFormat(uint32_t) [with VecType = bigintdyn::mubintvec<bigintdyn::ubint<long unsigned int> >; uint32_t = unsigned int]’:
+/home/runner/work/20231788./20231788./.ci/openfhe-src/src/core/lib/lattice/lattice.cpp:122:1:   required from here
+/home/runner/work/20231788./20231788./.ci/openfhe-src/src/core/include/lattice/hal/default/dcrtpoly-impl.h:1935:20: error: unused variable ‘limit’ [-Werror=unused-variable]
+ 1935 |     const uint32_t limit = thread_limit < size ? thread_limit : size;
+      |                    ^~~~~
+[  4%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/trapdoor-dcrtpoly.cpp.o
+[  5%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/lattice/trapdoor-poly.cpp.o
+[  6%] Building CXX object src/core/CMakeFiles/coreobj.dir/lib/math/chebyshev.cpp.o
+cc1plus: all warnings being treated as errors
+gmake[2]: *** [src/core/CMakeFiles/coreobj.dir/build.make:93: src/core/CMakeFiles/coreobj.dir/lib/lattice/lattice.cpp.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+gmake[1]: *** [CMakeFiles/Makefile2:371: src/core/CMakeFiles/coreobj.dir/all] Error 2
+gmake: *** [Makefile:136: all] Error 2
+Process completed with exit code 2.
+
+Cause and next check:
+
+The project configured pristine OpenFHE with `WITH_OPENMP=OFF`. In this upstream version, the `limit` local is consumed only by the OpenMP pragma; GCC therefore diagnoses it as unused while upstream warnings are treated as errors. The next run enables upstream's normal OpenMP path rather than patching or suppressing the official source. The expected TDD red remains the absent project-owned DCP/RCB public header.

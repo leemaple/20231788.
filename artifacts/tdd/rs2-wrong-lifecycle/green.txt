@@ -1,0 +1,70 @@
+RS2 wrong-lifecycle behavior — retained green evidence
+======================================================
+
+Public behavior
+---------------
+
+Calling `RS2` with a real `ReadyForFirstMult` pair produced through public DCP
+fails before arithmetic with exact `std::invalid_argument` diagnostic
+`DoubleCKKS: RS2 requires ReadyForRS2 input`, leaving both ciphertexts,
+metadata identities/deep values, and every exposed pair manifest field
+unchanged.
+
+Project branch: agent/codex-rs2-01
+Green source commit: b315731ebcabdf2e20a04bdbb3812a1b9340b94c
+Official OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+GitHub Actions run: https://github.com/leemaple/20231788./actions/runs/33816650702
+Workflow conclusion: success
+
+Observed minimal production change
+----------------------------------
+
+`DoubleCKKS::RS2` now validates the complete pair manifest, then rejects any
+lifecycle other than `ReadyForRS2` with the required diagnostic. The valid
+RS2 arithmetic path remains the explicit `DoubleCKKS: RS2 is not implemented`
+scaffold; no arithmetic, rescale, result-state, or precision claim is made by
+this green.
+
+Linux runner
+------------
+
+Environment: ubuntu-24.04, GCC 13.3.0, warning flags include
+`-Wall -Wextra -Wpedantic -Werror`.
+
+    cmake --build build --parallel 2
+    # success
+
+    cmake --build build --target relin2_api_contract_test --parallel 2
+    # success
+
+    cmake --build build --target rs2_api_contract_test --parallel 2
+    # success
+
+    ctest --test-dir build --output-on-failure
+    38/38 Test #38: rs2_wrong_lifecycle ..........................   Passed    0.00 sec
+    100% tests passed, 0 tests failed out of 38
+    Total Test time (real) =   0.51 sec
+
+Job: https://github.com/leemaple/20231788./actions/runs/33816650702/job/100850166854
+
+Windows runner
+--------------
+
+Environment: windows-2022, MSYS2 MinGW64, C++17 warning flags include
+`-Wall -Wextra -Wpedantic -Werror`.
+
+    cmake --build "$build" --parallel 2
+    # success
+
+    cmake --build "$build" --target relin2_api_contract_test --parallel 2
+    # success
+
+    cmake --build "$build" --target rs2_api_contract_test --parallel 2
+    # success
+
+    ctest --test-dir "$build" --output-on-failure
+    38/38 Test #38: rs2_wrong_lifecycle ..........................   Passed    0.01 sec
+    100% tests passed out of 38
+    Total Test time (real) =   0.63 sec
+
+Job: https://github.com/leemaple/20231788./actions/runs/33816650702/job/100850167378

@@ -1,0 +1,308 @@
+name: OpenFHE 2023/1788 TDD
+
+on:
+  push:
+    branches:
+      - agent/codex-dcp-rcb-01
+      - agent/codex-tensor2-01
+      - agent/codex-relin2-01
+      - agent/codex-rs2-01
+      - codex/mult2-01
+      - codex/bv-fixed-key-01
+      - codex/integration-01
+      - codex/pair-arithmetic-01
+      - codex/precision-01
+      - codex/pair-mult2-composition-01
+      - cleanroom/reimplement-mult2-20260831
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+  OPENFHE_PREFIX: ${{ github.workspace }}/.ci/openfhe-install
+
+jobs:
+  linux-gcc:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out clean-room source
+        uses: actions/checkout@v4
+
+      - name: Check out pristine OpenFHE 1.5.0
+        uses: actions/checkout@v4
+        with:
+          repository: openfheorg/openfhe-development
+          ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+          path: .ci/openfhe-src
+          submodules: recursive
+
+      - name: Verify OpenFHE provenance
+        shell: bash
+        run: |
+          actual="$(git -C .ci/openfhe-src rev-parse HEAD)"
+          test "$actual" = "$OPENFHE_COMMIT"
+          git -C .ci/openfhe-src status --short
+
+      - name: Install independent-oracle test dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libboost-dev
+
+      - name: Report toolchain versions
+        run: |
+          cmake --version
+          c++ --version
+
+      - name: Cache pristine OpenFHE install
+        id: cache-openfhe
+        uses: actions/cache@v4
+        with:
+          path: .ci/openfhe-install
+          key: openfhe-1.5.0-${{ runner.os }}-gcc-${{ env.OPENFHE_COMMIT }}
+
+      - name: Configure OpenFHE
+        if: steps.cache-openfhe.outputs.cache-hit != 'true'
+        run: >-
+          cmake -S .ci/openfhe-src -B .ci/openfhe-build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_INSTALL_PREFIX=${OPENFHE_PREFIX}
+          -DBUILD_UNITTESTS=OFF
+          -DBUILD_EXAMPLES=OFF
+          -DBUILD_BENCHMARKS=OFF
+          -DBUILD_EXTRAS=OFF
+          -DWITH_OPENMP=ON
+
+      - name: Build and install OpenFHE
+        if: steps.cache-openfhe.outputs.cache-hit != 'true'
+        run: |
+          cmake --build .ci/openfhe-build --parallel 2
+          cmake --install .ci/openfhe-build
+
+      - name: Configure clean-room project
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+
+      - name: Record clean-room run provenance
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          printf 'PROJECT_SOURCE_COMMIT=%s GITHUB_RUN_ID=%s GITHUB_RUN_ATTEMPT=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+
+      - name: Build warning-clean project
+        run: cmake --build build --parallel 2
+
+      - name: Build Relin2 public API contract
+        run: cmake --build build --target relin2_api_contract_test --parallel 2
+
+      - name: Build RS2 public API contract
+        run: cmake --build build --target rs2_api_contract_test --parallel 2
+
+      - name: Run focused first-Mult2 precision contract
+        run: |
+          cmake --build build --target precision_first_mult2_contract_test --parallel 2
+          ctest --test-dir build --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
+
+      - name: Run focused Pair Add and Sub inputs to first Mult2
+        run: ctest --test-dir build --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
+
+      - name: Run clean-room project tests
+        run: ctest --test-dir build --verbose --output-on-failure
+
+      - name: Build Mult2 public API contract
+        run: cmake --build build --target mult2_api_contract_test --parallel 2
+
+      - name: Build Add public API contract
+        run: cmake --build build --target add_api_contract_test --parallel 2
+
+      - name: Build Sub public API contract
+        run: cmake --build build --target sub_api_contract_test --parallel 2
+
+  windows-mingw64:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    env:
+      WINDOWS_ROOT: C:\openfhe-2023-1788
+      PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+      OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+      OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+      OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-${{ github.run_id }}-${{ github.run_attempt }}
+      PROJECT_BUILD: C:\openfhe-2023-1788\project-build-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Check out exact public source commits outside the dotted workspace
+        shell: pwsh
+        working-directory: C:/
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+          New-Item -ItemType Directory -Path $env:WINDOWS_ROOT | Out-Null
+
+          git init $env:PROJECT_SOURCE
+          git -C $env:PROJECT_SOURCE remote add origin https://github.com/leemaple/20231788..git
+          git -C $env:PROJECT_SOURCE fetch --depth 1 origin $env:GITHUB_SHA
+          git -C $env:PROJECT_SOURCE checkout --detach FETCH_HEAD
+          $projectActual = git -C $env:PROJECT_SOURCE rev-parse HEAD
+          if ($projectActual -ne $env:GITHUB_SHA) {
+            throw "Project checkout mismatch: $projectActual"
+          }
+
+          git init $env:OPENFHE_SOURCE
+          git -C $env:OPENFHE_SOURCE remote add origin https://github.com/openfheorg/openfhe-development.git
+          git -C $env:OPENFHE_SOURCE fetch --depth 1 origin $env:OPENFHE_COMMIT
+          git -C $env:OPENFHE_SOURCE checkout --detach FETCH_HEAD
+          git -C $env:OPENFHE_SOURCE submodule update --init --recursive --depth 1
+
+          $projectStatus = @(git -C $env:PROJECT_SOURCE status --porcelain)
+          if ($projectStatus.Count -ne 0) {
+            throw "Project checkout is dirty: $($projectStatus -join '; ')"
+          }
+          $openfheStatus = @(git -C $env:OPENFHE_SOURCE status --porcelain)
+          if ($openfheStatus.Count -ne 0) {
+            throw "OpenFHE checkout is dirty: $($openfheStatus -join '; ')"
+          }
+
+      - name: Install official Windows toolchain
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          cache: false
+          install: >-
+            git
+            make
+            mingw-w64-x86_64-boost
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-gcc
+
+      - name: Report toolchain versions
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          cmake --version
+          g++ --version
+
+      - name: Verify OpenFHE provenance
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          source="$(cygpath -u "$OPENFHE_SOURCE")"
+          actual="$(git -C "$source" rev-parse HEAD)"
+          test "$actual" = "$OPENFHE_COMMIT"
+          test -z "$(git -C "$source" status --porcelain)"
+          git -C "$source" submodule status --recursive
+
+      - name: Configure OpenFHE
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          source="$(cygpath -u "$OPENFHE_SOURCE")"
+          build="$(cygpath -u "$OPENFHE_BUILD")"
+          cmake -S "$source" -B "$build" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$prefix" \
+            -DBUILD_UNITTESTS=OFF \
+            -DBUILD_EXAMPLES=OFF \
+            -DBUILD_BENCHMARKS=OFF \
+            -DBUILD_EXTRAS=OFF \
+            -DWITH_OPENMP=ON
+
+      - name: Build and install OpenFHE
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$OPENFHE_BUILD")"
+          cmake --build "$build" --parallel 2
+          cmake --install "$build"
+
+      - name: Configure clean-room project
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake -S . -B "$build" \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_PREFIX_PATH="$prefix"
+
+      - name: Record clean-room run provenance
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          printf 'PROJECT_SOURCE_COMMIT=%s GITHUB_RUN_ID=%s GITHUB_RUN_ATTEMPT=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+
+      - name: Build warning-clean project
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --parallel 2
+
+      - name: Build Relin2 public API contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target relin2_api_contract_test --parallel 2
+
+      - name: Build RS2 public API contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target rs2_api_contract_test --parallel 2
+
+      - name: Run focused first-Mult2 precision contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          cmake --build "$build" --target precision_first_mult2_contract_test --parallel 2
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
+
+      - name: Run focused Pair Add and Sub inputs to first Mult2
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
+
+      - name: Run clean-room project tests
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure
+
+      - name: Build Mult2 public API contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target mult2_api_contract_test --parallel 2
+
+      - name: Build Add public API contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target add_api_contract_test --parallel 2
+
+      - name: Build Sub public API contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target sub_api_contract_test --parallel 2

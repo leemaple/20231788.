@@ -1,0 +1,45 @@
+DCP/RCB Windows/MinGW64 green evidence
+
+Observed: 2026-08-31 21:57 CST (Asia/Shanghai)
+Project commit: e236a6ef3361169363fd17a74ab1a8dafc539d57
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions windows-2022 / MSYS2 MINGW64
+Run: https://github.com/leemaple/20231788./actions/runs/33399245184
+Conclusion: success on Windows/MinGW64 and Linux/GCC
+
+Exact dependency/project commands:
+
+  cmake -S "$OPENFHE_SOURCE" -B "$OPENFHE_BUILD" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="$OPENFHE_PREFIX" \
+    -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF \
+    -DBUILD_BENCHMARKS=OFF -DBUILD_EXTRAS=OFF -DWITH_OPENMP=ON
+  cmake --build "$OPENFHE_BUILD" --parallel 2
+  cmake --install "$OPENFHE_BUILD"
+  cmake -S . -B "$PROJECT_BUILD" \
+    -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="$OPENFHE_PREFIX"
+  cmake --build "$PROJECT_BUILD" --parallel 2
+  ctest --test-dir "$PROJECT_BUILD" --output-on-failure
+
+The job checked out both public repositories at exact detached commits in a
+clean Windows path, disabled automatic line-ending conversion, required clean
+project/OpenFHE worktrees, and printed recursive OpenFHE submodule identities.
+Pristine OpenFHE configured, built, and installed before the project build.
+
+Project build output:
+
+  [1/4] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.obj
+  [2/4] Linking CXX static library libopenfhe_2023_1788.a
+  [3/4] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.obj
+  [4/4] Linking CXX executable dcp_rcb_test.exe
+
+CTest output:
+
+  Start 1: dcp_rcb
+  1/1 Test #1: dcp_rcb ..........................   Passed    0.12 sec
+  100% tests passed out of 1
+  Total Test time (real) =   0.12 sec
+
+The same run's Linux/GCC strict build also passed 1/1 CTest. This is the official
+OpenFHE-supported Windows MinGW64 path; it is not an MSVC claim. OpenFHE 1.5.0's
+official Windows documentation states that VC++ is no longer supported.

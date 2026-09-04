@@ -1,0 +1,147 @@
+I'll start by discovering the packet contents, then read the paper, the project sources, the official OpenFHE files, and the CI config before deciding.
+The paper is in. The packet has a `MANIFEST.sha256` at the root, which should list every file. I'll read it to find the project and official files.
+Now I have the full file list. I'll read every project file and all three official OpenFHE files in parallel.
+I still need the remainder of `cryptocontext.h` (Rescale, ModReduce, EvalMultNoCheck declarations) and the large `relin2_test.cpp` in chunks. All of these are independent reads.
+`claude-fable-5-1`
+
+Verdict up front: **ACCEPT_RS2_DESIGN**. Definition 4.5 maps onto two public `Rescale` calls plus the already-accepted `RCB` and one direct DCRT subtraction, with every OpenFHE fact that the packet cannot show being checked at runtime by exact equality rather than assumed. Two official declarations are outside the packet and are named below with a bounded probe. No build or test in this packet has completed output, so nothing here is execution evidence.
+
+## Facts and corrections
+
+| # | Fact | Status | Reference |
+|---|---|---|---|
+| F1 | Paper RS2: `high' = RS_ql(high)`, `low' = RS_ql(q_div*high+low) - q_div*RS_ql(high)`, output over `Q_(l-1)`, identity `RCB(RS2(CT)) = RS(RCB(CT))`, consumes only `q_l` | observed | `PAPER-2023-1788.txt:785-815` |
+| F2 | Paper RS: `⌈q⁻¹ct⌋ mod Q_l/q`, nearest with ties down, residues centered in `(-q/2, q/2]`; Lemma 4.6 bound `(h+1)/2` | observed | `PAPER-2023-1788.txt:201, 237-245, 817-851` |
+| F3 | Naive parallel rescale of both members is explicitly the wrong construction | observed | `PAPER-2023-1788.txt:131-135, 146` |
+| F4 | `Rescale(ConstCiphertext&)` body is `ValidateCiphertext` then `GetScheme()->ModReduce(ct, GetCompositeDegreeFromCtxt())`; the public `ModReduce` wrapper has the identical body. Correction: it is an alias of the scheme call, not a call through the public wrapper | observed | `cryptocontext.h:2507-2510, 2528-2531, 452-460` |
+| F5 | `ModReduceInternalInPlace`: degree `-= levels/compositeDegree`, level `+= levels`, then per level `DropLastElementAndScale(tables[diffQl+i])` and scale `/= GetModReduceFactor(sizeQl-1-i)`. Correction: the FIXEDMANUAL condition is in the unsupplied caller, not in this function | observed | `ckksrns-leveledshe.cpp:172-191` |
+| F6 | For the level-1 input, `sizeQl = firstPairModuli_.size()`, so the divisor index is `firstPairModuli_.size()-1`, the position of `q_l` in `fullModuli_`; CRT tables use index 1 | derived from F5 | `double_ckks.cpp:266-270` |
+| F7 | `DropLastElementAndScale`: copies last tower to COEFFICIENT, drops it, per tower `SwitchModulus`, multiply by table, NTT the correction only when aggregate is EVALUATION, scale tower, add. Format preserved for EVALUATION input. Correction: for COEFFICIENT input lines 709-710 flip each tower to EVALUATION while the aggregate flag stays COEFFICIENT; irrelevant here because the module accepts EVALUATION only | observed | `dcrtpoly-impl.h:692-712` |
+| F8 | Centering inside `SwitchModulus` and the table values `≡ -q_l⁻¹`, `q_l⁻¹ mod q_i` are not in the packet | pending, verified by oracle | native vector and `rns-cryptoparameters.cpp` absent |
+| F9 | `DropLastElement` allocates a new `Params`; a clone never mutates the source's shared params | observed | `dcrtpoly-impl.h:669-678` |
+| F10 | `EvalMultNoCheck(ct, NativeInteger)`: `Clone` then `cv[i] *= k`, no metadata setter | observed | `cryptocontext.h:2073-2080` |
+| F11 | `EvalSub` goes to `GetScheme()->EvalSub`; adjustment machinery exists in the CKKS class and mutates degree and scale; whether FIXEDMANUAL reaches it is undecidable from the packet | pending, avoided | `cryptocontext.h:1639-1642`, `ckksrns-leveledshe.cpp:603-734` |
+| F12 | DCRT `operator-=` and `operator*=` are tower-wise with no metadata effect; `Minus` checks tower count, `-=` does not | observed | `dcrtpoly-impl.h:402-408, 613-620, 362-371` |
+| F13 | `GetModReduceFactor` and `GetCompositeDegree` are called on `shared_ptr<CryptoParametersCKKSRNS>` from a different class; their declarations are not in the packet | pending, probe below | `ckksrns-leveledshe.cpp:136, 188` |
+| F14 | Scheme-level `ModReduce` returning a fresh clone under FIXEDMANUAL is not in the packet; the `ConstCiphertext` signature forbids in-place mutation without a cast | pending, probe below | `cryptocontext.h:2507` |
+| F15 | Module facts 1 to 8 of the task hold: single bound context, `q_div = fullModuli_.back()` odd, `firstPairModuli_` at level 1, ReadyForRS2 recorded scale `SF0²/Δ` at degree 3, RCB clones high then `*= q_div`, `+= low`, `ValidatePair` supports only level 1 states, read-only pair access | observed | `double_ckks.cpp:240-278, 428-504, 589-595, 802-828`; `double_ckks.h:39-56` |
+| F16 | Relin2 rejects fewer than 3 active towers, so RS2 input always has at least 3 towers and output at least 2 | observed | `double_ckks.cpp:642-644` |
+| F17 | Scalar `*=` with `q_div` larger than a tower modulus is already relied on by accepted DCP and RCB; fixture towers have bit widths 35, 31, 30, 31 | inherited | `double_ckks.cpp:388, 824`; `relin2_test.cpp:1917` |
+| F18 | The accepted Relin2 red pattern treats a scaffold `std::logic_error` as failure | observed | `relin2_test.cpp:3945-3949` |
+| F19 | The proposal wanted a private last-tower adapter for RS2; this design deviates to public `Rescale` | observed | `PUBLIC_API_PROPOSAL.md:57` |
+
+## Decision
+
+**Call sequence.** Exactly two public `Rescale` calls. The recombined operand is the public `RCB(pair)`, which is literally the paper's `q_div*high + low` over `Q_l` and already clones. No setter, no `EvalSub`, no third rescale, no mutation of any input.
+
+```cpp
+CiphertextPair DoubleCKKS::RS2(const CiphertextPair& pair) const {
+    ValidatePair(pair);                                            // step 1: read-only, lifecycle-aware
+    if (pair.lifecycle_ != PairLifecycle::ReadyForRS2)             // step 2: gate
+        Invalid("RS2 requires a ReadyForRS2 input");
+
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> highConst = pair.high_;
+    auto rescaledHigh = context_->Rescale(highConst);              // RS_ql(high)            [call 1 of 2]
+    auto recombined = RCB(pair);                                   // q_div*high + low, clone of high
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> recombinedConst = recombined;
+    auto rescaledSum = context_->Rescale(recombinedConst);         // RS_ql(RCB(pair))       [call 2 of 2]
+
+    const double rescaleDivisor = parameters_->GetModReduceFactor(firstPairModuli_.size() - 1);
+    const double recordedScalingFactor = pair.recordedScalingFactor_ / rescaleDivisor;   // same IEEE op as OpenFHE
+    ReadOnlyCiphertext highRO = rescaledHigh, sumRO = rescaledSum;
+    ValidateCiphertext(highRO, refreshPairModuli_, pair.level_ + 1, 2, recordedScalingFactor,
+                       pair.keyTag_, pair.slots_, 2, "RS2 rescaled", "RS2 rescaled high");
+    ValidateCiphertext(sumRO, refreshPairModuli_, pair.level_ + 1, 2, recordedScalingFactor,
+                       pair.keyTag_, pair.slots_, 2, "RS2 rescaled", "RS2 rescaled recombined");
+
+    auto low = std::move(rescaledSum);                             // owned; becomes low'
+    auto& lowElements = low->GetElements();
+    const auto& highElements = rescaledHigh->GetElements();
+    for (std::size_t i = 0; i < lowElements.size(); ++i) {
+        auto scaledHigh = highElements[i];                         // value copy, rescaledHigh untouched
+        scaledHigh *= divisor_;                                    // q_div * RS_ql(high) mod q_i
+        lowElements[i] -= scaledHigh;                              // DCRTPolyImpl::operator-=
+    }
+
+    const long double ql = static_cast<long double>(firstPairModuli_.back().ConvertToInt());
+    PaperScaleDescriptor paperScale{recordedScalingFactor, divisor_,
+        pair.paperScale_.approximateLogicalScalingFactor / ql,
+        pair.paperScale_.approximateRecombinedLogicalScalingFactor / ql};
+    CiphertextPair result(std::move(rescaledHigh), std::move(low), context_.get(), divisor_, refreshPairModuli_,
+        pair.level_ + 1, paperScale, recordedScalingFactor, 2, PairLifecycle::RefreshRequired,
+        pair.keyTag_, pair.slots_, Format::EVALUATION, 2);
+    ValidatePair(result);
+    return result;
+}
+```
+
+**Why direct subtraction, not `EvalSub`.** F11 makes `EvalSub` undecidable from the packet, and the supplied adjustment code would change degree and scale if reached. `operator-=` is fully observed (F12) and is the idiom already accepted in `DecomposeValidatedCiphertext`. Preconditions, all enforced by the two post-rescale `ValidateCiphertext` calls before the loop: identical ordered moduli by position, identical tower count so `-=` cannot silently truncate, EVALUATION on aggregate and every tower, tower roots and cyclotomic order equal to the bound context, exactly two components each, and the multiplier applied to a value copy so the high member is never modified.
+
+**Metadata formulas.** Let `Δ = GetScalingFactorReal(0)`, `SF0 = Δ²` (the module's `expectedInputScalingFactor_`), `q_div = fullModuli_.back()`, `q_l = firstPairModuli_.back()`, `f = GetModReduceFactor(firstPairModuli_.size()-1)` as a `double`. The three quantities never substitute for one another:
+
+| Quantity | ReadyForRS2 input | RefreshRequired output |
+|---|---|---|
+| level, basis | 1, `[q0..q_l]` | 2, `[q0..q_(l-1)]` = `refreshPairModuli_` |
+| components, format | 2, EVALUATION | 2, EVALUATION |
+| noise-scale degree | 3 | 2 |
+| recorded OpenFHE scale | `SF0²/Δ` | `(SF0²/Δ)/f` |
+| high logical scale | `(SF0/q_div)²` | `(SF0/q_div)²/q_l` |
+| recombined logical scale | `SF0²/q_div` | `(SF0²/q_div)/q_l` |
+| divisor, key tag, slots, context | unchanged | unchanged |
+
+`f` is compared with `==` only. Production and OpenFHE perform the same division of the same validated `double`, so equality is deterministic and no tolerance exists to mask wrong metadata. `ValidatePair` recomputes the same expression from constants in the same operation order. Both output members carry metadata values derived from the input high, which is what `RCB` and `Clone` already produce.
+
+**State and `ValidatePair` change.** One new member `refreshPairModuli_` assigned in the constructor as `fullModuli_` minus its last two entries. In `ValidatePair`, the level and basis checks stay in place and become lifecycle-aware, and one `case` is added:
+
+```cpp
+const bool refresh = (pair.lifecycle_ == PairLifecycle::RefreshRequired);
+const std::size_t expectedLevel = refresh ? 2 : 1;
+const auto& expectedBasis = refresh ? refreshPairModuli_ : firstPairModuli_;
+// existing level and basis checks with the same diagnostics, then existing switch plus:
+case PairLifecycle::RefreshRequired: {
+    const double baseScalingFactor = parameters_->GetScalingFactorReal(0);
+    expectedRecordedScalingFactor = (expectedInputScalingFactor_ * expectedInputScalingFactor_ / baseScalingFactor)
+                                    / parameters_->GetModReduceFactor(firstPairModuli_.size() - 1);
+    expectedNoiseScaleDegree = 2;
+    const long double inputHigh = static_cast<long double>(expectedInputScalingFactor_) / divisor;
+    expectedLogicalScalingFactor = (inputHigh * inputHigh) / ql;
+    expectedRecombinedLogicalScalingFactor =
+        (static_cast<long double>(expectedInputScalingFactor_) * expectedInputScalingFactor_ / divisor) / ql;
+    break;
+}
+```
+
+An out-of-range lifecycle value still reaches `default` and reports the existing diagnostic. Existing states keep their exact check order and messages.
+
+**Failure ordering.** Step 1 runs every existing structural check read-only. Step 2 rejects any lifecycle other than ReadyForRS2, so a RefreshRequired pair is rejected at this boundary too. Arithmetic starts only after both, on a clone from `RCB` and on OpenFHE's fresh rescale outputs. The post-rescale checks and the final `ValidatePair` can only fail if OpenFHE misbehaves; even then every mutated object is a local, so the input is byte-identical on every exit path.
+
+## Tests, patch plan, risks, verdict
+
+**Independent oracle** in the new `tests/rs2_test.cpp`, reusing the cpp_int helpers from `relin2_test.cpp:3199-3334`. It never calls `Rescale`, `DropLastElementAndScale`, or a private helper.
+
+```text
+X  = ReconstructCentered(residues over [q0..q_l])       X in [-(Q_l-1)/2, (Q_l-1)/2]
+r  = X mod q_l centered in [-(q_l-1)/2, (q_l-1)/2]      q_l odd ⇒ no ties; paper ties round down
+Y  = (X - r) / q_l   == round(X/q_l) == floor((X + (q_l-1)/2) / q_l)   both forms computed, must agree
+expected tower residue = PositiveMod(Y, q_i)
+Sc = Center((q_div*Hc + Lc) mod Q_l)                     RCB is defined modulo Q_l
+high'_i = PositiveMod(RS(Hc), q_i);  low'_i = PositiveMod(RS(Sc) - q_div*RS(Hc), q_i)
+identity check: module.RCB(result) residues == PositiveMod(RS(Sc), q_i)
+```
+
+The identity is algebraic and cannot detect wrong rounding; the direct residue checks on `high'` and on `RS(Sc)` do. Deterministic witnesses are installed by `SetElements` on a ReadyForRS2 pair through the same `const_pointer_cast` pattern as `relin2_test.cpp:4185-4207`, one coefficient slot each:
+
+| Slot | high H | low L | Falsifies |
+|---|---|---|---|
+| 0 | `0` | `0` | baseline |
+| 1, 2 | `(q_l-1)/2`, `(q_l+1)/2` | `0` | rounding boundary: RS(H) = 0 then 1 |
+| 3 | `-(q_l+1)/2` | `0` | negative boundary, RS(H) = -1 |
+| 4 | `3*q_l` | `0` | RS(H) = 3 exactly; dividing by `q_div` gives round(3q_l/q_div) |
+| 5 | `3*q_div` | `0` | RS(H) = round(3q_div/q_l), never 3; distinguishes `q_l` from `q_div` |
+| 6, 7 | `0` | `(q_l+1)/2`, `(q_l-1)/2` | low' = 1 then 0 |
+| 8, 9 | `1` | `(q_l±1)/2 - q_div` | S sits on the boundary while H does not; low' = 1 then 0 |
+| 10, 11 | `±(Q_l-1)/2` | `±1` | S wraps modulo Q_l; CRT centering |
+| 2 again | `(q_l+1)/2` | `0` | low' = RS(q_div(q_l+1)/2) - q_div; naive parallel rescale yields 0 |
+
+Fixture preconditions asserted before use: all towers odd, `q_l != q_div`, composite degree 1, ring dimension holds the slots. A wrong tower is
+API Error: Claude's response exceeded the 64000 output token maximum. To configure this behavior, set the CLAUDE_CODE_MAX_OUTPUT_TOKENS environment variable.

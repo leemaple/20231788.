@@ -1,0 +1,120 @@
+{
+  "artifactBasename": "precision-first-mult2-review-c9ee28d.zip",
+  "candidate": {
+    "acceptedPrecursorFilesChanged": false,
+    "baselineCTestCount": 54,
+    "candidateCTestCount": 55,
+    "changedPaths": [
+      "CMakeLists.txt",
+      "tests/precision_first_mult2_contract_test.cpp"
+    ],
+    "claimBoundary": "one N64 HYBRID first-Mult2 high-precision diagnostic only",
+    "finalFiles": [
+      {
+        "bytes": 12175,
+        "path": "final-changed-files/project/CMakeLists.txt",
+        "sha256": "48647eb2caa5cc481d8923c4d97f6836528f88cd74c8339b2cd31d71b9cb686e"
+      },
+      {
+        "bytes": 58273,
+        "path": "final-changed-files/project/tests/precision_first_mult2_contract_test.cpp",
+        "sha256": "60a7c27c7f88420b1c55899bbe4d4b3ad54cbbf6a06da90d2fdfb0a0646770db"
+      }
+    ],
+    "frozenContract": {
+      "bytes": 8398,
+      "path": "evidence/FROZEN_CONTRACT.json",
+      "sha256": "7d6b7f5e1c820cf49641dc1606fa64984a52267e2f04305c2ad5bd5981d2036b"
+    },
+    "originalBindingsPreserved": true,
+    "patch": {
+      "bytes": 61801,
+      "path": "patches/0001-add-first-mult2-high-precision-contract.patch",
+      "sha256": "acf043d3a04876e71ddbf17c14f8f579c1a7cb86a032d881243e27e010b6a105"
+    },
+    "productionFilesChanged": false,
+    "target": "precision_first_mult2_contract_test",
+    "testName": "precision_first_mult2_high_precision_contract",
+    "workflowChanged": false
+  },
+  "createdDate": "2026-09-04",
+  "execution": {
+    "candidateCryptoRuntime": "NOT_EXECUTED",
+    "candidateOpenfheBuild": "NOT_EXECUTED",
+    "candidateOpenfheConfigure": "NOT_EXECUTED",
+    "ctestBindingContinuity": "PASS",
+    "finalFileEquality": "PASS",
+    "hostedCI": "NOT_DISPATCHED",
+    "inputManifestAudit": "PASS",
+    "macCryptoExecution": "NOT_EXECUTED",
+    "patchApplyAgainstExactBaseline": "PASS",
+    "patchChangedPathClosure": "PASS",
+    "securityOrPerformance": "NOT_EXECUTED",
+    "sourceReview": "PASS",
+    "standaloneBoostArithmetic": "PASS_NON_CRYPTO_ONLY",
+    "staticSourceGuards": "PASS"
+  },
+  "input": {
+    "archive": "precision-first-mult2-c9ee28d.zip",
+    "bytes": 1163390,
+    "manifestExactClosure": true,
+    "manifestPayloads": 61,
+    "nestedPrecursorArchive": {
+      "bytes": 91266,
+      "manifestExactClosure": true,
+      "manifestPayloads": 33,
+      "name": "PRIOR-PRO-PRECURSOR-RETURN.zip",
+      "regularFiles": 34,
+      "sha256": "601c7bfbf195d383146ad63b508797322ed22cab12590fc470a241753da6f906"
+    },
+    "outerRegularFiles": 62,
+    "sha256": "e49e3fcb897ea7b9fa0cf31bc376a9289e0bd4fe8f4a1ff70a35622bd5fe0461"
+  },
+  "precursorAudit": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 4,
+    "rawProposalNamespaceCorrection": {
+      "acceptedCurrentSourceAuthoritative": true,
+      "contractReplacements": 4,
+      "fixtureReplacements": 3,
+      "from": "lbcrypto::Format::",
+      "to": "Format::"
+    },
+    "runtimeGreen": {
+      "freshKeyTrialsPerHost": 4,
+      "linux": "54/54, 1.19 s",
+      "windows": "54/54, 1.98 s",
+      "worstDeltaError": "5.9416098364710929682297021517222122255998e-28",
+      "worstMaxSlotError": "5.0925606891564857369051272102149462810231e-28"
+    },
+    "runtimeRed": {
+      "linux": "53/54; only frozen precision DCP-RCB contract failed from lossy binary64 fixture",
+      "sourceCommit": "e38764ab16bc638182d95ff259943eee0987d537",
+      "windows": "53/54; same isolated failure"
+    },
+    "verdict": "PASS_WITH_BOUNDED_CLAIM"
+  },
+  "prohibitedClaims": [
+    "hosted first-Mult2 green",
+    "repeated multiplication or refresh",
+    "Table 3 reproduction",
+    "production lossless codec",
+    "128-bit security",
+    "performance",
+    "universal no-wrap or relinearization theorem"
+  ],
+  "schema": "precision-first-mult2-delivery-v1",
+  "sidecarBasename": "precision-first-mult2-review-c9ee28d.zip.sha256",
+  "source": {
+    "branch": "codex/precision-01",
+    "openfheCommit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+    "openfheVersion": "1.5.0",
+    "pinnedOfficialSourceFiles": 16,
+    "projectProvenanceVerified": true,
+    "selectedProjectCommit": "c9ee28d0370eeee1ec7a1965402ed0b5e91f425e",
+    "selectedProjectFiles": 40,
+    "testedEquivalentCommit": "bd141806bd1e0b1dad80c7ad47bfd92fc334db55"
+  },
+  "status": "PROPOSED_TEST_ONLY_NOT_HOSTED"
+}

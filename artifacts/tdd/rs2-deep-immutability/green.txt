@@ -1,0 +1,368 @@
+# Executed rs2-deep-immutability coverage
+
+Run: https://github.com/leemaple/20231788./actions/runs/33837174597
+Source: 21c13fd3636d6ec9aa9f2a8ae5938e6a427b3d2a
+Pristine OpenFHE 1.5.0: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Linux GCC13.3/CMake3.31.6: 43/43, 0.50s, warning/API builds success.
+Windows MinGW64 GCC16.2/CMake4.4.2: 43/43, 1.02s, warning/API builds success.
+No local build. This is additional coverage of existing behavior, not an invented red-green production change, executed production mutation, or precision claim.
+
+## Job 100911955404
+
+2026-09-04T04:32:37.4155385Z ##[group]Run cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+2026-09-04T04:32:37.4156064Z cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+2026-09-04T04:32:37.4195933Z shell: /usr/bin/bash -e {0}
+2026-09-04T04:32:37.4196207Z env:
+2026-09-04T04:32:37.4196495Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T04:32:37.4196955Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T04:32:37.4197341Z ##[endgroup]
+2026-09-04T04:32:38.8531183Z -- The CXX compiler identification is GNU 13.3.0
+2026-09-04T04:32:39.0584083Z -- Detecting CXX compiler ABI info
+2026-09-04T04:32:39.4096525Z -- Detecting CXX compiler ABI info - done
+2026-09-04T04:32:39.4273613Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2026-09-04T04:32:39.4329288Z -- Detecting CXX compile features
+2026-09-04T04:32:39.4340277Z -- Detecting CXX compile features - done
+2026-09-04T04:32:39.4577386Z -- Configuring done (2.0s)
+2026-09-04T04:32:39.4724141Z -- Generating done (0.0s)
+2026-09-04T04:32:39.4727497Z -- Build files have been written to: /home/runner/work/20231788./20231788./build
+2026-09-04T04:32:39.4785944Z ##[group]Run cmake --build build --parallel 2
+2026-09-04T04:32:39.4786356Z cmake --build build --parallel 2
+2026-09-04T04:32:39.4825403Z shell: /usr/bin/bash -e {0}
+2026-09-04T04:32:39.4825681Z env:
+2026-09-04T04:32:39.4825975Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T04:32:39.4826446Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T04:32:39.4826836Z ##[endgroup]
+2026-09-04T04:32:39.5060124Z [  8%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+2026-09-04T04:32:48.9347476Z [ 16%] Linking CXX static library libopenfhe_2023_1788.a
+2026-09-04T04:32:49.6285768Z [ 16%] Built target openfhe_2023_1788
+2026-09-04T04:32:49.6363767Z [ 25%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+2026-09-04T04:32:49.6364947Z [ 33%] Building CXX object CMakeFiles/tensor2_api_contract_test.dir/tests/tensor2_api_contract_test.cpp.o
+2026-09-04T04:32:52.4430729Z [ 41%] Linking CXX executable tensor2_api_contract_test
+2026-09-04T04:32:52.5332047Z [ 41%] Built target tensor2_api_contract_test
+2026-09-04T04:32:52.5409394Z [ 50%] Building CXX object CMakeFiles/tensor2_test.dir/tests/tensor2_test.cpp.o
+2026-09-04T04:33:06.3280092Z [ 58%] Linking CXX executable tensor2_test
+2026-09-04T04:33:06.4644523Z [ 58%] Built target tensor2_test
+2026-09-04T04:33:06.4720251Z [ 66%] Building CXX object CMakeFiles/relin2_test.dir/tests/relin2_test.cpp.o
+2026-09-04T04:33:06.5984617Z [ 75%] Linking CXX executable dcp_rcb_test
+2026-09-04T04:33:06.7502043Z [ 75%] Built target dcp_rcb_test
+2026-09-04T04:33:06.7585194Z [ 83%] Building CXX object CMakeFiles/rs2_test.dir/tests/rs2_test.cpp.o
+2026-09-04T04:33:21.9392114Z [ 91%] Linking CXX executable rs2_test
+2026-09-04T04:33:22.0763961Z [ 91%] Built target rs2_test
+2026-09-04T04:33:34.9237918Z [100%] Linking CXX executable relin2_test
+2026-09-04T04:33:35.0809402Z [100%] Built target relin2_test
+2026-09-04T04:33:35.0886898Z ##[group]Run cmake --build build --target relin2_api_contract_test --parallel 2
+2026-09-04T04:33:35.0887830Z cmake --build build --target relin2_api_contract_test --parallel 2
+2026-09-04T04:33:35.0942965Z shell: /usr/bin/bash -e {0}
+2026-09-04T04:33:35.0943247Z env:
+2026-09-04T04:33:35.0943540Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T04:33:35.0944013Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T04:33:35.0944392Z ##[endgroup]
+2026-09-04T04:33:35.1292242Z [ 50%] Built target openfhe_2023_1788
+2026-09-04T04:33:35.1365905Z [ 75%] Building CXX object CMakeFiles/relin2_api_contract_test.dir/tests/relin2_api_contract_test.cpp.o
+2026-09-04T04:33:37.8270671Z [100%] Linking CXX executable relin2_api_contract_test
+2026-09-04T04:33:37.8997345Z [100%] Built target relin2_api_contract_test
+2026-09-04T04:33:37.9063448Z ##[group]Run cmake --build build --target rs2_api_contract_test --parallel 2
+2026-09-04T04:33:37.9064035Z cmake --build build --target rs2_api_contract_test --parallel 2
+2026-09-04T04:33:37.9103265Z shell: /usr/bin/bash -e {0}
+2026-09-04T04:33:37.9103533Z env:
+2026-09-04T04:33:37.9103826Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T04:33:37.9104286Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T04:33:37.9104668Z ##[endgroup]
+2026-09-04T04:33:37.9420700Z [ 50%] Built target openfhe_2023_1788
+2026-09-04T04:33:37.9494268Z [ 75%] Building CXX object CMakeFiles/rs2_api_contract_test.dir/tests/rs2_api_contract_test.cpp.o
+2026-09-04T04:33:40.6870830Z [100%] Linking CXX executable rs2_api_contract_test
+2026-09-04T04:33:40.7595448Z [100%] Built target rs2_api_contract_test
+2026-09-04T04:33:40.7662981Z ##[group]Run ctest --test-dir build --output-on-failure
+2026-09-04T04:33:40.7663701Z ctest --test-dir build --output-on-failure
+2026-09-04T04:33:40.7702959Z shell: /usr/bin/bash -e {0}
+2026-09-04T04:33:40.7703472Z env:
+2026-09-04T04:33:40.7703890Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T04:33:40.7704586Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+2026-09-04T04:33:40.7716311Z ##[endgroup]
+2026-09-04T04:33:41.4300907Z Internal ctest changing into directory: /home/runner/work/20231788./20231788./build
+2026-09-04T04:33:41.4991138Z Test project /home/runner/work/20231788./20231788./build
+2026-09-04T04:33:41.5500554Z       Start  1: dcp_rcb
+2026-09-04T04:33:41.5756653Z  1/43 Test  #1: dcp_rcb ......................................   Passed    0.02 sec
+2026-09-04T04:33:41.5812839Z       Start  2: tensor2_valid_arithmetic_immutability
+2026-09-04T04:33:41.5899010Z  2/43 Test  #2: tensor2_valid_arithmetic_immutability ........   Passed    0.01 sec
+2026-09-04T04:33:41.5900445Z       Start  3: tensor2_result_scale_contract
+2026-09-04T04:33:41.5953408Z  3/43 Test  #3: tensor2_result_scale_contract ................   Passed    0.01 sec
+2026-09-04T04:33:41.5954770Z       Start  4: tensor2_right_input_validation
+2026-09-04T04:33:41.6003847Z  4/43 Test  #4: tensor2_right_input_validation ...............   Passed    0.00 sec
+2026-09-04T04:33:41.6005491Z       Start  5: tensor2_mutual_compatibility
+2026-09-04T04:33:41.6053356Z  5/43 Test  #5: tensor2_mutual_compatibility .................   Passed    0.00 sec
+2026-09-04T04:33:41.6054844Z       Start  6: tensor2_prearithmetic_key_compatibility
+2026-09-04T04:33:41.6103751Z  6/43 Test  #6: tensor2_prearithmetic_key_compatibility ......   Passed    0.00 sec
+2026-09-04T04:33:41.6105382Z       Start  7: relin2_tensor_validation_order
+2026-09-04T04:33:41.6219823Z  7/43 Test  #7: relin2_tensor_validation_order ...............   Passed    0.01 sec
+2026-09-04T04:33:41.6221512Z       Start  8: relin2_insufficient_active_basis
+2026-09-04T04:33:41.6307636Z  8/43 Test  #8: relin2_insufficient_active_basis .............   Passed    0.01 sec
+2026-09-04T04:33:41.6309258Z       Start  9: relin2_missing_eval_key
+2026-09-04T04:33:41.6359706Z  9/43 Test  #9: relin2_missing_eval_key ......................   Passed    0.00 sec
+2026-09-04T04:33:41.6361422Z       Start 10: relin2_key_empty
+2026-09-04T04:33:41.6410736Z 10/43 Test #10: relin2_key_empty .............................   Passed    0.00 sec
+2026-09-04T04:33:41.6412362Z       Start 11: relin2_key_null_first
+2026-09-04T04:33:41.6460887Z 11/43 Test #11: relin2_key_null_first ........................   Passed    0.00 sec
+2026-09-04T04:33:41.6462527Z       Start 12: relin2_key_wrong_context
+2026-09-04T04:33:41.6521135Z 12/43 Test #12: relin2_key_wrong_context .....................   Passed    0.01 sec
+2026-09-04T04:33:41.6522847Z       Start 13: relin2_key_wrong_tag
+2026-09-04T04:33:41.6573201Z 13/43 Test #13: relin2_key_wrong_tag .........................   Passed    0.00 sec
+2026-09-04T04:33:41.6574777Z       Start 14: relin2_key_wrong_subtype
+2026-09-04T04:33:41.6630580Z 14/43 Test #14: relin2_key_wrong_subtype .....................   Passed    0.01 sec
+2026-09-04T04:33:41.6632168Z       Start 15: relin2_key_hybrid_a_length
+2026-09-04T04:33:41.6683511Z 15/43 Test #15: relin2_key_hybrid_a_length ...................   Passed    0.01 sec
+2026-09-04T04:33:41.6685013Z       Start 16: relin2_key_hybrid_b_length
+2026-09-04T04:33:41.6735332Z 16/43 Test #16: relin2_key_hybrid_b_length ...................   Passed    0.00 sec
+2026-09-04T04:33:41.6736852Z       Start 17: relin2_key_hybrid_entry_basis
+2026-09-04T04:33:41.7082674Z 17/43 Test #17: relin2_key_hybrid_entry_basis ................   Passed    0.03 sec
+2026-09-04T04:33:41.7084473Z       Start 18: relin2_key_hybrid_entry_format
+2026-09-04T04:33:41.7169260Z 18/43 Test #18: relin2_key_hybrid_entry_format ...............   Passed    0.01 sec
+2026-09-04T04:33:41.7171265Z       Start 19: relin2_key_bv_zero_digit_a_length
+2026-09-04T04:33:41.7226365Z 19/43 Test #19: relin2_key_bv_zero_digit_a_length ............   Passed    0.01 sec
+2026-09-04T04:33:41.7227909Z       Start 20: relin2_key_bv_zero_digit_b_length
+2026-09-04T04:33:41.7280930Z 20/43 Test #20: relin2_key_bv_zero_digit_b_length ............   Passed    0.01 sec
+2026-09-04T04:33:41.7282442Z       Start 21: relin2_key_bv_nonzero_digit_a_length
+2026-09-04T04:33:41.7342905Z 21/43 Test #21: relin2_key_bv_nonzero_digit_a_length .........   Passed    0.01 sec
+2026-09-04T04:33:41.7344570Z       Start 22: relin2_key_bv_nonzero_digit_b_length
+2026-09-04T04:33:41.7404851Z 22/43 Test #22: relin2_key_bv_nonzero_digit_b_length .........   Passed    0.01 sec
+2026-09-04T04:33:41.7406421Z       Start 23: relin2_key_bv_zero_digit_entry_basis
+2026-09-04T04:33:41.7510085Z 23/43 Test #23: relin2_key_bv_zero_digit_entry_basis .........   Passed    0.01 sec
+2026-09-04T04:33:41.7511572Z       Start 24: relin2_key_bv_nonzero_digit_entry_basis
+2026-09-04T04:33:41.7575345Z 24/43 Test #24: relin2_key_bv_nonzero_digit_entry_basis ......   Passed    0.01 sec
+2026-09-04T04:33:41.7577166Z       Start 25: relin2_key_bv_zero_digit_entry_format
+2026-09-04T04:33:41.7632525Z 25/43 Test #25: relin2_key_bv_zero_digit_entry_format ........   Passed    0.01 sec
+2026-09-04T04:33:41.7633992Z       Start 26: relin2_key_bv_nonzero_digit_entry_format
+2026-09-04T04:33:41.7700900Z 26/43 Test #26: relin2_key_bv_nonzero_digit_entry_format .....   Passed    0.01 sec
+2026-09-04T04:33:41.7706212Z       Start 27: relin2_valid_arithmetic_state_immutability
+2026-09-04T04:33:41.7880571Z 27/43 Test #27: relin2_valid_arithmetic_state_immutability ...   Passed    0.02 sec
+2026-09-04T04:33:41.7881978Z       Start 28: relin2_controlled_witnesses_and_boundaries
+2026-09-04T04:33:41.7957685Z 28/43 Test #28: relin2_controlled_witnesses_and_boundaries ...   Passed    0.01 sec
+2026-09-04T04:33:41.7959005Z       Start 29: relin2_representative_public_input
+2026-09-04T04:33:41.8170397Z 29/43 Test #29: relin2_representative_public_input ...........   Passed    0.02 sec
+2026-09-04T04:33:41.8171874Z       Start 30: relin2_key_extra_later_valid
+2026-09-04T04:33:41.8341854Z 30/43 Test #30: relin2_key_extra_later_valid .................   Passed    0.02 sec
+2026-09-04T04:33:41.8343023Z       Start 31: relin2_key_malformed_later_ignored
+2026-09-04T04:33:41.8529288Z 31/43 Test #31: relin2_key_malformed_later_ignored ...........   Passed    0.02 sec
+2026-09-04T04:33:41.8530684Z       Start 32: relin2_hybrid_valid_shapes
+2026-09-04T04:33:41.8761541Z 32/43 Test #32: relin2_hybrid_valid_shapes ...................   Passed    0.02 sec
+2026-09-04T04:33:41.8762868Z       Start 33: relin2_bv_zero_digit_valid_shapes
+2026-09-04T04:33:41.8839332Z 33/43 Test #33: relin2_bv_zero_digit_valid_shapes ............   Passed    0.01 sec
+2026-09-04T04:33:41.8840950Z       Start 34: relin2_bv_nonzero_digit_valid_shapes
+2026-09-04T04:33:41.8923450Z 34/43 Test #34: relin2_bv_nonzero_digit_valid_shapes .........   Passed    0.01 sec
+2026-09-04T04:33:41.8925286Z       Start 35: relin2_first_recombined_rcb_validation
+2026-09-04T04:33:41.8981359Z 35/43 Test #35: relin2_first_recombined_rcb_validation .......   Passed    0.01 sec
+2026-09-04T04:33:41.8983236Z       Start 36: relin2_first_recombined_tensor2_validation
+2026-09-04T04:33:41.9037407Z 36/43 Test #36: relin2_first_recombined_tensor2_validation ...   Passed    0.01 sec
+2026-09-04T04:33:41.9039393Z       Start 37: relin2_tensor2_requires_first_lifecycle
+2026-09-04T04:33:41.9305236Z 37/43 Test #37: relin2_tensor2_requires_first_lifecycle ......   Passed    0.03 sec
+2026-09-04T04:33:41.9307125Z       Start 38: rs2_wrong_lifecycle
+2026-09-04T04:33:41.9366516Z 38/43 Test #38: rs2_wrong_lifecycle ..........................   Passed    0.01 sec
+2026-09-04T04:33:41.9367951Z       Start 39: rs2_valid_arithmetic_state_immutability
+2026-09-04T04:33:41.9505010Z 39/43 Test #39: rs2_valid_arithmetic_state_immutability ......   Passed    0.01 sec
+2026-09-04T04:33:41.9506783Z       Start 40: rs2_mixed_tower_format
+2026-09-04T04:33:41.9729962Z 40/43 Test #40: rs2_mixed_tower_format .......................   Passed    0.02 sec
+2026-09-04T04:33:41.9730988Z       Start 41: rs2_untouched_public_pipeline
+2026-09-04T04:33:41.9836626Z 41/43 Test #41: rs2_untouched_public_pipeline ................   Passed    0.01 sec
+2026-09-04T04:33:41.9838182Z       Start 42: rs2_declared_basis_mismatch
+2026-09-04T04:33:41.9913537Z 42/43 Test #42: rs2_declared_basis_mismatch ..................   Passed    0.01 sec
+2026-09-04T04:33:41.9915387Z       Start 43: rs2_terminal_rejections
+2026-09-04T04:33:42.0019842Z 43/43 Test #43: rs2_terminal_rejections ......................   Passed    0.01 sec
+2026-09-04T04:33:42.0023473Z 
+2026-09-04T04:33:42.0023657Z 100% tests passed, 0 tests failed out of 43
+2026-09-04T04:33:42.0023971Z 
+2026-09-04T04:33:42.0024118Z Total Test time (real) =   0.50 sec
+
+## Job 100911955175
+
+2026-09-04T04:37:58.1951373Z ##[group]Run prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-04T04:37:58.1951896Z prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-04T04:37:58.1952267Z build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T04:37:58.1952569Z cmake -S . -B "$build" \
+2026-09-04T04:37:58.1952829Z   -DCMAKE_BUILD_TYPE=Debug \
+2026-09-04T04:37:58.1953099Z   -DCMAKE_PREFIX_PATH="$prefix"
+2026-09-04T04:37:58.1955724Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-04T04:37:58.1955998Z env:
+2026-09-04T04:37:58.1956251Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T04:37:58.1956611Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-04T04:37:58.1956910Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-04T04:37:58.1957190Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-04T04:37:58.1957500Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-04T04:37:58.1957906Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33837174597-1
+2026-09-04T04:37:58.1958295Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33837174597-1
+2026-09-04T04:37:58.1958613Z   MSYSTEM: MINGW64
+2026-09-04T04:37:58.1958798Z ##[endgroup]
+2026-09-04T04:37:58.5986923Z -- Building for: Ninja
+2026-09-04T04:37:58.5987277Z -- The CXX compiler identification is GNU 16.2.0
+2026-09-04T04:37:58.6474837Z -- Detecting CXX compiler ABI info
+2026-09-04T04:37:59.0035713Z -- Detecting CXX compiler ABI info - done
+2026-09-04T04:37:59.0359764Z -- Check for working CXX compiler: D:/a/_temp/msys64/mingw64/bin/c++.exe - skipped
+2026-09-04T04:37:59.0364171Z -- Detecting CXX compile features
+2026-09-04T04:37:59.0373518Z -- Detecting CXX compile features - done
+2026-09-04T04:37:59.0687251Z -- Configuring done (0.6s)
+2026-09-04T04:37:59.1206762Z -- Generating done (0.1s)
+2026-09-04T04:37:59.1220517Z -- Build files have been written to: C:/openfhe-2023-1788/project-build-33837174597-1
+2026-09-04T04:37:59.1459875Z ##[group]Run build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T04:37:59.1460458Z build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T04:37:59.1460871Z cmake --build "$build" --parallel 2
+2026-09-04T04:37:59.1463194Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-04T04:37:59.1463522Z env:
+2026-09-04T04:37:59.1463834Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T04:37:59.1464258Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-04T04:37:59.1464606Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-04T04:37:59.1464942Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-04T04:37:59.1465312Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-04T04:37:59.1465731Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33837174597-1
+2026-09-04T04:37:59.1466177Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33837174597-1
+2026-09-04T04:37:59.1466564Z   MSYSTEM: MINGW64
+2026-09-04T04:37:59.1466930Z ##[endgroup]
+2026-09-04T04:38:10.6260880Z [1/12] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.obj
+2026-09-04T04:38:10.7299852Z [2/12] Linking CXX static library libopenfhe_2023_1788.a
+2026-09-04T04:38:14.5123422Z [3/12] Building CXX object CMakeFiles/tensor2_api_contract_test.dir/tests/tensor2_api_contract_test.cpp.obj
+2026-09-04T04:38:22.9121057Z [4/12] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.obj
+2026-09-04T04:38:34.0702727Z [5/12] Building CXX object CMakeFiles/tensor2_test.dir/tests/tensor2_test.cpp.obj
+2026-09-04T04:38:56.2995749Z [6/12] Building CXX object CMakeFiles/rs2_test.dir/tests/rs2_test.cpp.obj
+2026-09-04T04:38:56.5288530Z [7/12] Linking CXX executable dcp_rcb_test.exe
+2026-09-04T04:38:56.6213826Z [8/12] Linking CXX executable tensor2_api_contract_test.exe
+2026-09-04T04:38:56.8711687Z [9/12] Linking CXX executable tensor2_test.exe
+2026-09-04T04:38:57.1385397Z [10/12] Linking CXX executable rs2_test.exe
+2026-09-04T04:39:03.8150408Z [11/12] Building CXX object CMakeFiles/relin2_test.dir/tests/relin2_test.cpp.obj
+2026-09-04T04:39:04.0729127Z [12/12] Linking CXX executable relin2_test.exe
+2026-09-04T04:39:04.0944032Z ##[group]Run build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T04:39:04.0944523Z build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T04:39:04.0944936Z cmake --build "$build" --target relin2_api_contract_test --parallel 2
+2026-09-04T04:39:04.0947174Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-04T04:39:04.0947440Z env:
+2026-09-04T04:39:04.0947683Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T04:39:04.0948042Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-04T04:39:04.0948336Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-04T04:39:04.0948613Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-04T04:39:04.0948913Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-04T04:39:04.0949278Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33837174597-1
+2026-09-04T04:39:04.0949682Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33837174597-1
+2026-09-04T04:39:04.0949988Z   MSYSTEM: MINGW64
+2026-09-04T04:39:04.0950204Z ##[endgroup]
+2026-09-04T04:39:07.6589119Z [1/2] Building CXX object CMakeFiles/relin2_api_contract_test.dir/tests/relin2_api_contract_test.cpp.obj
+2026-09-04T04:39:07.7458422Z [2/2] Linking CXX executable relin2_api_contract_test.exe
+2026-09-04T04:39:07.7674150Z ##[group]Run build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T04:39:07.7674623Z build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T04:39:07.7675029Z cmake --build "$build" --target rs2_api_contract_test --parallel 2
+2026-09-04T04:39:07.7678138Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-04T04:39:07.7678408Z env:
+2026-09-04T04:39:07.7678651Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T04:39:07.7679002Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-04T04:39:07.7679298Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-04T04:39:07.7679573Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-04T04:39:07.7679875Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-04T04:39:07.7680250Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33837174597-1
+2026-09-04T04:39:07.7680657Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33837174597-1
+2026-09-04T04:39:07.7680967Z   MSYSTEM: MINGW64
+2026-09-04T04:39:07.7681183Z ##[endgroup]
+2026-09-04T04:39:11.4198558Z [1/2] Building CXX object CMakeFiles/rs2_api_contract_test.dir/tests/rs2_api_contract_test.cpp.obj
+2026-09-04T04:39:11.5227324Z [2/2] Linking CXX executable rs2_api_contract_test.exe
+2026-09-04T04:39:11.5444809Z ##[group]Run prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-04T04:39:11.5445309Z prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-04T04:39:11.5445649Z build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T04:39:11.5445977Z export PATH="$prefix/bin:$prefix/lib:$PATH"
+2026-09-04T04:39:11.5446328Z ctest --test-dir "$build" --output-on-failure
+2026-09-04T04:39:11.5448317Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-04T04:39:11.5448586Z env:
+2026-09-04T04:39:11.5449028Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T04:39:11.5449386Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-04T04:39:11.5449684Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-04T04:39:11.5449963Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-04T04:39:11.5450283Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-04T04:39:11.5450643Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33837174597-1
+2026-09-04T04:39:11.5451070Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33837174597-1
+2026-09-04T04:39:11.5451381Z   MSYSTEM: MINGW64
+2026-09-04T04:39:11.5451573Z ##[endgroup]
+2026-09-04T04:39:11.7996325Z Test project C:/openfhe-2023-1788/project-build-33837174597-1
+2026-09-04T04:39:11.8033032Z       Start  1: dcp_rcb
+2026-09-04T04:39:11.8813160Z  1/43 Test  #1: dcp_rcb ......................................   Passed    0.08 sec
+2026-09-04T04:39:11.8833990Z       Start  2: tensor2_valid_arithmetic_immutability
+2026-09-04T04:39:11.9034017Z  2/43 Test  #2: tensor2_valid_arithmetic_immutability ........   Passed    0.02 sec
+2026-09-04T04:39:11.9038641Z       Start  3: tensor2_result_scale_contract
+2026-09-04T04:39:11.9179486Z  3/43 Test  #3: tensor2_result_scale_contract ................   Passed    0.01 sec
+2026-09-04T04:39:11.9183430Z       Start  4: tensor2_right_input_validation
+2026-09-04T04:39:11.9309415Z  4/43 Test  #4: tensor2_right_input_validation ...............   Passed    0.01 sec
+2026-09-04T04:39:11.9313009Z       Start  5: tensor2_mutual_compatibility
+2026-09-04T04:39:11.9444038Z  5/43 Test  #5: tensor2_mutual_compatibility .................   Passed    0.01 sec
+2026-09-04T04:39:11.9447876Z       Start  6: tensor2_prearithmetic_key_compatibility
+2026-09-04T04:39:11.9592216Z  6/43 Test  #6: tensor2_prearithmetic_key_compatibility ......   Passed    0.01 sec
+2026-09-04T04:39:11.9596115Z       Start  7: relin2_tensor_validation_order
+2026-09-04T04:39:12.0092789Z  7/43 Test  #7: relin2_tensor_validation_order ...............   Passed    0.05 sec
+2026-09-04T04:39:12.0096833Z       Start  8: relin2_insufficient_active_basis
+2026-09-04T04:39:12.0226220Z  8/43 Test  #8: relin2_insufficient_active_basis .............   Passed    0.01 sec
+2026-09-04T04:39:12.0229909Z       Start  9: relin2_missing_eval_key
+2026-09-04T04:39:12.0366449Z  9/43 Test  #9: relin2_missing_eval_key ......................   Passed    0.01 sec
+2026-09-04T04:39:12.0370448Z       Start 10: relin2_key_empty
+2026-09-04T04:39:12.0506545Z 10/43 Test #10: relin2_key_empty .............................   Passed    0.01 sec
+2026-09-04T04:39:12.0510239Z       Start 11: relin2_key_null_first
+2026-09-04T04:39:12.0644186Z 11/43 Test #11: relin2_key_null_first ........................   Passed    0.01 sec
+2026-09-04T04:39:12.0647983Z       Start 12: relin2_key_wrong_context
+2026-09-04T04:39:12.0807399Z 12/43 Test #12: relin2_key_wrong_context .....................   Passed    0.02 sec
+2026-09-04T04:39:12.0810829Z       Start 13: relin2_key_wrong_tag
+2026-09-04T04:39:12.0950351Z 13/43 Test #13: relin2_key_wrong_tag .........................   Passed    0.01 sec
+2026-09-04T04:39:12.0953870Z       Start 14: relin2_key_wrong_subtype
+2026-09-04T04:39:12.1138107Z 14/43 Test #14: relin2_key_wrong_subtype .....................   Passed    0.02 sec
+2026-09-04T04:39:12.1141718Z       Start 15: relin2_key_hybrid_a_length
+2026-09-04T04:39:12.1285465Z 15/43 Test #15: relin2_key_hybrid_a_length ...................   Passed    0.01 sec
+2026-09-04T04:39:12.1287448Z       Start 16: relin2_key_hybrid_b_length
+2026-09-04T04:39:12.1428281Z 16/43 Test #16: relin2_key_hybrid_b_length ...................   Passed    0.01 sec
+2026-09-04T04:39:12.1431882Z       Start 17: relin2_key_hybrid_entry_basis
+2026-09-04T04:39:12.1619209Z 17/43 Test #17: relin2_key_hybrid_entry_basis ................   Passed    0.02 sec
+2026-09-04T04:39:12.1623150Z       Start 18: relin2_key_hybrid_entry_format
+2026-09-04T04:39:12.1811200Z 18/43 Test #18: relin2_key_hybrid_entry_format ...............   Passed    0.02 sec
+2026-09-04T04:39:12.1814635Z       Start 19: relin2_key_bv_zero_digit_a_length
+2026-09-04T04:39:12.1970151Z 19/43 Test #19: relin2_key_bv_zero_digit_a_length ............   Passed    0.02 sec
+2026-09-04T04:39:12.1973888Z       Start 20: relin2_key_bv_zero_digit_b_length
+2026-09-04T04:39:12.2126542Z 20/43 Test #20: relin2_key_bv_zero_digit_b_length ............   Passed    0.01 sec
+2026-09-04T04:39:12.2130609Z       Start 21: relin2_key_bv_nonzero_digit_a_length
+2026-09-04T04:39:12.2324969Z 21/43 Test #21: relin2_key_bv_nonzero_digit_a_length .........   Passed    0.02 sec
+2026-09-04T04:39:12.2328744Z       Start 22: relin2_key_bv_nonzero_digit_b_length
+2026-09-04T04:39:12.2523242Z 22/43 Test #22: relin2_key_bv_nonzero_digit_b_length .........   Passed    0.02 sec
+2026-09-04T04:39:12.2527047Z       Start 23: relin2_key_bv_zero_digit_entry_basis
+2026-09-04T04:39:12.2683075Z 23/43 Test #23: relin2_key_bv_zero_digit_entry_basis .........   Passed    0.02 sec
+2026-09-04T04:39:12.2686780Z       Start 24: relin2_key_bv_nonzero_digit_entry_basis
+2026-09-04T04:39:12.2883898Z 24/43 Test #24: relin2_key_bv_nonzero_digit_entry_basis ......   Passed    0.02 sec
+2026-09-04T04:39:12.2887762Z       Start 25: relin2_key_bv_zero_digit_entry_format
+2026-09-04T04:39:12.3047345Z 25/43 Test #25: relin2_key_bv_zero_digit_entry_format ........   Passed    0.02 sec
+2026-09-04T04:39:12.3050971Z       Start 26: relin2_key_bv_nonzero_digit_entry_format
+2026-09-04T04:39:12.3284601Z 26/43 Test #26: relin2_key_bv_nonzero_digit_entry_format .....   Passed    0.02 sec
+2026-09-04T04:39:12.3290471Z       Start 27: relin2_valid_arithmetic_state_immutability
+2026-09-04T04:39:12.3684588Z 27/43 Test #27: relin2_valid_arithmetic_state_immutability ...   Passed    0.04 sec
+2026-09-04T04:39:12.3696615Z       Start 28: relin2_controlled_witnesses_and_boundaries
+2026-09-04T04:39:12.4005644Z 28/43 Test #28: relin2_controlled_witnesses_and_boundaries ...   Passed    0.03 sec
+2026-09-04T04:39:12.4010782Z       Start 29: relin2_representative_public_input
+2026-09-04T04:39:12.4378984Z 29/43 Test #29: relin2_representative_public_input ...........   Passed    0.04 sec
+2026-09-04T04:39:12.4384481Z       Start 30: relin2_key_extra_later_valid
+2026-09-04T04:39:12.4759770Z 30/43 Test #30: relin2_key_extra_later_valid .................   Passed    0.04 sec
+2026-09-04T04:39:12.4764314Z       Start 31: relin2_key_malformed_later_ignored
+2026-09-04T04:39:12.5129533Z 31/43 Test #31: relin2_key_malformed_later_ignored ...........   Passed    0.04 sec
+2026-09-04T04:39:12.5134575Z       Start 32: relin2_hybrid_valid_shapes
+2026-09-04T04:39:12.5499592Z 32/43 Test #32: relin2_hybrid_valid_shapes ...................   Passed    0.04 sec
+2026-09-04T04:39:12.5504507Z       Start 33: relin2_bv_zero_digit_valid_shapes
+2026-09-04T04:39:12.5790947Z 33/43 Test #33: relin2_bv_zero_digit_valid_shapes ............   Passed    0.03 sec
+2026-09-04T04:39:12.5795699Z       Start 34: relin2_bv_nonzero_digit_valid_shapes
+2026-09-04T04:39:12.6209253Z 34/43 Test #34: relin2_bv_nonzero_digit_valid_shapes .........   Passed    0.04 sec
+2026-09-04T04:39:12.6214723Z       Start 35: relin2_first_recombined_rcb_validation
+2026-09-04T04:39:12.6357840Z 35/43 Test #35: relin2_first_recombined_rcb_validation .......   Passed    0.01 sec
+2026-09-04T04:39:12.6361315Z       Start 36: relin2_first_recombined_tensor2_validation
+2026-09-04T04:39:12.6503329Z 36/43 Test #36: relin2_first_recombined_tensor2_validation ...   Passed    0.01 sec
+2026-09-04T04:39:12.6506085Z       Start 37: relin2_tensor2_requires_first_lifecycle
+2026-09-04T04:39:12.6713368Z 37/43 Test #37: relin2_tensor2_requires_first_lifecycle ......   Passed    0.02 sec
+2026-09-04T04:39:12.6717344Z       Start 38: rs2_wrong_lifecycle
+2026-09-04T04:39:12.6858235Z 38/43 Test #38: rs2_wrong_lifecycle ..........................   Passed    0.01 sec
+2026-09-04T04:39:12.6862004Z       Start 39: rs2_valid_arithmetic_state_immutability
+2026-09-04T04:39:12.7115071Z 39/43 Test #39: rs2_valid_arithmetic_state_immutability ......   Passed    0.02 sec
+2026-09-04T04:39:12.7120342Z       Start 40: rs2_mixed_tower_format
+2026-09-04T04:39:12.7370281Z 40/43 Test #40: rs2_mixed_tower_format .......................   Passed    0.02 sec
+2026-09-04T04:39:12.7374474Z       Start 41: rs2_untouched_public_pipeline
+2026-09-04T04:39:12.7729940Z 41/43 Test #41: rs2_untouched_public_pipeline ................   Passed    0.04 sec
+2026-09-04T04:39:12.7735337Z       Start 42: rs2_declared_basis_mismatch
+2026-09-04T04:39:12.7992593Z 42/43 Test #42: rs2_declared_basis_mismatch ..................   Passed    0.03 sec
+2026-09-04T04:39:12.7998358Z       Start 43: rs2_terminal_rejections
+2026-09-04T04:39:12.8200443Z 43/43 Test #43: rs2_terminal_rejections ......................   Passed    0.02 sec
+2026-09-04T04:39:12.8215537Z 
+2026-09-04T04:39:12.8215796Z 100% tests passed out of 43
+2026-09-04T04:39:12.8216066Z 
+2026-09-04T04:39:12.8216209Z Total Test time (real) =   1.02 sec

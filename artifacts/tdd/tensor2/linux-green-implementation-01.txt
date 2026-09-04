@@ -1,0 +1,42 @@
+Tensor2 first production Linux green
+====================================
+
+Exact production head:
+1408d46217e97a1c14d43d49b64791da22f652da
+
+External production patch SHA-256:
+27d10a4a929f4f7d994c2aa477d607723be41e606f60de8af5b6c62879a04fb2
+
+GitHub Actions run:
+https://github.com/leemaple/20231788./actions/runs/33427271692
+
+Linux job:
+https://github.com/leemaple/20231788./actions/runs/33427271692/job/99603779665
+
+The job was bound to exact project SHA
+1408d46217e97a1c14d43d49b64791da22f652da and pristine OpenFHE SHA
+df495ba2e91739a6dc8f1de254fc5a41155ce504 on `ubuntu-24.04`.
+It printed CMake 3.31.6 and
+`c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0`.
+
+The exact project commands were:
+
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+    cmake --build build --parallel 2
+    ctest --test-dir build --output-on-failure
+
+Configure and the strict warning-clean build succeeded. CTest reported 6/6
+passed in 0.11 seconds:
+
+    dcp_rcb                                    Passed
+    tensor2_valid_arithmetic_immutability      Passed
+    tensor2_result_scale_contract              Passed
+    tensor2_right_input_validation             Passed
+    tensor2_mutual_compatibility                Passed
+    tensor2_prearithmetic_key_compatibility     Passed
+
+The run was cancelled only after the Linux job had completed successfully, to
+avoid spending the intermediate-green cycle on a redundant Windows build. Its
+Windows job was therefore cancelled and no Windows result is claimed here.
+The final exact post-review/docs commit must run both jobs to completion.

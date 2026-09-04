@@ -1,0 +1,69 @@
+SCOPE=byte comparison between archived original precursor source and accepted current source
+CONTRACT_DIFF_COUNT=4
+FIXTURE_DIFF_COUNT=3
+DIFF_KIND=namespace qualification only: lbcrypto::Format -> global Format
+CONTRACT_DIFF_BEGIN
+--- /mnt/data/precision-first-mult2-work/outer/nested-prior/precision-delivery-repair-bda8791-reconstructed/final-changed-files/project/tests/precision_dcp_rcb_contract_test.cpp	2026-09-04 10:59:44.564147446 +0000
++++ /mnt/data/precision-first-mult2-work/baseline/tests/precision_dcp_rcb_contract_test.cpp	2026-09-04 10:59:25.664522712 +0000
+@@ -142,7 +142,7 @@
+ 
+ DCRTPoly ToCoefficient(const DCRTPoly& polynomial) {
+     DCRTPoly result(polynomial);
+-    result.SetFormat(lbcrypto::Format::COEFFICIENT);
++    result.SetFormat(Format::COEFFICIENT);
+     return result;
+ }
+ 
+@@ -509,7 +509,7 @@
+     Check(ciphertext->NumberCiphertextElements() == 2,
+           label + " must contain exactly two RLWE components");
+     for (const auto& component : ciphertext->GetElements()) {
+-        Check(component.GetFormat() == lbcrypto::Format::EVALUATION,
++        Check(component.GetFormat() == Format::EVALUATION,
+               label + " component format mismatch");
+         Check(GetNativeModuli(component) == expectedModuli,
+               label + " ordered RNS basis mismatch");
+@@ -528,7 +528,7 @@
+     Check(pair.GetRecordedScalingFactor() == std::ldexp(1.0, 100),
+           "DCP pair recorded scale mismatch");
+     Check(pair.GetSlots() == kBatchSize, "DCP pair slot count mismatch");
+-    Check(pair.GetFormat() == lbcrypto::Format::EVALUATION,
++    Check(pair.GetFormat() == Format::EVALUATION,
+           "DCP pair format mismatch");
+     Check(pair.GetComponentCount() == 2, "DCP pair component count mismatch");
+     Check(pair.GetKeyTag() == input->GetKeyTag(), "DCP pair key tag mismatch");
+@@ -611,7 +611,7 @@
+           "precision plaintext recorded scale mismatch");
+     Check(plaintext->GetSlots() == kBatchSize,
+           "precision plaintext slot count mismatch");
+-    Check(plaintext->GetElement<DCRTPoly>().GetFormat() == lbcrypto::Format::EVALUATION,
++    Check(plaintext->GetElement<DCRTPoly>().GetFormat() == Format::EVALUATION,
+           "precision plaintext element format mismatch");
+     const auto fullModuli = GetNativeModuli(plaintext->GetElement<DCRTPoly>());
+     Check(!fullModuli.empty(), "precision plaintext has empty RNS basis");
+CONTRACT_DIFF_END
+FIXTURE_DIFF_BEGIN
+--- /mnt/data/precision-first-mult2-work/outer/nested-prior/precision-delivery-repair-bda8791-reconstructed/final-changed-files/project/tests/precision_dcp_rcb_fixture.cpp	2026-09-04 10:59:44.564309395 +0000
++++ /mnt/data/precision-first-mult2-work/baseline/tests/precision_dcp_rcb_fixture.cpp	2026-09-04 10:59:25.664592915 +0000
+@@ -182,7 +182,7 @@
+     Check(coefficients.size() == params->GetRingDimension(),
+           "precision coefficient vector has wrong ring dimension");
+ 
+-    lbcrypto::DCRTPoly result(params, lbcrypto::Format::COEFFICIENT, true);
++    lbcrypto::DCRTPoly result(params, Format::COEFFICIENT, true);
+     auto& towers = result.GetAllElements();
+     for (std::size_t towerIndex = 0; towerIndex < towers.size(); ++towerIndex) {
+         const auto modulusNative = towers[towerIndex].GetModulus();
+@@ -194,9 +194,9 @@
+             residues[coefficient] = lbcrypto::NativeInteger(residue);
+         }
+         towers[towerIndex].SetValues(std::move(residues),
+-                                     lbcrypto::Format::COEFFICIENT);
++                                     Format::COEFFICIENT);
+     }
+-    result.SetFormat(lbcrypto::Format::EVALUATION);
++    result.SetFormat(Format::EVALUATION);
+     return result;
+ }
+ 
+FIXTURE_DIFF_END

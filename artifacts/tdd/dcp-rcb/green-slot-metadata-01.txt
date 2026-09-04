@@ -1,0 +1,33 @@
+DCP/RCB slot-metadata validation green
+=======================================
+
+Production/test commit:
+4971d2292b5af0ddbbe0c7dbe5a2e87f45102ff1
+
+GitHub Actions run:
+https://github.com/leemaple/20231788./actions/runs/33404816846
+
+Pinned pristine OpenFHE commit:
+df495ba2e91739a6dc8f1de254fc5a41155ce504
+
+Linux/GCC job:
+https://github.com/leemaple/20231788./actions/runs/33404816846/job/99529657335
+
+- strict project build passed;
+- `dcp_rcb` passed 1/1 in 0.01 seconds;
+- CTest reported 100% passed, 0 failed.
+
+Windows 2022/MSYS2 MinGW64 job:
+https://github.com/leemaple/20231788./actions/runs/33404816846/job/99529657530
+
+- pristine OpenFHE configured, built, and installed successfully;
+- the project compiled `double_ckks.cpp` and `dcp_rcb_test.cpp`, linked the
+  library and `dcp_rcb_test.exe` under the existing strict warning policy;
+- `dcp_rcb` passed 1/1 in 0.11 seconds;
+- CTest reported 100% passed.
+
+The complete workflow concluded `success` on the exact commit above. The green
+change records the original ciphertext slot count in the private pair manifest,
+exposes it read-only, cross-validates both stored ciphertexts before RCB raw
+arithmetic, and checks preservation/immutability through the public DCP/RCB
+seams.

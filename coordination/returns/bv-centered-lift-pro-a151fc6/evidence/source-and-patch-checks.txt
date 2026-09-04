@@ -1,0 +1,67 @@
+INDEPENDENT SOURCE / PACKAGE / PATCH CHECKS
+
+Input archive
+-------------
+PASS outer bytes: 2567648
+PASS outer SHA-256: da2b38c78cdb03581996ad278ac96c1210ae0454ed325b01982c0762972cfa01
+PASS outer entries: 15 regular files; no unsafe paths, duplicates, symlinks, encryption; CRC clean
+PASS outer SOURCE-MANIFEST: 14 payload records, exact closure
+
+Nested archives
+---------------
+PASS CURRENT-COMBINED-CONTEXT.zip: 1305833 bytes; e3dd499889e66a3406fa8ca755b559505db802c2d4cd7c8e1615d74900225fce; 70-record source-manifest closure
+PASS ORIGINAL-PAIR-PRO-RETURN.zip: 212032 bytes; 735dea4e6c164ced95c2829ea8eb5316201eb900fd5d77b1aad171e94e2676c4; 65-record FILE_HASHES closure
+PASS LATEST-COMPLETE-PRO-RETURN.zip: 58604 bytes; bf15886a0cabc2347469f74ac4c356b3f0afd500fe7b79cc6fdf0d4d9c4f5ea0; package 12 + SHA list 13 closure
+PASS PREVIOUS-FULL-BV-CONTEXT.zip: 1157474 bytes; 59a6f351e551ecbf8e1f8ee7e8577339ce5ca4d6d2b2b3c494bc514d71773e34; 6-record source-manifest closure
+PASS BV-REVIEW-INPUT-4e6cce5.zip: 1064259 bytes; 83a28e43e72d0874700be3ed49f67e8ba9f85984507887fafcca4210ac2e7479; 58-record source-manifest closure
+PASS ORIGINAL-PRO-RETURN.zip: 66462 bytes; 50b3a85159c0a8d860c301ecea84cd7831f9d4a48d2fbe0eaff06d707ac8b5c9; package 16 + SHA list 17 closure
+PASS all nested ZIPs: CRC, path, duplicate-name, symlink, and encryption checks
+
+Selected source identities
+--------------------------
+PASS 54/54 entries in CURRENT-SOURCE-PROVENANCE.json match supplied sizes and SHA-256 values
+PASS current oracle baseline: b27c15ceb2ab886077701187cd9700d89aad9bf8feb3904cd0dfccd1c78e1b26
+PASS current CTest registration count: 53
+INSPECTED retained Linux total: 53/53, 0.68 s (not executed here)
+INSPECTED retained Windows total: 53/53, 2.27 s (not executed here)
+
+New official source bytes
+-------------------------
+PASS 04cd20f4e186c0c313f422f2d70c408f4e213989a45ed56645f887583a12567d  src/core/include/lattice/hal/default/poly-impl.h
+PASS 3ac888c8165194a627822101d2a9f10ec8d3135e7e2eae8a91c92cb808793889  src/core/include/math/hal/intnat/mubintvecnat.h
+PASS 61bf8fddca55c6ea0b13fb22fc7761d44980221a7e909513509292568045d594  src/core/lib/math/hal/intnat/mubintvecnat.cpp
+PASS 22d49038f1b63a88a2da0fd13941b11bd2a255c1dd3e65304600992324b9080a  src/core/include/math/hal/intnat/ubintnat.h
+PASS all four hashes and byte sizes match OFFICIAL-PROVENANCE.json at df495ba2e91739a6dc8f1de254fc5a41155ce504
+
+Load-bearing source locations inspected
+---------------------------------------
+PASS official-openfhe/dcrtpoly-impl.h:230-250 — zero-digit decomposition, coefficient source copy, non-lazy SwitchModulus call, evaluation conversion
+PASS src/core/include/lattice/hal/default/poly-impl.h:400-406 — Poly forwards to NativeVectorT::SwitchModulus
+PASS src/core/include/lattice/hal/default/poly-impl.h:420-439 — inverse/forward format conversion
+PASS src/core/include/math/hal/intnat/mubintvecnat.h:311-326 — supported-modulus check and method declarations
+PASS src/core/lib/math/hal/intnat/mubintvecnat.cpp:98-122 — strict-half non-lazy branch
+PASS src/core/lib/math/hal/intnat/mubintvecnat.cpp:124-129 — lazy unsigned-reduction branch, not used
+PASS src/core/include/math/hal/intnat/ubintnat.h:73-143 — unsigned native representation/type traits
+PASS src/core/include/math/hal/intnat/ubintnat.h:318-327 — AddEqFast
+PASS src/core/include/math/hal/intnat/ubintnat.h:871-902 — modular subtraction and in-place variant
+PASS official-openfhe/keyswitch-bv.cpp:49-103 — BV row sign and noise-scale factor
+PASS official-openfhe/keyswitch-bv.cpp:245-278 — digit decomposition, basis truncation, row products and sum
+PASS official-openfhe/base-leveledshe.cpp:136-144 — s^2 -> s multiplication key
+PASS official-openfhe/base-leveledshe.cpp:327-340 — relinearization adds key-switch output and truncates to two components
+PASS project/src/double_ckks.cpp:377-405 — componentwise DCP recombination identity
+PASS project/src/double_ckks.cpp:925-970 — raised-high full-basis and prefix-low Relin2 paths
+
+Prior candidate replay
+----------------------
+PASS patch SHA-256: c70a5963909bb1fc1c4f5bdabbd5baba7d013dab7f5cdd9b7ebaf325a2545871
+PASS git apply --check against extracted current context
+PASS numstat: 363 insertions, 3 deletions, project/tests/mult2_e2e_oracle_test.cpp only
+PASS replayed full file SHA-256: 92a2f03c0301ba0e16d6d52f72e2fef129f069bbdee2b27e6a25b7c49030538d
+PASS replayed full file byte-identical to archived candidate full file
+PASS one-file delta whitespace check
+PASS bound construction precedes plaintext construction, encryption, Tensor2, Relin2 and path-error observation
+PASS existing labels retained: PER_PATH_CONDITIONAL / conservative_E_Relin_available=false / universal_theorem_gate=UNPROVED
+
+Execution boundary
+------------------
+NOT EXECUTED OpenFHE/C++ build, cryptographic runtime, CTest, CI, Windows, or Mac workload.

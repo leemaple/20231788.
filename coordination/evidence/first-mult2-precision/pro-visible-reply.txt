@@ -1,0 +1,344 @@
+URL: https://chatgpt.com/c/6a9a5891-6210-83ec-a24c-d6a5e0889fbd
+Title: Double CKKS precision design
+Observed: 2026-09-04T12:28:19.075Z
+
+Repaired deliverable
+
+Download the complete first-Mult2 precision candidate ZIP
+
+Download the matching relative-basename SHA-256 sidecar
+
+Download the post-extraction verification record
+
+The supplied input archive was verified as:
+
+precision-first-mult2-c9ee28d.zip
+size:   1,163,390 bytes
+SHA-256:
+e49e3fcb897ea7b9fa0cf31bc376a9289e0bd4fe8f4a1ff70a35622bd5fe0461
+
+The delivery ZIP was extracted into a new empty directory and rechecked for:
+
+ZIP CRC                                      PASS
+required members present and nonempty       PASS
+exact MANIFEST.sha256 closure                PASS
+sizes/SHA-256 table closure                  PASS
+patch applies to supplied current snapshot  PASS
+patched files equal delivered final copies  PASS
+54 existing CTest bindings preserved        PASS
+one new CTest binding appended               PASS
+forbidden cache/build/.git content           absent
+
+The output ZIP’s exact hash and relative basename are recorded in the sidecar and verification record.
+
+Precursor audit
+
+Verdict: PASS
+
+P0: 0
+P1: 0
+P2: 2
+
+The source-cited audit is in 
+PRECURSOR_REVIEW.md, with exact packet-relative source and retained-log locations in 
+SOURCE_CITATION_INDEX.md.
+
+The accepted precursor is internally coherent:
+
+The fe35a099... Windows namespace compilation failure is correctly separated from the intended runtime red.
+
+The real hosted red is the namespace-corrected e38764ab... state: 53/54 on both hosts, with only the frozen positive sub-binary64 delta assertion failing.
+
+That red establishes failure of the deliberately lossy binary64 fixture, not a defect in pristine OpenFHE encoding, DCP, or RCB.
+
+The hosted green changes only tests/precision_dcp_rcb_fixture.cpp; the accepted contract, header, CMake registration, thresholds, vectors, oracle, state assertions, and trial count remain frozen.
+
+The direct canonical evaluator is not merely the matching forward version of the fixture’s inverse transform. Constant, X
+32
+, and hard-coded X
+2
+ witnesses discriminate normalization, phase direction, conjugation, sign, and slot ordering.
+
+The injected plaintext’s packed-value cache remains stale and is not consumed. The accepted test does not use GetCKKSPackedValue(), serialization, or production Decrypt as a greater-than-53-bit oracle.
+
+The two retained P2 boundaries are:
+
+The observed 258-bit centered-coefficient headroom is useful diagnostic evidence, but not a universal non-wrap theorem or a bound covering every key-switch and Gaussian-noise history.
+
+The N64, homogeneous p50/50, HEStd_NotSet experiment is not the paper’s Table 3 configuration and cannot support Table 3, security, or performance claims.
+
+New executable slice
+
+The applicable patch is:
+
+0001-add-first-mult2-high-precision-contract.patch
+
+Complete final files:
+
+CMakeLists.txt
+
+precision_first_mult2_contract_test.cpp
+
+The patch changes only those two paths. It does not modify production code, the accepted precision fixture, its header, the old DCP→RCB contract, the workflow, or any existing functional test.
+
+The new registration is:
+
+precision_first_mult2_high_precision_contract
+
+The proposed hosted path is:
+
+lossless multiprecision left plaintext
+        ↓ Encrypt
+public DCP
+
+exact-unity right plaintext
+        ↓ Encrypt
+public DCP
+
+DCP(left), DCP(right)
+        ↓ public Mult2
+RefreshRequired result pair
+        ↓ public RCB
+observed ciphertext
+        ↓ independent secret/CRT reconstruction
+direct canonical polynomial evaluation
+        ↓ exact rational normalization
+lossless expected x × 1 comparison
+
+The right operand is encrypted exact unity. This is intentionally the narrowest first-Mult2 precision tracer:
+
+It exercises ciphertext-ciphertext Tensor2, Relin2, RS2, Mult2, and RCB with fresh encryption noise.
+
+It preserves the existing representative high-precision left vector and the exact positive witness (2
+−70
+,2
+−73
+).
+
+It isolates multiplication-path precision and final-scale normalization before introducing a second independently injected non-unity high-precision operand.
+
+It is not represented as the final two-nontrivial-operands precision gate.
+
+The left vector retains real and complex values, positive and negative signs, zero, near-zero values, nontrivial fractions, non-dyadic decimal values, and the sub-binary64 distinguishing perturbation. Expected products remain lossless multiprecision values; no double result is used as the greater-than-53-bit reference.
+
+Frozen contract
+
+The complete design is in 
+FIRST_MULT2_TEST_DESIGN.md.
+
+ring dimension                 64
+batch size                     16
+multiplicative depth           7
+scaling modulus size           50
+first modulus size             55
+scaling technique              FIXEDMANUAL
+key switching                  HYBRID
+plaintext mode                 COMPLEX
+secret distribution            UNIFORM_TERNARY
+security setting               HEStd_NotSet, diagnostic only
+input noise-scale degree       2
+initial logical scale Δ        2^100
+fresh-key trials               4
+absolute slot threshold        strictly below 2^-80
+positive witness               (2^-70, 2^-73)
+
+For the current first-Mult2 path, the test derives the final logical scale as
+
+Δ
+out
+	​
+
+=
+q
+div
+	​
+
+q
+l
+	​
+
+Δ
+2
+	​
+
+=
+q
+div
+	​
+
+q
+l
+	​
+
+2
+200
+	​
+
+.
+
+The expected normalization is therefore computed from exact integer representations of q
+div
+	​
+
+ and q
+l
+	​
+
+. Neither GetScalingFactor() as a binary floating-point value nor a long-double descriptor determines the expected answer.
+
+Where the reused independent decoder initially interprets coefficients relative to 2
+100
+, the test applies the exact multiprecision correction
+
+2
+100
+q
+div
+	​
+
+q
+l
+	​
+
+	​
+
+,
+
+which is algebraically equivalent to decoding at 2
+200
+/(q
+div
+	​
+
+q
+l
+	​
+
+). Production RCB supplies only the observed ciphertext endpoint; it does not compute expected coefficients or slots.
+
+The 2
+−80
+ threshold is frozen before hosted execution. Its plausibility is based on three distinct facts, not on metadata alone:
+
+fresh 2
+100
+ coefficient rounding in the N64 fixture has a deterministic rounding contribution bounded well below 2
+−80
+;
+
+the accepted DCP→RCB precursor observed errors around 5×10
+−28
+, roughly 2
+−90.6
+;
+
+q
+div
+	​
+
+q
+l
+	​
+
+ is near 2
+100
+ in the current p50/50 context, so the first-Mult2 output logical scale remains near 2
+100
+.
+
+This gives useful margin but does not guarantee green. Key-switch and rescale error are operation-specific and must be observed. The paper’s different Table 3 parameters are only directional context, not proof for this diagnostic configuration.
+
+First-observation rule
+
+Existing Mult2 production code already exists and has retained functional TDD evidence. Therefore:
+
+an initial pass is reported as first-observed GREEN;
+
+no artificial red is created by breaking production or the fixture;
+
+an initial failure is retained with the frozen vector, threshold, normalization, and oracle;
+
+the first diagnosis must isolate one precise cause before any implementation change;
+
+the threshold and expected values must not be adjusted after seeing results.
+
+Expected suite size after registration is 55 tests, but 55/55 has not been observed or claimed.
+
+The exact preservation ledger is available here:
+
+CTEST_BINDINGS.tsv
+
+Hosted commands
+
+HOSTED_COMMANDS_AND_EXPECTED_REGISTRATION.md contains the complete command sequence:
+
+Bash
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_PREFIX_PATH=<pristine-install>
+
+cmake --build build --parallel 2
+
+cmake --build build --target relin2_api_contract_test --parallel 2
+cmake --build build --target rs2_api_contract_test --parallel 2
+cmake --build build --target mult2_api_contract_test --parallel 2
+cmake --build build --target add_api_contract_test --parallel 2
+cmake --build build --target sub_api_contract_test --parallel 2
+
+ctest --test-dir build \
+  -R '^precision_first_mult2_high_precision_contract$' \
+  --verbose --output-on-failure
+
+ctest --test-dir build --verbose --output-on-failure
+
+The candidate preserves the existing warning-as-error configuration and does not modify the workflow.
+
+Execution status
+
+Executed in this review environment:
+
+input/archive identity checks              executed
+manifest closure checks                    executed
+static source and claim guards             executed
+patch applicability to current snapshot    executed
+patched/final-byte equality                 executed
+54-plus-1 CTest binding comparison          executed
+standalone multiprecision arithmetic check  recorded separately
+output ZIP CRC and new-directory extraction executed
+post-extraction manifest and patch checks   executed
+
+Not executed:
+
+OpenFHE candidate compilation
+Encrypt, DCP, Mult2, RCB runtime
+focused precision CTest
+complete 55-test CTest suite
+Linux or Windows hosted CI
+Mac OpenFHE or project execution
+security evaluation
+performance benchmarking
+
+The full execution boundary is in 
+COMMANDS_AND_EXECUTION_LEDGER.md.
+
+Path beyond this slice
+
+NEXT_PAPER_PRECISION_GATES.md keeps the complete paper destination explicit. Remaining independent gates include:
+
+a second non-unity, losslessly supplied high-precision operand and independent slotwise-product oracle;
+
+an explicit parameter-generation contract for ordered Div≈40-bit and Mult≈60-bit primes, Base50×2, dnum=11, and auxiliary P≈60 bits;
+
+N=2
+15
+, h=128, and an appropriate security-enabled parameter validation instead of HEStd_NotSet;
+
+a production lossless input/output decision that does not rely on the test fixture’s stale packed cache;
+
+refresh and lifecycle support sufficient for eight repeated squarings while retaining the current RefreshRequired rejection until that support exists;
+
+1,000-execution evidence with a preregistered aggregation rule, separately reporting correctness, precision, wrap status, security parameters, and performance.
+
+No part of the new patch claims first-Mult2 hosted precision, repeated-use precision, Table 3 reproduction, approximately 2
+−81.8
+ average error, security, or performance.

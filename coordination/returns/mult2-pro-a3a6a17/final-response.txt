@@ -1,0 +1,406 @@
+Mult2 工程交付
+下载
+
+完整交付 ZIP：源码、8 个补丁、测试、审计与校验材料
+
+外层 ZIP SHA-256 sidecar
+
+README 与精确补丁应用顺序
+
+8 个补丁的 series 文件
+
+完整合并 diff
+
+仅生产代码 diff
+
+SOURCE_FACT_AUDIT
+
+Theorem 4.8 与尺度裁决
+
+执行状态与未验证边界
+
+输入与输出哈希记录
+
+外层交付 ZIP 身份：
+
+filename = mult2-pro-a3a6a17-mult2-delivery.zip
+bytes    = 188514
+sha256   = 4003c9103b3a4251e061072ff30e0365bcd80678019ce2471e80633ffdf72b28
+
+我已从该 ZIP 重新解压到空目录，运行交付校验器并逐文件比较：
+
+zip_path_safety=PASS
+manifest_files=58
+sha256sum_files=57
+patches=8
+exact_extract_match=True
+1. 输入身份核验
+
+输入附件核验结果：
+
+filename        = mult2-pro-a3a6a17.zip
+expected bytes  = 1576818
+actual bytes    = 1576818
+expected sha256 = 5b83855378345120e65a4495eb034b2c2e5d406b1c6b03053491f1929bde7f81
+actual sha256   = 5b83855378345120e65a4495eb034b2c2e5d406b1c6b03053491f1929bde7f81
+
+ZIP 与 SOURCE-MANIFEST.json 闭合情况：
+
+ZIP members                              = 43
+regular files                            = 31
+duplicate names                          = 0
+unsafe paths                             = 0
+symlink members                          = 0
+SOURCE-MANIFEST bytes                    = 5705
+SOURCE-MANIFEST sha256                   = 812a0a4465f3a600442abc33cc9ee9e49817796337822c544da06af7652fc4a2
+manifest-listed objects                  = 30
+missing objects                          = 0
+unlisted regular objects excluding self  = 0
+size/hash mismatches                     = 0
+
+清单声明的身份为：
+
+source commit = a3a6a171b60c4829f674f0dc4f5b35d658d47868
+branch        = codex/mult2-01
+OpenFHE       = df495ba2e91739a6dc8f1de254fc5a41155ce504
+
+包中没有 .git 对象，因此我没有声称从 Git object graph 独立重算出了 a3a6a...。准确边界是：清单绑定的全部 30 个对象均已独立复算并逐字节匹配；source commit 是经已校验清单提供的身份。
+
+2. 最终生产实现
+
+生产代码只增加精确公开签名：
+
+C++
+CiphertextPair Mult2(const CiphertextPair& left,
+                     const CiphertextPair& right) const;
+
+以及最小组合：
+
+C++
+CiphertextPair DoubleCKKS::Mult2(const CiphertextPair& left,
+                                 const CiphertextPair& right) const {
+    return RS2(Relin2(Tensor2(left, right)));
+}
+
+生产差异共计：
+
+changed production files = 2
+added production lines   = 5
+deleted production lines = 0
+
+未修改以下既有算法体：
+
+DCP
+
+Tensor2
+
+Relin2
+
+RS2
+
+RCB
+
+也没有增加生产 try/catch、隐藏对齐、自动 rescale、第二次乘法、Add/Sub、刷新、自举、泛型 tuple/callback、序列化或 OpenFHE 分叉。
+
+输入错误沿原有公开接缝按顺序失败：
+
+Tensor2 validation
+    -> Relin2 evaluation-key validation
+        -> RS2 validation/rescale
+
+因此终态输入、context/key/scale/basis 不一致会通过既有验证原样抛出，不在 Mult2 层吞掉或改写异常。
+
+3. 红/绿补丁顺序
+
+交付了 8 个 git format-patch 补丁：
+
+顺序	类型	内容
+1	API red	在类声明尚无 Mult2 时加入精确 const 成员函数指针编译契约
+2	API scaffold green	加入公开声明和显式 logic_error 桩
+3	behavior red	加入真实加密端到端路径，并在实现前冻结校正后槽位绝对误差阈值 1e-3
+4	minimal behavior green	用唯一一行 Tensor2→Relin2→RS2 组合替换桩
+5	coverage	加入独立 cpp_int 系数和定理证书 oracle
+6	coverage	加入终态 fail-fast 与 context/key/scale/basis 拒绝测试
+7	coverage hardening	公开结果系数 oracle 改为直接独立解密 pair，不使用生产 RCB 生成期望
+8	CI	加入 codex/mult2-01 触发及 Linux/MinGW 四个显式 API 目标
+
+我已在新的基线副本中按该顺序执行 git am，8/8 应用成功。重放项目和最终导出项目：
+
+missing files       = 0
+extra files         = 0
+content mismatches  = 0
+expected Git tree   = 66bad80110c866a4616194a74eb3b6fa55b096af
+replayed Git tree   = 66bad80110c866a4616194a74eb3b6fa55b096af
+
+本地审查历史的最终 head 为：
+
+c70afca9f0fc772244eefe2fa5ff40bd0a78d0c8
+
+该 commit ID 只是本次临时审查账本。用户执行 git am 后，committer 时间会改变 commit ID，应以文件哈希和最终 Git tree 判等。
+
+4. 新增测试
+
+最终 CMake 图声明 49 个 CTest，其中新增 10 个 Mult2 测试：
+
+mult2_composition_contract
+
+mult2_e2e_hybrid_real
+mult2_e2e_hybrid_complex
+mult2_e2e_bv_real
+mult2_e2e_bv_complex
+
+mult2_terminal_before_key
+mult2_mismatched_context
+mult2_mismatched_key
+mult2_tampered_scale
+mult2_tampered_basis
+端到端路径
+
+四个 oracle 用例均走：
+
+deterministic host slots
+    -> MakeCKKSPackedPlaintext(noiseScaleDeg=2, level=0)
+    -> Encrypt
+    -> DCP
+    -> Mult2
+    -> RCB
+    -> Decrypt
+
+覆盖：
+
+REAL 与 COMPLEX；
+
+HYBRID 与 BV；
+
+正负数；
+
+零；
+
+近零值；
+
+代表性非零幅度；
+
+输入和输出向量长度；
+
+输入 ciphertext/pair 不变性。
+
+固定记录参数包括：
+
+ring dimension       = 64
+batch size           = 16
+scaling modulus bits = 30
+first modulus bits   = 35
+multiplicative depth = 7
+input scale degree   = 2
+input level          = 0
+maxRelinSkDeg        = 2
+secret distribution = UNIFORM_TERNARY
+security level       = HEStd_NotSet, functional-only
+
+没有把该玩具夹具描述为生产安全参数。
+
+独立系数 oracle
+
+测试自行实现：
+
+boost::multiprecision::cpp_int 整数算术；
+
+正模与中心化；
+
+CRT 重构；
+
+学校式 X^N+1 负循环卷积；
+
+使用真实 secret key 的 c0+c1·s+c2·s²+… 独立系数解密；
+
+high/low pair 的独立重组；
+
+secret Hamming weight；
+
+精确有理数交叉相乘比较。
+
+公开 Mult2 输出的系数检查不会调用生产 RCB，而是分别独立解密 high/low，再按实际 q_div 重组。生产 RCB 只用于任务明确要求的调用者槽位解码路径。
+
+实际定理量
+
+测试运行时从真实 ciphertext/secret key 计算：
+
+M_high
+M_low
+h
+N
+Q_l
+q_div
+q_l
+
+而不是使用 ciphertext 原始系数最大值冒充明文界。
+
+它分别测量：
+
+empirical_E_Relin
+empirical_pair_relin_error
+
+并检查：
+
+empirical_pair_relin_error <= empirical_E_Relin + h
+
+随后以 cpp_int 精确检查本次执行的：
+
+N*(M_high*q_div+M_low)^2 + empirical_E_Relin + h < Q_l/2
+
+以及：
+
+(N*M_low^2/q_div + empirical_E_Relin + h)/q_l + (h+1)/2
+
+测试固定输出：
+
+conservative_E_Relin_available=false
+universal_theorem_gate=UNPROVED
+
+即：单次测量只是经验执行证书，不被包装成保守、通用的 E_Relin 证明。
+
+终态 fail-fast
+
+测试先成功完成第一次 Mult2，再清除评估密钥缓存。随后分别把 RefreshRequired 结果放在左、右输入位置。
+
+预期必须在 Tensor2 生命周期验证阶段失败：
+
+DoubleCKKS: Tensor2 requires ReadyForFirstMult inputs
+
+同时检查：
+
+不访问或重新生成评估密钥；
+
+空评估密钥缓存保持不变；
+
+terminal pair 不变；
+
+另一 ready pair 不变。
+
+另有 context、key tag、recorded scale 和 ordered basis 失配的精确异常与不变性检查。
+
+5. Theorem 4.8 裁决
+
+我的独立结论是：
+
+PDF 第 8 页定理 4.8 的显示比较项很可能漏写 1/q_div。这是从定义和相邻引理推出的推断性勘误，不是作者确认的 erratum。
+
+令：
+
+m_i = q_div*a_i + b_i
+
+Tensor2 重组为：
+
+t = q_div*a_1*a_2 + a_1*b_2 + b_1*a_2
+
+于是：
+
+q_div*t = m_1*m_2 - b_1*b_2
+t = (m_1*m_2-b_1*b_2)/q_div
+
+RS2 再除以 q_l，组合目标应为：
+
+(m_1*m_2-b_1*b_2)/(q_div*q_l)
+
+极小反例：
+
+q_div=5, q_l=7
+m_1=m_2=5
+b_1=b_2=0
+a_1=a_2=1
+
+Tensor2 recombined     = 5
+after RS2              = 5/7
+printed theorem target = 25/7
+corrected target       = 5/7
+
+这与定义 4.1/引理 4.2 对 q_div 的除法、RS2 对 q_l 的除法，以及定理后“overall scale divided by q_div*q_l”的文字一致。
+
+测试不会用静默修正后的陈述去宣称 PDF 原定理已被证明。
+
+6. 记录尺度、逻辑尺度与解码偏差
+
+令：
+
+Delta_0 = 2^p
+
+输入 degree-2 pair 的记录尺度是：
+
+SF_in = Delta_0^2
+
+最终 Mult2 输出：
+
+SF_out,recorded          = Delta_0^2
+SF_out,recombined,logical = Delta_0^4/(q_div*q_l)
+
+因此：
+
+r = logical/recorded
+  = Delta_0^2/(q_div*q_l)
+  = 2^(2p)/(q_div*q_l)
+
+测试使用实际原生 q_div、实际被 RS2 丢弃的 q_l 计算该比值，不假定二者等于 FIXEDMANUAL 的记录因子 2^p。
+
+供应的 OpenFHE 1.5.0 FIXEDMANUAL DCRT decoder 依据 p 和 noiseScaleDeg 解码，而不是把任意 ciphertext scaling factor 当作最终逻辑尺度。因此普通解码会得到：
+
+decoded_recorded ≈ true_product * r
+
+当前测试的诊断性恢复为：
+
+decoded_logical
+    = decoded_recorded / r
+    = decoded_recorded * q_div*q_l / 2^(2p)
+
+测试先验证未经校正的结果确实符合预测的确定性偏差，再单独检查逻辑校正后的槽位误差，没有静默修改 expected plaintext。
+
+仅设置 ciphertext 的 recorded SF 不能透明修复该 decoder 路径。产品若要求 RCB -> Decrypt 直接返回逻辑乘积，需要后续增加明确的公开解码辅助接口或公共契约；本次首次 Mult2 切片未越界加入。
+
+7. 执行状态
+
+以下工作已经实际执行：
+
+输入 ZIP 大小与 SHA-256；
+
+ZIP 路径安全和成员审计；
+
+SOURCE-MANIFEST 30 个对象全量大小/SHA-256；
+
+8 个补丁顺序重放；
+
+最终 22 个源码文件逐字节比较；
+
+Git tree 比较；
+
+生产 diff 范围审计；
+
+红/绿顺序静态审计；
+
+workflow YAML 与关键步骤静态审计；
+
+合成 OpenFHE package metadata 下的 CMake 配置图检查；
+
+外层 ZIP 新目录解压、自校验和逐字节比较。
+
+以下候选动作是 NOT EXECUTED：
+
+C++ 编译和链接；
+
+默认 build；
+
+四个显式 API target build；
+
+49 项 CTest；
+
+四个真实 e2e 证书的数值运行；
+
+Linux GCC warning-clean；
+
+Windows MinGW64 warning-clean；
+
+候选 GitHub Actions。
+
+原因是当前 Linux 环境没有 OpenFHE 1.5.0 安装；真实 CMake 配置在 find_package(OpenFHE 1.5.0) 处停止。隔离获取固定 OpenFHE 源又因 DNS 无法解析而失败。因此没有编造绿色日志，也没有把配置图或静态审计冒充编译结果。
+
+包内既有绿色日志只覆盖旧基线提交的 39 项测试，明确不覆盖本次 Mult2、原始加密槽位精度或定理证明。
+
+最终状态：代码、红/绿补丁、独立 oracle、CMake/CI 接入和审计材料已完成；候选仍须在固定 OpenFHE 1.5.0 提交上接受 Linux GCC 与 Windows MinGW64 的独立编译和 49 项 CTest 裁决。

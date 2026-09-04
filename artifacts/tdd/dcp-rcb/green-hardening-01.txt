@@ -1,0 +1,44 @@
+DCP/RCB contract-hardening green evidence
+
+Observed: 2026-08-31 18:57 CST (Asia/Shanghai)
+Project commit: e961022bc4e24fbcc4fbd29d2b6cf24f9c11d0e3
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
+Run: https://github.com/leemaple/20231788./actions/runs/33384694828
+Conclusion: success
+
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
+This green follows `red-hardening-01.txt`. It keeps the independent arithmetic oracle unchanged and additionally verifies:
+
+- a structured paper-scale transition descriptor;
+- exact fresh degree-two FIXEDMANUAL input scale;
+- odd paper divisor invariant;
+- OpenFHE index-zero rescale-precomputation vector sizes before raw arithmetic;
+- fail-fast RCB rejection after adversarial mutation of key tag, component count, basis order, polynomial format, recorded scale, level, noise-scale degree, or paper-scale descriptor.
+
+Relevant warning-clean build output:
+
+  [ 25%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+  [ 50%] Linking CXX static library libopenfhe_2023_1788.a
+  [ 50%] Built target openfhe_2023_1788
+  [ 75%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+  [100%] Linking CXX executable dcp_rcb_test
+  [100%] Built target dcp_rcb_test
+
+Exact retained CTest output:
+
+  Internal ctest changing into directory: /home/runner/work/20231788./20231788./build
+  Test project /home/runner/work/20231788./20231788./build
+      Start 1: dcp_rcb
+  1/1 Test #1: dcp_rcb ..........................   Passed    0.01 sec
+
+  100% tests passed, 0 tests failed out of 1
+
+  Total Test time (real) =   0.05 sec
+
+The GitHub Actions annotation about actions/checkout and actions/cache Node.js 20 deprecation is external action metadata, not a project compiler warning. It does not change the accepted DCP/RCB scope or the requirement for later Windows and tri-party review.

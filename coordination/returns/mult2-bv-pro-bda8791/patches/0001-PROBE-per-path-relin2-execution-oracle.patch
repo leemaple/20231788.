@@ -1,0 +1,233 @@
+diff --git a/tests/mult2_e2e_oracle_test.cpp b/tests/mult2_e2e_oracle_test.cpp
+index 534dbd959afc36639461563eb1b57a0c661387e0..e392fa2d293b27a20754f82030819ff348c9ea70 100644
+--- a/tests/mult2_e2e_oracle_test.cpp
++++ b/tests/mult2_e2e_oracle_test.cpp
+@@ -334,6 +334,148 @@ Ciphertext<DCRTPoly> RecombineTensorCiphertext(const TensorCiphertextPair& pair)
+     return result;
+ }
+ 
++Ciphertext<DCRTPoly> RaiseTensorHighReference(
++    const TensorCiphertextPair& tensor,
++    const CryptoContext<DCRTPoly>& context) {
++    const auto parameters =
++        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(
++            context->GetCryptoParameters());
++    Check(parameters != nullptr,
++          "Relin2 path oracle context is not CKKS-RNS");
++    const auto fullParameters = parameters->GetElementParams();
++    Check(fullParameters != nullptr &&
++              fullParameters->GetParams().size() ==
++                  tensor.GetOrderedModuli().size() + 1 &&
++              fullParameters->GetParams().back() != nullptr,
++          "Relin2 path oracle full basis is not Q_l followed by q_div");
++    Check(fullParameters->GetParams().back()->GetModulus() ==
++              tensor.GetDivisor(),
++          "Relin2 path oracle final full-basis tower is not q_div");
++
++    auto raised = tensor.GetHigh()->Clone();
++    auto elements = raised->GetElements();
++    for (auto& element : elements) {
++        auto towers = element.GetAllElements();
++        Check(towers.size() == tensor.GetOrderedModuli().size(),
++              "Relin2 path oracle high input is not on Q_l");
++        for (auto& tower : towers) {
++            tower *= tensor.GetDivisor();
++        }
++        lbcrypto::NativePoly zero(fullParameters->GetParams().back(),
++                                  Format::EVALUATION, true);
++        towers.push_back(std::move(zero));
++        element = DCRTPoly(towers);
++    }
++    raised->SetElements(std::move(elements));
++    raised->SetLevel(0);
++    return raised;
++}
++
++Ciphertext<DCRTPoly> DropFinalTowerReference(
++    lbcrypto::ConstCiphertext<DCRTPoly> source) {
++    Check(source != nullptr,
++          "Relin2 path oracle cannot restrict a null ciphertext");
++    auto result = source->Clone();
++    auto elements = result->GetElements();
++    for (auto& element : elements) {
++        Check(element.GetAllElements().size() >= 2,
++              "Relin2 path oracle source has no removable final tower");
++        element.DropLastElement();
++    }
++    result->SetElements(std::move(elements));
++    result->SetLevel(source->GetLevel() + 1);
++    return result;
++}
++
++struct RelinPathExecutionCertificate {
++    BigInt highPathError;
++    BigInt lowPathError;
++    BigInt triangleBound;
++    std::vector<BigInt> predictedPairErrors;
++};
++
++RelinPathExecutionCertificate CheckRelin2PathIdentity(
++    const TensorCiphertextPair& tensor,
++    const PairOracleResult& tensorPlain,
++    const PairOracleResult& actualPlain,
++    const lbcrypto::PrivateKey<DCRTPoly>& secretKey,
++    const CryptoContext<DCRTPoly>& context) {
++    auto raisedHigh = RaiseTensorHighReference(tensor, context);
++    lbcrypto::ConstCiphertext<DCRTPoly> raisedHighConst = raisedHigh;
++    auto relinearizedHigh = context->Relinearize(raisedHighConst);
++    lbcrypto::ConstCiphertext<DCRTPoly> tensorLowConst = tensor.GetLow();
++    auto relinearizedLow = context->Relinearize(tensorLowConst);
++    Check(relinearizedHigh != nullptr && relinearizedLow != nullptr,
++          "Relin2 path oracle received a null public Relinearize result");
++
++    lbcrypto::ConstCiphertext<DCRTPoly> relinearizedHighConst =
++        relinearizedHigh;
++    auto restrictedHigh = DropFinalTowerReference(relinearizedHighConst);
++    ReadOnlyCiphertext restrictedHighReadOnly = restrictedHigh;
++    ReadOnlyCiphertext relinearizedLowReadOnly = relinearizedLow;
++    const auto highPlain =
++        IndependentDecrypt(restrictedHighReadOnly, secretKey);
++    const auto lowPlain = IndependentDecrypt(relinearizedLowReadOnly, secretKey);
++
++    const BigInt qDiv(tensor.GetDivisor().ConvertToInt());
++    const auto activeModuli = tensorPlain.high.moduli;
++    const BigInt qLProduct = tensorPlain.high.modulus;
++    const std::size_t ringDimension = tensorPlain.high.coefficients.size();
++    Check(activeModuli == tensorPlain.low.moduli &&
++              activeModuli == actualPlain.high.moduli &&
++              activeModuli == actualPlain.low.moduli &&
++              activeModuli == highPlain.moduli &&
++              activeModuli == lowPlain.moduli,
++          "Relin2 path oracle bases differ");
++    Check(highPlain.modulus == qLProduct && lowPlain.modulus == qLProduct,
++          "Relin2 path oracle decrypted public paths on the wrong modulus");
++    Check(tensorPlain.low.coefficients.size() == ringDimension &&
++              actualPlain.recombined.size() == ringDimension &&
++              highPlain.coefficients.size() == ringDimension &&
++              lowPlain.coefficients.size() == ringDimension,
++          "Relin2 path oracle coefficient shapes differ");
++
++    // Conditional public-seam identity for this exact execution:
++    //   err(RCB(Relin2(T))) = err(Rel_{Q_l*q_div}(q_div*T_hat)|Q_l)
++    //                         + err(Rel_{Q_l}(T_check)).
++    // The expected errors come from two independently constructed ordinary
++    // Relinearize paths. Production DCP and RCB are not used to construct them.
++    BigInt highPathError = 0;
++    BigInt lowPathError = 0;
++    BigInt pairPathError = 0;
++    std::vector<BigInt> predictedPairErrors(ringDimension);
++    for (std::size_t coefficient = 0;
++         coefficient < ringDimension; ++coefficient) {
++        const BigInt highSource = Center(
++            qDiv * tensorPlain.high.coefficients[coefficient], qLProduct);
++        const BigInt highError = Center(
++            highPlain.coefficients[coefficient] - highSource, qLProduct);
++        const BigInt lowError = Center(
++            lowPlain.coefficients[coefficient] -
++                tensorPlain.low.coefficients[coefficient],
++            qLProduct);
++        const BigInt predictedPairError =
++            Center(highError + lowError, qLProduct);
++        const BigInt actualPairError = Center(
++            actualPlain.recombined[coefficient] -
++                tensorPlain.recombined[coefficient],
++            qLProduct);
++        Check(predictedPairError == actualPairError,
++              "Relin2 pair error differs from independent high + low paths at coefficient " +
++                  std::to_string(coefficient));
++        highPathError = Max(highPathError, Abs(highError));
++        lowPathError = Max(lowPathError, Abs(lowError));
++        pairPathError = Max(pairPathError, Abs(predictedPairError));
++        predictedPairErrors[coefficient] = predictedPairError;
++    }
++
++    const BigInt triangleBound = highPathError + lowPathError;
++    Check(pairPathError <= triangleBound,
++          "Relin2 execution path errors violate their triangle bound");
++    return {highPathError, lowPathError, triangleBound,
++            std::move(predictedPairErrors)};
++}
++
+ BigInt MaximumAbsolute(const std::vector<BigInt>& values) {
+     BigInt result = 0;
+     for (const auto& value : values) {
+@@ -643,6 +785,11 @@ struct ArithmeticCertificate {
+     BigInt mLow;
+     BigInt empiricalRelinError;
+     BigInt empiricalPairRelinError;
++    BigInt highPathRelinError;
++    BigInt lowPathRelinError;
++    BigInt executionRelin2TriangleBound;
++    BigInt paperAdditivityResidual;
++    bool paperAdditivityExecutionObserved;
+     std::size_t secretHammingWeight;
+     BigInt nonWrapLeft;
+     BigInt empiricalBoundNumerator;
+@@ -695,12 +842,15 @@ ArithmeticCertificate CheckIndependentArithmetic(
+             MaximumAbsolute(rightPlain.low.coefficients)),
+         BigInt(0));
+     const std::size_t hammingWeight = SecretHammingWeight(secretKey);
++    const auto pathCertificate = CheckRelin2PathIdentity(
++        tensor, tensorPlain, relinPlain, secretKey, context);
+ 
+     Check(tensorPlain.recombined.size() == relinPlain.recombined.size() &&
+               tensorPlain.recombined.size() == standardRelinPlain.coefficients.size(),
+           "Tensor/Relin plaintext coefficient shape mismatch");
+     BigInt empiricalRelinError = 0;
+     BigInt empiricalPairRelinError = 0;
++    BigInt paperAdditivityResidual = 0;
+     for (std::size_t coefficient = 0; coefficient < tensorPlain.recombined.size(); ++coefficient) {
+         const BigInt standardDifference = Center(
+             standardRelinPlain.coefficients[coefficient] -
+@@ -710,7 +860,12 @@ ArithmeticCertificate CheckIndependentArithmetic(
+         const BigInt pairDifference = Center(
+             relinPlain.recombined[coefficient] - tensorPlain.recombined[coefficient],
+             qLProduct);
++        Check(pairDifference == pathCertificate.predictedPairErrors[coefficient],
++              "Relin2 pair error changed after the independent path oracle");
+         empiricalPairRelinError = Max(empiricalPairRelinError, Abs(pairDifference));
++        paperAdditivityResidual = Max(
++            paperAdditivityResidual,
++            Abs(Center(pairDifference - standardDifference, qLProduct)));
+     }
+ 
+     const std::size_t ringDimension = leftPlain.recombined.size();
+@@ -724,6 +879,12 @@ ArithmeticCertificate CheckIndependentArithmetic(
+               << " q_div=" << qDiv << " q_l=" << qL
+               << " empirical_E_Relin=" << empiricalRelinError
+               << " empirical_pair_relin_error=" << empiricalPairRelinError
++              << " high_path_relin_error=" << pathCertificate.highPathError
++              << " low_path_relin_error=" << pathCertificate.lowPathError
++              << " execution_relin2_triangle_bound=" << pathCertificate.triangleBound
++              << " paper_additivity_residual=" << paperAdditivityResidual
++              << " paper_additivity_execution_observed="
++              << (paperAdditivityResidual <= h ? "true" : "false")
+               << " secret_h=" << hammingWeight
+               << " input_Q_l=" << qLProduct
+               << " oracle_basis_agreement=true\n";
+@@ -775,6 +936,11 @@ ArithmeticCertificate CheckIndependentArithmetic(
+             mLow,
+             empiricalRelinError,
+             empiricalPairRelinError,
++            pathCertificate.highPathError,
++            pathCertificate.lowPathError,
++            pathCertificate.triangleBound,
++            paperAdditivityResidual,
++            paperAdditivityResidual <= h,
+             hammingWeight,
+             nonWrapLeft,
+             empiricalBoundNumerator,
+@@ -896,6 +1062,13 @@ void PrintCertificate(const std::string& caseName,
+               << " secret_h=" << arithmetic.secretHammingWeight
+               << " empirical_E_Relin=" << arithmetic.empiricalRelinError
+               << " empirical_pair_relin_error=" << arithmetic.empiricalPairRelinError
++              << " high_path_relin_error=" << arithmetic.highPathRelinError
++              << " low_path_relin_error=" << arithmetic.lowPathRelinError
++              << " execution_relin2_triangle_bound="
++              << arithmetic.executionRelin2TriangleBound
++              << " paper_additivity_residual=" << arithmetic.paperAdditivityResidual
++              << " paper_additivity_execution_observed="
++              << (arithmetic.paperAdditivityExecutionObserved ? "true" : "false")
+               << " conservative_E_Relin_available=false"
+               << " universal_theorem_gate=UNPROVED"
+               << " execution_nonwrap_left=" << arithmetic.nonWrapLeft

@@ -1,0 +1,183 @@
+{
+  "artifactPurpose": "Artifact recovery only; no algorithmic redesign or integration authority",
+  "artifactStatus": "RECONSTRUCTED",
+  "claimBoundary": {
+    "doesNotSupport": [
+      "production codec",
+      "Mult2 precision",
+      "repeated multiplication",
+      "refresh",
+      "Table 3 reproduction",
+      "security",
+      "performance",
+      "100-bit slot information"
+    ],
+    "futureFocusedGreenMaySupport": "Only the frozen DCP-to-RCB diagnostic precision behavior on each executed host.",
+    "separateFunctionalSuite": "User reports a different current combined implementation at 53/53 on each host; its source was not used here and its functional result is not precision evidence."
+  },
+  "continuity": {
+    "aggregateEqualsSequentialGreen": true,
+    "finalCopiesEqualSequentialGreen": true,
+    "frozenRedGreenHashes": {
+      "CMakeLists.txt": "7daa3e85267dd1c52bc8c0ead56fc4cba58717968d6d66f9c2ab980a576d5cfc",
+      "tests/precision_dcp_rcb_contract_test.cpp": "137612719a57f36316ee4a89d5c971300524ac9c6924c1513b1e57baeefcef01",
+      "tests/precision_dcp_rcb_fixture.h": "4b7b1c4f2670f5dc93e8d28f1ad585a47bb9cf4b81130bb45200a3af82e6b554"
+    },
+    "greenChangedPaths": [
+      "tests/precision_dcp_rcb_fixture.cpp"
+    ],
+    "greenFixtureSha256": "09f1ff5c8f165a5296f3ad62e1bb9a8f41e3450fecaf371d5109c5d96b0f4907",
+    "redChangedPaths": [
+      "CMakeLists.txt",
+      "tests/precision_dcp_rcb_contract_test.cpp",
+      "tests/precision_dcp_rcb_fixture.cpp",
+      "tests/precision_dcp_rcb_fixture.h"
+    ],
+    "redFixtureSha256": "f47a2b2f0446a97b62e77f41c1a1b36d759e07c7eb1b003e2b2b842383e23017"
+  },
+  "delivery": {
+    "cacheFilesIncluded": false,
+    "compiledOutputsIncluded": false,
+    "containsNestedInputArchives": false,
+    "manifest": "MANIFEST.sha256 covers every regular member except itself; MANIFEST.sizes-sha256.tsv covers payload members except both manifest files."
+  },
+  "execution": {
+    "MacOpenFHEOrCrypto": "NOT_EXECUTED",
+    "candidateOpenFHEBuild": "NOT_EXECUTED",
+    "ciDispatch": "NOT_EXECUTED",
+    "cmakeConfigureProbe": "EXECUTED_OPENFHE_NOT_FOUND",
+    "encryptDcpRcbRuntime": "NOT_EXECUTED",
+    "focusedHostedGreen": "NOT_EXECUTED",
+    "focusedHostedRed": "NOT_EXECUTED",
+    "fullCTest": "NOT_EXECUTED",
+    "gitPushOrMerge": "NOT_EXECUTED",
+    "inputArchiveAndManifestVerification": "EXECUTED_PASS",
+    "outputGitleaks": "NOT_EXECUTED_TOOL_UNAVAILABLE",
+    "pythonSourceCompileInMemory": "EXECUTED_PASS",
+    "securityOrPerformance": "NOT_EXECUTED",
+    "standaloneBoostCompileAndRuntime": "EXECUTED_PASS_NON_CRYPTO_ONLY",
+    "staticPatchApplicationAndContinuity": "EXECUTED_PASS"
+  },
+  "finalChangedFiles": [
+    {
+      "bytes": 9189,
+      "path": "final-changed-files/project/CMakeLists.txt",
+      "sha256": "7daa3e85267dd1c52bc8c0ead56fc4cba58717968d6d66f9c2ab980a576d5cfc"
+    },
+    {
+      "bytes": 32595,
+      "path": "final-changed-files/project/tests/precision_dcp_rcb_contract_test.cpp",
+      "sha256": "137612719a57f36316ee4a89d5c971300524ac9c6924c1513b1e57baeefcef01"
+    },
+    {
+      "bytes": 1007,
+      "path": "final-changed-files/project/tests/precision_dcp_rcb_fixture.h",
+      "sha256": "4b7b1c4f2670f5dc93e8d28f1ad585a47bb9cf4b81130bb45200a3af82e6b554"
+    },
+    {
+      "bytes": 10147,
+      "path": "final-changed-files/project/tests/precision_dcp_rcb_fixture.cpp",
+      "sha256": "09f1ff5c8f165a5296f3ad62e1bb9a8f41e3450fecaf371d5109c5d96b0f4907"
+    }
+  ],
+  "frozenContract": {
+    "absoluteTolerance": "2^-80",
+    "batchSize": 16,
+    "ckksDataType": "COMPLEX",
+    "cryptoRandomness": "fresh and intentionally unseeded",
+    "ctestName": "precision_dcp_rcb_high_precision_contract",
+    "expectedDelta": {
+      "imaginary": "2^-73",
+      "real": "2^-70"
+    },
+    "firstModSize": 55,
+    "freshKeyTrialsPerHost": 4,
+    "hosts": [
+      "GitHub Actions Linux GCC",
+      "GitHub Actions Windows MinGW64"
+    ],
+    "keySwitchTechnique": "HYBRID",
+    "minimumActualNonWrapHeadroomBits": 128,
+    "multiplicativeDepth": 7,
+    "noiseScaleDegree": 2,
+    "publicPath": [
+      "CryptoContext::Encrypt",
+      "DoubleCKKS::DCP",
+      "DoubleCKKS::RCB"
+    ],
+    "ringDimension": 64,
+    "scaleBits": 100,
+    "scalingModSize": 50,
+    "scalingTechnique": "FIXEDMANUAL",
+    "secretDistribution": "UNIFORM_TERNARY",
+    "securityLevel": "HEStd_NotSet"
+  },
+  "patches": [
+    {
+      "bytes": 38671,
+      "path": "patches/0001-red-freeze-dcp-rcb-high-precision-contract.patch",
+      "sha256": "1306127c68b5701d7391d8eaabef2233769a01e62f5d9d9afd59670ec3aa7810"
+    },
+    {
+      "bytes": 11678,
+      "path": "patches/0002-green-replace-only-precision-fixture.patch",
+      "sha256": "7ddb9921c7c516bb2153134742fd2ccbb3e1c7e29ea19a17232d598003d6442b"
+    },
+    {
+      "bytes": 47846,
+      "path": "patches/candidate-final.patch",
+      "sha256": "5626d938bb6d979057f73be7ab698f02c507ffb1d0ce9ea66eb9baec771f7bbe"
+    }
+  ],
+  "priorByteRecovery": {
+    "attempted": true,
+    "byteIdentityClaim": false,
+    "reason": "The defective/sanitized prior return and currently mounted prior artifacts contain no patch files or final changed source files.",
+    "succeeded": false
+  },
+  "schema": "precision-delivery-repair-record-v1",
+  "source": {
+    "manifests": {
+      "originalInput": {
+        "declaredPayloads": 51,
+        "verified": true
+      },
+      "outer": {
+        "declaredPayloads": 21,
+        "verified": true
+      },
+      "previousFullContext": {
+        "declaredPayloads": 3,
+        "verified": true
+      },
+      "priorCompleteDesignReturn": {
+        "declaredPayloads": 25,
+        "verified": true
+      },
+      "selectedProject": {
+        "files": 30,
+        "verifiedAgainstIncludedHashSet": true
+      }
+    },
+    "officialOpenFHECommit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+    "officialOpenFHEVersion": "1.5.0",
+    "originalInputArchive": {
+      "bytes": 1025333,
+      "sha256": "10fdc5a5d7327eca2ab03c8b9b5cb3778ca69415179277b8dd3c73495ce6e251"
+    },
+    "outerArchive": {
+      "bytes": 1151735,
+      "sha256": "d36d294976b230a0b769e8b683b58dad45d2b87b1b7800deced6091a32a50a62"
+    },
+    "previousFullContextArchive": {
+      "bytes": 1114585,
+      "sha256": "10f5ee04e6f90047b175ddcf8b7431b4e9c01eb263823f9c80dd9661ab48de93"
+    },
+    "priorCompleteDesignReturnArchive": {
+      "bytes": 83686,
+      "sha256": "4adb4832a47158b010932bc12cd1dc1c9b3790ad52ef68a1dc8d2ae521035cb6"
+    },
+    "proposalBaseline": "bda879104c8a8b1ba6ac9301385b5b1919bef440",
+    "proposalBranch": "codex/mult2-01"
+  }
+}

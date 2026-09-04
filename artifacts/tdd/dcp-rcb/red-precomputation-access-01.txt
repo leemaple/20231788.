@@ -1,0 +1,31 @@
+DCP unchecked precomputation-row access red evidence
+
+Observed: 2026-08-31 19:47 CST (Asia/Shanghai)
+Project commit: 9a81c3cf78f0d7125a1a251f9f4632e7b4711034
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
+Run: https://github.com/leemaple/20231788./actions/runs/33388548297
+Conclusion: expected behavioral safety failure before changing production
+
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
+The strict project build, including the test-only CKKS-RNS parameter subclass,
+completed. That subclass preserves the valid factory context's element parameters,
+technique fields, and FIXEDMANUAL scale while removing only the two outer DCP
+precomputation tables. CTest then reached the unchanged production accessors and
+failed as follows:
+
+  Start 1: dcp_rcb
+  1/1 Test #1: dcp_rcb ..........................***Exception: SegFault  0.18 sec
+  0% tests passed, 1 tests failed out of 1
+  1 - dcp_rcb (SEGFAULT)
+  Process completed with exit code 8.
+
+Pristine OpenFHE 1.5.0 implements both row accessors with unchecked
+`std::vector::operator[]`. The existing production row-length guard therefore
+cannot protect the outer access because it runs only after the reference to row
+zero has already been formed. This red is accepted; no production code changed.

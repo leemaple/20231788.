@@ -1,0 +1,21 @@
+RECONSTRUCTION_STATUS=RECONSTRUCTED
+SELECTED_BASELINE=bda879104c8a8b1ba6ac9301385b5b1919bef440
+TEST_NAME=precision_dcp_rcb_high_precision_contract
+RED_TO_GREEN_POLICY=Only tests/precision_dcp_rcb_fixture.cpp may change.
+
+FROZEN_RED_GREEN_SHA256:
+7daa3e85267dd1c52bc8c0ead56fc4cba58717968d6d66f9c2ab980a576d5cfc  CMakeLists.txt
+137612719a57f36316ee4a89d5c971300524ac9c6924c1513b1e57baeefcef01  tests/precision_dcp_rcb_contract_test.cpp
+4b7b1c4f2670f5dc93e8d28f1ad585a47bb9cf4b81130bb45200a3af82e6b554  tests/precision_dcp_rcb_fixture.h
+
+CHANGING_FIXTURE_SHA256:
+f47a2b2f0446a97b62e77f41c1a1b36d759e07c7eb1b003e2b2b842383e23017  RED tests/precision_dcp_rcb_fixture.cpp
+09f1ff5c8f165a5296f3ad62e1bb9a8f41e3450fecaf371d5109c5d96b0f4907  GREEN tests/precision_dcp_rcb_fixture.cpp
+
+PATCH_SHA256:
+1306127c68b5701d7391d8eaabef2233769a01e62f5d9d9afd59670ec3aa7810  patches/0001-red-freeze-dcp-rcb-high-precision-contract.patch
+7ddb9921c7c516bb2153134742fd2ccbb3e1c7e29ea19a17232d598003d6442b  patches/0002-green-replace-only-precision-fixture.patch
+5626d938bb6d979057f73be7ab698f02c507ffb1d0ce9ea66eb9baec771f7bbe  patches/candidate-final.patch
+
+MECHANICAL_RESULT=PASS
+See PATCH_APPLY_AND_CONTRACT_CHECK.txt for exact-baseline reapplication, changed paths, aggregate equality, final-copy equality, and prohibited-call checks.

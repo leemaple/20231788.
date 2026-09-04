@@ -1,0 +1,68 @@
+RS2 public API contract — retained compile-red evidence
+======================================================
+
+Observed seam
+-------------
+Public `DoubleCKKS::RS2(const CiphertextPair&) const` and terminal lifecycle
+`PairLifecycle::RefreshRequired`.
+
+Project branch: agent/codex-rs2-01
+Red source commit: 75cd77f57890eebfb49b9cc30e61b1a666bdd9f3
+Official OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+GitHub Actions run: https://github.com/leemaple/20231788./actions/runs/33777361966
+Workflow conclusion: failure (intentional API red)
+
+The ordinary warning-clean project build and the pre-existing Relin2 API
+contract completed successfully on both jobs. The explicitly selected RS2 API
+target then failed on both jobs before CTest. Therefore this evidence does not
+claim that the runtime suite ran at the red commit.
+
+Linux runner
+------------
+Environment: ubuntu-24.04, GCC 13.3.0, CMake 3.31.6
+Command:
+
+    cmake --build build --target rs2_api_contract_test --parallel 2
+
+Relevant complete diagnostic, exit 2:
+
+    [ 50%] Built target openfhe_2023_1788
+    [ 75%] Building CXX object CMakeFiles/rs2_api_contract_test.dir/tests/rs2_api_contract_test.cpp.o
+    /home/runner/work/20231788./20231788./tests/rs2_api_contract_test.cpp:13:30: error: ‘RefreshRequired’ is not a member of ‘openfhe_2023_1788::PairLifecycle’
+       13 | static_assert(PairLifecycle::RefreshRequired != PairLifecycle::ReadyForRS2,
+          |                              ^~~~~~~~~~~~~~~
+    /home/runner/work/20231788./20231788./tests/rs2_api_contract_test.cpp:15:52: error: ‘RS2’ is not a member of ‘openfhe_2023_1788::DoubleCKKS’
+       15 | static_assert(std::is_same_v<decltype(&DoubleCKKS::RS2), RS2Signature>,
+          |                                                    ^~~
+    /home/runner/work/20231788./20231788./tests/rs2_api_contract_test.cpp:15:20: error: template argument 1 is invalid
+       15 | static_assert(std::is_same_v<decltype(&DoubleCKKS::RS2), RS2Signature>,
+          |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    gmake[3]: *** [CMakeFiles/rs2_api_contract_test.dir/build.make:79: CMakeFiles/rs2_api_contract_test.dir/tests/rs2_api_contract_test.cpp.o] Error 1
+    gmake[2]: *** [CMakeFiles/Makefile2:229: CMakeFiles/rs2_api_contract_test.dir/all] Error 2
+    gmake[1]: *** [CMakeFiles/Makefile2:236: CMakeFiles/rs2_api_contract_test.dir/rule] Error 2
+    gmake: *** [Makefile:186: rs2_api_contract_test] Error 2
+    Error: Process completed with exit code 2.
+
+Windows runner
+--------------
+Environment: windows-2022, MSYS2 MinGW64, C++17 warning flags include
+`-Wall -Wextra -Wpedantic -Werror`.
+Command:
+
+    cmake --build "$build" --target rs2_api_contract_test --parallel 2
+
+Relevant complete diagnostic, exit 1:
+
+    [1/2] Building CXX object CMakeFiles/rs2_api_contract_test.dir/tests/rs2_api_contract_test.cpp.obj
+    FAILED: [code=1] CMakeFiles/rs2_api_contract_test.dir/tests/rs2_api_contract_test.cpp.obj
+    C:/openfhe-2023-1788/cleanroom/tests/rs2_api_contract_test.cpp:13:30: error: 'RefreshRequired' is not a member of 'openfhe_2023_1788::PairLifecycle'
+       13 | static_assert(PairLifecycle::RefreshRequired != PairLifecycle::ReadyForRS2,
+          |                              ^~~~~~~~~~~~~~~
+    C:/openfhe-2023-1788/cleanroom/tests/rs2_api_contract_test.cpp:15:52: error: 'RS2' is not a member of 'openfhe_2023_1788::DoubleCKKS'
+       15 | static_assert(std::is_same_v<decltype(&DoubleCKKS::RS2), RS2Signature>,
+          |                                                    ^~~
+    C:/openfhe-2023-1788/cleanroom/tests/rs2_api_contract_test.cpp:15:70: error: template argument 1 is invalid
+       15 | static_assert(std::is_same_v<decltype(&DoubleCKKS::RS2), RS2Signature>,
+          |                                                                      ^
+    ninja: build stopped: subcommand failed.
+    Error: Process completed with exit code 1.

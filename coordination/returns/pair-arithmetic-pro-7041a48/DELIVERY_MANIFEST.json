@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "createdAtUtc": "2026-09-04T04:38:35Z",
+  "status": "READY_FOR_CODEX_INTEGRATION",
+  "statusMeaning": "Source candidate and evidence package are ready for hosted compilation and independent review; no build/test/CI pass is claimed.",
+  "input": {
+    "archive": "pair-arithmetic-pro-7041a48.zip",
+    "bytes": 900942,
+    "sha256": "50269f2a0f5198d5f4aee312808097370e6153783f7586cb1e9c0446da133c38",
+    "sourceManifestSha256": "a14252379ac595d22272c7daeff8b88c10e5099dc6e47c6aeb88623cf6b9a054",
+    "taskSha256": "a026b4b2f87a3e7133c998f1e9f375daec8a69f9f0f481af74a14a2e2f7334c8",
+    "sourceCommit": "7041a489ae1afa98b75322ec334543f29f10b738",
+    "targetBranch": "codex/pair-arithmetic-01",
+    "openfheCommit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+    "manifestFiles": 24,
+    "manifestVerification": "PASS"
+  },
+  "candidate": {
+    "localHead": "6cae6e466c62f76dfa158c73ac67391b09c63b9f",
+    "selectedProjectTree": "32e9cf3a5e66c3e87018fe8a344593df24b8bb2a",
+    "selectedBaselineTree": "31ce99fc4944afe5e2e78bd746181348ed5d6cb1",
+    "changedFiles": 9,
+    "insertions": 1790,
+    "deletions": 0,
+    "productionHeaderInsertions": 4,
+    "productionSourceInsertions": 106,
+    "productionDeletions": 0,
+    "existingCodeFix": "none identified or made",
+    "publicSignatures": [
+      "CiphertextPair Add(const CiphertextPair& left, const CiphertextPair& right) const;",
+      "CiphertextPair Sub(const CiphertextPair& left, const CiphertextPair& right) const;"
+    ]
+  },
+  "patches": [
+    {
+      "order": 1,
+      "file": "0001-test-red-add-pair-add-public-api-compile-contract.patch",
+      "bytes": 3187,
+      "sha256": "7907525b87c69c2d72193e508da8b5b4093cf2173051377c5ee294029e829d49",
+      "localContentCommit": "781405c7fae0d0542c266ca665e715fd03724edc",
+      "subject": "test(red): add pair Add public API compile contract",
+      "intendedState": "compile-red",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 2,
+      "file": "0002-feat-green-expose-throwing-pair-add-scaffold.patch",
+      "bytes": 1835,
+      "sha256": "f0da175f03ccc5b76f31c13a065493c4a1eec279213b029fb9426176d124e494",
+      "localContentCommit": "ead2d7aeb951b84bf69176f18dec5014ee2e51dc",
+      "subject": "feat(green): expose throwing pair Add scaffold",
+      "intendedState": "api-scaffold-green",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 3,
+      "file": "0003-test-red-require-executable-pair-add-behavior.patch",
+      "bytes": 6739,
+      "sha256": "e06f4fac46831ad0f9bb5adf7a4c4fa89e892e9f894d609b9d81e1b3ca47db26",
+      "localContentCommit": "57b6682c2d934774f32955e8ac552d2b79344997",
+      "subject": "test(red): require executable pair Add behavior",
+      "intendedState": "runtime-behavioral-red",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 4,
+      "file": "0004-feat-green-implement-minimal-componentwise-pair-add.patch",
+      "bytes": 5934,
+      "sha256": "ab6e33c35fa2266c6d7ea9114b3fdf0cb0b898e22912521b70ddff32c80c5f25",
+      "localContentCommit": "5d471c03fe78ea0146d13364d18f31ead8cb0bea",
+      "subject": "feat(green): implement minimal componentwise pair Add",
+      "intendedState": "minimal-add-green",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 5,
+      "file": "0005-test-red-add-pair-sub-public-api-compile-contract.patch",
+      "bytes": 3306,
+      "sha256": "47f17f1a35dd023f10eb072f92561e65414929cb3a5a17060b2bdfbe5f2cf310",
+      "localContentCommit": "38ce4853b50a90f0a97e34da1dffc89e53288ec0",
+      "subject": "test(red): add pair Sub public API compile contract",
+      "intendedState": "compile-red",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 6,
+      "file": "0006-feat-green-expose-throwing-pair-sub-scaffold.patch",
+      "bytes": 1850,
+      "sha256": "a1f50854519331d8716e7b178c4a86dda86c11a27e9442ff541fd8fc2991a353",
+      "localContentCommit": "0c9297d77ff4d88ee2959da0d4d522223959954e",
+      "subject": "feat(green): expose throwing pair Sub scaffold",
+      "intendedState": "api-scaffold-green",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 7,
+      "file": "0007-test-red-require-executable-pair-sub-behavior.patch",
+      "bytes": 6819,
+      "sha256": "05da9b90886a71ea5f92b808576a7cb400a2ad44498e2757b7546629c7bdd489",
+      "localContentCommit": "7af1a74ce18aea7e50300c9be12daea4079ccdba",
+      "subject": "test(red): require executable pair Sub behavior",
+      "intendedState": "runtime-behavioral-red",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 8,
+      "file": "0008-feat-green-implement-minimal-componentwise-pair-sub.patch",
+      "bytes": 2066,
+      "sha256": "728518d03ffe7e7d53f1fdfe8ae2426f232135d4fab5d5ea70bb5e6617512385",
+      "localContentCommit": "3f19f1732cb9eecf503b19b9bd82bf4d17d91fcc",
+      "subject": "feat(green): implement minimal componentwise pair Sub",
+      "intendedState": "minimal-sub-green",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 9,
+      "file": "0009-test-add-independent-crt-and-rcb-pair-arithmetic-oracle.patch",
+      "bytes": 40419,
+      "sha256": "ebe71ccb16d58c15b5492d80c69e38a12be8a6b62495700aab89c1b24bc1217f",
+      "localContentCommit": "5ae1434f253e7e21918e287d7d2a05c98516e126",
+      "subject": "test: add independent CRT and RCB pair-arithmetic oracle",
+      "intendedState": "independent-oracle-coverage",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 10,
+      "file": "0010-test-cover-all-pair-lifecycles-and-evaluation-key-independence.patch",
+      "bytes": 22150,
+      "sha256": "5a478f9ca2facea49bc4eda18dad873bf771a0c18bc067e036f3d936631de15c",
+      "localContentCommit": "bea060ebc6cc230af6e2c2fc9f8a881c46137efc",
+      "subject": "test: cover all pair lifecycles and evaluation-key independence",
+      "intendedState": "lifecycle-key-independence-coverage",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 11,
+      "file": "0011-test-reject-incompatible-and-malformed-pair-operands-before-arithmetic.patch",
+      "bytes": 15941,
+      "sha256": "b894acb0b86a934f1f9fb78e6b507b32117e3260018258d6baa86a5143832d43",
+      "localContentCommit": "b26698eddf36beb43fc7352775741495e21b456c",
+      "subject": "test: reject incompatible and malformed pair operands before arithmetic",
+      "intendedState": "negative-validation-coverage",
+      "compileOrRuntimeObserved": false
+    },
+    {
+      "order": 12,
+      "file": "0012-ci-build-pair-arithmetic-api-contracts-on-target-branch.patch",
+      "bytes": 2154,
+      "sha256": "a2675c136669d63e9ad9bac4767511862741a26432336b9b82e50b32a469a95b",
+      "localContentCommit": "6cae6e466c62f76dfa158c73ac67391b09c63b9f",
+      "subject": "ci: build pair arithmetic API contracts on target branch",
+      "intendedState": "ci-wiring",
+      "compileOrRuntimeObserved": false
+    }
+  ],
+  "tests": {
+    "apiTargets": [
+      "pair_add_api_contract_test",
+      "pair_sub_api_contract_test"
+    ],
+    "runtimeExecutables": [
+      "pair_add_test",
+      "pair_sub_test",
+      "pair_arithmetic_test"
+    ],
+    "ctestCases": [
+      "pair_add_runtime_behavior",
+      "pair_sub_runtime_behavior",
+      "pair_arithmetic_controlled_oracle",
+      "pair_arithmetic_public_lifecycles_keyless",
+      "pair_arithmetic_compatibility_rejections"
+    ],
+    "independentOracle": "boost::multiprecision::cpp_int textbook CRT and signed modular reduction",
+    "lifecycles": [
+      "ReadyForFirstMult",
+      "ReadyForRS2",
+      "RefreshRequired"
+    ]
+  },
+  "workflow": {
+    "file": ".github/workflows/dcp-rcb.yml",
+    "pushBranchAdded": "codex/pair-arithmetic-01",
+    "jobs": [
+      "linux-gcc",
+      "windows-mingw64"
+    ],
+    "bothApiTargetsExplicitlyBuiltInBothJobs": true,
+    "dispatched": false
+  },
+  "execution": {
+    "inputHashAndManifest": {
+      "status": "EXECUTED-PASS"
+    },
+    "packetSourceAndPdfInspection": {
+      "status": "EXECUTED"
+    },
+    "patchReplay": {
+      "status": "EXECUTED-PASS",
+      "treeMatch": true
+    },
+    "gitDiffCheck": {
+      "status": "EXECUTED-PASS"
+    },
+    "workflowYamlParse": {
+      "status": "EXECUTED-PASS"
+    },
+    "staticSourceScans": {
+      "status": "EXECUTED-PASS"
+    },
+    "cmakeDependencyProbe": {
+      "status": "EXECUTED-EXPECTED-FAILURE",
+      "reason": "OpenFHEConfig.cmake for OpenFHE 1.5.0 unavailable"
+    },
+    "successfulConfigure": {
+      "status": "NOT-EXECUTED"
+    },
+    "compilation": {
+      "status": "NOT-EXECUTED"
+    },
+    "warningBuild": {
+      "status": "NOT-EXECUTED"
+    },
+    "apiTargetBuilds": {
+      "status": "NOT-EXECUTED"
+    },
+    "runtimeTests": {
+      "status": "NOT-EXECUTED"
+    },
+    "linuxCI": {
+      "status": "NOT-EXECUTED"
+    },
+    "windowsMingw64": {
+      "status": "NOT-EXECUTED"
+    },
+    "githubActions": {
+      "status": "NOT-EXECUTED"
+    }
+  },
+  "nonClaims": [
+    "decoded accuracy",
+    "53-bit or 106-bit precision",
+    "security proof or level",
+    "performance",
+    "Mult2 correctness",
+    "theorem normalization"
+  ],
+  "immutabilityBlindSpot": "No instrumentation of unexposed process-global allocator state, hidden unrelated library caches, data races, or concurrent callers.",
+  "contents": {
+    "patchFiles": 12,
+    "finalProjectFiles": 21,
+    "changedFinalFiles": 9,
+    "checkLogs": 10
+  }
+}

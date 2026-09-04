@@ -1,0 +1,30 @@
+DCP/RCB pair encoding-metadata validation red evidence
+
+Observed: 2026-08-31 20:59 CST (Asia/Shanghai)
+Project commit: dd3a254a2a0505f85267b55dc0e4fab083e69655
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 / GNU C++ 13.3.0
+Run: https://github.com/leemaple/20231788./actions/runs/33394331645
+Conclusion: expected behavioral failure before changing the shared ciphertext validator
+
+Exact workflow commands:
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+  cmake --build build --parallel 2
+  ctest --test-dir build --output-on-failure
+
+The pinned official OpenFHE 1.5.0 dependency was available from cache. The
+clean-room project configured and compiled warning-clean. CTest reached the new
+adversarial pair-storage case and failed against unchanged production code:
+
+  Start 1: dcp_rcb
+  1/1 Test #1: dcp_rcb ..........................***Failed    0.02 sec
+  DCP/RCB test failure: tampered pair encoding metadata did not fail fast
+  0% tests passed, 1 tests failed out of 1
+  Process completed with exit code 8.
+
+This is the intended red. DCP already rejects a non-CKKS input, but the common
+ciphertext validator used by RCB did not verify that either stored pair member
+still carried CKKS packed-encoding metadata. Production was not changed in the
+test commit. The GitHub Node.js action annotation is external metadata, not a
+project compiler warning.

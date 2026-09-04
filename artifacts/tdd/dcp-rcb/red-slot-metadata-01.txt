@@ -1,0 +1,29 @@
+DCP/RCB slot-metadata validation red
+=====================================
+
+Test-only commit:
+d0cbc97190c9cc5be2164c7bcbff82109fd2ca55
+
+GitHub Actions run:
+https://github.com/leemaple/20231788./actions/runs/33404277096
+
+Linux job:
+https://github.com/leemaple/20231788./actions/runs/33404277096/job/99527857566
+
+Observed at 2026-08-31 22:44 Asia/Shanghai via the completed Linux job log.
+The strict project build passed. CTest then produced the intended
+missing-behavior failure:
+
+    1/1 Test #1: dcp_rcb ..........................***Failed    0.02 sec
+    DCP/RCB test failure: tampered pair slot metadata did not fail fast
+    0% tests passed, 1 tests failed out of 1
+    Process completed with exit code 8.
+
+This is the accepted red for the public RCB seam. It shows that a caller can
+alter the CKKS slot-count metadata of stored pair ciphertext state and the
+module reaches RCB arithmetic instead of rejecting the inconsistent pair.
+
+The Windows job was still installing/building its toolchain when this red was
+captured. After the Linux log established the intended missing behavior, the
+run was cancelled to avoid a redundant Windows OpenFHE build. The corresponding
+green commit must run the complete Linux and Windows/MinGW64 workflow.

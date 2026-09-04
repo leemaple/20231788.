@@ -1,0 +1,19 @@
+DCP/RCB Windows/MinGW64 infrastructure attempt 04
+
+Observed: 2026-08-31 21:40 CST (Asia/Shanghai)
+Project commit: 1afd2fdda15a4726e7b66e9b3a0c8fc91a51b9ea
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions windows-2022 / MSYS2 MINGW64
+Run: https://github.com/leemaple/20231788./actions/runs/33398042323
+Conclusion: missing documented toolchain prerequisite; no Windows compile or test claim
+
+CMake selected its default `Unix Makefiles` generator as intended, then stopped
+because the MSYS `make` program was not installed:
+
+  CMake was unable to find a build program corresponding to "Unix Makefiles".
+  CMAKE_MAKE_PROGRAM is not set.
+
+OpenFHE 1.5.0's official Windows instructions explicitly install `make` in
+addition to the MinGW64 GCC and CMake packages. The next attempt adds that single
+documented prerequisite. Exact checkout, source-cleanliness validation, and the
+parallel Linux green result all succeeded in this run.

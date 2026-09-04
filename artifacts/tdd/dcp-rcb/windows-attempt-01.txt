@@ -1,0 +1,26 @@
+DCP/RCB Windows/MinGW64 infrastructure attempt 01
+
+Observed: 2026-08-31 21:18 CST (Asia/Shanghai)
+Project commit: 1a587a4dd952daf720928f43b35ea399cf2e8767
+OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions windows-2022
+Run: https://github.com/leemaple/20231788./actions/runs/33396112639
+Conclusion: infrastructure failure before source checkout; no Windows compile or test claim
+
+The repository name ends with a literal period. GitHub constructed the default
+Windows workspace as:
+
+  D:\a\20231788.\20231788.
+
+Windows path normalization cannot materialize that directory. The first
+`actions/checkout@v4` step therefore stopped immediately with:
+
+  Directory 'D:\a\20231788.\20231788.' does not exist
+
+Every later Windows step was skipped. This attempt did not configure or compile
+OpenFHE or the clean-room project and is not an algorithm red. The Linux job in
+the same run configured the project, built warning-clean, and passed 1/1 CTest.
+
+The next infrastructure attempt will avoid the invalid default workspace by
+checking out the exact public project and OpenFHE commits into an explicit clean
+Windows path whose components do not end in periods.

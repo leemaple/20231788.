@@ -1,0 +1,40 @@
+DCP/RCB first meaningful red evidence
+
+Observed: 2026-08-31 18:12 CST (Asia/Shanghai)
+Project commit under test: f60c84b08e0a9012169b9e5bf02b5682bebf615c
+OpenFHE source commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Runner: GitHub Actions ubuntu-24.04 (Ubuntu 24.04.4 LTS), GNU C++ 13.3.0
+Workflow run: https://github.com/leemaple/20231788./actions/runs/33381128212
+Workflow job: linux-gcc
+Command: cmake --build build --parallel 2
+Exit code: 2
+
+Preconditions observed before the red point:
+
+- The clean-room source checkout resolved exactly to the project commit above.
+- The separate OpenFHE checkout resolved exactly to the official commit above and was clean.
+- Pristine OpenFHE configured, built, and installed successfully.
+- The clean-room project configured successfully against that install.
+- No production DCP/RCB header or implementation existed.
+
+Complete relevant failed-step output:
+
+Run cmake --build build --parallel 2
+  cmake --build build --parallel 2
+  shell: /usr/bin/bash -e {0}
+  env:
+    OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+    OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+[ 50%] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o
+/home/runner/work/20231788./20231788./tests/dcp_rcb_test.cpp:2:10: fatal error: openfhe_2023_1788/double_ckks.h: No such file or directory
+    2 | #include "openfhe_2023_1788/double_ckks.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[2]: *** [CMakeFiles/dcp_rcb_test.dir/build.make:79: CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:87: CMakeFiles/dcp_rcb_test.dir/all] Error 2
+gmake: *** [Makefile:101: all] Error 2
+Process completed with exit code 2.
+
+Red classification:
+
+This is the permitted compile-time red for the first public-interface slice. It fails exactly because the independently authored test names the agreed DCP/RCB module seam before production behavior exists. The test oracle and assertions must remain unchanged while adding the smallest production header/source that can make this command and the subsequent CTest command green.
