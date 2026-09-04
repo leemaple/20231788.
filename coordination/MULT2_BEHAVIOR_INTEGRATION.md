@@ -69,3 +69,14 @@ tolerance; do not tune them to fit results. Add verbose focused hosted output
 for numerical certificates before claiming measured error values. The returned
 oracle has NOT yet been integrated or executed. Add/Sub Pro task and RS2 Pro
 follow-up remain live; no duplicate task submission or interruption occurred.
+## Windows terminal green verified 2026-09-04 13:04 CST
+
+Run33838399740, exact source59143025e0b6a64c94ec099e43dabbd059ddeb4f,
+Windows job100915498888 completed success:40/40 tests,1.02s. Warning-clean
+project and all three explicit Relin2/RS2/Mult2 API targets passed. Both
+platforms have now demonstrated behavior red then minimal-composition green.
+The terminal Windows project sections are in artifacts/tdd/mult2-behavior/
+green-windows.txt. This supersedes the earlier in-progress observations, not
+their history. Successful CTest stdout was not verbose: no exact measured
+slot-error value is claimed from this run. The independent coefficient oracle
+is under Codex inspection and is not yet integrated/executed.
