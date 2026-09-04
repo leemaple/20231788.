@@ -67,6 +67,9 @@ target_link_libraries(relin2_test PRIVATE openfhe_2023_1788)
 add_executable(rs2_test tests/rs2_test.cpp)
 target_link_libraries(rs2_test PRIVATE openfhe_2023_1788)
 
+add_executable(mult2_test tests/mult2_test.cpp)
+target_link_libraries(mult2_test PRIVATE openfhe_2023_1788)
+
 if(MSVC)
     target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
     target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
@@ -77,6 +80,7 @@ if(MSVC)
     target_compile_options(tensor2_test PRIVATE /W4 /WX)
     target_compile_options(relin2_test PRIVATE /W4 /WX)
     target_compile_options(rs2_test PRIVATE /W4 /WX)
+    target_compile_options(mult2_test PRIVATE /W4 /WX)
 else()
     target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
@@ -87,6 +91,7 @@ else()
     target_compile_options(tensor2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(relin2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(rs2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(mult2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
 enable_testing()
@@ -130,3 +135,5 @@ add_test(NAME relin2_tensor2_requires_first_lifecycle COMMAND relin2_test tensor
 add_test(NAME rs2_wrong_lifecycle COMMAND rs2_test wrong_lifecycle)
 add_test(NAME rs2_valid_arithmetic_state_immutability
          COMMAND rs2_test valid_arithmetic_state_immutability)
+
+add_test(NAME mult2_composition_contract COMMAND mult2_test composition_contract)
