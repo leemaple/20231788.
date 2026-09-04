@@ -1,0 +1,109 @@
+# RS2 declared-basis Windows red confirmation
+
+Source: f8e976099f9bff5d1597b48c978c556e00c07652
+Run: https://github.com/leemaple/20231788./actions/runs/33835497108
+Windows2022/MSYS2 MinGW64 job100907050796; pristine OpenFHE1.5.0
+at df495ba2e91739a6dc8f1de254fc5a41155ce504.
+Terminal failure: warning and explicit Relin2/RS2 API builds passed;41/42 tests
+passed;only test42 failed because RS2 accepted mismatched declared/actual bases.
+CTest exit8,1.12s. No crash or unrelated build failure. High fixture stops the
+loop; no independent low red is claimed. Same original job was allowed to finish,
+not restarted. Linux red was retained before the 68d0d98 implementation fix.
+
+2026-09-04T04:12:03.8401427Z Test project C:/openfhe-2023-1788/project-build-33835497108-1
+2026-09-04T04:12:03.8434200Z       Start  1: dcp_rcb
+2026-09-04T04:12:03.9422998Z  1/42 Test  #1: dcp_rcb ......................................   Passed    0.10 sec
+2026-09-04T04:12:03.9457269Z       Start  2: tensor2_valid_arithmetic_immutability
+2026-09-04T04:12:03.9681102Z  2/42 Test  #2: tensor2_valid_arithmetic_immutability ........   Passed    0.02 sec
+2026-09-04T04:12:03.9684801Z       Start  3: tensor2_result_scale_contract
+2026-09-04T04:12:03.9840968Z  3/42 Test  #3: tensor2_result_scale_contract ................   Passed    0.02 sec
+2026-09-04T04:12:03.9844379Z       Start  4: tensor2_right_input_validation
+2026-09-04T04:12:03.9981825Z  4/42 Test  #4: tensor2_right_input_validation ...............   Passed    0.01 sec
+2026-09-04T04:12:03.9984946Z       Start  5: tensor2_mutual_compatibility
+2026-09-04T04:12:04.0126021Z  5/42 Test  #5: tensor2_mutual_compatibility .................   Passed    0.01 sec
+2026-09-04T04:12:04.0129584Z       Start  6: tensor2_prearithmetic_key_compatibility
+2026-09-04T04:12:04.0284239Z  6/42 Test  #6: tensor2_prearithmetic_key_compatibility ......   Passed    0.02 sec
+2026-09-04T04:12:04.0287619Z       Start  7: relin2_tensor_validation_order
+2026-09-04T04:12:04.0853412Z  7/42 Test  #7: relin2_tensor_validation_order ...............   Passed    0.06 sec
+2026-09-04T04:12:04.0858102Z       Start  8: relin2_insufficient_active_basis
+2026-09-04T04:12:04.1033729Z  8/42 Test  #8: relin2_insufficient_active_basis .............   Passed    0.02 sec
+2026-09-04T04:12:04.1038057Z       Start  9: relin2_missing_eval_key
+2026-09-04T04:12:04.1195593Z  9/42 Test  #9: relin2_missing_eval_key ......................   Passed    0.02 sec
+2026-09-04T04:12:04.1199412Z       Start 10: relin2_key_empty
+2026-09-04T04:12:04.1362359Z 10/42 Test #10: relin2_key_empty .............................   Passed    0.02 sec
+2026-09-04T04:12:04.1366560Z       Start 11: relin2_key_null_first
+2026-09-04T04:12:04.1524810Z 11/42 Test #11: relin2_key_null_first ........................   Passed    0.02 sec
+2026-09-04T04:12:04.1529395Z       Start 12: relin2_key_wrong_context
+2026-09-04T04:12:04.1711825Z 12/42 Test #12: relin2_key_wrong_context .....................   Passed    0.02 sec
+2026-09-04T04:12:04.1715189Z       Start 13: relin2_key_wrong_tag
+2026-09-04T04:12:04.1868835Z 13/42 Test #13: relin2_key_wrong_tag .........................   Passed    0.01 sec
+2026-09-04T04:12:04.1872230Z       Start 14: relin2_key_wrong_subtype
+2026-09-04T04:12:04.2079223Z 14/42 Test #14: relin2_key_wrong_subtype .....................   Passed    0.02 sec
+2026-09-04T04:12:04.2082639Z       Start 15: relin2_key_hybrid_a_length
+2026-09-04T04:12:04.2242094Z 15/42 Test #15: relin2_key_hybrid_a_length ...................   Passed    0.02 sec
+2026-09-04T04:12:04.2243809Z       Start 16: relin2_key_hybrid_b_length
+2026-09-04T04:12:04.2397249Z 16/42 Test #16: relin2_key_hybrid_b_length ...................   Passed    0.01 sec
+2026-09-04T04:12:04.2400649Z       Start 17: relin2_key_hybrid_entry_basis
+2026-09-04T04:12:04.2612250Z 17/42 Test #17: relin2_key_hybrid_entry_basis ................   Passed    0.02 sec
+2026-09-04T04:12:04.2615985Z       Start 18: relin2_key_hybrid_entry_format
+2026-09-04T04:12:04.2837331Z 18/42 Test #18: relin2_key_hybrid_entry_format ...............   Passed    0.02 sec
+2026-09-04T04:12:04.2840848Z       Start 19: relin2_key_bv_zero_digit_a_length
+2026-09-04T04:12:04.3019289Z 19/42 Test #19: relin2_key_bv_zero_digit_a_length ............   Passed    0.02 sec
+2026-09-04T04:12:04.3023465Z       Start 20: relin2_key_bv_zero_digit_b_length
+2026-09-04T04:12:04.3204363Z 20/42 Test #20: relin2_key_bv_zero_digit_b_length ............   Passed    0.02 sec
+2026-09-04T04:12:04.3207872Z       Start 21: relin2_key_bv_nonzero_digit_a_length
+2026-09-04T04:12:04.3443535Z 21/42 Test #21: relin2_key_bv_nonzero_digit_a_length .........   Passed    0.02 sec
+2026-09-04T04:12:04.3447094Z       Start 22: relin2_key_bv_nonzero_digit_b_length
+2026-09-04T04:12:04.3682705Z 22/42 Test #22: relin2_key_bv_nonzero_digit_b_length .........   Passed    0.02 sec
+2026-09-04T04:12:04.3686217Z       Start 23: relin2_key_bv_zero_digit_entry_basis
+2026-09-04T04:12:04.3869208Z 23/42 Test #23: relin2_key_bv_zero_digit_entry_basis .........   Passed    0.02 sec
+2026-09-04T04:12:04.3872767Z       Start 24: relin2_key_bv_nonzero_digit_entry_basis
+2026-09-04T04:12:04.4110598Z 24/42 Test #24: relin2_key_bv_nonzero_digit_entry_basis ......   Passed    0.02 sec
+2026-09-04T04:12:04.4114134Z       Start 25: relin2_key_bv_zero_digit_entry_format
+2026-09-04T04:12:04.4297974Z 25/42 Test #25: relin2_key_bv_zero_digit_entry_format ........   Passed    0.02 sec
+2026-09-04T04:12:04.4302225Z       Start 26: relin2_key_bv_nonzero_digit_entry_format
+2026-09-04T04:12:04.4557291Z 26/42 Test #26: relin2_key_bv_nonzero_digit_entry_format .....   Passed    0.03 sec
+2026-09-04T04:12:04.4562262Z       Start 27: relin2_valid_arithmetic_state_immutability
+2026-09-04T04:12:04.4975391Z 27/42 Test #27: relin2_valid_arithmetic_state_immutability ...   Passed    0.04 sec
+2026-09-04T04:12:04.4979328Z       Start 28: relin2_controlled_witnesses_and_boundaries
+2026-09-04T04:12:04.5303705Z 28/42 Test #28: relin2_controlled_witnesses_and_boundaries ...   Passed    0.03 sec
+2026-09-04T04:12:04.5307210Z       Start 29: relin2_representative_public_input
+2026-09-04T04:12:04.5725877Z 29/42 Test #29: relin2_representative_public_input ...........   Passed    0.04 sec
+2026-09-04T04:12:04.5730761Z       Start 30: relin2_key_extra_later_valid
+2026-09-04T04:12:04.6128071Z 30/42 Test #30: relin2_key_extra_later_valid .................   Passed    0.04 sec
+2026-09-04T04:12:04.6131840Z       Start 31: relin2_key_malformed_later_ignored
+2026-09-04T04:12:04.6524553Z 31/42 Test #31: relin2_key_malformed_later_ignored ...........   Passed    0.04 sec
+2026-09-04T04:12:04.6528328Z       Start 32: relin2_hybrid_valid_shapes
+2026-09-04T04:12:04.6921268Z 32/42 Test #32: relin2_hybrid_valid_shapes ...................   Passed    0.04 sec
+2026-09-04T04:12:04.6924835Z       Start 33: relin2_bv_zero_digit_valid_shapes
+2026-09-04T04:12:04.7243178Z 33/42 Test #33: relin2_bv_zero_digit_valid_shapes ............   Passed    0.03 sec
+2026-09-04T04:12:04.7246748Z       Start 34: relin2_bv_nonzero_digit_valid_shapes
+2026-09-04T04:12:04.7701324Z 34/42 Test #34: relin2_bv_nonzero_digit_valid_shapes .........   Passed    0.05 sec
+2026-09-04T04:12:04.7705204Z       Start 35: relin2_first_recombined_rcb_validation
+2026-09-04T04:12:04.7841827Z 35/42 Test #35: relin2_first_recombined_rcb_validation .......   Passed    0.01 sec
+2026-09-04T04:12:04.7845389Z       Start 36: relin2_first_recombined_tensor2_validation
+2026-09-04T04:12:04.7985504Z 36/42 Test #36: relin2_first_recombined_tensor2_validation ...   Passed    0.01 sec
+2026-09-04T04:12:04.7988103Z       Start 37: relin2_tensor2_requires_first_lifecycle
+2026-09-04T04:12:04.8220658Z 37/42 Test #37: relin2_tensor2_requires_first_lifecycle ......   Passed    0.02 sec
+2026-09-04T04:12:04.8224602Z       Start 38: rs2_wrong_lifecycle
+2026-09-04T04:12:04.8357797Z 38/42 Test #38: rs2_wrong_lifecycle ..........................   Passed    0.01 sec
+2026-09-04T04:12:04.8361244Z       Start 39: rs2_valid_arithmetic_state_immutability
+2026-09-04T04:12:04.8623067Z 39/42 Test #39: rs2_valid_arithmetic_state_immutability ......   Passed    0.03 sec
+2026-09-04T04:12:04.8626327Z       Start 40: rs2_mixed_tower_format
+2026-09-04T04:12:04.8907310Z 40/42 Test #40: rs2_mixed_tower_format .......................   Passed    0.03 sec
+2026-09-04T04:12:04.8910790Z       Start 41: rs2_untouched_public_pipeline
+2026-09-04T04:12:04.9314388Z 41/42 Test #41: rs2_untouched_public_pipeline ................   Passed    0.04 sec
+2026-09-04T04:12:04.9317982Z       Start 42: rs2_declared_basis_mismatch
+2026-09-04T04:12:04.9552050Z 42/42 Test #42: rs2_declared_basis_mismatch ..................***Failed    0.02 sec
+2026-09-04T04:12:04.9552530Z RS2 test failure: RS2 invalid input did not fail fast
+2026-09-04T04:12:04.9552749Z 
+2026-09-04T04:12:04.9564890Z 
+2026-09-04T04:12:04.9565819Z 98% tests passed, 1 tests failed out of 42
+2026-09-04T04:12:04.9566287Z 
+2026-09-04T04:12:04.9566454Z Total Test time (real) =   1.12 sec
+2026-09-04T04:12:04.9566681Z 
+2026-09-04T04:12:04.9566773Z The following tests FAILED:
+2026-09-04T04:12:04.9595489Z 	 42 - rs2_declared_basis_mismatch (Failed)
+2026-09-04T04:12:04.9603242Z Errors while running CTest
+2026-09-04T04:12:04.9721158Z ##[error]Process completed with exit code 8.
+

@@ -19,7 +19,7 @@ matched. Return directory Gitleaks8.30.1 scan found no secrets.
 
 | Item | Disposition and evidence | Owner |
 | --- | --- | --- |
-| F1: RS2/Tensor2 terminal rejection coverage | Accepted test gap; add explicit RefreshRequired cases with fixture keys removed. Not yet closed. | Codex |
+| F1: RS2/Tensor2 terminal rejection coverage | Coverage authored as `b5f3d9f5848d7b39e8c3861e9a10d37a943e8d08`: repeated RS2 and terminal left/right/both Tensor2, fixture keys removed. Run33836142693 pending; not yet closed. | Codex |
 | F2: untouched nonzero pipeline | Closed by `7041a489ae1afa98b75322ec334543f29f10b738`, run33834861766. Both warning/API builds and41/41 tests passed: Linux0.56s, Windows1.24s. New case runs HYBRID and BV0 genuine complex pipelines without coefficient replacement and without an evaluation key during RS2/RCB. Full result sections in `artifacts/tdd/rs2-public-pipeline/green.txt`. This is RS2 coefficient/state evidence, not decoded product accuracy. | Codex |
 | F3: deep parameter/format immutability | Accepted. Clone/shared parameter identity is insufficient; extend value snapshots. Not a demonstrated production mutation. | Codex |
 | F4: shallow key-cache comparison | Accepted. Empty own-key cache now proves key independence for the new public case; deep retained-cache object invariance is still not proven by pointer equality. | Codex |
@@ -42,9 +42,19 @@ New public RS2 red test committed as `f8e976099f9bff5d1597b48c978c556e00c07652`.
 Run33835497108, Linux job100907050619: warning/API builds passed;41/42 tests passed;
 only `rs2_declared_basis_mismatch` failed with `RS2 invalid input did not fail fast`.
 The malformed high-member input was accepted. This is a demonstrated validation
-defect, not merely a coverage gap. Windows observation and minimal fix remain
-pending. The red loop stops on the high member, so no independent low-member red
-is claimed. Do not treat the earlier PASS_WITH_GAPS as acceptance of this defect.
+defect, not merely a coverage gap. Windows job100907050796 subsequently confirmed
+the same failure:41/42, CTest exit8,1.12s. Both red logs are retained in
+`artifacts/tdd/rs2-declared-basis/`. The red loop stops on the high member, so no
+independent low-member red is claimed. Do not treat the earlier PASS_WITH_GAPS as
+acceptance of this defect.
+
+Minimal fix `68d0d985d3c17b7b3d1095f9142e38c0937544ad` constructs the expected
+active prefix by copying pristine full parameters and dropping only the consumed
+parameter suffix, then compares each declared parameter basis before arithmetic.
+The prior per-tower diagnostics are preserved. Run33835813969: Linux passed;
+Windows pending at this checkpoint. This does not claim exhaustive null-child
+parameter corruption or deep immutability coverage. Source review follow-up is
+still required for this validation addition.
 
 The external review is preserved exactly, including minor inaccuracies: its scale
 table reuses p for both30 and2^30, so the RS2 recorded scale must be read as
