@@ -435,12 +435,24 @@ void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
     if (pair.componentCount_ != 2 || pair.format_ != Format::EVALUATION) {
         Invalid("pair shape or format is invalid");
     }
-    if (pair.level_ != 1) {
-        Invalid("pair level is outside the supported context basis");
-    }
 
-    if (!SameOrderedModuli(pair.orderedModuli_, firstPairModuli_)) {
-        Invalid("pair ordered RNS basis does not match its level");
+    std::vector<lbcrypto::NativeInteger> refreshModuli;
+    if (pair.lifecycle_ == PairLifecycle::RefreshRequired) {
+        if (pair.level_ != 2) {
+            Invalid("pair level is outside the supported context basis");
+        }
+        refreshModuli.assign(firstPairModuli_.begin(), firstPairModuli_.end() - 1);
+        if (!SameOrderedModuli(pair.orderedModuli_, refreshModuli)) {
+            Invalid("pair ordered RNS basis does not match its level");
+        }
+    }
+    else {
+        if (pair.level_ != 1) {
+            Invalid("pair level is outside the supported context basis");
+        }
+        if (!SameOrderedModuli(pair.orderedModuli_, firstPairModuli_)) {
+            Invalid("pair ordered RNS basis does not match its level");
+        }
     }
 
     double expectedRecordedScalingFactor = 0.0;
@@ -469,6 +481,50 @@ void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
             expectedRecombinedLogicalScalingFactor =
                 static_cast<long double>(expectedInputScalingFactor_) *
                 static_cast<long double>(expectedInputScalingFactor_) / divisor;
+            break;
+        }
+        case PairLifecycle::RefreshRequired: {
+            const lbcrypto::NativeInteger qL = firstPairModuli_.back();
+            if (qL.Mod(lbcrypto::NativeInteger(2)) != lbcrypto::NativeInteger(1)) {
+                Invalid("the last active Q tower used as q_l must be odd");
+            }
+            if (qL == divisor_) {
+                Invalid("q_l must remain distinct from q_div");
+            }
+
+            const std::size_t modReduceFactorIndex = firstPairModuli_.size() - 1;
+            const auto& fullTowerParameters = parameters_->GetElementParams()->GetParams();
+            if (modReduceFactorIndex >= fullTowerParameters.size() ||
+                !fullTowerParameters[modReduceFactorIndex] ||
+                fullTowerParameters[modReduceFactorIndex]->GetModulus() != qL) {
+                Invalid("q_l does not match the OpenFHE mod-reduce factor index");
+            }
+            if (fullTowerParameters.empty() || !fullTowerParameters.back() ||
+                fullTowerParameters.back()->GetModulus() != divisor_) {
+                Invalid("q_div does not match the final full-basis tower");
+            }
+            const double recordedFactorDivisor = parameters_->GetModReduceFactor(modReduceFactorIndex);
+            if (!std::isfinite(recordedFactorDivisor) || recordedFactorDivisor <= 0.0) {
+                Invalid("the OpenFHE mod-reduce factor is invalid");
+            }
+
+            const double baseScalingFactor = parameters_->GetScalingFactorReal(0);
+            const double readyForRs2RecordedScalingFactor =
+                expectedInputScalingFactor_ * expectedInputScalingFactor_ / baseScalingFactor;
+            expectedRecordedScalingFactor =
+                readyForRs2RecordedScalingFactor / recordedFactorDivisor;
+            expectedNoiseScaleDegree = 2;
+
+            const long double divisor = static_cast<long double>(divisor_.ConvertToInt());
+            const long double qLAsLongDouble = static_cast<long double>(qL.ConvertToInt());
+            const long double inputHighScalingFactor =
+                static_cast<long double>(expectedInputScalingFactor_) / divisor;
+            expectedLogicalScalingFactor =
+                inputHighScalingFactor * inputHighScalingFactor / qLAsLongDouble;
+            expectedRecombinedLogicalScalingFactor =
+                static_cast<long double>(expectedInputScalingFactor_) *
+                static_cast<long double>(expectedInputScalingFactor_) /
+                divisor / qLAsLongDouble;
             break;
         }
         default:
@@ -819,7 +875,123 @@ CiphertextPair DoubleCKKS::RS2(const CiphertextPair& relinearized) const {
     if (relinearized.lifecycle_ != PairLifecycle::ReadyForRS2) {
         Invalid("RS2 requires ReadyForRS2 input");
     }
-    throw std::logic_error("DoubleCKKS: RS2 is not implemented");
+
+    const lbcrypto::NativeInteger qDiv = relinearized.divisor_;
+    const lbcrypto::NativeInteger qL = relinearized.orderedModuli_.back();
+    if (qL.Mod(lbcrypto::NativeInteger(2)) != lbcrypto::NativeInteger(1)) {
+        Invalid("the last active Q tower used as q_l must be odd");
+    }
+    if (qL == qDiv) {
+        Invalid("q_l must remain distinct from q_div");
+    }
+
+    const std::size_t modReduceFactorIndex = relinearized.orderedModuli_.size() - 1;
+    const auto& fullTowerParameters = parameters_->GetElementParams()->GetParams();
+    if (modReduceFactorIndex >= fullTowerParameters.size() ||
+        !fullTowerParameters[modReduceFactorIndex] ||
+        fullTowerParameters[modReduceFactorIndex]->GetModulus() != qL) {
+        Invalid("q_l does not match the OpenFHE mod-reduce factor index");
+    }
+    if (fullTowerParameters.empty() || !fullTowerParameters.back() ||
+        fullTowerParameters.back()->GetModulus() != qDiv) {
+        Invalid("q_div does not match the final full-basis tower");
+    }
+    const double recordedFactorDivisor = parameters_->GetModReduceFactor(modReduceFactorIndex);
+    if (!std::isfinite(recordedFactorDivisor) || recordedFactorDivisor <= 0.0) {
+        Invalid("the OpenFHE mod-reduce factor is invalid");
+    }
+
+    std::vector<lbcrypto::NativeInteger> outputModuli(relinearized.orderedModuli_.begin(),
+                                                      relinearized.orderedModuli_.end() - 1);
+    const std::size_t outputLevel = relinearized.level_ + 1;
+    const std::size_t outputNoiseScaleDegree = relinearized.noiseScaleDegree_ - 1;
+    const double outputRecordedScalingFactor =
+        relinearized.recordedScalingFactor_ / recordedFactorDivisor;
+    if (!std::isfinite(outputRecordedScalingFactor) || outputRecordedScalingFactor <= 0.0) {
+        Invalid("the RS2 output recorded scaling factor is invalid");
+    }
+
+    const long double qLAsLongDouble = static_cast<long double>(qL.ConvertToInt());
+    const long double outputHighLogicalScalingFactor =
+        relinearized.paperScale_.approximateLogicalScalingFactor / qLAsLongDouble;
+    const long double outputRecombinedLogicalScalingFactor =
+        relinearized.paperScale_.approximateRecombinedLogicalScalingFactor / qLAsLongDouble;
+    if (!std::isfinite(outputHighLogicalScalingFactor) ||
+        !std::isfinite(outputRecombinedLogicalScalingFactor)) {
+        Invalid("the RS2 output logical scaling factors are invalid");
+    }
+
+    auto highInput = relinearized.high_->Clone();
+    ReadOnlyCiphertext highInputReadOnly = highInput;
+    ValidateCiphertext(highInputReadOnly, relinearized.orderedModuli_, relinearized.level_,
+                       relinearized.noiseScaleDegree_, relinearized.recordedScalingFactor_,
+                       relinearized.keyTag_, relinearized.slots_, 2, "RS2 input", "RS2 high input clone");
+
+    auto recombinedInput = RCB(relinearized);
+    ReadOnlyCiphertext recombinedInputReadOnly = recombinedInput;
+    ValidateCiphertext(recombinedInputReadOnly, relinearized.orderedModuli_, relinearized.level_,
+                       relinearized.noiseScaleDegree_, relinearized.recordedScalingFactor_,
+                       relinearized.keyTag_, relinearized.slots_, 2, "RS2 input",
+                       "RS2 recombined input");
+
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> highInputConst = highInput;
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> recombinedInputConst = recombinedInput;
+    // Definition 4.5 requires these two independently rounded rescale calls.
+    auto rescaledHigh = context_->Rescale(highInputConst);
+    auto rescaledRecombined = context_->Rescale(recombinedInputConst);
+
+    ReadOnlyCiphertext rescaledHighReadOnly = rescaledHigh;
+    ReadOnlyCiphertext rescaledRecombinedReadOnly = rescaledRecombined;
+    ValidateCiphertext(rescaledHighReadOnly, outputModuli, outputLevel, outputNoiseScaleDegree,
+                       outputRecordedScalingFactor, relinearized.keyTag_, relinearized.slots_, 2,
+                       "RS2 output", "RS2 rescaled high");
+    ValidateCiphertext(rescaledRecombinedReadOnly, outputModuli, outputLevel,
+                       outputNoiseScaleDegree, outputRecordedScalingFactor,
+                       relinearized.keyTag_, relinearized.slots_, 2, "RS2 output",
+                       "RS2 rescaled recombined");
+
+    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> rescaledHighConst = rescaledHigh;
+    auto scaledRescaledHigh = context_->EvalMultNoCheck(rescaledHighConst, qDiv);
+    ReadOnlyCiphertext scaledRescaledHighReadOnly = scaledRescaledHigh;
+    ValidateCiphertext(scaledRescaledHighReadOnly, outputModuli, outputLevel,
+                       outputNoiseScaleDegree, outputRecordedScalingFactor,
+                       relinearized.keyTag_, relinearized.slots_, 2, "RS2 output",
+                       "RS2 q_div-scaled high");
+
+    // Both operands were validated in the identical post-rescale state, so a
+    // direct component subtraction cannot trigger hidden level/degree adjustment.
+    auto newLow = rescaledRecombined->Clone();
+    auto& newLowElements = newLow->GetElements();
+    const auto& scaledHighElements = scaledRescaledHigh->GetElements();
+    if (newLowElements.size() != scaledHighElements.size()) {
+        Invalid("RS2 post-rescale component counts do not match");
+    }
+    for (std::size_t index = 0; index < newLowElements.size(); ++index) {
+        const auto& recombinedBasis = newLowElements[index].GetParams();
+        const auto& scaledHighBasis = scaledHighElements[index].GetParams();
+        if (!recombinedBasis || !scaledHighBasis || !(*recombinedBasis == *scaledHighBasis)) {
+            Invalid("RS2 post-rescale subtraction bases do not match");
+        }
+        newLowElements[index] -= scaledHighElements[index];
+    }
+    ReadOnlyCiphertext newLowReadOnly = newLow;
+    ValidateCiphertext(newLowReadOnly, outputModuli, outputLevel, outputNoiseScaleDegree,
+                       outputRecordedScalingFactor, relinearized.keyTag_, relinearized.slots_, 2,
+                       "RS2 output", "RS2 new low");
+
+    PaperScaleDescriptor paperScale{
+        outputRecordedScalingFactor,
+        qDiv,
+        outputHighLogicalScalingFactor,
+        outputRecombinedLogicalScalingFactor,
+    };
+    CiphertextPair result(std::move(rescaledHigh), std::move(newLow), context_.get(), qDiv,
+                          std::move(outputModuli), outputLevel, paperScale,
+                          outputRecordedScalingFactor, outputNoiseScaleDegree,
+                          PairLifecycle::RefreshRequired, relinearized.keyTag_,
+                          relinearized.slots_, Format::EVALUATION, 2);
+    ValidatePair(result);
+    return result;
 }
 
 lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {

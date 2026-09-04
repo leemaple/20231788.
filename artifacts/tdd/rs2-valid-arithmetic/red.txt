@@ -1,0 +1,60 @@
+RS2 valid arithmetic/state behavior — retained red evidence
+============================================================
+
+Public seam: DoubleCKKS::RS2(const CiphertextPair&) const.
+Project branch: agent/codex-rs2-01
+Red source commit: 01d131714cd384733e00c513e299eda6dc6a4bdd
+Official OpenFHE commit: df495ba2e91739a6dc8f1de254fc5a41155ce504
+Run: https://github.com/leemaple/20231788./actions/runs/33817976696
+Workflow conclusion: failure (intentional behavior red)
+
+The new test reaches ReadyForRS2 via public DCP/Tensor2/Relin2 and installs
+deterministic signed coefficient/rounding-boundary fixtures. It requires
+independent cpp_int centered-rescale results for high and q_div*high+low,
+the low correction, a complete RefreshRequired output state, input
+immutability, and exact public RCB identity over the retained prefix.
+The red below proves normal completion is missing; the remaining assertions
+are not reached at this red commit and are not claimed to have passed.
+
+Both platform warning builds (-Wall -Wextra -Wpedantic -Werror) and explicit
+Relin2/RS2 public API target builds succeeded. CTest ran all 39 registrations:
+the 38 inherited tests passed; only the new RS2 behavior failed.
+
+Linux / ubuntu-24.04 / GCC
+Command: ctest --test-dir build --output-on-failure
+Job: 100854221932; CTest exit: 8
+
+2026-09-03T23:33:08.8227261Z       Start 38: rs2_wrong_lifecycle
+2026-09-03T23:33:08.8274804Z 38/39 Test #38: rs2_wrong_lifecycle ..........................   Passed    0.00 sec
+2026-09-03T23:33:08.8276707Z       Start 39: rs2_valid_arithmetic_state_immutability
+2026-09-03T23:33:08.8332288Z 39/39 Test #39: rs2_valid_arithmetic_state_immutability ......***Failed    0.01 sec
+2026-09-03T23:33:08.8332832Z RS2 test failure: DoubleCKKS: RS2 is not implemented
+2026-09-03T23:33:08.8333683Z 
+2026-09-03T23:33:08.8337218Z 
+2026-09-03T23:33:08.8337508Z 97% tests passed, 1 tests failed out of 39
+2026-09-03T23:33:08.8337726Z 
+2026-09-03T23:33:08.8337831Z Total Test time (real) =   0.56 sec
+2026-09-03T23:33:08.8338010Z 
+2026-09-03T23:33:08.8338122Z The following tests FAILED:
+2026-09-03T23:33:08.8339769Z 	 39 - rs2_valid_arithmetic_state_immutability (Failed)
+2026-09-03T23:33:08.8340302Z Errors while running CTest
+
+Windows / windows-2022 / MSYS2 MinGW64
+Command: ctest --test-dir "$build" --output-on-failure
+Job: 100854222059; CTest exit: 8
+
+2026-09-03T23:38:34.4100913Z       Start 38: rs2_wrong_lifecycle
+2026-09-03T23:38:34.4221245Z 38/39 Test #38: rs2_wrong_lifecycle ..........................   Passed    0.01 sec
+2026-09-03T23:38:34.4224795Z       Start 39: rs2_valid_arithmetic_state_immutability
+2026-09-03T23:38:34.4417726Z 39/39 Test #39: rs2_valid_arithmetic_state_immutability ......***Failed    0.02 sec
+2026-09-03T23:38:34.4418221Z RS2 test failure: DoubleCKKS: RS2 is not implemented
+2026-09-03T23:38:34.4418448Z 
+2026-09-03T23:38:34.4431210Z 
+2026-09-03T23:38:34.4431466Z 97% tests passed, 1 tests failed out of 39
+2026-09-03T23:38:34.4431820Z 
+2026-09-03T23:38:34.4431915Z Total Test time (real) =   0.91 sec
+2026-09-03T23:38:34.4432097Z 
+2026-09-03T23:38:34.4432183Z The following tests FAILED:
+2026-09-03T23:38:34.4458441Z 	 39 - rs2_valid_arithmetic_state_immutability (Failed)
+2026-09-03T23:38:34.4471537Z Errors while running CTest
+

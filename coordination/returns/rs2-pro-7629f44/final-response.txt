@@ -1,0 +1,478 @@
+最终结论
+
+READY_FOR_CODEX_INTEGRATION
+
+四个补丁已经按 R1 → G1 → R2 → G2 的严格顺序制作完成，并从附件内项目基线副本逐片执行了静态 git apply --check 和应用重放。最终重放树与规划的 G2 树逐字节一致。
+
+这个结论仅表示：补丁设计、切片边界、独立 oracle 和静态源码审计已经达到可交给 Codex 选择性应用和运行正式红/绿验证的状态。
+它不表示已经编译、运行 CTest、通过 Ubuntu/Windows CI，或者已被项目接受。
+
+一、交付物
+
+完整交付包：
+
+下载 RS2 R1/G1/R2/G2 完整交付 ZIP
+
+交付 ZIP SHA-256：
+
+d0a2dc6f8a0fc1c998af55354ab62b28245a56f0b37bcf1a60b4419449107e65
+
+四个独立补丁：
+
+切片	补丁
+R1	0001-R1-wrong-lifecycle-red.patch
+G1	0002-G1-wrong-lifecycle-green.patch
+R2	0003-R2-valid-rs2-oracle-red.patch
+G2	0004-G2-valid-rs2-green.patch
+
+审计与说明：
+
+README 与应用顺序
+
+源码事实审计
+
+独立 oracle 与测试契约
+
+四片补丁说明
+
+静态验证记录
+
+风险与最终裁决
+
+补丁重放记录
+
+交付文件 SHA-256 清单
+
+最终合并视图也保存在 ZIP 的 final-tree/ 中，包括最终 CMakeLists.txt、src/double_ckks.cpp 和 tests/rs2_test.cpp。
+
+二、附件身份与基线结论
+
+输入 ZIP 实际 SHA-256 为：
+
+e4c04228ac8b3fadc4f4ffd9f7049ebd55dcaf0839647c5ba250772a4958a1e7
+
+已完成：
+
+MANIFEST.sha256 中 20 个文件全部校验通过；
+
+未发现路径穿越条目；
+
+未发现符号链接；
+
+完整读取了根目录 TASK.md；
+
+检查了论文 Definition 4.5/Lemma 4.6；
+
+检查了所附三份 OpenFHE 1.5.0 官方源码；
+
+检查了当前净室头文件、实现、已有测试、CMake、CI 工作流、API compile-red 记录和协调文档。
+
+需要明确的是，ZIP 中没有 .git 对象。因此本轮能够证明的是：
+
+四个补丁以附件中声明为 7629f446517413a3ae65551e7efe51b74fd70f00 的项目字节为父本制作并可顺序重放。
+
+但不能仅凭 ZIP 独立重算并证明这些字节对应那个 Git commit。Codex 应在实际仓库中先执行：
+
+Bash
+git rev-parse HEAD
+git status --short
+
+并确认 HEAD 正是：
+
+7629f446517413a3ae65551e7efe51b74fd70f00
+三、四个小步补丁
+R1：错误生命周期行为红
+
+只修改：
+
+CMakeLists.txt
+tests/rs2_test.cpp
+
+新增 CTest：
+
+rs2_wrong_lifecycle_immutability
+
+对应 selector：
+
+rs2_test wrong_lifecycle_immutability
+
+测试通过真实公共路径构造输入：
+
+fresh degree-two CKKS encryption
+    -> DCP
+    -> ReadyForFirstMult
+
+然后要求 RS2 精确抛出：
+
+std::invalid_argument
+DoubleCKKS: RS2 requires ReadyForRS2 input
+
+同时深度检查：
+
+high/low ciphertext 指针身份；
+
+ciphertext 完整值；
+
+每个 DCRT component；
+
+aggregate/tower 参数身份；
+
+Evaluation 格式；
+
+metadata map 身份；
+
+metadata value 身份和值；
+
+context、divisor、ordered moduli、level；
+
+两类逻辑 scale；
+
+recorded scale、degree、lifecycle；
+
+tag、slots、format 和 component count。
+
+当前起点 scaffold 会抛出 std::logic_error，所以从控制流静态推导的 R1 红诊断是：
+
+RS2 test failure: RS2 wrong-lifecycle guard threw the wrong exception type: DoubleCKKS: RS2 is not implemented
+
+这是预期诊断推导，不是已经运行得到的日志。
+
+G1：错误生命周期行为绿
+
+只修改：
+
+src/double_ckks.cpp
+
+仅增加：
+
+C++
+ValidatePair(relinearized);
+if (relinearized.lifecycle_ != PairLifecycle::ReadyForRS2) {
+    Invalid("RS2 requires ReadyForRS2 input");
+}
+
+之后仍保留：
+
+C++
+throw std::logic_error("DoubleCKKS: RS2 is not implemented");
+
+因此 G1 没有混入任何 RS2 算术。
+
+R2：有效 RS2 算术、状态和不可变性红
+
+只修改：
+
+CMakeLists.txt
+tests/rs2_test.cpp
+
+新增 CTest：
+
+rs2_valid_arithmetic_state_immutability
+
+对应 selector：
+
+rs2_test valid_arithmetic_state_immutability
+
+真实输入路径为：
+
+fresh CKKS encryptions
+    -> DCP
+    -> Tensor2
+    -> official EvalMultKeyGen
+    -> Relin2
+    -> ReadyForRS2
+
+R2 首先在未经系数改造的真实公共流水线对象上执行一次完整 RS2 检查；随后在同一个由公共流水线生成的 pair 上安装确定性边界系数，执行逐 component、逐 tower、逐 coefficient 的精确 oracle 检查。
+
+G1 上预期由正常未完成路径失败：
+
+RS2 unexpected exception: DoubleCKKS: RS2 is not implemented
+
+同样，这是静态推导的预期红，不是执行结果。
+
+G2：有效 RS2 算术和终态绿候选
+
+只修改：
+
+src/double_ckks.cpp
+
+实现严格对应论文 Definition 4.5：
+
+rescaledHigh       = Rescale(high)
+rescaledRecombined = Rescale(q_div * high + low)
+newLow             = rescaledRecombined - q_div * rescaledHigh
+RS2(CT)            = (rescaledHigh, newLow)
+
+G2 中 RS2 主体的静态调用计数为：
+
+context_->Rescale(...)       2
+EvalMultNoCheck(..., qDiv)   1
+RescaleInPlace               0
+EvalSub                      0
+production try              0
+production catch            0
+
+两条输入路径均先与原 pair 隔离：
+
+high 先 Clone()；
+
+recombined 由现有经过验证的 RCB 在独立 clone 上形成。
+
+因此即使附件缺少上游输出型 ModReduce 包装层的具体 clone 实现，原 pair 的不可变性也不依赖该缺失事实。
+
+在手工 DCRT subtraction 前，G2 显式检查：
+
+两个 ciphertext 的 context、basis、level、degree；
+
+recorded scaling factor；
+
+key tag、slots、format；
+
+component count；
+
+每个 component 的 aggregate DCRT basis 完全相等。
+
+随后才执行：
+
+C++
+newLowElements[index] -= scaledHighElements[index];
+四、独立 centered-RS oracle
+
+Oracle 不调用：
+
+DoubleCKKS 私有 helper
+OpenFHE Rescale
+DropLastElementAndScale
+生产 RS2
+
+对每个输入 coefficient，使用 boost::multiprecision::cpp_int：
+
+根据有序 RNS residues 做 textbook CRT；
+
+将输入中心化到：
+
+(-Q_l/2, Q_l/2]
+
+取最后一个 active odd prime q_l，计算：
+
+r = center(x mod q_l)
+r ∈ (-q_l/2, q_l/2]
+
+精确求商：
+
+RS_q_l(x) = (x - r) / q_l
+
+将有符号商独立转换回每个 retained modulus 的 residue。
+
+分别计算：
+
+expectedHigh       = RS_q_l(high)
+expectedRecombined = RS_q_l(q_div*high + low)
+expectedLow        = expectedRecombined - q_div*expectedHigh
+
+检查范围覆盖：
+
+2 个 pair members
+× 2 个 RLWE components
+× 全部 retained towers
+× 全部 ring coefficients
+
+并额外验证：
+
+RCB_q_div(RS2(pair))
+    == centered_RS_q_l(RCB_q_div(pair))
+    mod Q_(l-1)
+确定性边界
+
+覆盖：
+
+0
++1, -1
+±(q_l-1)/2
+±(q_l+1)/2
+上述点的一步邻域
+±Q_l/2 附近的可表示整数
+正负交错的普通系数
+
+所有模数均为奇数，因此没有虚构偶数模数的精确半点 tie。
+
+两个关键 mutation witness
+
+把 q_div 错当成 q_l：
+
+使用：
+
+(min(q_l, q_div) + 1) / 2
+
+使按两个不同质数中心除法所得结果不同。
+
+只做一次 RS 或错误使用 RS(low)：
+
+设置：
+
+high = (q_l + 1) / 2
+recombined = 0
+
+正确结果的 low 包含：
+
+-q_div * RS(high)
+
+它不等于 RS(low)。
+
+测试还会动态确认这些 witness 在 retained composite modulus 下确实区分错误实现，而不是只假设它们有效。
+
+五、精确状态与尺度公式
+
+设输入 active basis 为：
+
+[q0, ..., q_l]
+
+active tower 数为 n，则：
+
+q_l = input.GetOrderedModuli().back()
+factorIndex = n - 1
+f_recorded = parameters->GetModReduceFactor(factorIndex)
+
+输出状态为：
+
+basis_out = [q0, ..., q_(l-1)]
+level_out = level_in + 1 = 2
+degree_out = degree_in - 1 = 2
+componentCount = 2
+format = Evaluation
+lifecycle = RefreshRequired
+q_div 保持不变
+context/tag/slots 保持不变
+
+Recorded OpenFHE scale：
+
+recordedSF_out = recordedSF_in / f_recorded
+
+论文逻辑 high scale：
+
+logicalHigh_out = logicalHigh_in / q_l
+
+论文逻辑 recombined scale：
+
+logicalRecombined_out = logicalRecombined_in / q_l
+
+其中三个量始终分别处理：
+
+q_l          最后一个 active native modulus
+q_div        DCP divisor，已经不在 active basis 中
+f_recorded   OpenFHE GetModReduceFactor 返回的 double
+
+补丁没有假设 f_recorded 在数值上一定与 q_l 相同，也没有把两者混为一个变量。
+
+六、源码事实审计中的关键保留意见
+1. 输出型 Rescale 的 clone 位置未由附件完整证明
+
+附件中的：
+
+official-openfhe/cryptocontext.h:2507-2510
+
+能够证明：
+
+ValidateCiphertext
+-> GetScheme()->ModReduce(...)
+-> 返回结果
+
+但不能单独证明 scheme-level 输出型 ModReduce 在哪里 clone，因为该声明/定义没有包含在三份官方源码中。
+
+G2 通过先复制项目输入路径消除了对该 clone 行为的输入安全依赖，但 Codex 仍应在 pinned OpenFHE commit 中核验对应 wrapper。
+
+2. GetModReduceFactor 的索引已证明，数值生成方式未随包提供
+
+附件中的：
+
+ckksrns-leveledshe.cpp:172-190
+
+明确表明一次 ModReduce 使用：
+
+GetModReduceFactor(sizeQl - 1)
+
+因此本任务的索引就是：
+
+input active tower count - 1
+
+但 GetModReduceFactor 的预计算定义未随包提供，不能额外声称其 double 值必然精确等于 q_l。
+
+3. centered residue 的底层符号细节需要真实源码/执行闭合
+
+dcrtpoly-impl.h:693-712 显示了：
+
+复制最后一塔；
+
+转换为 coefficient；
+
+删除最后一塔；
+
+SwitchModulus 到 retained towers；
+
+使用预计算因子更新 retained residues。
+
+但附件未包含 native polynomial SwitchModulus 实现和相关 CKKS 预计算定义。因此，精确符号/边界约定仍应由 R2 的 first-principles oracle 在真实 pinned OpenFHE 上闭合。
+
+七、必须在实际仓库完成的验收门
+
+当前附件的 CMakeLists.txt 引用了两个未随包提供的文件：
+
+tests/tensor2_api_contract_test.cpp
+tests/relin2_api_contract_test.cpp
+
+所以本轮没有也不能诚实声称对附件执行了完整 CMake configure/build。
+
+在完整实际仓库中应当：
+
+核对 HEAD 与父文件字节；
+
+应用 R1，保留真实红日志；
+
+应用 G1，运行目标测试及全套继承测试；
+
+应用 R2，保留真实 scaffold 红日志；
+
+应用 G2；
+
+在 Ubuntu GCC 和 Windows MinGW64 上运行：
+
+Bash
+cmake --build <build> --parallel 2
+cmake --build <build> --target rs2_api_contract_test --parallel 2
+ctest --test-dir <build> --output-on-failure
+
+并单独运行：
+
+Bash
+ctest --test-dir <build> \
+  -R '^rs2_wrong_lifecycle_immutability$' \
+  --output-on-failure
+
+ctest --test-dir <build> \
+  -R '^rs2_valid_arithmetic_state_immutability$' \
+  --output-on-failure
+
+验收还应实际注入以下错误 mutation，确认 R2 必须失败：
+
+只做一次 Rescale / 使用 RS(low)
+使用 q_div 代替 q_l
+使用错误 GetModReduceFactor 索引
+删除错误 tower
+错误 level/degree/lifecycle
+只修改 metadata 强行对齐
+原地修改输入 pair
+
+在这些真实红/绿和双平台 CI 证据出现前，正确状态是：
+
+静态集成候选
+不是已测试实现
+不是已接受实现
+README.md
+Document
+SOURCE_FACT_AUDIT.md
+Document
+ORACLE_AND_TEST_CONTRACT.md
+Document
+4 more
+
+
