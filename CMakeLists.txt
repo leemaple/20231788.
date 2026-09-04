@@ -126,3 +126,4 @@ add_test(NAME rs2_valid_arithmetic_state_immutability
          COMMAND rs2_test valid_arithmetic_state_immutability)
 add_test(NAME rs2_mixed_tower_format COMMAND rs2_test mixed_tower_format)
 add_test(NAME rs2_untouched_public_pipeline COMMAND rs2_test untouched_public_pipeline)
+add_test(NAME rs2_declared_basis_mismatch COMMAND rs2_test declared_basis_mismatch)

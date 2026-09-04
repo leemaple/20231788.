@@ -726,6 +726,40 @@ void TestUntouchedPublicPipeline() {
     }
 }
 
+void TestDeclaredBasisMismatch() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    context->EvalMultKeyGen(keys.secretKey);
+    const auto plaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25}, 2, 0);
+    DoubleCKKS module(context);
+    const auto left = module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    const auto right = module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    const auto tensor = module.Tensor2(left, right);
+    const auto fullBasis = context->GetCryptoParameters()->GetElementParams();
+
+    for (const bool corruptHigh : {true, false}) {
+        const auto input = module.Relin2(tensor);
+        auto member = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(
+            corruptHigh ? input.GetHigh() : input.GetLow());
+        auto& element = member->GetElements().at(0);
+        // Independent objects: declare the full basis but retain only the valid
+        // active towers. Do not alter shared context or native-tower parameters.
+        DCRTPoly malformed(fullBasis, Format::EVALUATION, true);
+        malformed.GetAllElements() = element.GetAllElements();
+        Check(malformed.GetParams()->GetParams().size() ==
+                  malformed.GetAllElements().size() + 1,
+              "declared-basis fixture did not create the intended inconsistency");
+        element = std::move(malformed);
+        const auto before = SnapshotPair(input, "RS2 declared-basis mismatch input");
+        const std::string memberName = corruptHigh ? "pair high" : "pair low";
+        CheckThrowsInvalidArgument(
+            [&] { (void)module.RS2(input); },
+            "DoubleCKKS: " + memberName + " declared RNS basis mismatch");
+        CheckPairUnchanged(input, before, "RS2 declared-basis input after rejection");
+    }
+    lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
+}
+
 void TestMixedTowerFormat() {
     auto context = MakeContext();
     const auto keys = context->KeyGen();
@@ -775,6 +809,9 @@ int main(int argc, char** argv) {
         }
         else if (name == "untouched_public_pipeline") {
             TestUntouchedPublicPipeline();
+        }
+        else if (name == "declared_basis_mismatch") {
+            TestDeclaredBasisMismatch();
         }
         else {
             throw TestFailure("unknown RS2 case: " + name);
