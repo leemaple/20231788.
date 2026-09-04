@@ -116,6 +116,8 @@ add_test(NAME dcp_rcb COMMAND dcp_rcb_test)
 add_test(NAME pair_add_runtime_behavior COMMAND pair_add_test)
 add_test(NAME pair_sub_runtime_behavior COMMAND pair_sub_test)
 add_test(NAME pair_arithmetic_controlled_oracle COMMAND pair_arithmetic_test controlled_oracle)
+add_test(NAME pair_arithmetic_public_lifecycles_keyless
+         COMMAND pair_arithmetic_test public_lifecycles_keyless)
 add_test(NAME tensor2_valid_arithmetic_immutability COMMAND tensor2_test valid_arithmetic_immutability)
 add_test(NAME tensor2_result_scale_contract COMMAND tensor2_test result_scale_contract)
 add_test(NAME tensor2_right_input_validation COMMAND tensor2_test right_input_validation)

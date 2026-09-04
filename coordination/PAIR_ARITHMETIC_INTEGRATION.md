@@ -202,3 +202,38 @@ coverage, not a new production red-green cycle. It does not cover the unintegrat
 public-lifecycle keyless matrix or malformed-operand matrix, genuine canonical
 precision, repeated multiplication, or merged later-RS2 fixes. Those remain
 explicit next boundaries; no missing coverage is inferred from44 green tests.
+
+## Public lifecycle/keyless regression: first hosted execution pending
+
+Observed2026-09-04. Baseline915e7567cbd409794bd5d3397902ddfb28261d7f was clean.
+Codex read the complete Pro patch0010 and inspected the touched current source,
+agreed Add/Sub/RCB seams, preflight findings and pinned official plaintext
+constructor/context data-type paths. Only this slice is integrated, not the
+later malformed-operand matrix or any production change.
+
+The test prepares untouched encrypted real/complex inputs through public DCP,
+Tensor2, Relin2 and RS2, then exercises Add/Sub/RCB at ReadyForFirstMult,
+ReadyForRS2 and RefreshRequired. It removes only this fixture's EvalMultKey row
+AFTER state preparation and leaves an unrelated genuine BV row. Exact integer/
+CRT checks cover each high/low component and native coefficient; metadata,
+parameter provenance, enumerated context native values and retained key A/B
+native values are snapshotted around the arithmetic window. These are specified
+fields, not every hidden OpenFHE context/parameter/cache field.
+
+Codex's preflight correction selects explicit COMPLEX for the public lifecycle
+context, asserts GetCKKSDataType and checks the literal nonzero0.125 imaginary
+component remains in the constructed plaintext cache before encryption.
+Official ckkspackedencoding.h:89-102 shows the default REAL constructor would
+discard it; cryptocontext.h:1195-1205 permits the real host vector in a complex
+context. This is test-fixture correctness, not a claimed upstream defect.
+The existing controlled REAL fixture remains REAL. The HasNonzeroValue helper
+already integrated with patch09 is kept exactly once, not duplicated.
+
+All prior44 registrations/vectors/thresholds and production Add/Sub code remain
+unchanged; one public_lifecycles_keyless entry brings the proposed suite to45.
+This is additional regression coverage on the retained genuine Add/Sub red-green
+history, not an invented new missing-feature red. First actual hosted result is
+pending; no local compilation/crypto, precision, universal theorem, repeated
+multiplication or merged-branch acceptance is claimed. Owner Codex: preserve
+any actual failure and investigate before changing assertions; otherwise retain
+both-host logs, then proceed to negative contracts and independent final review.

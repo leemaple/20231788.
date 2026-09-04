@@ -4,13 +4,16 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 #include <algorithm>
+#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <typeinfo>
 #include <utility>
 #include <vector>
 
@@ -406,7 +409,8 @@ DCRTPoly MakePolynomial(const std::shared_ptr<DCRTPoly::Params>& params,
 
 CryptoContext<DCRTPoly> MakeContext(
     lbcrypto::KeySwitchTechnique keySwitchTechnique = lbcrypto::HYBRID,
-    std::uint32_t batchSize = 8) {
+    std::uint32_t batchSize = 8,
+    lbcrypto::CKKSDataType dataType = lbcrypto::REAL) {
     lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
     parameters.SetMultiplicativeDepth(3);
     parameters.SetScalingModSize(30);
@@ -417,6 +421,7 @@ CryptoContext<DCRTPoly> MakeContext(
     parameters.SetSecurityLevel(lbcrypto::HEStd_NotSet);
     parameters.SetRingDim(32);
     parameters.SetBatchSize(batchSize);
+    parameters.SetCKKSDataType(dataType);
 
     auto context = lbcrypto::GenCryptoContext(parameters);
     context->Enable(lbcrypto::PKE);
@@ -575,6 +580,42 @@ void CheckRcbOracle(DoubleCKKS& module,
     }
 }
 
+void CheckMemberStructureDerivedFrom(const ReadOnlyCiphertext& result,
+                                     const CiphertextSnapshot& source,
+                                     const std::string& label) {
+    Check(result != nullptr, label + " result is null");
+    Check(result->GetCryptoContext().get() == source.contextIdentity, label + " context changed");
+    Check(result->GetEncodingType() == source.encoding, label + " encoding changed");
+    Check(result->GetLevel() == source.level, label + " level changed");
+    Check(result->GetNoiseScaleDeg() == source.noiseScaleDegree,
+          label + " noise-scale degree changed");
+    Check(result->GetScalingFactor() == source.scalingFactor,
+          label + " recorded scaling factor changed");
+    Check(result->GetKeyTag() == source.keyTag, label + " key tag changed");
+    Check(result->GetSlots() == source.slots, label + " slots changed");
+    Check(result->GetElements().size() == source.elements.size(),
+          label + " component count changed");
+    for (std::size_t component = 0; component < source.elements.size(); ++component) {
+        const auto actual = SnapshotDcrt(result->GetElements().at(component));
+        const auto& expected = source.elements[component];
+        Check(actual.paramsIdentity == expected.paramsIdentity,
+              label + " aggregate parameter provenance changed at component=" +
+                  std::to_string(component));
+        Check(actual.format == expected.format && actual.towers.size() == expected.towers.size(),
+              label + " DCRT structure changed at component=" + std::to_string(component));
+        for (std::size_t tower = 0; tower < expected.towers.size(); ++tower) {
+            const auto& a = actual.towers[tower];
+            const auto& e = expected.towers[tower];
+            Check(a.paramsIdentity == e.paramsIdentity && a.modulus == e.modulus &&
+                      a.root == e.root && a.cyclotomicOrder == e.cyclotomicOrder &&
+                      a.format == e.format,
+                  label + " tower parameter provenance changed at component=" +
+                      std::to_string(component) + ",tower=" + std::to_string(tower));
+        }
+    }
+    CheckMetadataDerivedFrom(result, source.metadata, label);
+}
+
 void CheckResultManifestAndProvenance(const CiphertextPair& result,
                                       const CiphertextPair& left,
                                       const PairSnapshot& leftBefore,
@@ -611,8 +652,10 @@ void CheckResultManifestAndProvenance(const CiphertextPair& result,
     Check(result.GetHigh().get() != rightBefore.high.identity.get(), label + " high aliases right high");
     Check(result.GetLow().get() != rightBefore.low.identity.get(), label + " low aliases right low");
     Check(result.GetHigh().get() != result.GetLow().get(), label + " high and low outputs alias");
-    CheckMetadataDerivedFrom(result.GetHigh(), leftBefore.high.metadata, label + " high");
-    CheckMetadataDerivedFrom(result.GetLow(), leftBefore.low.metadata, label + " low");
+    CheckMemberStructureDerivedFrom(result.GetHigh(), leftBefore.high, label + " high");
+    CheckMemberStructureDerivedFrom(result.GetLow(), leftBefore.low, label + " low");
+    Check(result.GetHigh()->GetMetadataMap().get() != result.GetLow()->GetMetadataMap().get(),
+          label + " high/low metadata maps alias");
 }
 
 bool SameCiphertextElements(const ReadOnlyCiphertext& left, const ReadOnlyCiphertext& right) {
@@ -658,6 +701,292 @@ bool HasNonzeroValue(const ReadOnlyCiphertext& ciphertext) {
         }
     }
     return false;
+}
+
+void TagPairMembers(const CiphertextPair& pair, const std::string& prefix) {
+    auto high = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetHigh());
+    auto low = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(pair.GetLow());
+    Check(high != nullptr && low != nullptr, prefix + " tagging encountered a null pair member");
+    high->SetMetadataByKey(prefix + "-high", std::make_shared<ProbeMetadata>(prefix + "-high-value"));
+    low->SetMetadataByKey(prefix + "-low", std::make_shared<ProbeMetadata>(prefix + "-low-value"));
+}
+
+struct ContextParameterSnapshot {
+    const void* cryptoParametersIdentity;
+    const void* elementParametersIdentity;
+    std::vector<const void*> towerParameterIdentities;
+    std::vector<NativeInteger> moduli;
+    std::vector<NativeInteger> roots;
+    std::vector<std::uint32_t> cyclotomicOrders;
+};
+
+ContextParameterSnapshot SnapshotContextParameters(const CryptoContext<DCRTPoly>& context,
+                                                   const std::string& label) {
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
+    Check(parameters != nullptr, label + " context parameters are not CKKS-RNS");
+    const auto elementParameters = parameters->GetElementParams();
+    Check(elementParameters != nullptr, label + " element parameters are null");
+    ContextParameterSnapshot snapshot{parameters.get(), elementParameters.get(), {}, {}, {}, {}};
+    for (const auto& tower : elementParameters->GetParams()) {
+        Check(tower != nullptr, label + " has a null tower parameter");
+        snapshot.towerParameterIdentities.push_back(tower.get());
+        snapshot.moduli.push_back(tower->GetModulus());
+        snapshot.roots.push_back(tower->GetRootOfUnity());
+        snapshot.cyclotomicOrders.push_back(tower->GetCyclotomicOrder());
+    }
+    return snapshot;
+}
+
+void CheckContextParametersUnchanged(const CryptoContext<DCRTPoly>& context,
+                                     const ContextParameterSnapshot& expected,
+                                     const std::string& label) {
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(context->GetCryptoParameters());
+    Check(parameters != nullptr && parameters.get() == expected.cryptoParametersIdentity,
+          label + " crypto-parameter identity changed");
+    const auto elementParameters = parameters->GetElementParams();
+    Check(elementParameters != nullptr && elementParameters.get() == expected.elementParametersIdentity,
+          label + " element-parameter identity changed");
+    Check(elementParameters->GetParams().size() == expected.moduli.size(),
+          label + " tower-parameter count changed");
+    for (std::size_t tower = 0; tower < expected.moduli.size(); ++tower) {
+        const auto& actual = elementParameters->GetParams().at(tower);
+        Check(actual != nullptr && actual.get() == expected.towerParameterIdentities[tower],
+              label + " tower-parameter identity changed at tower=" + std::to_string(tower));
+        Check(actual->GetModulus() == expected.moduli[tower] &&
+                  actual->GetRootOfUnity() == expected.roots[tower] &&
+                  actual->GetCyclotomicOrder() == expected.cyclotomicOrders[tower],
+              label + " tower-parameter value changed at tower=" + std::to_string(tower));
+    }
+}
+
+using EvalMultKeyMap = std::map<std::string, std::vector<lbcrypto::EvalKey<DCRTPoly>>>;
+
+struct EvalKeyEntrySnapshot {
+    bool isNull;
+    const void* pointerIdentity;
+    const lbcrypto::CryptoContextImpl<DCRTPoly>* contextIdentity;
+    std::string keyTag;
+    std::string concreteType;
+    bool isRelinearizationKey;
+    std::vector<DcrtSnapshot> a;
+    std::vector<DcrtSnapshot> b;
+};
+
+struct EvalKeyCacheSnapshot {
+    const EvalMultKeyMap* mapIdentity;
+    std::map<std::string, const std::vector<lbcrypto::EvalKey<DCRTPoly>>*> rowIdentities;
+    std::map<std::string, std::vector<EvalKeyEntrySnapshot>> rows;
+};
+
+std::vector<DcrtSnapshot> SnapshotDcrtVector(const std::vector<DCRTPoly>& values) {
+    std::vector<DcrtSnapshot> result;
+    result.reserve(values.size());
+    for (const auto& value : values) {
+        result.push_back(SnapshotDcrt(value));
+    }
+    return result;
+}
+
+EvalKeyCacheSnapshot SnapshotEvalKeyCache() {
+    const auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    EvalKeyCacheSnapshot snapshot{&cache, {}, {}};
+    for (const auto& [tag, row] : cache) {
+        snapshot.rowIdentities[tag] = &row;
+        auto& entries = snapshot.rows[tag];
+        entries.reserve(row.size());
+        for (const auto& key : row) {
+            if (!key) {
+                entries.push_back({true, nullptr, nullptr, {}, {}, false, {}, {}});
+                continue;
+            }
+            EvalKeyEntrySnapshot entry{false,
+                                       key.get(),
+                                       key->GetCryptoContext().get(),
+                                       key->GetKeyTag(),
+                                       typeid(*key).name(),
+                                       false,
+                                       {},
+                                       {}};
+            const auto relinearizationKey =
+                std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(key);
+            if (relinearizationKey) {
+                entry.isRelinearizationKey = true;
+                entry.a = SnapshotDcrtVector(relinearizationKey->GetAVector());
+                entry.b = SnapshotDcrtVector(relinearizationKey->GetBVector());
+            }
+            entries.push_back(std::move(entry));
+        }
+    }
+    return snapshot;
+}
+
+void CheckDcrtVectorUnchanged(const std::vector<DCRTPoly>& actual,
+                              const std::vector<DcrtSnapshot>& expected,
+                              const std::string& label) {
+    Check(actual.size() == expected.size(), label + " vector length changed");
+    for (std::size_t index = 0; index < expected.size(); ++index) {
+        Check(SameDcrtValueAndParameters(SnapshotDcrt(actual[index]), expected[index]),
+              label + " changed at index=" + std::to_string(index));
+    }
+}
+
+void CheckEvalKeyCacheUnchanged(const EvalKeyCacheSnapshot& expected,
+                                const std::string& label) {
+    const auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(&cache == expected.mapIdentity, label + " cache map identity changed");
+    Check(cache.size() == expected.rows.size(), label + " cache row count changed");
+    auto actualRow = cache.begin();
+    auto expectedRow = expected.rows.begin();
+    for (; expectedRow != expected.rows.end(); ++expectedRow, ++actualRow) {
+        Check(actualRow != cache.end() && actualRow->first == expectedRow->first,
+              label + " cache row tag changed");
+        Check(&actualRow->second == expected.rowIdentities.at(expectedRow->first),
+              label + " cache row-vector identity changed");
+        Check(actualRow->second.size() == expectedRow->second.size(),
+              label + " cache row length changed");
+        for (std::size_t index = 0; index < expectedRow->second.size(); ++index) {
+            const auto& actual = actualRow->second[index];
+            const auto& entry = expectedRow->second[index];
+            Check((actual == nullptr) == entry.isNull, label + " cache key nullness changed");
+            if (entry.isNull) {
+                continue;
+            }
+            Check(actual.get() == entry.pointerIdentity, label + " cache key identity changed");
+            Check(actual->GetCryptoContext().get() == entry.contextIdentity,
+                  label + " cache key context changed");
+            Check(actual->GetKeyTag() == entry.keyTag, label + " cache key tag changed");
+            Check(typeid(*actual).name() == entry.concreteType,
+                  label + " cache concrete key type changed");
+            const auto relinearizationKey =
+                std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(actual);
+            Check((relinearizationKey != nullptr) == entry.isRelinearizationKey,
+                  label + " cache relinearization-key classification changed");
+            if (relinearizationKey) {
+                CheckDcrtVectorUnchanged(relinearizationKey->GetAVector(), entry.a,
+                                         label + " cache A-vector");
+                CheckDcrtVectorUnchanged(relinearizationKey->GetBVector(), entry.b,
+                                         label + " cache B-vector");
+            }
+        }
+    }
+    Check(actualRow == cache.end(), label + " cache gained trailing rows");
+}
+
+void ExercisePublicLifecycle(DoubleCKKS& module,
+                             const CiphertextPair& left,
+                             const CiphertextPair& right,
+                             PairLifecycle expectedLifecycle,
+                             const EvalKeyCacheSnapshot& keyCache,
+                             const std::string& label) {
+    Check(left.GetLifecycle() == expectedLifecycle && right.GetLifecycle() == expectedLifecycle,
+          label + " fixture lifecycle mismatch");
+    Check(HasNonzeroValue(left.GetHigh()) && HasNonzeroValue(left.GetLow()) &&
+              HasNonzeroValue(right.GetHigh()) && HasNonzeroValue(right.GetLow()),
+          label + " untouched public fixture contains a zero pair member");
+    const auto leftBefore = SnapshotPair(left, label + " left");
+    const auto rightBefore = SnapshotPair(right, label + " right");
+
+    const auto sum = module.Add(left, right);
+    CheckMemberOracle(left.GetHigh(), right.GetHigh(), sum.GetHigh(), ArithmeticKind::Add,
+                      label + " Add high");
+    CheckMemberOracle(left.GetLow(), right.GetLow(), sum.GetLow(), ArithmeticKind::Add,
+                      label + " Add low");
+    CheckRcbOracle(module, left, right, sum, ArithmeticKind::Add, label + " Add");
+    CheckResultManifestAndProvenance(sum, left, leftBefore, rightBefore, label + " Add");
+    CheckEvalKeyCacheUnchanged(keyCache, label + " after Add and RCB");
+
+    const auto difference = module.Sub(left, right);
+    CheckMemberOracle(left.GetHigh(), right.GetHigh(), difference.GetHigh(), ArithmeticKind::Sub,
+                      label + " Sub high");
+    CheckMemberOracle(left.GetLow(), right.GetLow(), difference.GetLow(), ArithmeticKind::Sub,
+                      label + " Sub low");
+    CheckRcbOracle(module, left, right, difference, ArithmeticKind::Sub, label + " Sub");
+    CheckResultManifestAndProvenance(difference, left, leftBefore, rightBefore, label + " Sub");
+    CheckEvalKeyCacheUnchanged(keyCache, label + " after Sub and RCB");
+
+    CheckPairUnchanged(left, leftBefore, label + " left after arithmetic");
+    CheckPairUnchanged(right, rightBefore, label + " right after arithmetic");
+}
+
+void TestPublicLifecyclesAndKeyIndependence() {
+    auto guardContext = MakeContext(lbcrypto::BV);
+    const auto guardKeys = guardContext->KeyGen();
+    guardContext->EvalMultKeyGen(guardKeys.secretKey);
+    const std::string guardTag = guardKeys.secretKey->GetKeyTag();
+
+    auto context = MakeContext(lbcrypto::HYBRID, 8, lbcrypto::COMPLEX);
+    Check(context->GetCKKSDataType() == lbcrypto::COMPLEX,
+          "public-pipeline context must preserve complex slots");
+    const auto keys = context->KeyGen();
+    context->EvalMultKeyGen(keys.secretKey);
+    const std::string fixtureTag = keys.secretKey->GetKeyTag();
+    Check(!guardTag.empty() && !fixtureTag.empty() && guardTag != fixtureTag,
+          "evaluation-key fixture tags are empty or collide");
+
+    const std::vector<double> leftValues{
+        0.25, -0.125, 0.5, 0x1p-20, -0.75, 0.375, 0.25, -0x1p-18};
+    const std::vector<std::complex<double>> rightValues{
+        {-0.5, 0.125}, {0.25, -0.25}, {0.125, 0.0}, {-0x1p-19, 0x1p-20},
+        {0.5, -0.375}, {-0.0625, 0.5}, {0.25, 0.0}, {0.0, -0.125}};
+    const auto leftInput = context->Encrypt(
+        context->MakeCKKSPackedPlaintext(leftValues, 2, 0), keys.publicKey);
+    const auto rightPlaintext = context->MakeCKKSPackedPlaintext(rightValues, 2, 0);
+    const auto& rightCachedValues = rightPlaintext->GetCKKSPackedValue();
+    Check(!rightCachedValues.empty() && rightCachedValues.front().imag() == 0.125,
+          "public-pipeline plaintext constructor discarded the imaginary witness");
+    const auto rightInput = context->Encrypt(rightPlaintext, keys.publicKey);
+    const auto leftInputBefore = SnapshotCiphertext(leftInput, "public-pipeline left ciphertext");
+    const auto rightInputBefore = SnapshotCiphertext(rightInput, "public-pipeline right ciphertext");
+
+    DoubleCKKS module(context);
+    const auto firstLeft = module.DCP(leftInput);
+    const auto firstRight = module.DCP(rightInput);
+    const auto readyLeft = module.Relin2(module.Tensor2(firstLeft, firstLeft));
+    const auto readyRight = module.Relin2(module.Tensor2(firstRight, firstRight));
+    const auto refreshLeft = module.RS2(readyLeft);
+    const auto refreshRight = module.RS2(readyRight);
+
+    TagPairMembers(firstLeft, "public-first-left");
+    TagPairMembers(firstRight, "public-first-right");
+    TagPairMembers(readyLeft, "public-ready-left");
+    TagPairMembers(readyRight, "public-ready-right");
+    TagPairMembers(refreshLeft, "public-refresh-left");
+    TagPairMembers(refreshRight, "public-refresh-right");
+
+    const auto& cacheBeforeClear = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(cacheBeforeClear.find(fixtureTag) != cacheBeforeClear.end(),
+          "fixture evaluation-key row is absent before targeted removal");
+    Check(cacheBeforeClear.find(guardTag) != cacheBeforeClear.end(),
+          "unrelated guard evaluation-key row is absent before targeted removal");
+    lbcrypto::CryptoContextImpl<DCRTPoly>::ClearEvalMultKeys(fixtureTag);
+    const auto& cacheAfterClear = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(cacheAfterClear.find(fixtureTag) == cacheAfterClear.end(),
+          "targeted fixture evaluation-key row was not removed");
+    Check(cacheAfterClear.find(guardTag) != cacheAfterClear.end(),
+          "targeted removal erased the unrelated guard evaluation-key row");
+    const auto keyCache = SnapshotEvalKeyCache();
+    // Start the context-parameter immutability window only after lifecycle
+    // preparation and targeted key removal, so any failure is attributable to
+    // Add/Sub/RCB rather than to the already-existing preparation pipeline.
+    const auto contextBefore = SnapshotContextParameters(context, "public-pipeline");
+    const auto guardContextBefore = SnapshotContextParameters(guardContext, "guard");
+
+    ExercisePublicLifecycle(module, firstLeft, firstRight, PairLifecycle::ReadyForFirstMult,
+                            keyCache, "ReadyForFirstMult");
+    ExercisePublicLifecycle(module, readyLeft, readyRight, PairLifecycle::ReadyForRS2,
+                            keyCache, "ReadyForRS2");
+    ExercisePublicLifecycle(module, refreshLeft, refreshRight, PairLifecycle::RefreshRequired,
+                            keyCache, "RefreshRequired");
+
+    CheckCiphertextUnchanged(leftInput, leftInputBefore, "public-pipeline left ciphertext");
+    CheckCiphertextUnchanged(rightInput, rightInputBefore, "public-pipeline right ciphertext");
+    CheckContextParametersUnchanged(context, contextBefore, "public-pipeline context");
+    CheckContextParametersUnchanged(guardContext, guardContextBefore, "guard context");
+    CheckEvalKeyCacheUnchanged(keyCache, "final pair-arithmetic key cache");
+
+    lbcrypto::CryptoContextImpl<DCRTPoly>::ClearEvalMultKeys(guardTag);
 }
 
 // Test-owned controlled coefficients check exact modular arithmetic, not slot precision.
@@ -746,6 +1075,9 @@ using TestFunction = void (*)();
 TestFunction ResolveTest(const std::string& name) {
     if (name == "controlled_oracle") {
         return &TestControlledOracleAndAliases;
+    }
+    if (name == "public_lifecycles_keyless") {
+        return &TestPublicLifecyclesAndKeyIndependence;
     }
     throw TestFailure("unknown pair-arithmetic test case: " + name);
 }
