@@ -12,6 +12,7 @@ on:
       - codex/integration-01
       - codex/pair-arithmetic-01
       - codex/precision-01
+      - codex/pair-mult2-composition-01
       - cleanroom/reimplement-mult2-20260831
   workflow_dispatch:
 
@@ -105,6 +106,9 @@ jobs:
         run: |
           cmake --build build --target precision_first_mult2_contract_test --parallel 2
           ctest --test-dir build --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
+
+      - name: Run focused Pair Add and Sub inputs to first Mult2
+        run: ctest --test-dir build --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
 
       - name: Run clean-room project tests
         run: ctest --test-dir build --verbose --output-on-failure
@@ -263,6 +267,15 @@ jobs:
           export PATH="$prefix/bin:$prefix/lib:$PATH"
           cmake --build "$build" --target precision_first_mult2_contract_test --parallel 2
           ctest --test-dir "$build" --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
+
+      - name: Run focused Pair Add and Sub inputs to first Mult2
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
 
       - name: Run clean-room project tests
         shell: msys2 {0}

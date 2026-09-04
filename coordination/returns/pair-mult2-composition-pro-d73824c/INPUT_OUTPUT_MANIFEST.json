@@ -1,0 +1,187 @@
+{
+  "actual_model": "GPT-5.6 Pro",
+  "scope": "test-only candidate; no source implementation change and no hosted execution",
+  "input": {
+    "archive": "pair-mult2-composition-d73824c.zip",
+    "bytes": 1361787,
+    "sha256": "5eda78d7d49f0eb3ed565c0d18577608027ce31db1c5a165906487b1d79150d6",
+    "zip": {
+      "entries": 11,
+      "regular_files": 11,
+      "duplicates": [],
+      "unsafe_paths": [],
+      "symlinks": [],
+      "crc_first_bad_member": null
+    },
+    "outer_manifest": {
+      "manifest_sha256": "29879afea1037220222887eaab47349018e6add5e65d27277640c486233b70e5",
+      "declared_payloads": 10,
+      "regular_files_in_root": 11,
+      "bad_payloads": [],
+      "missing_paths": [],
+      "undeclared_paths": [],
+      "self_excluded": true,
+      "metadata": {
+        "purpose": "Pair Add/Sub result into first Mult2; additional regression candidate, not precision or new missing-feature red-green",
+        "sourceCommit": "1610ee522a39949a3f50a08e08ef3a9a8bcc126c",
+        "testedSourceCommit": "d73824c2d382013c3aadbd7cb29c57008e839714",
+        "branch": "codex/integration-01",
+        "dirtyState": "clean before handoff",
+        "officialOpenfheCommit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+        "sourceFilesVerifiedAgainstCurrentGit": 54,
+        "manifestSelfExcluded": true
+      }
+    },
+    "nested_context_archive": {
+      "path": "COMPLETE-COMBINED-CONTEXT.zip",
+      "bytes": 1305833,
+      "sha256": "e3dd499889e66a3406fa8ca755b559505db802c2d4cd7c8e1615d74900225fce",
+      "zip": {
+        "entries": 91,
+        "regular_files": 71,
+        "duplicates": [],
+        "unsafe_paths": [],
+        "symlinks": [],
+        "crc_first_bad_member": null
+      }
+    },
+    "nested_manifest": {
+      "manifest_sha256": "5193f793959813a5561e93ee7201cc4124c9ac52609bc40792c64700ae1f0c85",
+      "declared_payloads": 70,
+      "regular_files_in_root": 71,
+      "bad_payloads": [],
+      "missing_paths": [],
+      "undeclared_paths": [],
+      "self_excluded": true,
+      "metadata": {
+        "sourceCommit": "f550eac1251f2005222e60aa4f07cc2e57380c46",
+        "testedSourceCommit": "d73824c2d382013c3aadbd7cb29c57008e839714",
+        "branch": "codex/integration-01",
+        "dirtyState": "clean",
+        "openfheCommit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+        "projectFilesVerifiedAgainstGit": 54,
+        "priorPinnedPaperAndOfficialFiles": 8,
+        "newOfficialFilesVerifiedByGithubCommitAndGitBlob": 4,
+        "originalProArchive": {
+          "entries": 88,
+          "regularFiles": 66,
+          "bytes": 212032,
+          "sha256": "735dea4e6c164ced95c2829ea8eb5316201eb900fd5d77b1aad171e94e2676c4"
+        }
+      }
+    },
+    "post_review_rehash": {
+      "bytes": 1361787,
+      "sha256": "5eda78d7d49f0eb3ed565c0d18577608027ce31db1c5a165906487b1d79150d6",
+      "unchanged": true
+    }
+  },
+  "source_identity": {
+    "documentation_head": "1610ee522a39949a3f50a08e08ef3a9a8bcc126c",
+    "tested_source": "d73824c2d382013c3aadbd7cb29c57008e839714",
+    "branch": "codex/integration-01",
+    "official_openfhe_pin": "df495ba2e91739a6dc8f1de254fc5a41155ce504"
+  },
+  "baseline_relevant_files": {
+    "CMakeLists.txt": {
+      "bytes": 11149,
+      "sha256": "99b27c4bd0f6374e510fe9011b4cf6b8bebf9c09dca8661600a24614d3b4ea09"
+    },
+    "tests/mult2_e2e_oracle_test.cpp": {
+      "bytes": 56370,
+      "sha256": "b27c15ceb2ab886077701187cd9700d89aad9bf8feb3904cd0dfccd1c78e1b26"
+    },
+    "include/openfhe_2023_1788/double_ckks.h": {
+      "bytes": 7560,
+      "sha256": "3d089be507d7ea64e64b5ed3eb97b25ec249675c4da19e8e90d517151654bdfb"
+    },
+    "src/double_ckks.cpp": {
+      "bytes": 51962,
+      "sha256": "3ed23f2261cd7d8efea7a76a5724bfe44f6f20c521c20aedccd4fec69e6e916a"
+    },
+    ".github/workflows/dcp-rcb.yml": {
+      "bytes": 9436,
+      "sha256": "e6ebcb44dd1a695fd4c35313ec1133225caae7de4fe4264ac5d0c8d780a718ec"
+    }
+  },
+  "candidate": {
+    "changed_paths": [
+      "CMakeLists.txt",
+      "tests/mult2_e2e_oracle_test.cpp"
+    ],
+    "patches": {
+      "patches/0001-add-input-first-mult2-regression.patch": {
+        "bytes": 18997,
+        "sha256": "0fde6df49bb9c82a7353c11e5382cdc67b99b3a4733a08dad6b2acfece9492a0"
+      },
+      "patches/0002-sub-input-first-mult2-regression.patch": {
+        "bytes": 4288,
+        "sha256": "3e34245127c8f8dbffbb3e6b680bf49e7fd04e027adaabcab822ea526785c861"
+      },
+      "patches/candidate-final.patch": {
+        "bytes": 20809,
+        "sha256": "13c6c4a6f7af59da89a8cecdba89e1ad6502449b0c00529ae445f4e6099828b2"
+      }
+    },
+    "stage1": {
+      "static_expected_ctest_count": 54,
+      "CMakeLists.txt": {
+        "bytes": 11269,
+        "sha256": "05bacc8ce51ab6514da67f17a94dce68cdbc4db91613da1b58c654d36adce115"
+      },
+      "tests/mult2_e2e_oracle_test.cpp": {
+        "bytes": 73356,
+        "sha256": "ba71c84b55d1fda70fce6434542ca6845912cc4b1941628eaaff659954e126cb"
+      }
+    },
+    "final": {
+      "static_expected_ctest_count": 55,
+      "CMakeLists.txt": {
+        "bytes": 11389,
+        "sha256": "bf27cc6e2514049019671bbc8bc2461e65e0b63431dddd3a1b0194fa020180fa"
+      },
+      "tests/mult2_e2e_oracle_test.cpp": {
+        "bytes": 75003,
+        "sha256": "7522b2e3aaf3f2730e52ae7fe0a45c77517bb45f973dc4eca6ed65da59e7be8d"
+      }
+    },
+    "numbered_patch_replay_equals_final_all_54_project_files": true,
+    "aggregate_patch_replay_equals_final_all_54_project_files": true,
+    "no_production_header_workflow_or_other_test_change": true
+  },
+  "supplied_ci_evidence_not_reexecuted": {
+    "baseline_run": "33854419062",
+    "linux_job": "100964299802",
+    "windows_job": "100964299593",
+    "linux_supplied_total": "53/53; 0.68 s",
+    "windows_supplied_total": "53/53; 2.27 s"
+  },
+  "delivery_contract": {
+    "archive_basename": "pair-mult2-composition-d73824c-test-only-candidate.zip",
+    "sha256_sidecar_basename": "pair-mult2-composition-d73824c-test-only-candidate.zip.sha256",
+    "required_zip_members": [
+      "README.md",
+      "REVIEW_AND_DESIGN.md",
+      "EXECUTION-LEDGER.md",
+      "INPUT_OUTPUT_MANIFEST.json",
+      "HOST_VECTOR_VERIFICATION.json",
+      "CMAKE_TEST_CLOSURE.json",
+      "CMAKE_TEST_CLOSURE.md",
+      "STATIC_CHECKS.json",
+      "STATIC_CHECKS.md",
+      "patches/0001-add-input-first-mult2-regression.patch",
+      "patches/0002-sub-input-first-mult2-regression.patch",
+      "patches/candidate-final.patch",
+      "final-project/CMakeLists.txt",
+      "final-project/tests/mult2_e2e_oracle_test.cpp",
+      "REQUIRED-MEMBERS.txt",
+      "OUTPUT-TREE.txt",
+      "FILE-INVENTORY.json",
+      "MANIFEST.sha256"
+    ],
+    "required_zip_member_count": 18,
+    "manifest_policy": "MANIFEST.sha256 covers every ZIP member except itself",
+    "inventory_policy": "FILE-INVENTORY.json lists all required members and hashes every member except itself and MANIFEST.sha256; MANIFEST.sha256 closes those two exclusions",
+    "execution_status": "TEST-ONLY candidate; compile/configure/CTest/crypto NOT EXECUTED"
+  }
+}

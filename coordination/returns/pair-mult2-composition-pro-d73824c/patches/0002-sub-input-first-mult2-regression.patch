@@ -1,0 +1,108 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8d7214c..89275af 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -187,3 +187,5 @@ add_test(NAME mult2_e2e_bv_real COMMAND mult2_e2e_oracle_test bv_real)
+ add_test(NAME mult2_e2e_bv_complex COMMAND mult2_e2e_oracle_test bv_complex)
+ add_test(NAME mult2_pair_add_input_hybrid_complex
+          COMMAND mult2_e2e_oracle_test pair_add_input_hybrid_complex)
++add_test(NAME mult2_pair_sub_input_hybrid_complex
++         COMMAND mult2_e2e_oracle_test pair_sub_input_hybrid_complex)
+diff --git a/tests/mult2_e2e_oracle_test.cpp b/tests/mult2_e2e_oracle_test.cpp
+index 28d0f17..760fb86 100644
+--- a/tests/mult2_e2e_oracle_test.cpp
++++ b/tests/mult2_e2e_oracle_test.cpp
+@@ -1174,6 +1174,7 @@ void RunCase(const std::string& caseName,
+ 
+ enum class PairInputOperation {
+     Add,
++    Sub,
+ };
+ 
+ CiphertextPair ComposeFirstMultInput(const DoubleCKKS& module,
+@@ -1183,6 +1184,9 @@ CiphertextPair ComposeFirstMultInput(const DoubleCKKS& module,
+     if (operation == PairInputOperation::Add) {
+         return module.Add(left, right);
+     }
++    if (operation == PairInputOperation::Sub) {
++        return module.Sub(left, right);
++    }
+     throw TestFailure("unsupported pair-input arithmetic operation");
+ }
+ 
+@@ -1194,6 +1198,10 @@ BigInt ExpectedPairInputCoefficient(const BigInt& left,
+         const BigInt materialized = BigInt(left + right);
+         return Center(materialized, modulus);
+     }
++    if (operation == PairInputOperation::Sub) {
++        const BigInt materialized = BigInt(left - right);
++        return Center(materialized, modulus);
++    }
+     throw TestFailure("unsupported pair-input arithmetic oracle operation");
+ }
+ 
+@@ -1233,6 +1241,9 @@ void CheckFrozenPairHostArithmetic(
+         if (operation == PairInputOperation::Add) {
+             materialized = left[slot] + right[slot];
+         }
++        else if (operation == PairInputOperation::Sub) {
++            materialized = left[slot] - right[slot];
++        }
+         else {
+             throw TestFailure("unsupported frozen host arithmetic operation");
+         }
+@@ -1517,6 +1528,28 @@ std::vector<std::complex<double>> FrozenPairSumTimesMultiplierValues() {
+             {0.015625, 0.015625}};
+ }
+ 
++std::vector<std::complex<double>> FrozenPairDifferenceValues() {
++    return {{0.0625, -0.09375},
++            {-0.375, 0.1875},
++            {0.0, -0.0625},
++            {0.09375, 0.0},
++            {-0.1875, -0.375},
++            {std::ldexp(1.0, -19), -3.0 * std::ldexp(1.0, -22)},
++            {0.25, -0.03125},
++            {-0.0625, 0.1875}};
++}
++
++std::vector<std::complex<double>> FrozenPairDifferenceTimesMultiplierValues() {
++    return {{-0.00390625, 0.03125},
++            {-0.0703125, -0.0234375},
++            {0.0, 0.0078125},
++            {0.0, -0.0234375},
++            {-0.09375, -0.0703125},
++            {19.0 * std::ldexp(1.0, -24), std::ldexp(1.0, -23)},
++            {-0.0234375, 0.06640625},
++            {-0.015625, 0.046875}};
++}
++
+ void RunSelectedCase(const std::string& name) {
+     const std::vector<double> realLeft{
+         0.0, std::ldexp(1.0, -20), -std::ldexp(1.0, -20), 0.125,
+@@ -1569,6 +1602,16 @@ void RunSelectedCase(const std::string& name) {
+             name, PairInputOperation::Add, left, right, multiplier, sum, product);
+         return;
+     }
++    if (name == "pair_sub_input_hybrid_complex") {
++        const auto left = FrozenPairLeftValues();
++        const auto right = FrozenPairRightValues();
++        const auto multiplier = FrozenPairMultiplierValues();
++        const auto difference = FrozenPairDifferenceValues();
++        const auto product = FrozenPairDifferenceTimesMultiplierValues();
++        RunPairArithmeticInputCase(
++            name, PairInputOperation::Sub, left, right, multiplier, difference, product);
++        return;
++    }
+     throw TestFailure("unknown Mult2 end-to-end case: " + name);
+ }
+ 
+@@ -1578,7 +1621,7 @@ int main(int argc, char** argv) {
+     if (argc != 2) {
+         std::cerr << "usage: mult2_e2e_oracle_test "
+                      "hybrid_real|hybrid_complex|bv_real|bv_complex|"
+-                     "pair_add_input_hybrid_complex\n";
++                     "pair_add_input_hybrid_complex|pair_sub_input_hybrid_complex\n";
+         return 2;
+     }
+ 

@@ -1,0 +1,318 @@
+{
+  "scope": "exact dyadic binary64/host arithmetic only; no OpenFHE, encryption, decryption, CTest, or precision claim",
+  "source_file": "input/FROZEN-HOST-VECTORS.json",
+  "source_sha256": "2d2ca0a3cba8494f31235ba6018ad5607eac292292aedd0ec61d1f25ffb7e1e0",
+  "method": "Python Fraction.from_float over JSON numeric round-trips; exact complex +/- and multiplication; independent parse of final C++ literal functions",
+  "vectors": 7,
+  "slots": 8,
+  "complex_identities_checked": 32,
+  "scalar_real_imag_equalities_checked": 64,
+  "all_identities_exact": true,
+  "required_unit_l1_envelopes": {
+    "a": "3/8",
+    "b": "3/16",
+    "c": "3/4",
+    "sum": "7/32",
+    "difference": "9/16"
+  },
+  "maximum_required_l1_including_multiplier_c": "3/4",
+  "maximum_composed_sum_or_difference_l1": "9/16",
+  "final_cpp_literals_match_json": {
+    "a": {
+      "function": "FrozenPairLeftValues",
+      "all_8_values_exactly_match_json": true
+    },
+    "b": {
+      "function": "FrozenPairRightValues",
+      "all_8_values_exactly_match_json": true
+    },
+    "c": {
+      "function": "FrozenPairMultiplierValues",
+      "all_8_values_exactly_match_json": true
+    },
+    "sum": {
+      "function": "FrozenPairSumValues",
+      "all_8_values_exactly_match_json": true
+    },
+    "difference": {
+      "function": "FrozenPairDifferenceValues",
+      "all_8_values_exactly_match_json": true
+    },
+    "sumTimesC": {
+      "function": "FrozenPairSumTimesMultiplierValues",
+      "all_8_values_exactly_match_json": true
+    },
+    "differenceTimesC": {
+      "function": "FrozenPairDifferenceTimesMultiplierValues",
+      "all_8_values_exactly_match_json": true
+    }
+  },
+  "slot0_discriminators": {
+    "(A+B)*C": [
+      "-11/256",
+      "1/32"
+    ],
+    "(A-B)*C": [
+      "-1/256",
+      "1/32"
+    ],
+    "A*C_if_B_dropped": [
+      "-3/128",
+      "1/32"
+    ],
+    "(B-A)*C_if_subtraction_swapped": [
+      "1/256",
+      "-1/32"
+    ]
+  },
+  "slots_exact": [
+    {
+      "slot": 0,
+      "a": [
+        "1/8",
+        "-1/16"
+      ],
+      "b": [
+        "1/16",
+        "1/32"
+      ],
+      "c": [
+        "-1/4",
+        "1/8"
+      ],
+      "a_plus_b": [
+        "3/16",
+        "-1/32"
+      ],
+      "a_minus_b": [
+        "1/16",
+        "-3/32"
+      ],
+      "sum_times_c": [
+        "-11/256",
+        "1/32"
+      ],
+      "difference_times_c": [
+        "-1/256",
+        "1/32"
+      ]
+    },
+    {
+      "slot": 1,
+      "a": [
+        "-1/4",
+        "1/8"
+      ],
+      "b": [
+        "1/8",
+        "-1/16"
+      ],
+      "c": [
+        "1/8",
+        "1/8"
+      ],
+      "a_plus_b": [
+        "-1/8",
+        "1/16"
+      ],
+      "a_minus_b": [
+        "-3/8",
+        "3/16"
+      ],
+      "sum_times_c": [
+        "-3/128",
+        "-1/128"
+      ],
+      "difference_times_c": [
+        "-9/128",
+        "-3/128"
+      ]
+    },
+    {
+      "slot": 2,
+      "a": [
+        "0",
+        "0"
+      ],
+      "b": [
+        "0",
+        "1/16"
+      ],
+      "c": [
+        "-1/8",
+        "0"
+      ],
+      "a_plus_b": [
+        "0",
+        "1/16"
+      ],
+      "a_minus_b": [
+        "0",
+        "-1/16"
+      ],
+      "sum_times_c": [
+        "0",
+        "-1/128"
+      ],
+      "difference_times_c": [
+        "0",
+        "1/128"
+      ]
+    },
+    {
+      "slot": 3,
+      "a": [
+        "1/16",
+        "1/16"
+      ],
+      "b": [
+        "-1/32",
+        "1/16"
+      ],
+      "c": [
+        "0",
+        "-1/4"
+      ],
+      "a_plus_b": [
+        "1/32",
+        "1/8"
+      ],
+      "a_minus_b": [
+        "3/32",
+        "0"
+      ],
+      "sum_times_c": [
+        "1/32",
+        "-1/128"
+      ],
+      "difference_times_c": [
+        "0",
+        "-3/128"
+      ]
+    },
+    {
+      "slot": 4,
+      "a": [
+        "-1/8",
+        "-1/4"
+      ],
+      "b": [
+        "1/16",
+        "1/8"
+      ],
+      "c": [
+        "1/4",
+        "-1/8"
+      ],
+      "a_plus_b": [
+        "-1/16",
+        "-1/8"
+      ],
+      "a_minus_b": [
+        "-3/16",
+        "-3/8"
+      ],
+      "sum_times_c": [
+        "-1/32",
+        "-3/128"
+      ],
+      "difference_times_c": [
+        "-3/32",
+        "-9/128"
+      ]
+    },
+    {
+      "slot": 5,
+      "a": [
+        "1/1048576",
+        "-1/2097152"
+      ],
+      "b": [
+        "-1/1048576",
+        "1/4194304"
+      ],
+      "c": [
+        "1/2",
+        "1/4"
+      ],
+      "a_plus_b": [
+        "0",
+        "-1/4194304"
+      ],
+      "a_minus_b": [
+        "1/524288",
+        "-3/4194304"
+      ],
+      "sum_times_c": [
+        "1/16777216",
+        "-1/8388608"
+      ],
+      "difference_times_c": [
+        "19/16777216",
+        "1/8388608"
+      ]
+    },
+    {
+      "slot": 6,
+      "a": [
+        "3/16",
+        "0"
+      ],
+      "b": [
+        "-1/16",
+        "1/32"
+      ],
+      "c": [
+        "-1/8",
+        "1/4"
+      ],
+      "a_plus_b": [
+        "1/8",
+        "1/32"
+      ],
+      "a_minus_b": [
+        "1/4",
+        "-1/32"
+      ],
+      "sum_times_c": [
+        "-3/128",
+        "7/256"
+      ],
+      "difference_times_c": [
+        "-3/128",
+        "17/256"
+      ]
+    },
+    {
+      "slot": 7,
+      "a": [
+        "0",
+        "1/8"
+      ],
+      "b": [
+        "1/16",
+        "-1/16"
+      ],
+      "c": [
+        "1/4",
+        "0"
+      ],
+      "a_plus_b": [
+        "1/16",
+        "1/16"
+      ],
+      "a_minus_b": [
+        "-1/16",
+        "3/16"
+      ],
+      "sum_times_c": [
+        "1/64",
+        "1/64"
+      ],
+      "difference_times_c": [
+        "-1/64",
+        "3/64"
+      ]
+    }
+  ]
+}

@@ -91,16 +91,6 @@ target_link_libraries(mult2_test PRIVATE openfhe_2023_1788)
 add_executable(mult2_e2e_oracle_test tests/mult2_e2e_oracle_test.cpp)
 target_link_libraries(mult2_e2e_oracle_test PRIVATE openfhe_2023_1788)
 
-add_executable(precision_dcp_rcb_contract_test
-    tests/precision_dcp_rcb_contract_test.cpp
-    tests/precision_dcp_rcb_fixture.cpp)
-target_link_libraries(precision_dcp_rcb_contract_test PRIVATE openfhe_2023_1788)
-
-add_executable(precision_first_mult2_contract_test
-    tests/precision_first_mult2_contract_test.cpp
-    tests/precision_dcp_rcb_fixture.cpp)
-target_link_libraries(precision_first_mult2_contract_test PRIVATE openfhe_2023_1788)
-
 if(MSVC)
     target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
     target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
@@ -118,8 +108,6 @@ if(MSVC)
     target_compile_options(rs2_test PRIVATE /W4 /WX)
     target_compile_options(mult2_test PRIVATE /W4 /WX)
     target_compile_options(mult2_e2e_oracle_test PRIVATE /W4 /WX)
-    target_compile_options(precision_dcp_rcb_contract_test PRIVATE /W4 /WX)
-    target_compile_options(precision_first_mult2_contract_test PRIVATE /W4 /WX)
 else()
     target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
@@ -137,16 +125,10 @@ else()
     target_compile_options(rs2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(mult2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(mult2_e2e_oracle_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    target_compile_options(precision_dcp_rcb_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    target_compile_options(precision_first_mult2_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
 enable_testing()
 add_test(NAME dcp_rcb COMMAND dcp_rcb_test)
-add_test(NAME precision_dcp_rcb_high_precision_contract
-         COMMAND precision_dcp_rcb_contract_test)
-add_test(NAME precision_first_mult2_high_precision_contract
-         COMMAND precision_first_mult2_contract_test)
 add_test(NAME pair_add_runtime_behavior COMMAND pair_add_test)
 add_test(NAME pair_sub_runtime_behavior COMMAND pair_sub_test)
 add_test(NAME pair_arithmetic_controlled_oracle COMMAND pair_arithmetic_test controlled_oracle)
