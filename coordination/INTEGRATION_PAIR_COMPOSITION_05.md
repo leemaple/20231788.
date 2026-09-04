@@ -66,7 +66,7 @@ Keep their exact archived bytes. Scoped checks exclude ONLY these four paths;
 no live source/config/new-note exception is permitted. Final secret scan,
 commit/push and exact remote verification are required before evidence closure.
 
-## New hosted gate — PENDING
+## New hosted gate — required scope at merge time
 The actual new merge commit must pass LinuxGCC and WindowsMinGW64 default
 warning-as-error builds, all five API targets, focused precision1/1,
 focused Pair2/2, and full57/57 with exact source/run/attempt markers.
@@ -79,3 +79,31 @@ branch is not evidence for this merged source. Do not tune around failures.
 No Mac project/OpenFHE build, crypto or benchmark runs. Repeated8-square
 paper configuration, production client I/O, statistics/performance/security
 and the deferred stale-cache checker retain their prior uncompleted status.
+
+## Hosted gate accepted — 2026-09-04 Asia/Shanghai
+The actual merge source7c982519dfedacf5505dbd0f1ca6579ee91da2fd passed
+run33882911345 attempt1, completed/success at2026-09-04T14:26:44Z:
+https://github.com/leemaple/20231788./actions/runs/33882911345.
+Linux job101055635135 and WindowsMinGW64 job101055635468 each passed the
+default warning-clean build, all five explicit API targets, precision1/1,
+Pair2/2 and full57/57. Full-suite durations were1.19s and2.38s respectively.
+The independent hosted audit and retained logs/JSON are listed in
+INTEGRATION_PAIR_COMPOSITION_HOSTED_AUDIT.md; they identify exact bytes,
+SHA256, source/run/attempt, ordered CTest names and COMMAND bindings.
+
+Main re-fetched the terminal run metadata and independently verified the
+four retained payload sizes/hashes, all57 ordered passes on each host,
+all16 first-Mult2 precision records using exact rational comparisons,
+actual q_div*q_l scale denominators, eight Pair non-BV classifications and
+four fixed-key BV classifications. The independent auditor additionally
+recomputed the Pair and fixed-key BV integer inequalities; this is not
+represented as a second full arithmetic recomputation by main.
+All16 first-Mult2 slot/delta errors satisfy the unchanged<=2^-80 threshold.
+Worst observed slot error1.0207019984968550582096576801729991728015e-27;
+worst delta5.6718120115719861766604087388765154494645e-28.
+Pair cases remain N64,p30,HYBRID,conditional,threshold1/1000 and BV=false.
+Fixed-key BV combined-additivity observations remain false, not suppressed.
+
+This closes the merged functional/high-precision diagnostic regression gate,
+not repeated multiplication, public lossless I/O or paper-scale reproduction.
+All execution was hosted; no Mac project/OpenFHE compilation or crypto run.
