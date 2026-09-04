@@ -93,7 +93,7 @@ jobs:
         run: cmake --build build --target rs2_api_contract_test --parallel 2
 
       - name: Run clean-room project tests
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build --verbose --output-on-failure
 
       - name: Build Mult2 public API contract
         run: cmake --build build --target mult2_api_contract_test --parallel 2
@@ -234,7 +234,7 @@ jobs:
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           build="$(cygpath -u "$PROJECT_BUILD")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
-          ctest --test-dir "$build" --output-on-failure
+          ctest --test-dir "$build" --verbose --output-on-failure
 
       - name: Build Mult2 public API contract
         shell: msys2 {0}
