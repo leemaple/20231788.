@@ -28,8 +28,9 @@ evaluator receiving no secret.  Codex accepts the narrow v1 interface described
 in the design return after applying the two independent review corrections
 below.  Do not ask for the old invented confirmation token.
 
-Deliver a genuine RED patch followed by the smallest GREEN patch for this
-end-to-end public path:
+Deliver a genuine end-to-end tracer RED/GREEN, including the malformed-key
+safety correction needed before calling upstream primitives, followed by one
+small clone/parameter-safety RED/GREEN pair for this public path:
 
 ```text
 ClientComplex[16]
@@ -95,7 +96,9 @@ Add only the narrow declarations needed under namespace
 `openfhe_2023_1788::client_io`, following
 `PROPOSED_PUBLIC_INTERFACE.md` unless this task narrows or corrects it:
 
-- `ClientReal` fixed to `boost::multiprecision::cpp_dec_float<100>`;
+- `ClientReal` fixed exactly to
+  `boost::multiprecision::number<boost::multiprecision::cpp_dec_float<100>>`
+  (the numeric wrapper, not the backend type alone);
 - `ClientComplex { real, imag }` with no binary64 overload;
 - gcd-reduced positive `PositiveRationalScale` using `cpp_int`;
 - ordered modulus/root basis and immutable context/state receipt values;
@@ -115,8 +118,11 @@ is allowed only if it produces a materially clearer ownership boundary.
 
 Do not expose raw private snapshots, mutable receipts, `Plaintext`, raw
 `Poly`, arbitrary caller-provided level/basis/scale transitions, or private
-transform helpers.  The production API accepts and returns no `double`,
-`long double`, or `std::complex<double>` values.
+transform helpers.  Slot-value input and output accepts and returns no
+`double`, `long double`, or `std::complex<double>` values.  The read-only state
+receipt may expose OpenFHE's `double recordedScalingFactor` solely as an
+explicitly non-authoritative compatibility observation; it is never a slot
+value or the source of exact normalization.
 
 ### Required correction 1: fail closed on actual key shape
 
@@ -148,15 +154,23 @@ arbitrary transitive clone isolation.  V1 supports:
 - an explicit shared-context/shared-basis nonmutation contract.
 
 Snapshot the complete public structural basis identity in the receipt and
-revalidate it before every use.  If shared parameters drift, fail closed.  The
-test must prove coefficient/scalar/map isolation and separately prove basis
-drift detection; do not add a deep-copy context/parameter subsystem.
+revalidate it at every operation boundary that returns or uses a ciphertext:
+`CloneForEvaluation`, `BindFirstMult2Rcb`, and `Decrypt`.  The nonthrowing
+`State()` accessor only returns the already immutable value receipt and does
+not perform live revalidation.  If shared parameters drift, the next operation
+fails closed.  The test must prove coefficient/scalar/map isolation and
+separately prove basis-drift detection; do not add a deep-copy
+context/parameter subsystem.
 
 ## Frozen v1 profile and state
 
 The test constructs and validates the actual context returned by the factory,
-not only the locally requested parameter object.  Select every relevant mode
-explicitly:
+not only the locally requested parameter object.  Explicitly set every field
+for which the pinned CKKS `CCParams` exposes a supported setter.  OpenFHE 1.5.0
+deliberately rejects CKKS `SetEncryptionTechnique` and
+`SetMultiplicationTechnique`; do not call those disabled setters.  Instead,
+require the actual factory-returned CKKS profile to read back `STANDARD` and
+`HPS` and fail closed if it does not.  Freeze:
 
 ```text
 OpenFHE pin              df495ba2e91739a6dc8f1de254fc5a41155ce504
@@ -167,11 +181,14 @@ multiplicative depth     7
 scaling / first bits     50 / 55
 key switching            HYBRID
 scaling                  FIXEDMANUAL
-encryption               STANDARD
+digit size               0
+encryption readback      STANDARD
+multiplication readback  HPS
 PRE                      NOT_SET
 CKKS data                COMPLEX
 execution                EXEC_EVALUATION
 decrypt noise            FIXED_NOISE_DECRYPT
+noise scale              1
 secret distribution      UNIFORM_TERNARY
 security                 HEStd_NotSet (diagnostic only)
 max relin secret degree  2
@@ -274,19 +291,35 @@ maximum centered absolute coefficient, centered headroom, and maximum
 cross-precision disagreement.  Do not promote observed headroom into an
 all-key/no-wrap theorem.
 
-## Required RED then GREEN
+## Required ordered vertical RED/GREEN series
 
-Return two independently applicable patches in this order:
+Return four independently applicable patches in this order.  Each pair is one
+behavioral vertical slice; do not put all negative-state coverage in the first
+RED or implement later pairs speculatively:
 
-1. `0001-red-lossless-client-io-first-mult2.patch` adds only the new semantic
-   test, CMake/CTest registration, exact branch trigger
+1. `0001-red-lossless-client-io-first-mult2-tracer.patch` adds only the positive
+   end-to-end semantic tracer, independent arithmetic/transform oracles,
+   and the directly reviewed malformed public/private key shape cases needed
+   to prove official primitive calls are safe,
+   CMake/CTest registration, exact branch trigger
    `codex/lossless-io-implementation-01`, and the same focused test step in both
    Linux and Windows jobs.  It contains no production implementation.  The
    honest expected RED is a missing public header/type/API compile failure.
-2. `0002-green-lossless-client-io-first-mult2.patch` applies only after RED and
-   adds the smallest public header/source and build integration needed for that
-   unchanged test to pass.  Do not alter RED expectations in GREEN and do not
-   modify `double_ckks.cpp` or existing tests.
+2. `0002-green-lossless-client-io-first-mult2-tracer.patch` applies only after
+   patch 1 and adds the smallest public header/source and build integration
+   needed for that unchanged tracer and malformed-key cases to pass.  It
+   includes the pre-call fail-closed checks required by correction 1.
+3. `0003-red-lossless-client-io-shared-params-drift.patch` applies after patch 2
+   and adds only the supported clone-isolation assertions plus one separate,
+   disposable-fixture shared-`Params` drift rejection required by correction 2.
+4. `0004-green-lossless-client-io-shared-params-drift.patch` applies after patch
+   3 and adds only the immutable structural snapshot/revalidation needed for
+   those unchanged cases.
+
+Do not alter a RED expectation in its GREEN, modify `double_ckks.cpp`, or edit
+existing tests.  Later rejection/state/ownership matrices remain ordered future
+RED/GREEN work in `NEXT_GATES.md`; they are not silently folded into these four
+patches.
 
 Name the new executable `precision_client_io_first_mult2_contract_test` and the
 new CTest exactly `precision_client_io_first_mult2_contract`.  Append it after
@@ -296,11 +329,10 @@ five explicit API-target builds and existing focused steps.
 
 ## Test obligations
 
-The new test must use only the public client/evaluator seams and independently
-prove all of the following:
+The new test executable must use only the public client/evaluator seams.  The
+two ordered pairs above must cumulatively prove all of the following:
 
 - positive-rational rejection and canonical gcd reduction;
-- constructor rejection of wrong profile and feature-mask drift;
 - malformed public and private key shape/basis/format rejection before official
   primitive access;
 - exact frozen 16-slot input and product arithmetic, including adjacent
@@ -319,10 +351,13 @@ prove all of the following:
 - exact actual context/profile/Q-root/P/QP/HYBRID/PK-key state, fresh/output
   receipts, `qDiv/qL`, exact rational scale, recorded factor, lifecycle/state,
   slots/format/components/degree/encoding and metadata policy;
-- input vectors, keys, contexts/tables and client receipts remain unchanged;
+- on ordinary positive and malformed-key paths, input vectors, keys,
+  contexts/tables and client receipts remain unchanged;
 - evaluator clones cannot mutate receipt coefficients/scalars/maps, while a
   deliberate shared-parameter drift is detected rather than falsely called
-  isolated; and
+  isolated.  Run that drift case last in its own disposable context/key/
+  ciphertext fixture; require receipt use to fail closed and do not include the
+  deliberately mutated context in an `unchanged` assertion; and
 - returned decoded values remain valid after raw local Poly/coefficient buffers
   are destroyed.
 
@@ -355,8 +390,10 @@ ctest --test-dir build --verbose --output-on-failure
 ```
 
 Hosted GREEN acceptance is warning-clean builds, focused 1/1 and full 58/58 on
-both jobs, with all original 57 exact bindings preserved.  RED must be retained
-as a real failing commit/run before GREEN exists.
+both jobs, with all original 57 exact bindings preserved.  Codex will apply and
+push each RED before its matching GREEN and retain the actual failing run.  Pro
+must mark compilation/runtime/CI `NOT RUN` unless it genuinely executed them;
+the existence of a later returned GREEN patch is not itself a RED observation.
 
 You may perform source inspection, exact arithmetic, patch replay and bounded
 static checks.  Do not use credentials/accounts, send messages, push/merge,
@@ -389,9 +426,12 @@ Return one downloadable ZIP and matching SHA-256 sidecar containing:
 - `DESIGN_DECISION.md` resolving ownership, corrected key validation,
   shared-Params drift contract, numerical algorithms, first binder, and the
   later repeated-receipt handoff;
-- the two ordered patches above;
+- all four ordered patches above;
 - `complete/project/...` with every complete changed/new file after GREEN;
-- the frozen input/product vectors byte-identical to their supplied source;
+- `contracts/PROPOSED_FIRST_TDD_CONTRACT.md`, byte-identical to the supplied
+  Markdown that contains the frozen input/product vectors; an optional derived
+  machine-readable vector file must name that source and pass an independently
+  documented exact-arithmetic check;
 - `SOURCE_CLAIM_TEST_LEDGER.md` with exact official/project line citations;
 - `EXPECTED_CTEST_BINDINGS.tsv` with all 58 exact name/command pairs in order;
 - `RED_GREEN_EXECUTION_LEDGER.md`, separating static, replay, compile, runtime,
@@ -400,11 +440,14 @@ Return one downloadable ZIP and matching SHA-256 sidecar containing:
   full-slot codec, h=128, paper ordered Q/P, eight operations, then N32768/
   1000-run precision/performance; and
 - a closed manifest with each payload path, byte size, SHA-256, origin and
-  source commit.
+  source commit.  The manifest must explicitly self-exclude itself and its own
+  hash sidecar; the outer ZIP and outer sidecar are necessarily outside that
+  inner payload manifest.
 
-Verify in a fresh scratch copy that RED applies to exact `4ccc8fd`, GREEN applies
-only after RED, replayed final files equal `complete/project` byte-for-byte, and
-no unexpected file changes exist.  Exclude `.git`, dependencies, builds,
+Verify in a fresh scratch copy that patch 1 applies to exact `4ccc8fd`, every
+later patch applies only after its predecessor, replayed final files equal
+`complete/project` byte-for-byte, and no unexpected file changes exist.
+Exclude `.git`, dependencies, builds,
 caches, databases, runtime/browser state, credentials and unrelated files.
 
 If a source-level blocker prevents a defensible GREEN, return the smallest exact
