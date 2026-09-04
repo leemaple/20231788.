@@ -61,3 +61,40 @@ follow-up verdicts and any requested production-mutation experiments remain pend
 The actual production source remains68d0d98 plus prior implementation; latest
 changes are coverage extensions, not fabricated new red-green implementation.
 No decoded multiplication, non-wrap theorem acceptance or53/106-bit claim.
+
+## ZCode completed follow-up and Codex reconciliation
+
+Task title finalized as Static review of rs2-followup archive. Native UI verified
+the correct task heading, Worked for11m4s, and no Stop. Output/REVIEW.md SHA-256
+523396fd3e8c73fe610cf0f02537cd04e61b40c8434235b5b0b32b3749863293.
+Exact review and input manifest retained in coordination/returns/rs2-zcode-7928bb7/.
+Return scan: Gitleaks8.30.1 zero. Codex re-hashed all35 consumed payload entries
+after completion; all unchanged. No local compilation or crypto test occurred.
+
+Verdict PASS_WITH_GAPS: no new production defect found; the9-line basis fix is
+consistent with the official copy-then-pop idiom. Do not elevate this to a
+whole-project precision or final acceptance verdict.
+
+- N1 (current-head CI pending in its packet): closed by the now-terminal
+  run33837253564,43/43 both hosts, retained above. This evidence postdates the
+  packet; the reviewer was not interrupted or made to fabricate seeing it.
+- N2: acknowledge exactly snapshotted fields, not every internal context,
+  parameter or ciphertext field. No demonstrated mutation in unsnapshotted fields.
+  Remaining wider immutability audit owner Codex; do not claim exhaustive proof.
+- N3/metadata-role corruption positions: coverage is intentionally scoped; same
+  production loops cover all elements, but not every corruption position has an
+  executed fixture. No claim of exhaustive adversarial-input coverage.
+- N4: helper overwrite needs23 slots to retain21 boundaries; actual fixture fixes
+  ringDimension32, so current coverage is intact. This is a future-fixture guard
+  suggestion, not a current production defect; do not generalize to21/22 rings.
+- N5: HYBRID/BV0 regime is recorded and tested. No additional source change.
+- Documentation correction: packet TASK.md's Definition4.7/RS2 wording is a
+  numbering error, not a valid alternate definition. RS2 is Definition4.5;
+  Definition4.7 is the Mult2 composition. Original packet and review are preserved.
+  Its --parallel2 command prose should read --parallel 2; no such command was
+  executed from the static-only brief.
+- The review's mention of N6 has no matching finding row. Its claimed location
+  of ILDCRTParams in dcrtpoly.h is not accepted as verified source; parameter-class
+  definitions were absent from the packet. Null-child safety remains unproved.
+
+ChatGPT Pro follow-up remains live with visible progress; no duplicate sent.
