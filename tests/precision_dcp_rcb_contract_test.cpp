@@ -142,7 +142,7 @@ BigInt ReconstructCentered(const std::vector<BigInt>& residues,
 
 DCRTPoly ToCoefficient(const DCRTPoly& polynomial) {
     DCRTPoly result(polynomial);
-    result.SetFormat(lbcrypto::Format::COEFFICIENT);
+    result.SetFormat(Format::COEFFICIENT);
     return result;
 }
 
@@ -509,7 +509,7 @@ void CheckCiphertextState(const ReadOnlyCiphertext& ciphertext,
     Check(ciphertext->NumberCiphertextElements() == 2,
           label + " must contain exactly two RLWE components");
     for (const auto& component : ciphertext->GetElements()) {
-        Check(component.GetFormat() == lbcrypto::Format::EVALUATION,
+        Check(component.GetFormat() == Format::EVALUATION,
               label + " component format mismatch");
         Check(GetNativeModuli(component) == expectedModuli,
               label + " ordered RNS basis mismatch");
@@ -528,7 +528,7 @@ void CheckPairState(const CiphertextPair& pair,
     Check(pair.GetRecordedScalingFactor() == std::ldexp(1.0, 100),
           "DCP pair recorded scale mismatch");
     Check(pair.GetSlots() == kBatchSize, "DCP pair slot count mismatch");
-    Check(pair.GetFormat() == lbcrypto::Format::EVALUATION,
+    Check(pair.GetFormat() == Format::EVALUATION,
           "DCP pair format mismatch");
     Check(pair.GetComponentCount() == 2, "DCP pair component count mismatch");
     Check(pair.GetKeyTag() == input->GetKeyTag(), "DCP pair key tag mismatch");
@@ -611,7 +611,7 @@ void RunContract() {
           "precision plaintext recorded scale mismatch");
     Check(plaintext->GetSlots() == kBatchSize,
           "precision plaintext slot count mismatch");
-    Check(plaintext->GetElement<DCRTPoly>().GetFormat() == lbcrypto::Format::EVALUATION,
+    Check(plaintext->GetElement<DCRTPoly>().GetFormat() == Format::EVALUATION,
           "precision plaintext element format mismatch");
     const auto fullModuli = GetNativeModuli(plaintext->GetElement<DCRTPoly>());
     Check(!fullModuli.empty(), "precision plaintext has empty RNS basis");

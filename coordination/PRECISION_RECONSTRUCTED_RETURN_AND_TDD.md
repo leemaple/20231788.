@@ -132,3 +132,41 @@ Staged Gitleaks scanned321321 bytes, zero findings. The unfiltered whitespace
 check flags eight context-only blank lines inside the THREE original .patch
 artifacts. Those exact files are preserved byte-for-byte; excluding only their
 explicit paths, every remaining staged file passes git diff --cached --check.
+
+## First hosted build failure and minimal pre-red correction
+
+Initial RED source fe35a09940e3f3f5388aa735e93ef1a8c5a5deb4 was pushed and
+remote SHA matched. Run33862006375 was observed live at that exact source.
+Windows job100988349902 completed FAILURE at warning-clean project build,
+not CTest: GNU16.2.0 reports four occurrences of
+'lbcrypto::Format' has not been declared in contract lines145,512,531,614.
+Retained complete project configure/build failure section:
+artifacts/tdd/precision-dcp-rcb/compile-failure-windows.txt.
+Linux job100988349689 was still installing dependencies when this correction
+was prepared; no Linux outcome is presumed and the old run was not cancelled.
+
+This is a test-candidate namespace error, NOT the intended positive precision
+red, an upstream arithmetic defect or a high-precision failure. No CTest ran
+on Windows. Existing source files compiled until the new contract object failed.
+
+Codex used the diagnosing-bugs workflow with the observed warning-build command
+as a deterministic compiler feedback loop. The compiler already pinpoints four
+invalid type qualifications; probabilistic stress, broad bisection and repeated
+costly minimization are unnecessary for this syntax error and were omitted.
+Existing accepted DCP/RCB tests use Format::COEFFICIENT/EVALUATION successfully.
+The smallest correction removes only the four lbcrypto:: prefixes.
+Static byte comparison proves every constant, vector, witness, state assertion,
+tolerance, error calculation, test name and trial count is otherwise unchanged.
+No warning or assertion is disabled. The lossy RED fixture is unchanged.
+
+Corrected pre-red contract SHA256:
+ad677414499c3e98e7f798ed940d587cb35c6cc791c7b0f81166ca1e6917f854.
+This supersedes the delivered contract hash for the forthcoming genuine
+runtime red/green pair. The original returned bytes and failed commit remain
+preserved. CMake/header hashes remain unchanged from the integrated RED.
+The future GREEN fixture has the same invalid qualification in three places;
+apply the same mechanical namespace correction ONLY when adopting that fixture.
+Do not call the old delivered aggregate byte-identical to the corrected candidate.
+Hosted verification must still reach the original frozen positive2^-80 assertion
+before precision RED is accepted, then fixture-only green must preserve this
+corrected contract hash.
