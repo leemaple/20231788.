@@ -81,3 +81,17 @@ failure, NOT proof of exhaustion or a completed reset. The14:58 reading above
 remains the last observed quota. No new job or retry was dispatched because of
 this check; no Pro page was refreshed or stopped. Owner Codex: recheck quota at
 the next useful boundary and inspect both specific live review handles.
+
+## Quota observation recovered after the reset
+
+The same quota tab first repeated a Runtime.evaluate/pageInfo timeout, then one
+Page.reload on ONLY the quota page completed. No ChatGPT Pro tab was refreshed.
+Subsequent read succeeded with official page refresh2026.09.04 15:49:
+every5hours2%used/98%remaining, next reset20:29;
+week65%used/35%remaining, reset2026-09-09 10:00;
+MCPmonth16%used/84%remaining, reset2026-09-25 10:00.
+The5-hour reset is now observed, not inferred from the clock. All ZCode sessions
+remain on this shared pool; no reset credit was redeemed and no task was sent
+for the quota check. Continue normal bounded ZCode review routing while quota
+remains available, preserving the existing single live BV audit. Windows input
+delivery is a separate unresolved operational limitation, not a quota shortage.
