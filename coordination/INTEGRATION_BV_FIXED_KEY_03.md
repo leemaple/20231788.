@@ -61,3 +61,26 @@ Previous goal turn classification: PROGRESS (actual Windows precision proof,
 archived/pushed results, completed source checks, and real Pro/ZCode dispatch),
 not merely a status restatement. This turn integrates an already reviewed
 boundary while the larger paper implementation remains incomplete and active.
+
+## Post-merge result accepted,2026-09-04
+Merge source33ad0aa8959dba3cef5c321f1cee9d5f4d84de2a was pushed and remote
+SHA verified. Run33877197208 attempt1 completed successfully:
+Linux101036891213,53/53,0.77s,finished21:19:13CST;
+Windows MinGW64101036891058,53/53,1.77s,finished21:24:44CST.
+Both warning-as-error builds and five explicit API targets succeeded.
+See INTEGRATION_BV_FIXED_KEY_HOSTED_AUDIT.md and exact new log/JSON payloads.
+An independent Codex auditor verified53 actual names/indices/commands and
+eight execution plus four fixed-key certificates. Main Codex independently
+refetched both job identities, rechecked53 actual ordered passes/log hashes,
+and recomputed all four fixed-key B_path/B_pair, nonwrap, coefficient and
+final integer-lift inequalities with bounded BigInt arithmetic. All passed.
+This supersedes the historical PENDING section, not the original provenance.
+No Mac project/OpenFHE build or crypto occurred; no threshold changed.
+
+Parallel updates,not part of this merge's53-case acceptance:
+precision final ZCode review has since returned and was reconciled/pushed in
+codex/precision-01 at07e81fd (narrow ACCEPT,P0/P1=0,P2 dispositions explicit).
+Pair composition final ZCode review was submitted once21:34:57CST in its own
+dedicated folder; source da50a7e/testedb48b54e, dispatch pushed2a048f4.
+Repeated Mult2 Pro remains live at its saved URL, last read-only observation
+21:36:54CST Stop present. No interruption/repeat request occurred.
