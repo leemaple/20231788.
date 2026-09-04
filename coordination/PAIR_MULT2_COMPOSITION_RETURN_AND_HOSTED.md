@@ -184,3 +184,28 @@ retained logs and independent actual-test-name closure. Final independent
 review of the actual composition patch and integration remain pending.
 This functional diagnostic does not replace the still-live first-Mult2
 high-precision task or the complete paper parameter/repeated-use destination.
+
+## Stage2 first-observed GREEN on both platforms
+Frozen/pushed source b48b54e22f14bbfe988a6890f1b03eac9efb11a3, remote exact
+SHA verified. Run33871723090:
+https://github.com/leemaple/20231788./actions/runs/33871723090
+Linux job101019032191 completed20:17:07 Asia/Shanghai2026-09-04:
+focused Add/Sub2/2,total0.43s; full55/55,total1.06s.
+Windows job101019032537 completed20:21:00:
+focused Add/Sub2/2,total0.15s; full55/55,total1.68s.
+Both warning-clean default builds and all5 explicit API builds passed.
+Actual55 unique name sequences match current CMake in order on both hosts.
+Each host has2 focused+2 full composition records, with real fresh fixture
+keys. No tolerance/vector/production change followed an observed failure.
+The final active CMake/test still exactly match the original Pro final copies.
+
+Full configure/build/focused/full/API logs and exact job metadata are retained:
+artifacts/tdd/pair-mult2-composition/add-sub-linux.txt,63386bytes,
+SHA256 b4ea478c185fbd3f10f66b75425d897380a44066d5f42907ce7a9f958115cc02;
+add-sub-windows.txt,67039bytes,
+SHA256 fcd4fc79f708e8aceb20c1e6c97770a5e415ddee5b986e49f0e5335fe9e33148.
+Corresponding JSON is in coordination/evidence/pair-mult2-composition/.
+Only ANSI/CR/trailing spaces are normalized in these new retained log sections.
+This closes staged Add/Sub-to-first-Mult2 hosted regression coverage.
+Final independent review of this actual composition patch and integration
+remain pending; functional1e-3,N64 coverage is not high-precision/paper proof.
