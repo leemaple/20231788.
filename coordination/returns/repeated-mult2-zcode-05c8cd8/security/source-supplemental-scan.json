@@ -1,0 +1,56 @@
+{
+  "kind": "supplemental-filename-and-content-scan",
+  "roots": [
+    "TASK.md",
+    "SOURCE_SNAPSHOT.json",
+    "inputs",
+    "policy"
+  ],
+  "files": 193,
+  "bytes": 5885478,
+  "deniedFilenameRegex": "(^|\\/)(\\.git|node_modules|build|dist|\\.cache|__pycache__|\\.env(?:\\.[^/]*)?|\\.DS_Store|Cookies|Login Data|History|Local State|id_rsa|id_ed25519|credentials(?:\\.json)?)(\\/|$)|\\.(?:sqlite3?|db|key|pem|p12|pfx)$",
+  "contentPatterns": [
+    [
+      "private-key",
+      "-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----"
+    ],
+    [
+      "aws-access",
+      "AKIA[0-9A-Z]{16}"
+    ],
+    [
+      "provider-key",
+      "sk-(?:proj-|ant-)?[A-Za-z0-9_-]{24,}"
+    ],
+    [
+      "github-token",
+      "(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,})"
+    ],
+    [
+      "literal-bearer",
+      "Authorization\\s*[:=]\\s*[\"']?Bearer\\s+[A-Za-z0-9._-]{20,}"
+    ],
+    [
+      "session-cookie",
+      "(?:__Secure-next-auth\\.session-token|__Secure-authjs\\.session-token)\\s*=\\s*[^*;\\s]{20,}"
+    ],
+    [
+      "jwt",
+      "eyJ[A-Za-z0-9_-]{15,}\\.[A-Za-z0-9_-]{15,}\\.[A-Za-z0-9_-]{10,}"
+    ],
+    [
+      "signed-url",
+      "[?&](?:X-Amz-Signature|X-Goog-Signature|access_token|session_token)=[A-Za-z0-9%_-]{16,}"
+    ]
+  ],
+  "findings": [],
+  "symlinks": 0,
+  "nonregular": 0,
+  "projectGitBlobsVerified": 81,
+  "officialFullBlobsVerified": 53,
+  "supplementalSourceVerified": true,
+  "sourceManifest": "155 payload plus one self-manifest",
+  "candidateManifest": "22 payload plus two declared self-exclusions",
+  "normalization": "none; inputs copied/extracted without rewriting",
+  "limit": "Pattern checks and a clean maintained scan are evidence, not a guarantee."
+}

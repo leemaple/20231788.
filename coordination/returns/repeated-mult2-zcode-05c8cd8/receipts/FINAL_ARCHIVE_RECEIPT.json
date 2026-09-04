@@ -1,0 +1,203 @@
+{
+  "schema": "clean-room-local-static-final-archive-receipt/v1",
+  "status": "prepared-not-dispatched",
+  "reviewStatus": "NOT DISPATCHED; no ZCode review performed by packager",
+  "scope": "Mac LOCAL STATIC incoming-candidate review package only; no build, crypto execution, tests, CI, external dispatch, source edits, staging, commit, or push performed by packager.",
+  "packageRoot": "/Users/lifeng/Documents/20231788-openfhe-zcode-repeated-probe-review-20260904",
+  "archive": {
+    "archive": "distribution/repeated-mult2-zcode-local-static-774fe2d-05c8cd8.zip",
+    "bytes": 3084581,
+    "sha256": "72320f25fc2b2e055cb9a0aaf761516667bdecd5cf5f7c124f968fcbf4f76ead",
+    "members": 197,
+    "regularFiles": 197,
+    "decodedBytes": 6020396,
+    "manifestPayloadEntries": 196,
+    "manifestSelfExclusions": [
+      "MANIFEST.json"
+    ],
+    "closureExact": true,
+    "pathTypeEncryptionCaseChecks": true,
+    "crc": "No errors detected in compressed data of distribution/repeated-mult2-zcode-local-static-774fe2d-05c8cd8.zip.",
+    "absolutePath": "/Users/lifeng/Documents/20231788-openfhe-zcode-repeated-probe-review-20260904/distribution/repeated-mult2-zcode-local-static-774fe2d-05c8cd8.zip"
+  },
+  "task": {
+    "path": "TASK.md",
+    "bytes": 9445,
+    "sha256": "184c24866e10a8af9f1a24907116cbb241dd996617515ea1370b32d090d49900"
+  },
+  "manifest": {
+    "path": "MANIFEST.json",
+    "schema": "clean-room-local-static-review-package/v1",
+    "bytes": 129878,
+    "sha256": "187c0b6c74b4dc5acd94fc7272e0aede17990c2920f349d0fe8f12da7fa2f078",
+    "payloadEntries": 196,
+    "onlyInArchiveSelfExclusion": "MANIFEST.json",
+    "notPackaged": [
+      "output/",
+      "distribution/",
+      "verification/",
+      "receipts/"
+    ]
+  },
+  "originals": [
+    {
+      "path": "inputs/originals/repeated-mult2-design-774fe2d.zip",
+      "origin": "/private/tmp/repeated-mult2-pro-handoff.azsrhb/repeated-mult2-design-774fe2d.zip",
+      "bytes": 1451817,
+      "sha256": "efc96137d3412bae57099b6e2f7f85a96bd175b4dd810b587083e1e3d324587d",
+      "expandedMembers": 156
+    },
+    {
+      "path": "inputs/originals/repeated-mult2-bounded-basis-routing-probe-774fe2d.zip",
+      "origin": "/Users/lifeng/Downloads/repeated-mult2-bounded-basis-routing-probe-774fe2d.zip",
+      "bytes": 63963,
+      "sha256": "bee2b27ebf88c901b5b91bc3e79fe386231f07ea580b5228512bf380fdac2fd2",
+      "expandedMembers": 24
+    }
+  ],
+  "provenance": {
+    "sourceCommit": "774fe2dcfca47d7a08cab9c04b29c430e354cf9f",
+    "originalSourceSnapshotState": "clean",
+    "evidenceCommit": "05c8cd873070144b0c74b0f0c5cde93420924d46",
+    "currentEvidenceWorktreeState": "clean",
+    "evidenceCopiesMatchingCommittedBlobs": 6,
+    "initialObservationHead": "8dcadb4544ed567c6de3a7d3825857f89470b29e",
+    "initialObservationState": "untracked return/review/supplemental documents; exact observed paths retained in SOURCE_SNAPSHOT.json",
+    "chronology": "Initial dirty observation is retained, not silently rewritten. Later evidence was verified against clean local 05c8cd8. Remote exactness was reported by root, not network-verified by packager.",
+    "officialOpenFheCommit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+    "projectSourceGitBlobsVerified": 81,
+    "officialFullPathFilesVerified": 53,
+    "supplementalHeader": {
+      "path": "inputs/supplemental/ciphertext-fwd.h",
+      "bytes": 3890,
+      "sha256": "deb7550169a8b673105609313562e036bd48827a065eec41a27c414ebe710a10",
+      "gitBlob": "35dcbcd41327e6966c2d0c0ac7518db3cabee508"
+    }
+  },
+  "sourceGitleaks": {
+    "command": "env -u GITLEAKS_CONFIG -u GITLEAKS_CONFIG_TOML gitleaks dir . --redact --no-banner --no-color --report-format json --report-path - --gitleaks-ignore-path /dev/null --ignore-gitleaks-allow --max-archive-depth 2 --max-decode-depth 5 --max-target-megabytes 10",
+    "cwd": "/Users/lifeng/Documents/20231788-openfhe-zcode-repeated-probe-review-20260904",
+    "version": "8.30.1",
+    "exitCode": 0,
+    "signal": null,
+    "error": null,
+    "report": [],
+    "stderr": "11:28PM INF scanned ~7170289 bytes (7.17 MB) in 1.66s\n11:28PM INF no leaks found\n"
+  },
+  "sourceSupplementalScan": {
+    "kind": "supplemental-filename-and-content-scan",
+    "roots": [
+      "TASK.md",
+      "SOURCE_SNAPSHOT.json",
+      "inputs",
+      "policy"
+    ],
+    "files": 193,
+    "bytes": 5885478,
+    "deniedFilenameRegex": "(^|\\/)(\\.git|node_modules|build|dist|\\.cache|__pycache__|\\.env(?:\\.[^/]*)?|\\.DS_Store|Cookies|Login Data|History|Local State|id_rsa|id_ed25519|credentials(?:\\.json)?)(\\/|$)|\\.(?:sqlite3?|db|key|pem|p12|pfx)$",
+    "contentPatterns": [
+      [
+        "private-key",
+        "-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----"
+      ],
+      [
+        "aws-access",
+        "AKIA[0-9A-Z]{16}"
+      ],
+      [
+        "provider-key",
+        "sk-(?:proj-|ant-)?[A-Za-z0-9_-]{24,}"
+      ],
+      [
+        "github-token",
+        "(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,})"
+      ],
+      [
+        "literal-bearer",
+        "Authorization\\s*[:=]\\s*[\"']?Bearer\\s+[A-Za-z0-9._-]{20,}"
+      ],
+      [
+        "session-cookie",
+        "(?:__Secure-next-auth\\.session-token|__Secure-authjs\\.session-token)\\s*=\\s*[^*;\\s]{20,}"
+      ],
+      [
+        "jwt",
+        "eyJ[A-Za-z0-9_-]{15,}\\.[A-Za-z0-9_-]{15,}\\.[A-Za-z0-9_-]{10,}"
+      ],
+      [
+        "signed-url",
+        "[?&](?:X-Amz-Signature|X-Goog-Signature|access_token|session_token)=[A-Za-z0-9%_-]{16,}"
+      ]
+    ],
+    "findings": [],
+    "symlinks": 0,
+    "nonregular": 0,
+    "projectGitBlobsVerified": 81,
+    "officialFullBlobsVerified": 53,
+    "supplementalSourceVerified": true,
+    "sourceManifest": "155 payload plus one self-manifest",
+    "candidateManifest": "22 payload plus two declared self-exclusions",
+    "normalization": "none; inputs copied/extracted without rewriting",
+    "limit": "Pattern checks and a clean maintained scan are evidence, not a guarantee."
+  },
+  "finalArchiveGitleaks": {
+    "command": "env -u GITLEAKS_CONFIG -u GITLEAKS_CONFIG_TOML gitleaks dir distribution --redact --no-banner --no-color --report-format json --report-path - --gitleaks-ignore-path /dev/null --ignore-gitleaks-allow --max-archive-depth 3 --max-decode-depth 5 --max-target-megabytes 10",
+    "cwd": "/Users/lifeng/Documents/20231788-openfhe-zcode-repeated-probe-review-20260904",
+    "version": "8.30.1",
+    "exitCode": 0,
+    "signal": null,
+    "error": null,
+    "report": [],
+    "stderr": "11:33PM INF scanned ~7305207 bytes (7.31 MB) in 3.26s\n11:33PM INF no leaks found\n"
+  },
+  "finalDecodedVerification": {
+    "decodedFiles": 197,
+    "decodedBytes": 6020396,
+    "manifestPayloadEntries": 196,
+    "selfExcluded": [
+      "MANIFEST.json"
+    ],
+    "closureAndHashesExact": true,
+    "expandedSourceMembersEqualOriginalArchive": 156,
+    "expandedCandidateMembersEqualOriginalArchive": 24,
+    "supplementalFindings": [],
+    "symlinks": 0,
+    "nonregular": 0,
+    "manifestBytes": 129878,
+    "manifestSha256": "187c0b6c74b4dc5acd94fc7272e0aede17990c2920f349d0fe8f12da7fa2f078",
+    "currentMainHead": "05c8cd873070144b0c74b0f0c5cde93420924d46",
+    "currentMainStatus": "",
+    "mainCodeDiffFromFrozen774": "empty",
+    "reviewOutputsPresent": []
+  },
+  "method": {
+    "archiveBuild": "Explicit manifest paths supplied to zip -q -X <archive> -@; no recursive workspace capture.",
+    "crc": "unzip -t distribution/repeated-mult2-zcode-local-static-774fe2d-05c8cd8.zip",
+    "archiveIdentity": "File byte length and SHA-256 of the frozen ZIP.",
+    "closure": "All decoded members enumerated; exact 196 manifest payload entries plus MANIFEST.json; per-file bytes/SHA-256 checked. Expanded source 156 and candidate 24 files byte-compared against original ZIP members. Path traversal, case collision, nonregular/symlink and encryption checks passed.",
+    "supplemental": "Recorded filename/content deny patterns applied to all 197 final decoded files; zero findings.",
+    "scansBoundary": "Zero findings are measured scanner results, not a guarantee that no secret exists.",
+    "receiptBoundary": "This receipt lives outside the frozen archive to avoid recursive hashes. It is not part of the 196-entry payload manifest."
+  },
+  "rootIndependentChecks": [
+    "Recompute frozen ZIP size and SHA-256; do not rebuild unnecessarily.",
+    "Confirm 197-member exact closure, 196 payload entries plus manifest, and manifest identity.",
+    "Confirm original ZIP identities and all source/candidate expanded members are unchanged.",
+    "Confirm six current evidence files match committed 05c8cd8 blobs, with source code still frozen at 774fe2d.",
+    "Read TASK.md scope, candidate-first order, known-finding reconciliation, no unconfirmed client-setup seam adoption, and output-only contract.",
+    "Confirm empty output/ and zero measured maintained/supplemental scan findings.",
+    "Before any later authorized dispatch, verify the actual UI agent/model identity; do not represent a prepared package as completed review."
+  ],
+  "rootIndependentVerificationReported": {
+    "provenance": "Root message to packager; not claimed as packager's own separate execution.",
+    "archiveSizeShaClosure": true,
+    "sourceAndCandidateByteClosure": true,
+    "sixEvidenceFilesAgainst05c8": true,
+    "taskSizeSha": true,
+    "gitleaksVersion": "8.30.1",
+    "archiveDepth": 3,
+    "decodeDepth": 5,
+    "scannedBytes": 7305207,
+    "findings": 0
+  }
+}
