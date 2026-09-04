@@ -8,15 +8,16 @@ implementation-complete claim.
 
 - Branch: `codex/lossless-io-implementation-01`.
 - Implementation source base: `4ccc8fd2e7617625d27e58a53eb3489e99466ed4`.
-- Task overlay commit: `20320489e076f5dc37bbc36f05d9448f2a92f046`.
+- Final reviewed task overlay commit:
+  `6fb991f4e850eaa3b389e33b871704186f20e2db`.
 - Last independently hosted engineering bytes:
   `4ecbd972429884489918d9f82dfc3fe9f702ef4a`.
 - Pristine OpenFHE pin:
   `df495ba2e91739a6dc8f1de254fc5a41155ce504`.
 - Retained hosted run for the unchanged 57-test engineering tree:
   `33892550947` (Linux 57/57 and Windows 57/57).
-- Task bytes: 20,451; SHA-256
-  `48a0bf044e96810280bafbeea436095e531a2f76d1dfefc7b4af54ad89b5830e`.
+- Task bytes: 23,380; SHA-256
+  `95087208602ae132d793fd260e42eb4a57dc045cceceaf02015e726422cb5a1e`.
 
 The task is placed at packet-root `TASK.md`.  It is the active assignment and
 wins over all older design notes.  Files below `project/` are exact Git blobs
