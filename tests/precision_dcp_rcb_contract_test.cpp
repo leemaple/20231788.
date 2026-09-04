@@ -1,0 +1,705 @@
+#include "openfhe.h"
+#include "openfhe_2023_1788/double_ckks.h"
+#include "precision_dcp_rcb_fixture.h"
+
+#include <boost/math/constants/constants.hpp>
+#include <boost/multiprecision/cpp_dec_float.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <complex>
+#include <cstddef>
+#include <cstdint>
+#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+
+namespace {
+
+using BigFloat = precision_dcp_rcb_test::BigFloat;
+using BigInt = boost::multiprecision::cpp_int;
+using MpComplex = precision_dcp_rcb_test::MpComplex;
+using lbcrypto::Ciphertext;
+using lbcrypto::CryptoContext;
+using lbcrypto::DCRTPoly;
+using lbcrypto::NativeInteger;
+using openfhe_2023_1788::CiphertextPair;
+using openfhe_2023_1788::DoubleCKKS;
+using openfhe_2023_1788::PairLifecycle;
+using openfhe_2023_1788::ReadOnlyCiphertext;
+
+constexpr char kTestName[] = "precision_dcp_rcb_high_precision_contract";
+constexpr std::uint32_t kRingDimension = 64;
+constexpr std::uint32_t kBatchSize = 16;
+constexpr std::uint32_t kMultiplicativeDepth = 7;
+constexpr std::uint32_t kScalingModSize = 50;
+constexpr std::uint32_t kFirstModSize = 55;
+constexpr std::uint32_t kDigitSize = 0;
+constexpr std::uint32_t kMaxRelinSkDeg = 2;
+constexpr std::uint32_t kScaleBits = 100;
+constexpr std::uint32_t kAcceptanceBits = 80;
+constexpr std::size_t kMinimumWrapHeadroomBits = 128;
+constexpr std::size_t kFreshKeyTrials = 4;
+constexpr std::uint32_t kCyclotomicOrder = 128;
+
+class TestFailure final : public std::runtime_error {
+public:
+    using std::runtime_error::runtime_error;
+};
+
+void Check(bool condition, const std::string& message) {
+    if (!condition) {
+        throw TestFailure(message);
+    }
+}
+
+BigFloat Pow2Float(std::uint32_t bits) {
+    BigFloat result = 1;
+    for (std::uint32_t bit = 0; bit < bits; ++bit) {
+        result *= 2;
+    }
+    return result;
+}
+
+BigFloat ToBigFloat(const BigInt& value) {
+    return BigFloat(value.convert_to<std::string>());
+}
+
+BigInt Abs(const BigInt& value) {
+    return value < 0 ? -value : value;
+}
+
+BigInt PositiveMod(BigInt value, const BigInt& modulus) {
+    value %= modulus;
+    if (value < 0) {
+        value += modulus;
+    }
+    return value;
+}
+
+BigInt Center(const BigInt& residue, const BigInt& modulus) {
+    BigInt centered = PositiveMod(residue, modulus);
+    if (centered > modulus / 2) {
+        centered -= modulus;
+    }
+    return centered;
+}
+
+BigInt ExtendedGcd(BigInt left, BigInt right, BigInt& x, BigInt& y) {
+    if (right == 0) {
+        x = 1;
+        y = 0;
+        return left;
+    }
+    BigInt nextX;
+    BigInt nextY;
+    const BigInt gcd = ExtendedGcd(right, left % right, nextX, nextY);
+    x = nextY;
+    y = nextX - (left / right) * nextY;
+    return gcd;
+}
+
+BigInt ModInverse(const BigInt& value, const BigInt& modulus) {
+    BigInt x;
+    BigInt y;
+    const BigInt gcd = ExtendedGcd(PositiveMod(value, modulus), modulus, x, y);
+    Check(gcd == 1, "CRT oracle received non-coprime moduli");
+    return PositiveMod(x, modulus);
+}
+
+BigInt Product(const std::vector<BigInt>& values) {
+    BigInt result = 1;
+    for (const auto& value : values) {
+        result *= value;
+    }
+    return result;
+}
+
+std::size_t BitLength(const BigInt& value) {
+    Check(value > 0, "bit-length input must be positive");
+    return static_cast<std::size_t>(boost::multiprecision::msb(value)) + 1U;
+}
+
+BigInt ReconstructCentered(const std::vector<BigInt>& residues,
+                           const std::vector<BigInt>& moduli) {
+    Check(!moduli.empty() && residues.size() == moduli.size(),
+          "CRT oracle residue/modulus shape mismatch");
+    const BigInt modulus = Product(moduli);
+    BigInt result = 0;
+    for (std::size_t index = 0; index < moduli.size(); ++index) {
+        const BigInt partial = modulus / moduli[index];
+        result += PositiveMod(residues[index], moduli[index]) * partial *
+                  ModInverse(partial, moduli[index]);
+    }
+    return Center(result, modulus);
+}
+
+DCRTPoly ToCoefficient(const DCRTPoly& polynomial) {
+    DCRTPoly result(polynomial);
+    result.SetFormat(Format::COEFFICIENT);
+    return result;
+}
+
+std::vector<BigInt> GetModuli(const DCRTPoly& polynomial) {
+    std::vector<BigInt> result;
+    result.reserve(polynomial.GetAllElements().size());
+    for (const auto& tower : polynomial.GetAllElements()) {
+        result.emplace_back(tower.GetModulus().ConvertToInt());
+    }
+    return result;
+}
+
+std::vector<NativeInteger> GetNativeModuli(const DCRTPoly& polynomial) {
+    std::vector<NativeInteger> result;
+    result.reserve(polynomial.GetAllElements().size());
+    for (const auto& tower : polynomial.GetAllElements()) {
+        result.push_back(tower.GetModulus());
+    }
+    return result;
+}
+
+std::vector<BigInt> TowerResidues(const DCRTPoly& coefficientPolynomial,
+                                  std::size_t towerIndex) {
+    const auto& values = coefficientPolynomial.GetAllElements().at(towerIndex).GetValues();
+    std::vector<BigInt> result;
+    result.reserve(values.GetLength());
+    for (std::size_t coefficient = 0; coefficient < values.GetLength(); ++coefficient) {
+        result.emplace_back(values.at(coefficient).ConvertToInt());
+    }
+    return result;
+}
+
+std::vector<BigInt> NegacyclicProductMod(const std::vector<BigInt>& left,
+                                         const std::vector<BigInt>& right,
+                                         const BigInt& modulus) {
+    Check(left.size() == right.size() && !left.empty(),
+          "negacyclic modular product shape mismatch");
+    const std::size_t size = left.size();
+    std::vector<BigInt> result(size, 0);
+    for (std::size_t i = 0; i < size; ++i) {
+        for (std::size_t j = 0; j < size; ++j) {
+            const BigInt term = left[i] * right[j];
+            const std::size_t rawIndex = i + j;
+            if (rawIndex < size) {
+                result[rawIndex] += term;
+            }
+            else {
+                result[rawIndex - size] -= term;
+            }
+        }
+    }
+    for (auto& coefficient : result) {
+        coefficient = PositiveMod(coefficient, modulus);
+    }
+    return result;
+}
+
+void AddModInPlace(std::vector<BigInt>& accumulator,
+                   const std::vector<BigInt>& addend,
+                   const BigInt& modulus) {
+    Check(accumulator.size() == addend.size(), "modular vector-add shape mismatch");
+    for (std::size_t index = 0; index < accumulator.size(); ++index) {
+        accumulator[index] = PositiveMod(accumulator[index] + addend[index], modulus);
+    }
+}
+
+struct DecryptionOracleResult final {
+    std::vector<BigInt> coefficients;
+    std::vector<BigInt> moduli;
+    BigInt modulus;
+};
+
+DecryptionOracleResult IndependentDecrypt(
+    const ReadOnlyCiphertext& ciphertext,
+    const lbcrypto::PrivateKey<DCRTPoly>& secretKey) {
+    Check(ciphertext != nullptr, "independent decryption received a null ciphertext");
+    Check(secretKey != nullptr, "independent decryption received a null secret key");
+    Check(!ciphertext->GetElements().empty(),
+          "independent decryption received no RLWE components");
+
+    std::vector<DCRTPoly> components;
+    components.reserve(ciphertext->GetElements().size());
+    for (const auto& element : ciphertext->GetElements()) {
+        components.push_back(ToCoefficient(element));
+    }
+    const DCRTPoly secret = ToCoefficient(secretKey->GetPrivateElement());
+    const auto moduli = GetModuli(components.front());
+    Check(!moduli.empty(), "independent decryption received an empty RNS basis");
+    Check(secret.GetAllElements().size() >= moduli.size(),
+          "secret-key basis is shorter than ciphertext basis");
+
+    const std::size_t ringDimension = components.front().GetParams()->GetRingDimension();
+    for (const auto& component : components) {
+        Check(component.GetParams()->GetRingDimension() == ringDimension,
+              "ciphertext components disagree on ring dimension");
+        Check(GetModuli(component) == moduli,
+              "ciphertext components disagree on ordered RNS basis");
+    }
+
+    std::vector<std::vector<BigInt>> coefficientResidues(
+        ringDimension, std::vector<BigInt>(moduli.size(), 0));
+    for (std::size_t tower = 0; tower < moduli.size(); ++tower) {
+        Check(BigInt(secret.GetAllElements().at(tower).GetModulus().ConvertToInt()) ==
+                  moduli[tower],
+              "secret-key tower does not match ciphertext tower");
+        const auto secretResidues = TowerResidues(secret, tower);
+        Check(secretResidues.size() == ringDimension,
+              "secret-key coefficient vector has wrong length");
+
+        std::vector<BigInt> decrypted = TowerResidues(components.front(), tower);
+        Check(decrypted.size() == ringDimension,
+              "ciphertext coefficient vector has wrong length");
+        std::vector<BigInt> secretPower(ringDimension, 0);
+        secretPower.front() = 1;
+        for (std::size_t component = 1; component < components.size(); ++component) {
+            secretPower = NegacyclicProductMod(secretPower, secretResidues, moduli[tower]);
+            const auto componentResidues = TowerResidues(components[component], tower);
+            const auto term =
+                NegacyclicProductMod(componentResidues, secretPower, moduli[tower]);
+            AddModInPlace(decrypted, term, moduli[tower]);
+        }
+        for (std::size_t coefficient = 0; coefficient < ringDimension; ++coefficient) {
+            coefficientResidues[coefficient][tower] = decrypted[coefficient];
+        }
+    }
+
+    DecryptionOracleResult result{{}, moduli, Product(moduli)};
+    result.coefficients.reserve(ringDimension);
+    for (const auto& residues : coefficientResidues) {
+        result.coefficients.push_back(ReconstructCentered(residues, moduli));
+    }
+    return result;
+}
+
+bool DcrtEqual(const DCRTPoly& left, const DCRTPoly& right) {
+    const DCRTPoly leftCoefficient = ToCoefficient(left);
+    const DCRTPoly rightCoefficient = ToCoefficient(right);
+    const auto& leftTowers = leftCoefficient.GetAllElements();
+    const auto& rightTowers = rightCoefficient.GetAllElements();
+    if (leftTowers.size() != rightTowers.size()) {
+        return false;
+    }
+    for (std::size_t tower = 0; tower < leftTowers.size(); ++tower) {
+        if (leftTowers[tower].GetModulus() != rightTowers[tower].GetModulus()) {
+            return false;
+        }
+        const auto& leftValues = leftTowers[tower].GetValues();
+        const auto& rightValues = rightTowers[tower].GetValues();
+        if (leftValues.GetLength() != rightValues.GetLength()) {
+            return false;
+        }
+        for (std::size_t coefficient = 0; coefficient < leftValues.GetLength(); ++coefficient) {
+            if (leftValues.at(coefficient) != rightValues.at(coefficient)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+MpComplex Add(const MpComplex& left, const MpComplex& right) {
+    return {left.real + right.real, left.imag + right.imag};
+}
+
+MpComplex Subtract(const MpComplex& left, const MpComplex& right) {
+    return {left.real - right.real, left.imag - right.imag};
+}
+
+MpComplex Multiply(const MpComplex& left, const MpComplex& right) {
+    return {left.real * right.real - left.imag * right.imag,
+            left.real * right.imag + left.imag * right.real};
+}
+
+BigFloat Magnitude(const MpComplex& value) {
+    using boost::multiprecision::sqrt;
+    return sqrt(value.real * value.real + value.imag * value.imag);
+}
+
+MpComplex RootForExponent(std::uint32_t exponent) {
+    const BigFloat pi = boost::math::constants::pi<BigFloat>();
+    const BigFloat angle =
+        BigFloat(2) * pi * BigFloat(exponent) / BigFloat(kCyclotomicOrder);
+    using boost::multiprecision::cos;
+    using boost::multiprecision::sin;
+    return {cos(angle), sin(angle)};
+}
+
+MpComplex DirectEvaluate(const std::vector<BigInt>& coefficients,
+                         std::uint32_t exponent,
+                         std::uint32_t scaleBits) {
+    const MpComplex root = RootForExponent(exponent);
+    MpComplex accumulator{BigFloat(0), BigFloat(0)};
+    for (auto coefficient = coefficients.rbegin(); coefficient != coefficients.rend();
+         ++coefficient) {
+        accumulator = Add(Multiply(accumulator, root),
+                          {ToBigFloat(*coefficient), BigFloat(0)});
+    }
+    const BigFloat scale = Pow2Float(scaleBits);
+    accumulator.real /= scale;
+    accumulator.imag /= scale;
+    return accumulator;
+}
+
+std::array<std::uint32_t, kBatchSize> CanonicalExponents() {
+    return {1U, 5U, 25U, 125U, 113U, 53U, 9U, 45U,
+            97U, 101U, 121U, 93U, 81U, 21U, 105U, 13U};
+}
+
+std::vector<MpComplex> DirectCanonicalEvaluate(
+    const std::vector<BigInt>& coefficients,
+    std::uint32_t scaleBits) {
+    std::vector<MpComplex> result;
+    result.reserve(kBatchSize);
+    for (const std::uint32_t exponent : CanonicalExponents()) {
+        result.push_back(DirectEvaluate(coefficients, exponent, scaleBits));
+    }
+    return result;
+}
+
+std::vector<MpComplex> X2WitnessTable() {
+    return {
+        {BigFloat("0.99518472667219688624483695310947992157547486872985706183361296578489016689458654"), BigFloat("0.098017140329560601994195563888641845861136673167500567257264979809387302789087537")},
+        {BigFloat("0.88192126434835502971275686366038834950844262067472798063253861671206664704500350"), BigFloat("0.47139673682599764855638762590525437765746031893248062140161403100883522166516175")},
+        {BigFloat("-0.77301045336273696081090660975846980097104129290080960935640289668795060530598730"), BigFloat("0.63439328416364549821517161322549337067568709484172160643382471869668672612354839")},
+        {BigFloat("0.95694033573220886493579788698026996948284920563003726130120719988416014536816082"), BigFloat("-0.29028467725446236763619237581739527469147627832415111142066711312539289829945745")},
+        {BigFloat("0.098017140329560601994195563888641845861136673167500567257264979809387302789087537"), BigFloat("-0.99518472667219688624483695310947992157547486872985706183361296578489016689458654")},
+        {BigFloat("0.47139673682599764855638762590525437765746031893248062140161403100883522166516175"), BigFloat("-0.88192126434835502971275686366038834950844262067472798063253861671206664704500350")},
+        {BigFloat("0.63439328416364549821517161322549337067568709484172160643382471869668672612354839"), BigFloat("0.77301045336273696081090660975846980097104129290080960935640289668795060530598730")},
+        {BigFloat("-0.29028467725446236763619237581739527469147627832415111142066711312539289829945745"), BigFloat("-0.95694033573220886493579788698026996948284920563003726130120719988416014536816082")},
+        {BigFloat("-0.99518472667219688624483695310947992157547486872985706183361296578489016689458654"), BigFloat("-0.098017140329560601994195563888641845861136673167500567257264979809387302789087537")},
+        {BigFloat("-0.88192126434835502971275686366038834950844262067472798063253861671206664704500350"), BigFloat("-0.47139673682599764855638762590525437765746031893248062140161403100883522166516175")},
+        {BigFloat("0.77301045336273696081090660975846980097104129290080960935640289668795060530598730"), BigFloat("-0.63439328416364549821517161322549337067568709484172160643382471869668672612354839")},
+        {BigFloat("-0.95694033573220886493579788698026996948284920563003726130120719988416014536816082"), BigFloat("0.29028467725446236763619237581739527469147627832415111142066711312539289829945745")},
+        {BigFloat("-0.098017140329560601994195563888641845861136673167500567257264979809387302789087537"), BigFloat("0.99518472667219688624483695310947992157547486872985706183361296578489016689458654")},
+        {BigFloat("-0.47139673682599764855638762590525437765746031893248062140161403100883522166516175"), BigFloat("0.88192126434835502971275686366038834950844262067472798063253861671206664704500350")},
+        {BigFloat("-0.63439328416364549821517161322549337067568709484172160643382471869668672612354839"), BigFloat("-0.77301045336273696081090660975846980097104129290080960935640289668795060530598730")},
+        {BigFloat("0.29028467725446236763619237581739527469147627832415111142066711312539289829945745"), BigFloat("0.95694033573220886493579788698026996948284920563003726130120719988416014536816082")},
+    };
+}
+
+void CheckCanonicalOracleWitnesses() {
+    const BigInt witnessScale = BigInt(1) << 90U;
+    const BigFloat tolerance("1e-70");
+    std::vector<BigInt> coefficients(kRingDimension, 0);
+
+    coefficients[0] = witnessScale;
+    auto actual = DirectCanonicalEvaluate(coefficients, 90U);
+    for (const auto& value : actual) {
+        Check(Magnitude(Subtract(value, {BigFloat(1), BigFloat(0)})) <= tolerance,
+              "constant canonical witness failed");
+    }
+
+    std::fill(coefficients.begin(), coefficients.end(), BigInt(0));
+    coefficients[32] = witnessScale;
+    actual = DirectCanonicalEvaluate(coefficients, 90U);
+    for (const auto& value : actual) {
+        Check(Magnitude(Subtract(value, {BigFloat(0), BigFloat(1)})) <= tolerance,
+              "X^32 canonical phase witness failed");
+    }
+
+    std::fill(coefficients.begin(), coefficients.end(), BigInt(0));
+    coefficients[2] = witnessScale;
+    actual = DirectCanonicalEvaluate(coefficients, 90U);
+    const auto expected = X2WitnessTable();
+    for (std::size_t slot = 0; slot < expected.size(); ++slot) {
+        Check(Magnitude(Subtract(actual[slot], expected[slot])) <= tolerance,
+              "X^2 canonical ordering witness failed at slot " + std::to_string(slot));
+    }
+}
+
+std::vector<MpComplex> ExpectedValues() {
+    const BigFloat p40 = BigFloat(1) / Pow2Float(40);
+    const BigFloat p45 = BigFloat(1) / Pow2Float(45);
+    const BigFloat p60 = BigFloat(1) / Pow2Float(60);
+    const BigFloat p65 = BigFloat(1) / Pow2Float(65);
+    const BigFloat p70 = BigFloat(1) / Pow2Float(70);
+    const BigFloat p73 = BigFloat(1) / Pow2Float(73);
+    const BigFloat p80 = BigFloat(1) / Pow2Float(80);
+    return {
+        {BigFloat("0.125"), BigFloat("-0.0625")},
+        {BigFloat("0.125") + p70, BigFloat("-0.0625") + p73},
+        {BigFloat("0.123456789012345678901234567890"), BigFloat("-0.234567890123456789012345678901")},
+        {BigFloat("-0.314159265358979323846264338327"), BigFloat("0.271828182845904523536028747135")},
+        {-p60, p65},
+        {BigFloat("1.234567890123456789e-19"), BigFloat("-9.876543210987654321e-19")},
+        {BigFloat(0), BigFloat(0)},
+        {BigFloat("-0.499999999999999999999999999999"), BigFloat("0.333333333333333333333333333333")},
+        {p40, -p45},
+        {BigFloat("-0.125") - p70, BigFloat("0.0625") - p73},
+        {BigFloat("0.2"), BigFloat("-0.142857142857142857142857142857")},
+        {BigFloat("1.23456789e-28"), BigFloat("-9.87654321e-28")},
+        {BigFloat("0.375"), BigFloat("-0.4375")},
+        {BigFloat("-0.0009765625"), BigFloat("0.001953125")},
+        {BigFloat("0.411111111111111111111111111111"), BigFloat("-0.377777777777777777777777777777")},
+        {BigFloat(0), p80},
+    };
+}
+
+CryptoContext<DCRTPoly> MakeContext() {
+    lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
+    parameters.SetMultiplicativeDepth(kMultiplicativeDepth);
+    parameters.SetScalingModSize(kScalingModSize);
+    parameters.SetFirstModSize(kFirstModSize);
+    parameters.SetScalingTechnique(lbcrypto::FIXEDMANUAL);
+    parameters.SetKeySwitchTechnique(lbcrypto::HYBRID);
+    parameters.SetDigitSize(kDigitSize);
+    parameters.SetMaxRelinSkDeg(kMaxRelinSkDeg);
+    parameters.SetSecretKeyDist(lbcrypto::UNIFORM_TERNARY);
+    parameters.SetSecurityLevel(lbcrypto::HEStd_NotSet);
+    parameters.SetRingDim(kRingDimension);
+    parameters.SetBatchSize(kBatchSize);
+    parameters.SetCKKSDataType(lbcrypto::COMPLEX);
+
+    auto context = lbcrypto::GenCryptoContext(parameters);
+    context->Enable(lbcrypto::PKE);
+    context->Enable(lbcrypto::KEYSWITCH);
+    context->Enable(lbcrypto::LEVELEDSHE);
+    return context;
+}
+
+void CheckBinary64NegativeControl(const CryptoContext<DCRTPoly>& context,
+                                  const std::vector<MpComplex>& expected) {
+    Check(expected.size() >= 2, "negative control requires slots zero and one");
+    Check(expected[0].real != expected[1].real && expected[0].imag != expected[1].imag,
+          "multiprecision source values unexpectedly coincide");
+
+    const std::complex<double> base(expected[0].real.convert_to<double>(),
+                                    expected[0].imag.convert_to<double>());
+    const std::complex<double> shifted(expected[1].real.convert_to<double>(),
+                                       expected[1].imag.convert_to<double>());
+    Check(base == shifted,
+          "selected sub-ULP source delta unexpectedly survived binary64 conversion");
+
+    const auto basePlaintext =
+        context->MakeCKKSPackedPlaintext(std::vector<std::complex<double>>{base}, 2, 0);
+    const auto shiftedPlaintext =
+        context->MakeCKKSPackedPlaintext(std::vector<std::complex<double>>{shifted}, 2, 0);
+    Check(DcrtEqual(basePlaintext->GetElement<DCRTPoly>(),
+                    shiftedPlaintext->GetElement<DCRTPoly>()),
+          "standard encoding of identical binary64 controls produced different DCRT elements");
+}
+
+void CheckCiphertextState(const ReadOnlyCiphertext& ciphertext,
+                          const CryptoContext<DCRTPoly>& context,
+                          const std::vector<NativeInteger>& expectedModuli,
+                          std::size_t expectedLevel,
+                          std::size_t expectedNoiseScaleDegree,
+                          double expectedScalingFactor,
+                          std::uint32_t expectedSlots,
+                          const std::string& expectedKeyTag,
+                          const std::string& label) {
+    Check(ciphertext != nullptr, label + " is null");
+    Check(ciphertext->GetCryptoContext().get() == context.get(),
+          label + " context identity mismatch");
+    Check(ciphertext->GetEncodingType() == lbcrypto::CKKS_PACKED_ENCODING,
+          label + " encoding metadata mismatch");
+    Check(ciphertext->GetLevel() == expectedLevel, label + " level mismatch");
+    Check(ciphertext->GetNoiseScaleDeg() == expectedNoiseScaleDegree,
+          label + " scale-degree mismatch");
+    Check(ciphertext->GetScalingFactor() == expectedScalingFactor,
+          label + " recorded scale mismatch");
+    Check(ciphertext->GetSlots() == expectedSlots, label + " slot count mismatch");
+    Check(ciphertext->GetKeyTag() == expectedKeyTag, label + " key tag mismatch");
+    Check(ciphertext->NumberCiphertextElements() == 2,
+          label + " must contain exactly two RLWE components");
+    for (const auto& component : ciphertext->GetElements()) {
+        Check(component.GetFormat() == Format::EVALUATION,
+              label + " component format mismatch");
+        Check(GetNativeModuli(component) == expectedModuli,
+              label + " ordered RNS basis mismatch");
+    }
+}
+
+void CheckPairState(const CiphertextPair& pair,
+                    const ReadOnlyCiphertext& input,
+                    const CryptoContext<DCRTPoly>& context,
+                    const std::vector<NativeInteger>& fullModuli) {
+    Check(pair.GetContextIdentity() == context.get(), "DCP pair context mismatch");
+    Check(pair.GetLifecycle() == PairLifecycle::ReadyForFirstMult,
+          "DCP pair lifecycle mismatch");
+    Check(pair.GetLevel() == 1, "DCP pair level mismatch");
+    Check(pair.GetNoiseScaleDegree() == 2, "DCP pair scale-degree mismatch");
+    Check(pair.GetRecordedScalingFactor() == std::ldexp(1.0, 100),
+          "DCP pair recorded scale mismatch");
+    Check(pair.GetSlots() == kBatchSize, "DCP pair slot count mismatch");
+    Check(pair.GetFormat() == Format::EVALUATION,
+          "DCP pair format mismatch");
+    Check(pair.GetComponentCount() == 2, "DCP pair component count mismatch");
+    Check(pair.GetKeyTag() == input->GetKeyTag(), "DCP pair key tag mismatch");
+    Check(fullModuli.size() >= 3, "DCP fixture generated too few towers");
+    const std::vector<NativeInteger> expectedPrefix(fullModuli.begin(), fullModuli.end() - 1);
+    Check(pair.GetOrderedModuli() == expectedPrefix,
+          "DCP pair did not preserve the exact ordered prefix basis");
+    Check(pair.GetDivisor() == fullModuli.back(),
+          "DCP pair divisor is not the removed final tower");
+    Check(pair.GetPaperScale().inputRecordedScalingFactor == std::ldexp(1.0, 100),
+          "DCP paper descriptor input scale mismatch");
+    Check(pair.GetPaperScale().divisor == pair.GetDivisor(),
+          "DCP paper descriptor divisor mismatch");
+    Check(pair.GetPaperScale().approximateRecombinedLogicalScalingFactor ==
+              static_cast<long double>(std::ldexp(1.0, 100)),
+          "DCP recombined logical scale mismatch");
+    const long double expectedHighScale =
+        static_cast<long double>(std::ldexp(1.0, 100)) /
+        static_cast<long double>(pair.GetDivisor().ConvertToInt());
+    Check(pair.GetPaperScale().approximateLogicalScalingFactor == expectedHighScale,
+          "DCP high logical scale mismatch");
+
+    CheckCiphertextState(pair.GetHigh(), context, expectedPrefix, 1, 2,
+                         std::ldexp(1.0, 100), kBatchSize, input->GetKeyTag(),
+                         "DCP high member");
+    CheckCiphertextState(pair.GetLow(), context, expectedPrefix, 1, 2,
+                         std::ldexp(1.0, 100), kBatchSize, input->GetKeyTag(),
+                         "DCP low member");
+}
+
+BigInt MaximumAbsolute(const std::vector<BigInt>& coefficients) {
+    BigInt maximum = 0;
+    for (const auto& coefficient : coefficients) {
+        if (Abs(coefficient) > maximum) {
+            maximum = Abs(coefficient);
+        }
+    }
+    return maximum;
+}
+
+BigFloat MaximumSlotError(const std::vector<MpComplex>& actual,
+                          const std::vector<MpComplex>& expected) {
+    Check(actual.size() == expected.size(), "actual/expected slot count mismatch");
+    BigFloat maximum = 0;
+    for (std::size_t slot = 0; slot < expected.size(); ++slot) {
+        const BigFloat error = Magnitude(Subtract(actual[slot], expected[slot]));
+        if (error > maximum) {
+            maximum = error;
+        }
+    }
+    return maximum;
+}
+
+void RunContract() {
+    const auto expected = ExpectedValues();
+    Check(expected.size() == kBatchSize, "literal expected vector must contain 16 slots");
+    CheckCanonicalOracleWitnesses();
+
+    auto context = MakeContext();
+    Check(context != nullptr, "context generation returned null");
+    const auto parameters =
+        std::dynamic_pointer_cast<lbcrypto::CryptoParametersCKKSRNS>(
+            context->GetCryptoParameters());
+    Check(parameters != nullptr, "generated context is not CKKS-RNS");
+    Check(parameters->GetScalingTechnique() == lbcrypto::FIXEDMANUAL,
+          "generated context scaling technique mismatch");
+    Check(parameters->GetScalingFactorReal(0) == std::ldexp(1.0, 50),
+          "generated base scaling factor is not exact 2^50");
+
+    CheckBinary64NegativeControl(context, expected);
+    const auto plaintext =
+        precision_dcp_rcb_test::MakePrecisionPlaintext(context, expected, kScaleBits);
+    Check(plaintext != nullptr, "precision fixture returned null plaintext");
+    Check(plaintext->GetEncodingType() == lbcrypto::CKKS_PACKED_ENCODING,
+          "precision plaintext encoding metadata mismatch");
+    Check(plaintext->GetLevel() == 0, "precision plaintext level mismatch");
+    Check(plaintext->GetNoiseScaleDeg() == 2,
+          "precision plaintext scale-degree mismatch");
+    Check(plaintext->GetScalingFactor() == std::ldexp(1.0, 100),
+          "precision plaintext recorded scale mismatch");
+    Check(plaintext->GetSlots() == kBatchSize,
+          "precision plaintext slot count mismatch");
+    Check(plaintext->GetElement<DCRTPoly>().GetFormat() == Format::EVALUATION,
+          "precision plaintext element format mismatch");
+    const auto fullModuli = GetNativeModuli(plaintext->GetElement<DCRTPoly>());
+    Check(!fullModuli.empty(), "precision plaintext has empty RNS basis");
+
+    DoubleCKKS module(context);
+    const BigFloat tolerance = BigFloat(1) / Pow2Float(kAcceptanceBits);
+    const MpComplex expectedDelta{BigFloat(1) / Pow2Float(70),
+                                  BigFloat(1) / Pow2Float(73)};
+
+    for (std::size_t trial = 0; trial < kFreshKeyTrials; ++trial) {
+        const auto keys = context->KeyGen();
+        Check(keys.good(), "fresh key generation failed at trial " + std::to_string(trial));
+        const auto encrypted = context->Encrypt(plaintext, keys.publicKey);
+        const ReadOnlyCiphertext input = encrypted;
+        CheckCiphertextState(input, context, fullModuli, 0, 2,
+                             std::ldexp(1.0, 100), kBatchSize,
+                             input->GetKeyTag(), "DCP input");
+
+        const auto pair = module.DCP(input);
+        CheckPairState(pair, input, context, fullModuli);
+        const auto recombined = module.RCB(pair);
+        const ReadOnlyCiphertext output = recombined;
+        const std::vector<NativeInteger> retainedModuli(fullModuli.begin(),
+                                                        fullModuli.end() - 1);
+        CheckCiphertextState(output, context, retainedModuli, 1, 2,
+                             std::ldexp(1.0, 100), kBatchSize,
+                             input->GetKeyTag(), "RCB output");
+
+        const auto decrypted = IndependentDecrypt(output, keys.secretKey);
+        Check(decrypted.coefficients.size() == kRingDimension,
+              "independent decryption returned wrong ring dimension");
+        const BigInt maximumCoefficient = MaximumAbsolute(decrypted.coefficients);
+        Check(maximumCoefficient > 0,
+              "independent decryption unexpectedly returned the zero polynomial");
+        Check((maximumCoefficient << kMinimumWrapHeadroomBits) < decrypted.modulus / 2,
+              "independent result lacks the frozen 128-bit non-wrap headroom");
+        const std::size_t modulusBits = BitLength(decrypted.modulus);
+        const std::size_t coefficientBits = BitLength(maximumCoefficient);
+        const std::size_t headroomBits = modulusBits > coefficientBits
+            ? modulusBits - coefficientBits
+            : 0;
+
+        const auto actual = DirectCanonicalEvaluate(decrypted.coefficients, kScaleBits);
+        Check(actual.size() == expected.size(), "direct evaluator returned wrong slot count");
+        const MpComplex actualDelta = Subtract(actual[1], actual[0]);
+        const BigFloat deltaError = Magnitude(Subtract(actualDelta, expectedDelta));
+        const BigFloat maximumError = MaximumSlotError(actual, expected);
+        Check(deltaError <= tolerance,
+              "sub-ULP delta error exceeded frozen 2^-80 at trial " +
+                  std::to_string(trial) + ": " +
+                  deltaError.str(50, std::ios_base::scientific));
+        Check(maximumError <= tolerance,
+              "all-slot maximum error exceeded frozen 2^-80 at trial " +
+                  std::to_string(trial) + ": " +
+                  maximumError.str(50, std::ios_base::scientific));
+
+        std::cout << std::setprecision(18)
+                  << "test=" << kTestName
+                  << " trial=" << trial
+                  << " security_level=HEStd_NotSet(functional-diagnostic-only)"
+                  << " key_switch=HYBRID"
+                  << " ckks_data_type=COMPLEX"
+                  << " N=" << kRingDimension
+                  << " batch=" << kBatchSize
+                  << " depth=" << kMultiplicativeDepth
+                  << " scaling_mod_size=" << kScalingModSize
+                  << " first_mod_size=" << kFirstModSize
+                  << " scale_bits=" << kScaleBits
+                  << " q_div=" << pair.GetDivisor()
+                  << " active_modulus_bits=" << modulusBits
+                  << " maximum_coefficient_bits=" << coefficientBits
+                  << " approximate_headroom_bits=" << headroomBits
+                  << " delta_error=" << deltaError.str(40, std::ios_base::scientific)
+                  << " max_slot_error=" << maximumError.str(40, std::ios_base::scientific)
+                  << '\n';
+    }
+}
+
+}  // namespace
+
+int main() {
+    try {
+        RunContract();
+        std::cout << kTestName << "=PASS\n";
+        return 0;
+    }
+    catch (const TestFailure& error) {
+        std::cerr << kTestName << "=FAIL: " << error.what() << '\n';
+        return 1;
+    }
+}

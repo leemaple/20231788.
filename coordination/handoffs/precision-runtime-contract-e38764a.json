@@ -1,0 +1,45 @@
+{
+  "sourceCommit": "e38764ab16bc638182d95ff259943eee0987d537",
+  "testName": "precision_dcp_rcb_high_precision_contract",
+  "stage": "runtime RED contract, frozen before fixture-only GREEN",
+  "parameters": {
+    "ringDimension": 64,
+    "batchSize": 16,
+    "depth": 7,
+    "scalingModSize": 50,
+    "firstModSize": 55,
+    "keySwitch": "HYBRID",
+    "scalingTechnique": "FIXEDMANUAL",
+    "dataType": "COMPLEX",
+    "secretDistribution": "UNIFORM_TERNARY",
+    "scaleBits": 100,
+    "acceptanceBits": 80,
+    "minimumCenteredCoefficientHeadroomBits": 128,
+    "freshKeyTrials": 4
+  },
+  "frozenFiles": [
+    {
+      "path": "tests/precision_dcp_rcb_contract_test.cpp",
+      "sha256": "ad677414499c3e98e7f798ed940d587cb35c6cc791c7b0f81166ca1e6917f854"
+    },
+    {
+      "path": "tests/precision_dcp_rcb_fixture.h",
+      "sha256": "4b7b1c4f2670f5dc93e8d28f1ad585a47bb9cf4b81130bb45200a3af82e6b554"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "ab5a9873f90f5ab7d292dca4e54684e1242102ac469e0810f71508b26e39c91b"
+    },
+    {
+      "path": ".github/workflows/dcp-rcb.yml",
+      "sha256": "e3e1d23250b73f70747a3681975e3da870d1f337a3e2f54e674bb05a8900f951"
+    }
+  ],
+  "redFixtureSha256": "f47a2b2f0446a97b62e77f41c1a1b36d759e07c7eb1b003e2b2b842383e23017",
+  "proposedCorrectedGreenFixtureSha256": "4bcd633c3fb4b6ad4fa5d2088908e7992ccd50dec0d3b826fe976e590a3aa596",
+  "allowedGreenCodeChanges": [
+    "tests/precision_dcp_rcb_fixture.cpp"
+  ],
+  "fullSuiteRegistrationCount": 54,
+  "claimBoundary": "Only diagnostic DCP-to-RCB transport, not first Mult2/repeated use/production lossless IO/paper-scale security/performance."
+}
