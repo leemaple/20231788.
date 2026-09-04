@@ -300,7 +300,9 @@ RED or implement later pairs speculatively:
 1. `0001-red-lossless-client-io-first-mult2-tracer.patch` adds only the positive
    end-to-end semantic tracer, independent arithmetic/transform oracles,
    and the directly reviewed malformed public/private key shape cases needed
-   to prove official primitive calls are safe,
+   to prove official primitive calls are safe.  This slice also binds the
+   positive-rational value semantics and decoded-value lifetime needed by that
+   tracer.  It adds the
    CMake/CTest registration, exact branch trigger
    `codex/lossless-io-implementation-01`, and the same focused test step in both
    Linux and Windows jobs.  It contains no production implementation.  The
@@ -362,9 +364,13 @@ two ordered pairs above must cumulatively prove all of the following:
   are destroyed.
 
 Use one freshly generated matching keypair and evaluation key for the frozen
-diagnostic unless an exact source constraint requires more; report that change
-before claiming success.  Test catches must be narrow, diagnostic-specific and
-verify the rest of observable state is unchanged.
+positive diagnostic.  The final disposable shared-`Params` drift fixture may
+use one additional isolated matching keypair; it needs an evaluation key only
+if that fixture actually reaches evaluator arithmetic.  This explicit isolated
+fixture is not a profile change requiring user confirmation.  Any other key
+count change must be reported before claiming success.  Test catches must be
+narrow, diagnostic-specific and verify the rest of observable state is
+unchanged.
 
 Print one parseable success record containing the test name, exact source/pin,
 N/S/gap/profile, actual `qDiv/qL`, exact scale numerator/denominator, maximum
