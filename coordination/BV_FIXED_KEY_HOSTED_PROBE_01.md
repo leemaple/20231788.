@@ -55,3 +55,59 @@ Codex observes exact-SHA CI, retains full project logs and checks actual53-name
 closure plus new certificate fields. ZCode must independently review the final
 candidate/evidence at a subsequent boundary; its current precision precursor
 review remains uninterrupted. Pro first-Mult2 precision work runs independently.
+
+## First hosted observation: dual-platform PASS
+
+Exact source5b5a4152076d43868a9dbad193807f2ede25e04d was pushed and its
+remote branch SHA matched. Run33866620400 completed SUCCESS:
+https://github.com/leemaple/20231788./actions/runs/33866620400
+Linux job101002832323:53/53,1.00s total, completed19:12:00 Asia/Shanghai.
+Windows job101002832196:53/53,2.13s total, completed19:17:28 Asia/Shanghai.
+Both default warning-as-error builds and all five explicit public API build
+steps succeeded. Linux used a verified pristine-install cache; Windows actually
+configured/built pristine OpenFHE1.5.0. No Mac compile or crypto run occurred.
+
+Retained full project configure/build/CTest/API log sections:
+- artifacts/tdd/bv-fixed-key-bound/linux.txt
+  SHA256 fbcf6bc8ab594853585efb17c18e7d3020162bc9231a0e9bba40e064d6604903
+- artifacts/tdd/bv-fixed-key-bound/windows.txt
+  SHA256 acfb4fb457182de8c6e923971bdc571bd6dacfa21f2c5a255019e37edf0c79e1
+Only ANSI/CR/trailing whitespace normalized in these new retained logs.
+Codex matched both actual53 unique PASS names to current CMake, exact closure.
+An initial ad-hoc closure command had an extra closing brace and did not run;
+its corrected read-only parser passed. No source/test/log was changed to fix
+that command. This was not a compiler or CTest failure.
+
+All four actually generated BV keys (REAL/COMPLEX per host) reported seven
+active residual rows,zero final high digit,centered boundary probe PASS,
+nontrivial fixed-key per-path/pair bounds, explicit integer-lift/non-wrap PASS,
+independent coefficient PASS and unchanged1e-3 functional tolerance.
+Per-path bounds / pair bounds, respectively:
+- Linux REAL:4879082475520 /9758164951040
+- Linux COMPLEX:3813930631168 /7627861262336
+- Windows REAL:2714419113984 /5428838227968
+- Windows COMPLEX:3813930610688 /7627861221376
+
+Separately from the hosted tests, Codex recomputed the logged key bounds from
+all seven exact moduli/radii and row residual norms with BigInt arithmetic,
+rechecked every observed high/low/pair error, independently cross-multiplied
+both no-wrap conditions and verified the conservative coefficient numerator/
+denominator comparison. All four records matched exactly. These lightweight
+log calculations are not new cryptographic executions or independent key draws.
+Complete API-step metadata and exact per-case checks are retained in
+coordination/evidence/bv-fixed-key-bound/dual-platform-5b5a415.json.
+
+This is FIRST-OBSERVED GREEN for the additive diagnostic, not manufactured
+feature TDD. The candidate oracle hash is unchanged from the frozen reviewed
+92a2f03c...0538d. There was no threshold/vector/formula tuning after execution.
+The fixed-key bound is source-backed and ciphertext-uniform for each specified
+key/basis; downstream integer-lift checks remain input-envelope-specific.
+PER_PATH_CONDITIONAL,conservative_E_Relin_available=false,
+universal_theorem_gate=UNPROVED and the separate candidate status are retained.
+No all-key Gaussian-tail, >53-bit precision, repeated multiplication,
+paper-scale/security/performance or full completion claim follows.
+
+Independent ZCode final review of this exact candidate/result remains pending;
+do not confuse its previous theoretical lead with a final code review.
+The branch remains isolated and unmerged. Pro first-Mult2 precision drafting
+and ZCode precursor audit continue independently, without interruption.
