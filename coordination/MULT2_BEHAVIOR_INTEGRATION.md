@@ -51,3 +51,21 @@ After that verified runtime red, the scaffold was replaced only by the exact
 Pro composition return RS2(Relin2(Tensor2(left, right))). No upstream algorithm,
 test vector, tolerance or correction factor was changed. Candidate-green hosted
 execution is pending; no successful multiplication result is claimed yet.
+
+## Subsequent authoritative results
+
+Windows red completed in run33838194537, job100914915298:39/40 passed,
+only the intended Mult2 scaffold failure,0.78s. Both hosts now prove the same red.
+Minimal production commit59143025e0b6a64c94ec099e43dabbd059ddeb4f triggered
+run33838399740. Linux job100915499092 completed success:40/40,0.45s;
+warning build and all configured explicit API steps passed. Windows job
+100915498888 is live building pristine OpenFHE. Do not restart or cancel it.
+Relevant raw sections are retained beside red-linux.txt.
+
+Next owner Codex: collect Windows terminal green; then inspect/integrate the
+independent cpp_int e2e certificate oracle, followed by scoped negative tests,
+one reviewable coverage boundary at a time. Preserve host vectors and the frozen
+tolerance; do not tune them to fit results. Add verbose focused hosted output
+for numerical certificates before claiming measured error values. The returned
+oracle has NOT yet been integrated or executed. Add/Sub Pro task and RS2 Pro
+follow-up remain live; no duplicate task submission or interruption occurred.
