@@ -672,6 +672,12 @@ CiphertextPair DoubleCKKS::Add(const CiphertextPair& left, const CiphertextPair&
     return result;
 }
 
+CiphertextPair DoubleCKKS::Sub(const CiphertextPair& left, const CiphertextPair& right) const {
+    (void)left;
+    (void)right;
+    throw std::logic_error("DoubleCKKS: Sub is not implemented");
+}
+
 void DoubleCKKS::ValidatePairCompatibility(const CiphertextPair& left, const CiphertextPair& right,
                                            const char* operationName) const {
     const std::string operation(operationName);

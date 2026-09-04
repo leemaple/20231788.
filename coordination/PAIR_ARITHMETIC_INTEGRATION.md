@@ -85,3 +85,26 @@ implementation; no test was weakened. This is the first Add behavior slice,
 not yet the full coefficient/lifecycle/negative matrix or independent final review.
 Next owner Codex: Sub API red, scaffold, independent literal subtraction runtime
 red/green; then returned exact coefficient/lifecycle/negative coverage.
+
+## Sub API: real compile red retained before the scaffold
+
+Observed 2026-09-04 13:46 CST, source43bbe9d3ef0d4da262772b51a7b3b6a9102a5c14,
+run https://github.com/leemaple/20231788./actions/runs/33841224322 completed failure.
+Linux job100923761068:42/42 runtime tests,0.49s; Windows100923760882:42/42,1.03s.
+Warning/default build, Relin2/RS2 API and Add API steps passed before the explicit
+Sub API target failed: Sub is not a member of openfhe_2023_1788::DoubleCKKS.
+The complete project configure/build/CTest/API log sections were saved under
+artifacts/tdd/pair-sub-api/red-{linux,windows}.txt BEFORE any production Sub edit.
+
+The seven-line public declaration/throwing scaffold is integrated from Pro's
+reviewed patch06, retaining the existing std::logic_error classification for
+missing greenfield behavior instead of misclassifying it as invalid user input.
+The public const signature is unchanged. No subtraction arithmetic, validation
+or speculative capability is implemented at this API-only boundary. Hosted API
+green is pending. No Mac compilation or crypto execution occurred.
+
+Next runtime slice will use Pro's explicit plaintext vectors(2.25,-1.5,4.0) and
+(0.75,2.0,-3.5), and an independent literal expected difference(1.5,-3.5,7.5),
+with a frozen functional1e-6 absolute tolerance and finite output guard before
+any arithmetic green. The returned shape-only test is insufficient on its own.
+Only after actual runtime red is saved may the inspected minimal Sub body land.
