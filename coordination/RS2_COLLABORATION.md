@@ -35,7 +35,11 @@ Recorded: 2026-09-04, Asia/Shanghai. This records observations, not final accept
 
 ## Remaining gates
 
-- Run exact G2 on Linux/GCC and Windows/MinGW64; retain complete relevant green or failure evidence.
+- G2 commit `ed00f3518d65223a482e1e9db54111eb24573f2c` passed both Linux/GCC and Windows/MinGW64 warning builds and all 39 tests in Actions run `33831920036`; complete CTest result sections are retained in `artifacts/tdd/rs2-valid-arithmetic/green.txt`. The remote branch matched that exact commit.
 - Add/verify remaining public-pipeline, mutation, fail-fast terminal-lifecycle, and deeper immutability coverage. Pro's full alternative R2 test has not been applied or executed.
 - Obtain/reconcile exact-current review after hardening. The truncated Fable result is not treated as full review closure; shared ZCode quota must be rechecked before any new ZCode dispatch.
 - Mult2, required pair Add/Sub, end-to-end accuracy/theorem evidence, and final integration remain separate unfinished requirements.
+
+## Additional return retrieval
+
+On 2026-09-04, retrieved Pro's already-completed ZIP again through its observed authenticated browser download, without resubmitting a message or changing the response. The same 51,922-byte ZIP hash was verified. The exact alternative test file is now retained at `coordination/returns/rs2-pro-7629f44/final-tree/tests/rs2_test.cpp` (47,161 bytes; SHA-256 `6d7ed9d97851e84e393a2d5e328dc30b2f34bf687288cae3b01ccf53de93d117`). Gitleaks scanned this retained file with zero findings. It is a review input, not compiled production-test coverage. Its polynomial snapshots retain pointer identities but still need independent parameter-value snapshots to prove pointed-to parameter immutability.
