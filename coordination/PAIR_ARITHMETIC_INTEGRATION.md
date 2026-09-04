@@ -288,3 +288,20 @@ First hosted result is pending. No Mac compilation/crypto, full precision,
 repeated multiplication, universal error-bound or combined-branch acceptance
 is claimed. Any actual failure must be retained and diagnosed before editing
 expectations. Owner: Codex integration, followed by independent static review.
+
+## Compatibility/malformed-operand regression observed on both hosts
+
+Exact source 4b170183f29b415329c232a17ea1924acdd0d954, run
+https://github.com/leemaple/20231788./actions/runs/33852796677:
+Linux job 100959175670: 46/46, 0.52s;
+Windows job 100959175902: 46/46, 1.69s.
+The new pair_arithmetic_compatibility_rejections case passed in 0.01s and
+0.07s respectively. Warning-clean default and explicit Relin2/RS2/Add/Sub API
+builds passed on both hosts. Exact run head_sha matched the pushed source.
+Complete project configure/build/CTest/API sections are retained under
+artifacts/tdd/pair-compatibility-rejections/ with ANSI/CR/trailing whitespace
+only normalized. This is the first hosted execution of the additional negative
+matrix; no production change or invented red-green cycle is claimed.
+Independent final static review and combined-branch tests remain next gates.
+Full precision, repeated multiplication and the general error-bound obligation
+remain open. No Mac compilation or cryptographic test was executed.
