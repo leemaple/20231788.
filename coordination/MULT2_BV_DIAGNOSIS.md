@@ -44,3 +44,23 @@ Owner Codex; external Pro/Fable5.1 escalation will include the exact red and
 diagnostic data, complete pristine references and current source. Fable's prior
 403 is not a successful review and must not be relabelled. Ordinary waits do not
 block the parallel Add/Sub TDD track.
+
+## Diagnostic reproduction on both platforms
+
+Original matrix3087ff8 also failed on Windows job100919538008:42/44,1.18s,
+same two BV cases. Diagnostic revisionbda8791 run33840176712 completed with
+the same42/44 on Linux0.71s and Windows1.18s. Basis-agreement checks reached
+the diagnostic point on all cases. The original and instrumented matrices thus
+reproduced this failure in8 independently generated BV fixtures across two hosts;
+this is a repeatable observed sample, not a probability/seed guarantee.
+
+Measured ordinary-E / pair-error / h in diagnostic runs:
+- Linux REAL:197331007675 /323602105437 /43;
+- Linux COMPLEX:181218269350 /223094194606 /44;
+- Windows REAL:190622642352 /254980207580 /47;
+- Windows COMPLEX:200349662290 /316191854996 /50.
+
+HYBRID stayed green. These data falsify using that one ordinary measurement as
+this run's pair bound; they do not by themselves decide whether a correct
+per-path bound would clear the production Relin2 implementation. Root-cause
+adjudication remains pending. Tagged diagnostic logs remain until then.

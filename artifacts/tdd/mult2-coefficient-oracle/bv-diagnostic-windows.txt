@@ -1,0 +1,491 @@
+Source: bda879104c8a8b1ba6ac9301385b5b1919bef440
+Run33840176712, Windows job100920696992.42/44 tests,1.18s;
+same BV REAL/COMPLEX empirical-bound failure. No production/threshold change.
+Hosted project output below; ANSI/CR removed.
+
+2026-09-04T05:27:15.7394671Z ##[group]Run prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-04T05:27:15.7395147Z prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-04T05:27:15.7395481Z build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T05:27:15.7395773Z cmake -S . -B "$build" \
+2026-09-04T05:27:15.7396025Z   -DCMAKE_BUILD_TYPE=Debug \
+2026-09-04T05:27:15.7396295Z   -DCMAKE_PREFIX_PATH="$prefix"
+2026-09-04T05:27:15.7398369Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-04T05:27:15.7398639Z env:
+2026-09-04T05:27:15.7398873Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T05:27:15.7399249Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-04T05:27:15.7399552Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-04T05:27:15.7399834Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-04T05:27:15.7400150Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-04T05:27:15.7400538Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33840176712-1
+2026-09-04T05:27:15.7400938Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33840176712-1
+2026-09-04T05:27:15.7401247Z   MSYSTEM: MINGW64
+2026-09-04T05:27:15.7401421Z ##[endgroup]
+2026-09-04T05:27:16.1249852Z -- Building for: Ninja
+2026-09-04T05:27:16.1250227Z -- The CXX compiler identification is GNU 16.2.0
+2026-09-04T05:27:16.1715522Z -- Detecting CXX compiler ABI info
+2026-09-04T05:27:16.5394237Z -- Detecting CXX compiler ABI info - done
+2026-09-04T05:27:16.5727300Z -- Check for working CXX compiler: D:/a/_temp/msys64/mingw64/bin/c++.exe - skipped
+2026-09-04T05:27:16.5732389Z -- Detecting CXX compile features
+2026-09-04T05:27:16.5742246Z -- Detecting CXX compile features - done
+2026-09-04T05:27:16.6057718Z -- Configuring done (0.6s)
+2026-09-04T05:27:16.6509644Z -- Generating done (0.0s)
+2026-09-04T05:27:16.6526782Z -- Build files have been written to: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:27:16.6753825Z ##[group]Run build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T05:27:16.6754318Z build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T05:27:16.6754689Z cmake --build "$build" --parallel 2
+2026-09-04T05:27:16.6756863Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-04T05:27:16.6757188Z env:
+2026-09-04T05:27:16.6757497Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T05:27:16.6757924Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-04T05:27:16.6758300Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-04T05:27:16.6758622Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-04T05:27:16.6758980Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-04T05:27:16.6759596Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33840176712-1
+2026-09-04T05:27:16.6760027Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33840176712-1
+2026-09-04T05:27:16.6760422Z   MSYSTEM: MINGW64
+2026-09-04T05:27:16.6760699Z ##[endgroup]
+2026-09-04T05:27:27.7038293Z [1/16] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.obj
+2026-09-04T05:27:27.7987058Z [2/16] Linking CXX static library libopenfhe_2023_1788.a
+2026-09-04T05:27:31.5441001Z [3/16] Building CXX object CMakeFiles/tensor2_api_contract_test.dir/tests/tensor2_api_contract_test.cpp.obj
+2026-09-04T05:27:40.2003973Z [4/16] Building CXX object CMakeFiles/dcp_rcb_test.dir/tests/dcp_rcb_test.cpp.obj
+2026-09-04T05:27:51.1456422Z [5/16] Building CXX object CMakeFiles/tensor2_test.dir/tests/tensor2_test.cpp.obj
+2026-09-04T05:28:10.2325889Z [6/16] Building CXX object CMakeFiles/rs2_test.dir/tests/rs2_test.cpp.obj
+2026-09-04T05:28:21.4124448Z [7/16] Building CXX object CMakeFiles/relin2_test.dir/tests/relin2_test.cpp.obj
+2026-09-04T05:28:22.4236060Z [8/16] Building CXX object CMakeFiles/mult2_test.dir/tests/mult2_test.cpp.obj
+2026-09-04T05:28:22.6662114Z [9/16] Linking CXX executable dcp_rcb_test.exe
+2026-09-04T05:28:22.7982316Z [10/16] Linking CXX executable tensor2_api_contract_test.exe
+2026-09-04T05:28:23.0378646Z [11/16] Linking CXX executable tensor2_test.exe
+2026-09-04T05:28:23.2975427Z [12/16] Linking CXX executable relin2_test.exe
+2026-09-04T05:28:23.5134339Z [13/16] Linking CXX executable rs2_test.exe
+2026-09-04T05:28:23.7390794Z [14/16] Linking CXX executable mult2_test.exe
+2026-09-04T05:28:40.2481860Z [15/16] Building CXX object CMakeFiles/mult2_e2e_oracle_test.dir/tests/mult2_e2e_oracle_test.cpp.obj
+2026-09-04T05:28:40.4708306Z [16/16] Linking CXX executable mult2_e2e_oracle_test.exe
+2026-09-04T05:28:40.4925069Z ##[group]Run build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T05:28:40.4925542Z build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T05:28:40.4925980Z cmake --build "$build" --target relin2_api_contract_test --parallel 2
+2026-09-04T05:28:40.4928083Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-04T05:28:40.4928351Z env:
+2026-09-04T05:28:40.4928594Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T05:28:40.4928948Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-04T05:28:40.4929287Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-04T05:28:40.4929569Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-04T05:28:40.4929870Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-04T05:28:40.4930224Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33840176712-1
+2026-09-04T05:28:40.4930619Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33840176712-1
+2026-09-04T05:28:40.4930934Z   MSYSTEM: MINGW64
+2026-09-04T05:28:40.4931165Z ##[endgroup]
+2026-09-04T05:28:43.9902942Z [1/2] Building CXX object CMakeFiles/relin2_api_contract_test.dir/tests/relin2_api_contract_test.cpp.obj
+2026-09-04T05:28:44.0747037Z [2/2] Linking CXX executable relin2_api_contract_test.exe
+2026-09-04T05:28:44.0980990Z ##[group]Run build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T05:28:44.0981455Z build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T05:28:44.0981872Z cmake --build "$build" --target rs2_api_contract_test --parallel 2
+2026-09-04T05:28:44.0984360Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-04T05:28:44.0984630Z env:
+2026-09-04T05:28:44.0984870Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T05:28:44.0985236Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-04T05:28:44.0985537Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-04T05:28:44.0985811Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-04T05:28:44.0986122Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-04T05:28:44.0986477Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33840176712-1
+2026-09-04T05:28:44.0987044Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33840176712-1
+2026-09-04T05:28:44.0987360Z   MSYSTEM: MINGW64
+2026-09-04T05:28:44.0987578Z ##[endgroup]
+2026-09-04T05:28:47.6190873Z [1/2] Building CXX object CMakeFiles/rs2_api_contract_test.dir/tests/rs2_api_contract_test.cpp.obj
+2026-09-04T05:28:47.7054901Z [2/2] Linking CXX executable rs2_api_contract_test.exe
+2026-09-04T05:28:47.7262175Z ##[group]Run prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-04T05:28:47.7262683Z prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+2026-09-04T05:28:47.7263025Z build="$(cygpath -u "$PROJECT_BUILD")"
+2026-09-04T05:28:47.7263358Z export PATH="$prefix/bin:$prefix/lib:$PATH"
+2026-09-04T05:28:47.7263737Z ctest --test-dir "$build" --verbose --output-on-failure
+2026-09-04T05:28:47.7265892Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+2026-09-04T05:28:47.7266159Z env:
+2026-09-04T05:28:47.7266588Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+2026-09-04T05:28:47.7266965Z   OPENFHE_PREFIX: C:\openfhe-2023-1788\openfhe-install
+2026-09-04T05:28:47.7267266Z   WINDOWS_ROOT: C:\openfhe-2023-1788
+2026-09-04T05:28:47.7267534Z   PROJECT_SOURCE: C:\openfhe-2023-1788\cleanroom
+2026-09-04T05:28:47.7267844Z   OPENFHE_SOURCE: C:\openfhe-2023-1788\openfhe-src
+2026-09-04T05:28:47.7268335Z   OPENFHE_BUILD: C:\openfhe-2023-1788\openfhe-build-33840176712-1
+2026-09-04T05:28:47.7268748Z   PROJECT_BUILD: C:\openfhe-2023-1788\project-build-33840176712-1
+2026-09-04T05:28:47.7269062Z   MSYSTEM: MINGW64
+2026-09-04T05:28:47.7269247Z ##[endgroup]
+2026-09-04T05:28:47.9597947Z UpdateCTestConfiguration  from :C:/openfhe-2023-1788/project-build-33840176712-1/DartConfiguration.tcl
+2026-09-04T05:28:47.9621377Z Test project C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:47.9643036Z Constructing a list of tests
+2026-09-04T05:28:47.9654677Z Done constructing a list of tests
+2026-09-04T05:28:47.9656040Z Updating test list for fixtures
+2026-09-04T05:28:47.9656459Z Added 0 tests to meet fixture requirements
+2026-09-04T05:28:47.9661978Z Checking test dependency graph...
+2026-09-04T05:28:47.9662388Z Checking test dependency graph end
+2026-09-04T05:28:47.9664111Z test 1
+2026-09-04T05:28:47.9665538Z       Start  1: dcp_rcb
+2026-09-04T05:28:47.9667300Z 
+2026-09-04T05:28:47.9667877Z 1: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\dcp_rcb_test.exe
+2026-09-04T05:28:47.9668831Z 1: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:47.9669586Z 1: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.0503137Z 1: DCP/RCB independent-oracle tests passed
+2026-09-04T05:28:48.0515657Z  1/44 Test  #1: dcp_rcb ......................................   Passed    0.08 sec
+2026-09-04T05:28:48.0539714Z test 2
+2026-09-04T05:28:48.0540243Z       Start  2: tensor2_valid_arithmetic_immutability
+2026-09-04T05:28:48.0541859Z 
+2026-09-04T05:28:48.0542838Z 2: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\tensor2_test.exe "valid_arithmetic_immutability"
+2026-09-04T05:28:48.0544119Z 2: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.0544808Z 2: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.0749155Z 2: Tensor2 case passed: valid_arithmetic_immutability
+2026-09-04T05:28:48.0761372Z  2/44 Test  #2: tensor2_valid_arithmetic_immutability ........   Passed    0.02 sec
+2026-09-04T05:28:48.0766140Z test 3
+2026-09-04T05:28:48.0766472Z       Start  3: tensor2_result_scale_contract
+2026-09-04T05:28:48.0767640Z 
+2026-09-04T05:28:48.0768263Z 3: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\tensor2_test.exe "result_scale_contract"
+2026-09-04T05:28:48.0768885Z 3: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.0769273Z 3: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.0904348Z 3: Tensor2 case passed: result_scale_contract
+2026-09-04T05:28:48.0914179Z  3/44 Test  #3: tensor2_result_scale_contract ................   Passed    0.01 sec
+2026-09-04T05:28:48.0918405Z test 4
+2026-09-04T05:28:48.0918742Z       Start  4: tensor2_right_input_validation
+2026-09-04T05:28:48.0919763Z 
+2026-09-04T05:28:48.0920383Z 4: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\tensor2_test.exe "right_input_validation"
+2026-09-04T05:28:48.0923080Z 4: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.0923558Z 4: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.1038270Z 4: Tensor2 case passed: right_input_validation
+2026-09-04T05:28:48.1047371Z  4/44 Test  #4: tensor2_right_input_validation ...............   Passed    0.01 sec
+2026-09-04T05:28:48.1050927Z test 5
+2026-09-04T05:28:48.1051250Z       Start  5: tensor2_mutual_compatibility
+2026-09-04T05:28:48.1052350Z 
+2026-09-04T05:28:48.1052972Z 5: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\tensor2_test.exe "mutual_compatibility"
+2026-09-04T05:28:48.1053606Z 5: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.1053997Z 5: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.1177864Z 5: Tensor2 case passed: mutual_compatibility
+2026-09-04T05:28:48.1192193Z  5/44 Test  #5: tensor2_mutual_compatibility .................   Passed    0.01 sec
+2026-09-04T05:28:48.1196922Z test 6
+2026-09-04T05:28:48.1197456Z       Start  6: tensor2_prearithmetic_key_compatibility
+2026-09-04T05:28:48.1197909Z 
+2026-09-04T05:28:48.1198609Z 6: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\tensor2_test.exe "prearithmetic_key_compatibility"
+2026-09-04T05:28:48.1199752Z 6: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.1200486Z 6: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.1351609Z 6: Tensor2 case passed: prearithmetic_key_compatibility
+2026-09-04T05:28:48.1366712Z  6/44 Test  #6: tensor2_prearithmetic_key_compatibility ......   Passed    0.02 sec
+2026-09-04T05:28:48.1371141Z test 7
+2026-09-04T05:28:48.1371525Z       Start  7: relin2_tensor_validation_order
+2026-09-04T05:28:48.1372733Z 
+2026-09-04T05:28:48.1373359Z 7: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "tensor_validation_order"
+2026-09-04T05:28:48.1374450Z 7: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.1375136Z 7: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.1548580Z 7: Relin2 case passed: tensor_validation_order
+2026-09-04T05:28:48.1558500Z  7/44 Test  #7: relin2_tensor_validation_order ...............   Passed    0.02 sec
+2026-09-04T05:28:48.1562673Z test 8
+2026-09-04T05:28:48.1563190Z       Start  8: relin2_insufficient_active_basis
+2026-09-04T05:28:48.1564005Z 
+2026-09-04T05:28:48.1564660Z 8: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "insufficient_active_basis"
+2026-09-04T05:28:48.1565772Z 8: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.1566429Z 8: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.1712028Z 8: Relin2 case passed: insufficient_active_basis
+2026-09-04T05:28:48.1722552Z  8/44 Test  #8: relin2_insufficient_active_basis .............   Passed    0.02 sec
+2026-09-04T05:28:48.1726341Z test 9
+2026-09-04T05:28:48.1726684Z       Start  9: relin2_missing_eval_key
+2026-09-04T05:28:48.1727052Z 
+2026-09-04T05:28:48.1727805Z 9: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "missing_eval_key"
+2026-09-04T05:28:48.1728845Z 9: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.1729497Z 9: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.1888300Z 9: Relin2 case passed: missing_eval_key
+2026-09-04T05:28:48.1899162Z  9/44 Test  #9: relin2_missing_eval_key ......................   Passed    0.02 sec
+2026-09-04T05:28:48.1903863Z test 10
+2026-09-04T05:28:48.1904182Z       Start 10: relin2_key_empty
+2026-09-04T05:28:48.1904485Z 
+2026-09-04T05:28:48.1905137Z 10: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_empty"
+2026-09-04T05:28:48.1907027Z 10: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.1907686Z 10: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.2068705Z 10: Relin2 case passed: key_empty
+2026-09-04T05:28:48.2086043Z 10/44 Test #10: relin2_key_empty .............................   Passed    0.02 sec
+2026-09-04T05:28:48.2089103Z test 11
+2026-09-04T05:28:48.2089435Z       Start 11: relin2_key_null_first
+2026-09-04T05:28:48.2089846Z 
+2026-09-04T05:28:48.2090482Z 11: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_null_first"
+2026-09-04T05:28:48.2091507Z 11: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.2092176Z 11: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.2248009Z 11: Relin2 case passed: key_null_first
+2026-09-04T05:28:48.2260455Z 11/44 Test #11: relin2_key_null_first ........................   Passed    0.02 sec
+2026-09-04T05:28:48.2265569Z test 12
+2026-09-04T05:28:48.2265927Z       Start 12: relin2_key_wrong_context
+2026-09-04T05:28:48.2266300Z 
+2026-09-04T05:28:48.2266855Z 12: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_wrong_context"
+2026-09-04T05:28:48.2267925Z 12: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.2268598Z 12: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.2432921Z 12: Relin2 case passed: key_wrong_context
+2026-09-04T05:28:48.2443774Z 12/44 Test #12: relin2_key_wrong_context .....................   Passed    0.02 sec
+2026-09-04T05:28:48.2447569Z test 13
+2026-09-04T05:28:48.2447861Z       Start 13: relin2_key_wrong_tag
+2026-09-04T05:28:48.2448969Z 
+2026-09-04T05:28:48.2449658Z 13: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_wrong_tag"
+2026-09-04T05:28:48.2450694Z 13: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.2451413Z 13: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.2582588Z 13: Relin2 case passed: key_wrong_tag
+2026-09-04T05:28:48.2592417Z 13/44 Test #13: relin2_key_wrong_tag .........................   Passed    0.01 sec
+2026-09-04T05:28:48.2596291Z test 14
+2026-09-04T05:28:48.2596596Z       Start 14: relin2_key_wrong_subtype
+2026-09-04T05:28:48.2597681Z 
+2026-09-04T05:28:48.2598238Z 14: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_wrong_subtype"
+2026-09-04T05:28:48.2598854Z 14: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.2599238Z 14: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.2779604Z 14: Relin2 case passed: key_wrong_subtype
+2026-09-04T05:28:48.2790047Z 14/44 Test #14: relin2_key_wrong_subtype .....................   Passed    0.02 sec
+2026-09-04T05:28:48.2793541Z test 15
+2026-09-04T05:28:48.2793844Z       Start 15: relin2_key_hybrid_a_length
+2026-09-04T05:28:48.2794999Z 
+2026-09-04T05:28:48.2795696Z 15: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_hybrid_a_length"
+2026-09-04T05:28:48.2796310Z 15: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.2796684Z 15: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.2927956Z 15: Relin2 case passed: key_hybrid_a_length
+2026-09-04T05:28:48.2937792Z 15/44 Test #15: relin2_key_hybrid_a_length ...................   Passed    0.01 sec
+2026-09-04T05:28:48.2941128Z test 16
+2026-09-04T05:28:48.2941426Z       Start 16: relin2_key_hybrid_b_length
+2026-09-04T05:28:48.2942445Z 
+2026-09-04T05:28:48.2943020Z 16: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_hybrid_b_length"
+2026-09-04T05:28:48.2943652Z 16: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.2944039Z 16: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.3081269Z 16: Relin2 case passed: key_hybrid_b_length
+2026-09-04T05:28:48.3091029Z 16/44 Test #16: relin2_key_hybrid_b_length ...................   Passed    0.01 sec
+2026-09-04T05:28:48.3094639Z test 17
+2026-09-04T05:28:48.3094951Z       Start 17: relin2_key_hybrid_entry_basis
+2026-09-04T05:28:48.3096017Z 
+2026-09-04T05:28:48.3096891Z 17: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_hybrid_entry_basis"
+2026-09-04T05:28:48.3097552Z 17: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.3097933Z 17: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.3280301Z 17: Relin2 case passed: key_hybrid_entry_basis
+2026-09-04T05:28:48.3290608Z 17/44 Test #17: relin2_key_hybrid_entry_basis ................   Passed    0.02 sec
+2026-09-04T05:28:48.3294280Z test 18
+2026-09-04T05:28:48.3295044Z       Start 18: relin2_key_hybrid_entry_format
+2026-09-04T05:28:48.3295917Z 
+2026-09-04T05:28:48.3296418Z 18: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_hybrid_entry_format"
+2026-09-04T05:28:48.3297344Z 18: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.3297724Z 18: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.3489163Z 18: Relin2 case passed: key_hybrid_entry_format
+2026-09-04T05:28:48.3499578Z 18/44 Test #18: relin2_key_hybrid_entry_format ...............   Passed    0.02 sec
+2026-09-04T05:28:48.3503397Z test 19
+2026-09-04T05:28:48.3504209Z       Start 19: relin2_key_bv_zero_digit_a_length
+2026-09-04T05:28:48.3505058Z 
+2026-09-04T05:28:48.3505596Z 19: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_bv_zero_digit_a_length"
+2026-09-04T05:28:48.3506517Z 19: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.3506902Z 19: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.3656433Z 19: Relin2 case passed: key_bv_zero_digit_a_length
+2026-09-04T05:28:48.3666691Z 19/44 Test #19: relin2_key_bv_zero_digit_a_length ............   Passed    0.02 sec
+2026-09-04T05:28:48.3670123Z test 20
+2026-09-04T05:28:48.3670518Z       Start 20: relin2_key_bv_zero_digit_b_length
+2026-09-04T05:28:48.3671411Z 
+2026-09-04T05:28:48.3672000Z 20: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_bv_zero_digit_b_length"
+2026-09-04T05:28:48.3672892Z 20: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.3673267Z 20: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.3825173Z 20: Relin2 case passed: key_bv_zero_digit_b_length
+2026-09-04T05:28:48.3835160Z 20/44 Test #20: relin2_key_bv_zero_digit_b_length ............   Passed    0.02 sec
+2026-09-04T05:28:48.3838801Z test 21
+2026-09-04T05:28:48.3839545Z       Start 21: relin2_key_bv_nonzero_digit_a_length
+2026-09-04T05:28:48.3840293Z 
+2026-09-04T05:28:48.3840847Z 21: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_bv_nonzero_digit_a_length"
+2026-09-04T05:28:48.3841882Z 21: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.3842275Z 21: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.4039951Z 21: Relin2 case passed: key_bv_nonzero_digit_a_length
+2026-09-04T05:28:48.4050970Z 21/44 Test #21: relin2_key_bv_nonzero_digit_a_length .........   Passed    0.02 sec
+2026-09-04T05:28:48.4054974Z test 22
+2026-09-04T05:28:48.4055762Z       Start 22: relin2_key_bv_nonzero_digit_b_length
+2026-09-04T05:28:48.4056508Z 
+2026-09-04T05:28:48.4057018Z 22: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_bv_nonzero_digit_b_length"
+2026-09-04T05:28:48.4058187Z 22: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.4058562Z 22: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.4256317Z 22: Relin2 case passed: key_bv_nonzero_digit_b_length
+2026-09-04T05:28:48.4267311Z 22/44 Test #22: relin2_key_bv_nonzero_digit_b_length .........   Passed    0.02 sec
+2026-09-04T05:28:48.4270964Z test 23
+2026-09-04T05:28:48.4271475Z       Start 23: relin2_key_bv_zero_digit_entry_basis
+2026-09-04T05:28:48.4272401Z 
+2026-09-04T05:28:48.4273017Z 23: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_bv_zero_digit_entry_basis"
+2026-09-04T05:28:48.4273904Z 23: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.4274464Z 23: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.4426748Z 23: Relin2 case passed: key_bv_zero_digit_entry_basis
+2026-09-04T05:28:48.4436649Z 23/44 Test #23: relin2_key_bv_zero_digit_entry_basis .........   Passed    0.02 sec
+2026-09-04T05:28:48.4440163Z test 24
+2026-09-04T05:28:48.4440613Z       Start 24: relin2_key_bv_nonzero_digit_entry_basis
+2026-09-04T05:28:48.4441622Z 
+2026-09-04T05:28:48.4442246Z 24: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_bv_nonzero_digit_entry_basis"
+2026-09-04T05:28:48.4443206Z 24: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.4443596Z 24: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.4637024Z 24: Relin2 case passed: key_bv_nonzero_digit_entry_basis
+2026-09-04T05:28:48.4646579Z 24/44 Test #24: relin2_key_bv_nonzero_digit_entry_basis ......   Passed    0.02 sec
+2026-09-04T05:28:48.4650369Z test 25
+2026-09-04T05:28:48.4651138Z       Start 25: relin2_key_bv_zero_digit_entry_format
+2026-09-04T05:28:48.4651835Z 
+2026-09-04T05:28:48.4652380Z 25: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_bv_zero_digit_entry_format"
+2026-09-04T05:28:48.4653404Z 25: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.4653770Z 25: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.4809886Z 25: Relin2 case passed: key_bv_zero_digit_entry_format
+2026-09-04T05:28:48.4820145Z 25/44 Test #25: relin2_key_bv_zero_digit_entry_format ........   Passed    0.02 sec
+2026-09-04T05:28:48.4823856Z test 26
+2026-09-04T05:28:48.4824249Z       Start 26: relin2_key_bv_nonzero_digit_entry_format
+2026-09-04T05:28:48.4825317Z 
+2026-09-04T05:28:48.4826002Z 26: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_bv_nonzero_digit_entry_format"
+2026-09-04T05:28:48.4826648Z 26: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.4827041Z 26: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.5026455Z 26: Relin2 case passed: key_bv_nonzero_digit_entry_format
+2026-09-04T05:28:48.5037004Z 26/44 Test #26: relin2_key_bv_nonzero_digit_entry_format .....   Passed    0.02 sec
+2026-09-04T05:28:48.5041008Z test 27
+2026-09-04T05:28:48.5041440Z       Start 27: relin2_valid_arithmetic_state_immutability
+2026-09-04T05:28:48.5042549Z 
+2026-09-04T05:28:48.5043195Z 27: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "valid_arithmetic_state_immutability"
+2026-09-04T05:28:48.5043882Z 27: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.5044285Z 27: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.5391533Z 27: Relin2 case passed: valid_arithmetic_state_immutability
+2026-09-04T05:28:48.5402096Z 27/44 Test #27: relin2_valid_arithmetic_state_immutability ...   Passed    0.04 sec
+2026-09-04T05:28:48.5405918Z test 28
+2026-09-04T05:28:48.5406311Z       Start 28: relin2_controlled_witnesses_and_boundaries
+2026-09-04T05:28:48.5407358Z 
+2026-09-04T05:28:48.5408078Z 28: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "controlled_witnesses_and_boundaries"
+2026-09-04T05:28:48.5408839Z 28: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.5409215Z 28: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.5692780Z 28: Relin2 case passed: controlled_witnesses_and_boundaries
+2026-09-04T05:28:48.5703002Z 28/44 Test #28: relin2_controlled_witnesses_and_boundaries ...   Passed    0.03 sec
+2026-09-04T05:28:48.5706921Z test 29
+2026-09-04T05:28:48.5707484Z       Start 29: relin2_representative_public_input
+2026-09-04T05:28:48.5708430Z 
+2026-09-04T05:28:48.5709060Z 29: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "representative_public_input"
+2026-09-04T05:28:48.5709690Z 29: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.5710691Z 29: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.6073591Z 29: Relin2 case passed: representative_public_input
+2026-09-04T05:28:48.6084323Z 29/44 Test #29: relin2_representative_public_input ...........   Passed    0.04 sec
+2026-09-04T05:28:48.6088497Z test 30
+2026-09-04T05:28:48.6088793Z       Start 30: relin2_key_extra_later_valid
+2026-09-04T05:28:48.6089965Z 
+2026-09-04T05:28:48.6090558Z 30: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_extra_later_valid"
+2026-09-04T05:28:48.6091179Z 30: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.6091564Z 30: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.6442957Z 30: Relin2 case passed: key_extra_later_valid
+2026-09-04T05:28:48.6453202Z 30/44 Test #30: relin2_key_extra_later_valid .................   Passed    0.04 sec
+2026-09-04T05:28:48.6457024Z test 31
+2026-09-04T05:28:48.6457357Z       Start 31: relin2_key_malformed_later_ignored
+2026-09-04T05:28:48.6458518Z 
+2026-09-04T05:28:48.6459138Z 31: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "key_malformed_later_ignored"
+2026-09-04T05:28:48.6459789Z 31: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.6460179Z 31: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.6808281Z 31: Relin2 case passed: key_malformed_later_ignored
+2026-09-04T05:28:48.6819082Z 31/44 Test #31: relin2_key_malformed_later_ignored ...........   Passed    0.04 sec
+2026-09-04T05:28:48.6823100Z test 32
+2026-09-04T05:28:48.6823401Z       Start 32: relin2_hybrid_valid_shapes
+2026-09-04T05:28:48.6824538Z 
+2026-09-04T05:28:48.6825252Z 32: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "hybrid_valid_shapes"
+2026-09-04T05:28:48.6825858Z 32: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.6826256Z 32: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.7167473Z 32: Relin2 case passed: hybrid_valid_shapes
+2026-09-04T05:28:48.7178185Z 32/44 Test #32: relin2_hybrid_valid_shapes ...................   Passed    0.03 sec
+2026-09-04T05:28:48.7182220Z test 33
+2026-09-04T05:28:48.7182527Z       Start 33: relin2_bv_zero_digit_valid_shapes
+2026-09-04T05:28:48.7183706Z 
+2026-09-04T05:28:48.7184439Z 33: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "bv_zero_digit_valid_shapes"
+2026-09-04T05:28:48.7185083Z 33: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.7185451Z 33: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.7455441Z 33: Relin2 case passed: bv_zero_digit_valid_shapes
+2026-09-04T05:28:48.7466535Z 33/44 Test #33: relin2_bv_zero_digit_valid_shapes ............   Passed    0.03 sec
+2026-09-04T05:28:48.7470494Z test 34
+2026-09-04T05:28:48.7470836Z       Start 34: relin2_bv_nonzero_digit_valid_shapes
+2026-09-04T05:28:48.7471985Z 
+2026-09-04T05:28:48.7472643Z 34: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "bv_nonzero_digit_valid_shapes"
+2026-09-04T05:28:48.7473260Z 34: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.7473646Z 34: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.7855668Z 34: Relin2 case passed: bv_nonzero_digit_valid_shapes
+2026-09-04T05:28:48.7866126Z 34/44 Test #34: relin2_bv_nonzero_digit_valid_shapes .........   Passed    0.04 sec
+2026-09-04T05:28:48.7870058Z test 35
+2026-09-04T05:28:48.7870403Z       Start 35: relin2_first_recombined_rcb_validation
+2026-09-04T05:28:48.7871561Z 
+2026-09-04T05:28:48.7872477Z 35: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "first_recombined_rcb_validation"
+2026-09-04T05:28:48.7873360Z 35: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.7873727Z 35: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.7984031Z 35: Relin2 case passed: first_recombined_rcb_validation
+2026-09-04T05:28:48.7993981Z 35/44 Test #35: relin2_first_recombined_rcb_validation .......   Passed    0.01 sec
+2026-09-04T05:28:48.7997290Z test 36
+2026-09-04T05:28:48.7997671Z       Start 36: relin2_first_recombined_tensor2_validation
+2026-09-04T05:28:48.7998602Z 
+2026-09-04T05:28:48.7999271Z 36: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "first_recombined_tensor2_validation"
+2026-09-04T05:28:48.7999931Z 36: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.8000312Z 36: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.8116388Z 36: Relin2 case passed: first_recombined_tensor2_validation
+2026-09-04T05:28:48.8126216Z 36/44 Test #36: relin2_first_recombined_tensor2_validation ...   Passed    0.01 sec
+2026-09-04T05:28:48.8129571Z test 37
+2026-09-04T05:28:48.8129922Z       Start 37: relin2_tensor2_requires_first_lifecycle
+2026-09-04T05:28:48.8130899Z 
+2026-09-04T05:28:48.8131563Z 37: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\relin2_test.exe "tensor2_requires_first_lifecycle"
+2026-09-04T05:28:48.8132207Z 37: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.8132573Z 37: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.8320374Z 37: Relin2 case passed: tensor2_requires_first_lifecycle
+2026-09-04T05:28:48.8330459Z 37/44 Test #37: relin2_tensor2_requires_first_lifecycle ......   Passed    0.02 sec
+2026-09-04T05:28:48.8333837Z test 38
+2026-09-04T05:28:48.8334106Z       Start 38: rs2_wrong_lifecycle
+2026-09-04T05:28:48.8335336Z 
+2026-09-04T05:28:48.8335845Z 38: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\rs2_test.exe "wrong_lifecycle"
+2026-09-04T05:28:48.8336424Z 38: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.8336805Z 38: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.8449472Z 38: RS2 case passed: wrong_lifecycle
+2026-09-04T05:28:48.8458718Z 38/44 Test #38: rs2_wrong_lifecycle ..........................   Passed    0.01 sec
+2026-09-04T05:28:48.8462032Z test 39
+2026-09-04T05:28:48.8462373Z       Start 39: rs2_valid_arithmetic_state_immutability
+2026-09-04T05:28:48.8463416Z 
+2026-09-04T05:28:48.8464066Z 39: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\rs2_test.exe "valid_arithmetic_state_immutability"
+2026-09-04T05:28:48.8464712Z 39: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.8465077Z 39: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.8678465Z 39: RS2 case passed: valid_arithmetic_state_immutability
+2026-09-04T05:28:48.8689337Z 39/44 Test #39: rs2_valid_arithmetic_state_immutability ......   Passed    0.02 sec
+2026-09-04T05:28:48.8693583Z test 40
+2026-09-04T05:28:48.8694154Z       Start 40: mult2_composition_contract
+2026-09-04T05:28:48.8695565Z 
+2026-09-04T05:28:48.8696121Z 40: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\mult2_test.exe "composition_contract"
+2026-09-04T05:28:48.8698303Z 40: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.8698967Z 40: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.8943058Z 40: security_level=HEStd_NotSet(functional-only) ring_dimension=64 batch_size=16 scaling_mod_size=30 first_mod_size=35 multiplicative_depth=7 key_switch=HYBRID secret_key_dist=UNIFORM_TERNARY ckks_data_type=REAL active_Q_l_towers=7 q_div=1073741953 q_l=1073741441 ratio_2^(2p)/(q_div*q_l)=1.00000023655603276 frozen_decoded_abs_tolerance=0.00100000000000000002 measured_max_logical_slot_error=6.37376036193670617e-09
+2026-09-04T05:28:48.8952840Z 40/44 Test #40: mult2_composition_contract ...................   Passed    0.03 sec
+2026-09-04T05:28:48.8956742Z test 41
+2026-09-04T05:28:48.8957037Z       Start 41: mult2_e2e_hybrid_real
+2026-09-04T05:28:48.8958277Z 
+2026-09-04T05:28:48.8959018Z 41: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\mult2_e2e_oracle_test.exe "hybrid_real"
+2026-09-04T05:28:48.8960386Z 41: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.8961071Z 41: Test timeout computed to be: 10000000
+2026-09-04T05:28:48.9626204Z 41: [DEBUG-mult2-bv-bound] q_div=1073741953 q_l=1073741441 empirical_E_Relin=14 empirical_pair_relin_error=31 secret_h=50 input_Q_l=52656049226897061758347970843194892279389197066160739197584863617 oracle_basis_agreement=true
+2026-09-04T05:28:48.9632494Z 41: case=hybrid_real security_level=HEStd_NotSet(functional-only) key_switch=HYBRID secret_key_dist=UNIFORM_TERNARY ckks_data_type=REAL selected_ring_dimension=64 actual_N=64 batch_size=16 host_vector_length=8 encoding_noise_scale_degree=2 encoding_level=0 scaling_technique=FIXEDMANUAL digit_size=0 max_relin_sk_deg=2 scaling_mod_size=30 first_mod_size=35 multiplicative_depth=7 active_Q_l_towers=7 Q_l_bits=215 preselection_required_bits=174 selection_reserve_bits=32 q_div=1073741953 q_l=1073741441 ratio_2^(2p)/(q_div*q_l)=1.00000023655603276 descriptor_ratio=1.00000023655603276 M_high=107367070 M_low=5368709801 secret_h=50 empirical_E_Relin=14 empirical_pair_relin_error=31 conservative_E_Relin_available=false universal_theorem_gate=UNPROVED execution_nonwrap_left=850593504162866652712850532543687808 execution_nonwrap_right_Q_l_over_2=26328024613448530879173985421597446139694598533080369598792431808 coefficient_error=99449652279969727865/1152921231876374273 empirical_bound=3748148733664376886835/2305842463752748546 frozen_decoded_abs_tolerance=0.00100000000000000002 measured_recorded_bias_error=8.42282230073543303e-09 measured_logical_slot_error=8.42282030233398871e-09
+2026-09-04T05:28:48.9640449Z 41/44 Test #41: mult2_e2e_hybrid_real ........................   Passed    0.07 sec
+2026-09-04T05:28:48.9645334Z test 42
+2026-09-04T05:28:48.9645719Z       Start 42: mult2_e2e_hybrid_complex
+2026-09-04T05:28:48.9646919Z 
+2026-09-04T05:28:48.9647662Z 42: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\mult2_e2e_oracle_test.exe "hybrid_complex"
+2026-09-04T05:28:48.9648770Z 42: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:48.9649450Z 42: Test timeout computed to be: 10000000
+2026-09-04T05:28:49.0291377Z 42: [DEBUG-mult2-bv-bound] q_div=1073741953 q_l=1073741441 empirical_E_Relin=9 empirical_pair_relin_error=14 secret_h=43 input_Q_l=52656049226897061758347970843194892279389197066160739197584863617 oracle_basis_agreement=true
+2026-09-04T05:28:49.0296788Z 42: case=hybrid_complex security_level=HEStd_NotSet(functional-only) key_switch=HYBRID secret_key_dist=UNIFORM_TERNARY ckks_data_type=COMPLEX selected_ring_dimension=64 actual_N=64 batch_size=16 host_vector_length=8 encoding_noise_scale_degree=2 encoding_level=0 scaling_technique=FIXEDMANUAL digit_size=0 max_relin_sk_deg=2 scaling_mod_size=30 first_mod_size=35 multiplicative_depth=7 active_Q_l_towers=7 Q_l_bits=215 preselection_required_bits=174 selection_reserve_bits=32 q_div=1073741953 q_l=1073741441 ratio_2^(2p)/(q_div*q_l)=1.00000023655603276 descriptor_ratio=1.00000023655603276 M_high=88152831 M_low=5368709763 secret_h=43 empirical_E_Relin=9 empirical_pair_relin_error=14 conservative_E_Relin_available=false universal_theorem_gate=UNPROVED execution_nonwrap_left=573393011691547715077208616527003956 execution_nonwrap_right_Q_l_over_2=26328024613448530879173985421597446139694598533080369598792431808 coefficient_error=108624182769360237341/1152921231876374273 empirical_bound=3740078232788663700756/2305842463752748546 frozen_decoded_abs_tolerance=0.00100000000000000002 measured_recorded_bias_error=1.32248398244301788e-09 measured_logical_slot_error=1.32248366935683066e-09
+2026-09-04T05:28:49.0304190Z 42/44 Test #42: mult2_e2e_hybrid_complex .....................   Passed    0.07 sec
+2026-09-04T05:28:49.0308894Z test 43
+2026-09-04T05:28:49.0309182Z       Start 43: mult2_e2e_bv_real
+2026-09-04T05:28:49.0310295Z 
+2026-09-04T05:28:49.0310871Z 43: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\mult2_e2e_oracle_test.exe "bv_real"
+2026-09-04T05:28:49.0311680Z 43: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:49.0312087Z 43: Test timeout computed to be: 10000000
+2026-09-04T05:28:49.0872175Z 43: [DEBUG-mult2-bv-bound] q_div=1073741953 q_l=1073741441 empirical_E_Relin=190622642352 empirical_pair_relin_error=254980207580 secret_h=47 input_Q_l=52656049226897061758347970843194892279389197066160739197584863617 oracle_basis_agreement=true
+2026-09-04T05:28:49.0874171Z 43: mult2_e2e_oracle_test failure: pair relinearization error exceeded empirical E_Relin + h
+2026-09-04T05:28:49.0884436Z 43/44 Test #43: mult2_e2e_bv_real ............................***Failed    0.06 sec
+2026-09-04T05:28:49.0885635Z [DEBUG-mult2-bv-bound] q_div=1073741953 q_l=1073741441 empirical_E_Relin=190622642352 empirical_pair_relin_error=254980207580 secret_h=47 input_Q_l=52656049226897061758347970843194892279389197066160739197584863617 oracle_basis_agreement=true
+2026-09-04T05:28:49.0886756Z mult2_e2e_oracle_test failure: pair relinearization error exceeded empirical E_Relin + h
+2026-09-04T05:28:49.0887126Z 
+2026-09-04T05:28:49.0889038Z test 44
+2026-09-04T05:28:49.0889334Z       Start 44: mult2_e2e_bv_complex
+2026-09-04T05:28:49.0890432Z 
+2026-09-04T05:28:49.0890971Z 44: Test command: C:\openfhe-2023-1788\project-build-33840176712-1\mult2_e2e_oracle_test.exe "bv_complex"
+2026-09-04T05:28:49.0891583Z 44: Working Directory: C:/openfhe-2023-1788/project-build-33840176712-1
+2026-09-04T05:28:49.0891956Z 44: Test timeout computed to be: 10000000
+2026-09-04T05:28:49.1441214Z 44: [DEBUG-mult2-bv-bound] q_div=1073741953 q_l=1073741441 empirical_E_Relin=200349662290 empirical_pair_relin_error=316191854996 secret_h=50 input_Q_l=52656049226897061758347970843194892279389197066160739197584863617 oracle_basis_agreement=true
+2026-09-04T05:28:49.1443215Z 44: mult2_e2e_oracle_test failure: pair relinearization error exceeded empirical E_Relin + h
+2026-09-04T05:28:49.1454097Z 44/44 Test #44: mult2_e2e_bv_complex .........................***Failed    0.06 sec
+2026-09-04T05:28:49.1455260Z [DEBUG-mult2-bv-bound] q_div=1073741953 q_l=1073741441 empirical_E_Relin=200349662290 empirical_pair_relin_error=316191854996 secret_h=50 input_Q_l=52656049226897061758347970843194892279389197066160739197584863617 oracle_basis_agreement=true
+2026-09-04T05:28:49.1456350Z mult2_e2e_oracle_test failure: pair relinearization error exceeded empirical E_Relin + h
+2026-09-04T05:28:49.1456697Z 
+2026-09-04T05:28:49.1472536Z 
+2026-09-04T05:28:49.1472906Z 95% tests passed, 2 tests failed out of 44
+2026-09-04T05:28:49.1473282Z 
+2026-09-04T05:28:49.1473539Z Total Test time (real) =   1.18 sec
+2026-09-04T05:28:49.1473843Z 
+2026-09-04T05:28:49.1473996Z The following tests FAILED:
+2026-09-04T05:28:49.1489489Z 	 43 - mult2_e2e_bv_real (Failed)
+2026-09-04T05:28:49.1489965Z 	 44 - mult2_e2e_bv_complex (Failed)
+2026-09-04T05:28:49.1500610Z Errors while running CTest
+2026-09-04T05:28:49.1601171Z ##[error]Process completed with exit code 8.
+2026-09-04T05:28:49.1708186Z Cleaning up orphan processes
