@@ -38,4 +38,11 @@ Resume Windows ZCode review at the next reachable task boundary; quota alone no 
 
 ## Ownership and next gates
 
+### Public API TDD checkpoint — 2026-09-04
+
+- API red `c4c98b637d9c8428d08edac1ec2ea86de8240a43`, run `33833322352`: both platforms passed warning builds, Relin2/RS2 API targets and 39/39 existing tests, then failed only because `DoubleCKKS::Mult2` was missing. Linux build exit 2; Windows build exit 1. Complete relevant sections are retained in `artifacts/tdd/mult2-public-api/red.txt`.
+- Scaffold green `40b6a780b1058d7f04e033fecd22dabc57130a16`, run `33834736079`: both platforms passed warning/API builds and 39/39 tests (Linux 0.58s, Windows 0.87s). Exact headSha and remote branch were verified. Results are retained in `artifacts/tdd/mult2-public-api/green.txt`.
+- The body still deliberately throws `DoubleCKKS: Mult2 is not implemented`; this is API green only, not runtime multiplication. Pro's existing conversation remains live and was inspected read-only, not interrupted or resubmitted. Next gate is independent runtime behavioral red before integrating composition.
+- ZCode has resumed on a separate exact RS2 snapshot as a bounded local static-only reviewer after Windows text input failed. Its source packet and actual native submission receipt are retained on the RS2 branch. No local cryptographic execution is authorized.
+
 Pro drafts Mult2 code and executable acceptance criteria. Fable independently resolves the theorem/scale issue. Codex integrates one TDD slice at a time, preserves real red/green logs, uses hosted builds, and verifies remote commits. Windows ZCode independent review remains to be re-established. Necessary pair Add/Sub, final quantitative acceptance, tri-party reconciliation, and final integration are still unfinished.
