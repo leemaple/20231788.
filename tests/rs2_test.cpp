@@ -726,6 +726,45 @@ void TestUntouchedPublicPipeline() {
     }
 }
 
+void TestTerminalRejections() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    context->EvalMultKeyGen(keys.secretKey);
+    const auto plaintext =
+        context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5, 0.0}, 2, 0);
+    DoubleCKKS module(context);
+    const auto fresh = module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    const auto terminal = module.RS2(module.Relin2(module.Tensor2(fresh, fresh)));
+    Check(terminal.GetLifecycle() == PairLifecycle::RefreshRequired,
+          "terminal rejection fixture did not reach RefreshRequired");
+
+    const auto keyTag = keys.secretKey->GetKeyTag();
+    Check(!keyTag.empty(), "terminal rejection fixture key tag must not be empty");
+    lbcrypto::CryptoContextImpl<DCRTPoly>::ClearEvalMultKeys(keyTag);
+    const auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(cache.find(keyTag) == cache.end(), "terminal fixture evaluation key remains installed");
+    const auto cacheBefore = cache;
+    const auto terminalBefore = SnapshotPair(terminal, "terminal pair");
+    const auto freshBefore = SnapshotPair(fresh, "fresh pair");
+
+    CheckThrowsInvalidArgument(
+        [&] { (void)module.RS2(terminal); },
+        "DoubleCKKS: RS2 requires ReadyForRS2 input");
+    CheckThrowsInvalidArgument(
+        [&] { (void)module.Tensor2(terminal, fresh); },
+        "DoubleCKKS: Tensor2 requires ReadyForFirstMult inputs");
+    CheckThrowsInvalidArgument(
+        [&] { (void)module.Tensor2(fresh, terminal); },
+        "DoubleCKKS: Tensor2 requires ReadyForFirstMult inputs");
+    CheckThrowsInvalidArgument(
+        [&] { (void)module.Tensor2(terminal, terminal); },
+        "DoubleCKKS: Tensor2 requires ReadyForFirstMult inputs");
+    CheckPairUnchanged(terminal, terminalBefore, "terminal pair after rejected operations");
+    CheckPairUnchanged(fresh, freshBefore, "fresh pair after rejected operations");
+    Check(cache == cacheBefore, "terminal rejection changed the evaluation-key cache");
+    lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
+}
+
 void TestDeclaredBasisMismatch() {
     auto context = MakeContext();
     const auto keys = context->KeyGen();
@@ -812,6 +851,9 @@ int main(int argc, char** argv) {
         }
         else if (name == "declared_basis_mismatch") {
             TestDeclaredBasisMismatch();
+        }
+        else if (name == "terminal_rejections") {
+            TestTerminalRejections();
         }
         else {
             throw TestFailure("unknown RS2 case: " + name);
