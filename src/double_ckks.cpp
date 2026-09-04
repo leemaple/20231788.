@@ -322,6 +322,11 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
     if (level > fullModuli_.size() || orderedModuli.size() != fullModuli_.size() - level) {
         Invalid(std::string(label) + " level and active-basis size disagree");
     }
+    auto expectedBasis =
+        std::make_shared<lbcrypto::DCRTPoly::Params>(*parameters_->GetElementParams());
+    for (std::size_t dropped = 0; dropped < level; ++dropped) {
+        expectedBasis->PopLastParam();
+    }
 
     for (const auto& element : ciphertext->GetElements()) {
         if (element.GetFormat() != Format::EVALUATION) {
@@ -339,6 +344,10 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
                 towers[index].GetCyclotomicOrder() != expectedTowerParameters[index]->GetCyclotomicOrder()) {
                 Invalid(std::string(label) + " tower parameters do not match the bound context");
             }
+        }
+        const auto& declaredBasis = element.GetParams();
+        if (!declaredBasis || !(*declaredBasis == *expectedBasis)) {
+            Invalid(std::string(label) + " declared RNS basis mismatch");
         }
     }
 }
