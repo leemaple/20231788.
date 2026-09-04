@@ -95,8 +95,8 @@ jobs:
       - name: Build RS2 public API contract
         run: cmake --build build --target rs2_api_contract_test --parallel 2
 
-      - name: Run focused Pair Add input to first Mult2
-        run: ctest --test-dir build --verbose --output-on-failure -R '^mult2_pair_add_input_hybrid_complex$'
+      - name: Run focused Pair Add and Sub inputs to first Mult2
+        run: ctest --test-dir build --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
 
       - name: Run clean-room project tests
         run: ctest --test-dir build --verbose --output-on-failure
@@ -239,14 +239,14 @@ jobs:
           build="$(cygpath -u "$PROJECT_BUILD")"
           cmake --build "$build" --target rs2_api_contract_test --parallel 2
 
-      - name: Run focused Pair Add input to first Mult2
+      - name: Run focused Pair Add and Sub inputs to first Mult2
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           build="$(cygpath -u "$PROJECT_BUILD")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
-          ctest --test-dir "$build" --verbose --output-on-failure -R '^mult2_pair_add_input_hybrid_complex$'
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
 
       - name: Run clean-room project tests
         shell: msys2 {0}

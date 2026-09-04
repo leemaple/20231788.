@@ -146,3 +146,41 @@ failure, threshold tuning, production patch or fake red was introduced.
 This satisfies the stage1 execution boundary; the original archived stage2 may
 now be applied unchanged, then frozen and observed separately. It does not
 establish the still-unapplied Sub composition or high-precision/repeated use.
+
+## Stage2 frozen before first hosted observation
+After both stage1 jobs completed, Codex rechecked clean branch HEAD
+2661ae3d8e279a3b4d67da5b6ed5648df9e062f7 and applied the original archived
+0002 patch through apply_patch. Its SHA remains
+3e34245127c8f8dbffbb3e6b680bf49e7fd04e027adaabcab822ea526785c861.
+Active CMakeLists.txt and tests/mult2_e2e_oracle_test.cpp are byte-identical
+to the Pro return's final-project files, confirmed with cmp and SHA256:
+CMake11389bytes bf27cc6e2514049019671bbc8bc2461e65e0b63431dddd3a1b0194fa020180fa;
+oracle75003bytes 7522b2e3aaf3f2730e52ae7fe0a45c77517bb45f973dc4eca6ed65da59e7be8d.
+
+Exactly one additional CTest binding is active:
+mult2_pair_sub_input_hybrid_complex ->
+mult2_e2e_oracle_test pair_sub_input_hybrid_complex.
+All54 prior name/command bindings are preserved in order, giving55 total.
+The only code/build edits in this stage are that binding and the original
+Pro Sub case: explicit public Sub dispatch, materialized BigInt difference
+oracle, frozen difference/product literals and selector. The independently
+verified7 final arrays/112 scalar literals remain unchanged.
+No production/public-header changes, tolerance weakening, new private seam,
+exception suppression or hypothetical repeated-use path were introduced.
+
+Codex changed only the two existing focused CI step names and regexes to
+select BOTH Add and Sub. Full CTest,5 API builds, warnings, pinned OpenFHE,
+resource caps and platform setup are unchanged. Workflow SHA256:
+f8549f97bff475990f19a5172af5a2f20412f6f12b71b356ebd3a828ac115511.
+git diff --check and independent static CTest/changed-file closure PASS.
+These are static checks, not a compile or runtime observation.
+
+This is the frozen pre-execution state on2026-09-04. First hosted results
+remain PENDING; preserve a real failure if observed, or label a first pass
+FIRST-OBSERVED GREEN. Do not manufacture a production defect for a regression.
+Required next evidence: focused2/2 and full55/55 on Linux and Windows,
+warnings-as-errors and all5 explicit API builds, exact head/run/job metadata,
+retained logs and independent actual-test-name closure. Final independent
+review of the actual composition patch and integration remain pending.
+This functional diagnostic does not replace the still-live first-Mult2
+high-precision task or the complete paper parameter/repeated-use destination.
