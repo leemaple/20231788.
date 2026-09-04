@@ -4,13 +4,16 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -61,11 +64,147 @@ struct MetadataEntrySnapshot {
     std::shared_ptr<lbcrypto::Metadata> deepValue;
 };
 
+// Copy pointed-to parameter fields and every native value. Ciphertext::Clone
+// alone can share parameter objects and therefore mask an in-place mutation.
+using NativeParameterSnapshot =
+    std::tuple<const void*, std::uint32_t, NativeInteger, NativeInteger>;
+
+struct PolynomialSnapshot {
+    const void* parameterIdentity;
+    std::uint32_t cyclotomicOrder;
+    lbcrypto::BigInteger modulus;
+    lbcrypto::BigInteger root;
+    Format format;
+    std::vector<NativeParameterSnapshot> declaredParameters;
+    std::vector<NativeParameterSnapshot> actualParameters;
+    std::vector<Format> towerFormats;
+    std::vector<std::vector<NativeInteger>> towerValues;
+};
+
+PolynomialSnapshot SnapshotPolynomial(const DCRTPoly& polynomial) {
+    const auto& parameters = polynomial.GetParams();
+    Check(parameters != nullptr, "snapshot aggregate parameters are null");
+    PolynomialSnapshot result{parameters.get(), parameters->GetCyclotomicOrder(),
+                              parameters->GetModulus(), parameters->GetRootOfUnity(),
+                              polynomial.GetFormat(), {}, {}, {}, {}};
+    for (const auto& towerParameters : parameters->GetParams()) {
+        Check(towerParameters != nullptr, "snapshot declared tower parameters are null");
+        result.declaredParameters.emplace_back(
+            towerParameters.get(), towerParameters->GetCyclotomicOrder(),
+            towerParameters->GetModulus(), towerParameters->GetRootOfUnity());
+    }
+    for (const auto& tower : polynomial.GetAllElements()) {
+        Check(tower.GetParams() != nullptr, "snapshot actual tower parameters are null");
+        result.actualParameters.emplace_back(tower.GetParams().get(), tower.GetCyclotomicOrder(),
+                                             tower.GetModulus(), tower.GetRootOfUnity());
+        result.towerFormats.push_back(tower.GetFormat());
+        std::vector<NativeInteger> values;
+        values.reserve(tower.GetLength());
+        for (std::size_t index = 0; index < tower.GetLength(); ++index) {
+            values.push_back(tower.GetValues()[index]);
+        }
+        result.towerValues.push_back(std::move(values));
+    }
+    return result;
+}
+
+using PolynomialVectorSnapshot = std::vector<PolynomialSnapshot>;
+
+PolynomialVectorSnapshot SnapshotPolynomials(const std::vector<DCRTPoly>& polynomials) {
+    PolynomialVectorSnapshot result;
+    result.reserve(polynomials.size());
+    for (const auto& polynomial : polynomials) {
+        result.push_back(SnapshotPolynomial(polynomial));
+    }
+    return result;
+}
+
+void CheckPolynomialsUnchanged(const std::vector<DCRTPoly>& polynomials,
+                               const PolynomialVectorSnapshot& before,
+                               const std::string& label) {
+    Check(polynomials.size() == before.size(), label + " polynomial count changed");
+    for (std::size_t index = 0; index < polynomials.size(); ++index) {
+        const auto current = SnapshotPolynomial(polynomials[index]);
+        const auto& expected = before[index];
+        Check(current.parameterIdentity == expected.parameterIdentity,
+              label + " aggregate parameter identity changed");
+        Check(current.cyclotomicOrder == expected.cyclotomicOrder &&
+                  current.modulus == expected.modulus && current.root == expected.root,
+              label + " aggregate parameter value changed");
+        Check(current.format == expected.format, label + " aggregate format changed");
+        Check(current.declaredParameters == expected.declaredParameters,
+              label + " declared tower parameters changed");
+        Check(current.actualParameters == expected.actualParameters,
+              label + " actual tower parameters changed");
+        Check(current.towerFormats == expected.towerFormats, label + " native tower format changed");
+        Check(current.towerValues == expected.towerValues, label + " native tower value changed");
+    }
+}
+
+struct EvaluationKeySnapshot {
+    const void* identity;
+    const void* contextIdentity;
+    std::string keyTag;
+    PolynomialVectorSnapshot a;
+    PolynomialVectorSnapshot b;
+};
+
+struct EvaluationKeyRowSnapshot {
+    const void* identity;
+    std::vector<EvaluationKeySnapshot> keys;
+};
+
+using EvaluationKeyCacheSnapshot = std::map<std::string, EvaluationKeyRowSnapshot>;
+
+EvaluationKeyCacheSnapshot SnapshotEvaluationKeyCache() {
+    EvaluationKeyCacheSnapshot result;
+    for (const auto& [tag, row] : lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys()) {
+        EvaluationKeyRowSnapshot rowSnapshot{&row, {}};
+        for (const auto& key : row) {
+            const auto relin = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(key);
+            // These fixtures generate genuine evaluation keys, not malformed or
+            // arbitrary-subtype cache entries. Fail if that premise changes.
+            Check(relin != nullptr, "snapshot requires a non-null relinearization key");
+            rowSnapshot.keys.push_back({key.get(), key->GetCryptoContext().get(), key->GetKeyTag(),
+                                        SnapshotPolynomials(relin->GetAVector()),
+                                        SnapshotPolynomials(relin->GetBVector())});
+        }
+        result.emplace(tag, std::move(rowSnapshot));
+    }
+    return result;
+}
+
+void CheckEvaluationKeyCacheUnchanged(const EvaluationKeyCacheSnapshot& before) {
+    const auto& current = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(current.size() == before.size(), "evaluation-key cache row count changed");
+    for (const auto& [tag, expected] : before) {
+        const auto entry = current.find(tag);
+        Check(entry != current.end(), "evaluation-key cache tag disappeared");
+        const auto& row = entry->second;
+        Check(&row == expected.identity, "evaluation-key row identity changed");
+        Check(row.size() == expected.keys.size(), "evaluation-key row length changed");
+        for (std::size_t index = 0; index < row.size(); ++index) {
+            const auto& key = row[index];
+            const auto& keyBefore = expected.keys[index];
+            Check(key != nullptr && key.get() == keyBefore.identity,
+                  "evaluation-key identity changed");
+            const auto relin = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(key);
+            Check(relin != nullptr, "evaluation-key subtype changed");
+            Check(key->GetCryptoContext().get() == keyBefore.contextIdentity &&
+                      key->GetKeyTag() == keyBefore.keyTag,
+                  "evaluation-key context or tag changed");
+            CheckPolynomialsUnchanged(relin->GetAVector(), keyBefore.a, "evaluation-key A");
+            CheckPolynomialsUnchanged(relin->GetBVector(), keyBefore.b, "evaluation-key B");
+        }
+    }
+}
+
 struct CiphertextSnapshot {
     ReadOnlyCiphertext identity;
     Ciphertext<DCRTPoly> clone;
     lbcrypto::MetadataMap metadataIdentity;
     std::vector<MetadataEntrySnapshot> metadata;
+    PolynomialVectorSnapshot polynomials;
 };
 
 CiphertextSnapshot SnapshotCiphertext(const ReadOnlyCiphertext& ciphertext,
@@ -74,7 +213,8 @@ CiphertextSnapshot SnapshotCiphertext(const ReadOnlyCiphertext& ciphertext,
     const auto metadata = ciphertext->GetMetadataMap();
     Check(metadata != nullptr, label + " metadata map is null");
 
-    CiphertextSnapshot snapshot{ciphertext, ciphertext->Clone(), metadata, {}};
+    CiphertextSnapshot snapshot{ciphertext, ciphertext->Clone(), metadata, {},
+                                 SnapshotPolynomials(ciphertext->GetElements())};
     snapshot.metadata.reserve(metadata->size());
     for (const auto& [key, value] : *metadata) {
         Check(value != nullptr, label + " metadata value is null");
@@ -92,6 +232,7 @@ void CheckCiphertextUnchanged(const ReadOnlyCiphertext& ciphertext,
           label + " ciphertext or snapshot is null");
     Check(ciphertext.get() == before.identity.get(), label + " ciphertext identity changed");
     Check(*ciphertext == *before.clone, label + " ciphertext value changed");
+    CheckPolynomialsUnchanged(ciphertext->GetElements(), before.polynomials, label);
 
     const auto metadata = ciphertext->GetMetadataMap();
     Check(metadata != nullptr, label + " metadata map is null");
@@ -200,14 +341,14 @@ void CheckThrowsInvalidArgument(Function&& function, const std::string& expected
     }
     catch (const std::invalid_argument& exception) {
         Check(exception.what() == expectedMessage,
-              "RS2 wrong-lifecycle diagnostic mismatch: " + std::string(exception.what()));
+              "RS2 rejection diagnostic mismatch: " + std::string(exception.what()));
         threw = true;
     }
     catch (const std::exception& exception) {
-        throw TestFailure("RS2 wrong lifecycle threw the wrong exception type: " +
+        throw TestFailure("RS2 rejection threw the wrong exception type: " +
                           std::string(exception.what()));
     }
-    Check(threw, "RS2 wrong lifecycle did not fail fast");
+    Check(threw, "RS2 invalid input did not fail fast");
 }
 
 BigInt PositiveMod(BigInt value, const BigInt& modulus) {
@@ -368,7 +509,8 @@ std::vector<BigInt> BoundaryValues(const BigInt& droppedModulus,
     return result;
 }
 
-CryptoContext<DCRTPoly> MakeContext() {
+CryptoContext<DCRTPoly> MakeContext(
+    lbcrypto::KeySwitchTechnique keySwitchTechnique = lbcrypto::HYBRID) {
     lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
     parameters.SetMultiplicativeDepth(3);
     parameters.SetScalingModSize(30);
@@ -377,6 +519,8 @@ CryptoContext<DCRTPoly> MakeContext() {
     parameters.SetSecurityLevel(lbcrypto::HEStd_NotSet);
     parameters.SetRingDim(32);
     parameters.SetBatchSize(8);
+    parameters.SetKeySwitchTechnique(keySwitchTechnique);
+    parameters.SetDigitSize(0);
 
     auto context = lbcrypto::GenCryptoContext(parameters);
     context->Enable(lbcrypto::PKE);
@@ -405,8 +549,15 @@ void InstallControlledValues(const CiphertextPair& pair) {
     highElements.reserve(2);
     lowElements.reserve(2);
     for (std::size_t component = 0; component < 2; ++component) {
-        const auto highValues = BoundaryValues(droppedModulus, sourceModulus, ringDimension,
-                                               component * 5);
+        auto highValues = BoundaryValues(droppedModulus, sourceModulus, ringDimension,
+                                         component * 5);
+        Check(divisor != droppedModulus, "RS2 prime-role fixture requires distinct primes");
+        // At the smaller odd prime's first upper-half integer, rounding gives
+        // one for that divisor and zero for the larger prime (and -1/0 below).
+        // Keep the full 21-entry boundary set in the preceding coefficients.
+        const BigInt smallerPrime = divisor < droppedModulus ? divisor : droppedModulus;
+        highValues[ringDimension - 2] = smallerPrime / 2 + 1;
+        highValues[ringDimension - 1] = -(smallerPrime / 2 + 1);
         const auto recombinedValues = BoundaryValues(droppedModulus, sourceModulus, ringDimension,
                                                      component * 7 + 3);
         std::vector<BigInt> lowValues(ringDimension);
@@ -533,7 +684,8 @@ void CheckResultState(const CiphertextPair& result,
 
 void CheckExactArithmeticOracle(DoubleCKKS& module,
                                 const CiphertextPair& input,
-                                const CiphertextPair& result) {
+                                const CiphertextPair& result,
+                                bool requireControlledWitnesses = true) {
     const BigInt divisor(input.GetDivisor().ConvertToInt());
     const auto sourceModuli = GetModuli(input.GetHigh()->GetElements().front());
     const auto targetModuli = GetModuli(result.GetHigh()->GetElements().front());
@@ -564,6 +716,7 @@ void CheckExactArithmeticOracle(DoubleCKKS& module,
           "RS2 public RCB recorded scaling factor mismatch");
 
     bool differsFromDirectLowRescale = false;
+    bool differsFromDivisorQuotient = false;
     for (std::size_t component = 0; component < 2; ++component) {
         const auto inputHigh = ToCoefficient(input.GetHigh()->GetElements().at(component));
         const auto inputLow = ToCoefficient(input.GetLow()->GetElements().at(component));
@@ -582,6 +735,9 @@ void CheckExactArithmeticOracle(DoubleCKKS& module,
             const BigInt expectedLow = rescaledRecombined - divisor * rescaledHigh;
             const BigInt directLowRescale =
                 RescaleCentered(low, sourceModulus, droppedModulus);
+            // Deliberately incorrect comparison model: divide by q_div, not
+            // the consumed active prime q_l. This is not a production mutation.
+            const BigInt wrongDivisorQuotient = RescaleCentered(high, sourceModulus, divisor);
 
             for (std::size_t tower = 0; tower < targetModuli.size(); ++tower) {
                 const BigInt expectedHighResidue = PositiveMod(rescaledHigh, targetModuli[tower]);
@@ -601,11 +757,18 @@ void CheckExactArithmeticOracle(DoubleCKKS& module,
                 if (expectedLowResidue != PositiveMod(directLowRescale, targetModuli[tower])) {
                     differsFromDirectLowRescale = true;
                 }
+                if (expectedHighResidue != PositiveMod(wrongDivisorQuotient, targetModuli[tower])) {
+                    differsFromDivisorQuotient = true;
+                }
             }
         }
     }
-    Check(differsFromDirectLowRescale,
-          "RS2 witnesses do not distinguish the required two-RS construction from RS(low)");
+    if (requireControlledWitnesses) {
+        Check(differsFromDirectLowRescale,
+              "RS2 witnesses do not distinguish the required two-RS construction from RS(low)");
+        Check(differsFromDivisorQuotient,
+              "RS2 witnesses do not distinguish division by q_l from division by q_div");
+    }
 }
 
 void TestWrongLifecycle() {
@@ -654,16 +817,177 @@ void TestValidArithmeticStateImmutability() {
 
     InstallControlledValues(relinearized);
     const PairSnapshot before = SnapshotPair(relinearized, "RS2 valid input");
-    const auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
-    const auto evaluationKeysBefore = evaluationKeys;
+    const auto unrelatedKeys = context->KeyGen();
+    context->EvalMultKeyGen(unrelatedKeys.secretKey);
+    Check(unrelatedKeys.secretKey->GetKeyTag() != keys.secretKey->GetKeyTag(),
+          "retained-cache fixture requires a distinct unrelated key tag");
+    const auto evaluationKeysBefore = SnapshotEvaluationKeyCache();
+    Check(evaluationKeysBefore.count(keys.secretKey->GetKeyTag()) == 1 &&
+              evaluationKeysBefore.count(unrelatedKeys.secretKey->GetKeyTag()) == 1,
+          "retained-cache fixture is missing its own or unrelated key row");
 
     const CiphertextPair result = module.RS2(relinearized);
     CheckPairUnchanged(relinearized, before, "RS2 valid input");
-    Check(evaluationKeys == evaluationKeysBefore,
-          "RS2 mutated the process-wide evaluation-key cache");
+    CheckEvaluationKeyCacheUnchanged(evaluationKeysBefore);
     CheckResultState(result, relinearized, before, context);
     CheckExactArithmeticOracle(module, relinearized, result);
+    CheckEvaluationKeyCacheUnchanged(evaluationKeysBefore);
 
+    lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
+}
+
+void TestUntouchedPublicPipeline() {
+    const std::vector<std::complex<double>> leftValues{
+        {0.25, 0.0}, {-0.125, 0.0}, {0.0, 0.0}, {0.0, 0.25},
+        {0.125, -0.0625}, {-0.25, 0.125}, {0x1p-20, -0x1p-21}, {-0x1p-18, 0.0}};
+    const std::vector<std::complex<double>> rightValues{
+        {-0.5, 0.0}, {0.25, 0.0}, {0.125, 0.0625}, {0.0, -0.125},
+        {-0.25, 0.125}, {0.0625, 0.25}, {-0x1p-19, 0x1p-20}, {0.0, 0.0}};
+
+    for (const auto technique : {lbcrypto::HYBRID, lbcrypto::BV}) {
+        auto context = MakeContext(technique);
+        const auto keys = context->KeyGen();
+        context->EvalMultKeyGen(keys.secretKey);
+        const auto leftInput = context->Encrypt(
+            context->MakeCKKSPackedPlaintext(leftValues, 2, 0), keys.publicKey);
+        const auto rightInput = context->Encrypt(
+            context->MakeCKKSPackedPlaintext(rightValues, 2, 0), keys.publicKey);
+        const auto leftInputBefore = SnapshotCiphertext(leftInput, "public left ciphertext");
+        const auto rightInputBefore = SnapshotCiphertext(rightInput, "public right ciphertext");
+        DoubleCKKS module(context);
+        const auto left = module.DCP(leftInput);
+        const auto right = module.DCP(rightInput);
+        const auto leftBefore = SnapshotPair(left, "public left pair");
+        const auto rightBefore = SnapshotPair(right, "public right pair");
+        const auto tensor = module.Tensor2(left, right);
+        const auto relinearized = module.Relin2(tensor);
+        const auto before = SnapshotPair(relinearized, "untouched RS2 input");
+
+        // RS2 needs no evaluation key after the genuine Relin2 boundary.
+        const auto keyTag = keys.secretKey->GetKeyTag();
+        Check(!keyTag.empty(), "public pipeline key tag must not be empty");
+        lbcrypto::CryptoContextImpl<DCRTPoly>::ClearEvalMultKeys(keyTag);
+        const auto& evaluationKeys = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+        Check(evaluationKeys.find(keyTag) == evaluationKeys.end(),
+              "public pipeline did not remove its evaluation key");
+        const auto evaluationKeysBefore = evaluationKeys;
+
+        const auto result = module.RS2(relinearized);
+        CheckResultState(result, relinearized, before, context);
+        // Every coefficient is checked; the fixed controlled fixture separately
+        // guarantees shortcut discrimination without depending on encryption randomness.
+        CheckExactArithmeticOracle(module, relinearized, result, false);
+        CheckPairUnchanged(relinearized, before, "untouched RS2 input");
+        CheckPairUnchanged(left, leftBefore, "public left pair");
+        CheckPairUnchanged(right, rightBefore, "public right pair");
+        CheckCiphertextUnchanged(leftInput, leftInputBefore, "public left ciphertext");
+        CheckCiphertextUnchanged(rightInput, rightInputBefore, "public right ciphertext");
+        Check(evaluationKeys == evaluationKeysBefore,
+              "keyless RS2 or RCB changed the evaluation-key cache");
+        lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
+    }
+}
+
+void TestTerminalRejections() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    context->EvalMultKeyGen(keys.secretKey);
+    const auto plaintext =
+        context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5, 0.0}, 2, 0);
+    DoubleCKKS module(context);
+    const auto fresh = module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    const auto terminal = module.RS2(module.Relin2(module.Tensor2(fresh, fresh)));
+    Check(terminal.GetLifecycle() == PairLifecycle::RefreshRequired,
+          "terminal rejection fixture did not reach RefreshRequired");
+
+    const auto keyTag = keys.secretKey->GetKeyTag();
+    Check(!keyTag.empty(), "terminal rejection fixture key tag must not be empty");
+    lbcrypto::CryptoContextImpl<DCRTPoly>::ClearEvalMultKeys(keyTag);
+    const auto& cache = lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    Check(cache.find(keyTag) == cache.end(), "terminal fixture evaluation key remains installed");
+    const auto cacheBefore = cache;
+    const auto terminalBefore = SnapshotPair(terminal, "terminal pair");
+    const auto freshBefore = SnapshotPair(fresh, "fresh pair");
+
+    CheckThrowsInvalidArgument(
+        [&] { (void)module.RS2(terminal); },
+        "DoubleCKKS: RS2 requires ReadyForRS2 input");
+    CheckThrowsInvalidArgument(
+        [&] { (void)module.Tensor2(terminal, fresh); },
+        "DoubleCKKS: Tensor2 requires ReadyForFirstMult inputs");
+    CheckThrowsInvalidArgument(
+        [&] { (void)module.Tensor2(fresh, terminal); },
+        "DoubleCKKS: Tensor2 requires ReadyForFirstMult inputs");
+    CheckThrowsInvalidArgument(
+        [&] { (void)module.Tensor2(terminal, terminal); },
+        "DoubleCKKS: Tensor2 requires ReadyForFirstMult inputs");
+    CheckPairUnchanged(terminal, terminalBefore, "terminal pair after rejected operations");
+    CheckPairUnchanged(fresh, freshBefore, "fresh pair after rejected operations");
+    Check(cache == cacheBefore, "terminal rejection changed the evaluation-key cache");
+    lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
+}
+
+void TestDeclaredBasisMismatch() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    context->EvalMultKeyGen(keys.secretKey);
+    const auto plaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25}, 2, 0);
+    DoubleCKKS module(context);
+    const auto left = module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    const auto right = module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    const auto tensor = module.Tensor2(left, right);
+    const auto fullBasis = context->GetCryptoParameters()->GetElementParams();
+
+    for (const bool corruptHigh : {true, false}) {
+        const auto input = module.Relin2(tensor);
+        auto member = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(
+            corruptHigh ? input.GetHigh() : input.GetLow());
+        auto& element = member->GetElements().at(0);
+        // Independent objects: declare the full basis but retain only the valid
+        // active towers. Do not alter shared context or native-tower parameters.
+        DCRTPoly malformed(fullBasis, Format::EVALUATION, true);
+        malformed.GetAllElements() = element.GetAllElements();
+        Check(malformed.GetParams()->GetParams().size() ==
+                  malformed.GetAllElements().size() + 1,
+              "declared-basis fixture did not create the intended inconsistency");
+        element = std::move(malformed);
+        const auto before = SnapshotPair(input, "RS2 declared-basis mismatch input");
+        const std::string memberName = corruptHigh ? "pair high" : "pair low";
+        CheckThrowsInvalidArgument(
+            [&] { (void)module.RS2(input); },
+            "DoubleCKKS: " + memberName + " declared RNS basis mismatch");
+        CheckPairUnchanged(input, before, "RS2 declared-basis input after rejection");
+    }
+    lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
+}
+
+void TestMixedTowerFormat() {
+    auto context = MakeContext();
+    const auto keys = context->KeyGen();
+    context->EvalMultKeyGen(keys.secretKey);
+    const auto plaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5}, 2, 0);
+    DoubleCKKS module(context);
+    const auto left = module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    const auto right = module.DCP(context->Encrypt(plaintext, keys.publicKey));
+    const auto tensor = module.Tensor2(left, right);
+
+    for (const bool corruptHigh : {true, false}) {
+        const auto input = module.Relin2(tensor);
+        auto member = std::const_pointer_cast<lbcrypto::CiphertextImpl<DCRTPoly>>(
+            corruptHigh ? input.GetHigh() : input.GetLow());
+        auto& element = member->GetElements().at(0);
+        element.GetAllElements().at(0).SetFormat(Format::COEFFICIENT);
+        Check(element.GetFormat() == Format::EVALUATION,
+              "RS2 mixed-format fixture changed the aggregate format");
+        Check(element.GetAllElements().at(0).GetFormat() == Format::COEFFICIENT,
+              "RS2 mixed-format fixture did not corrupt an individual tower");
+        const auto before = SnapshotPair(input, "RS2 mixed-format input");
+        const std::string memberName = corruptHigh ? "pair high" : "pair low";
+        CheckThrowsInvalidArgument(
+            [&] { (void)module.RS2(input); },
+            "DoubleCKKS: " + memberName + " tower must be in evaluation format");
+        CheckPairUnchanged(input, before, "RS2 mixed-format input after rejection");
+    }
     lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
 }
 
@@ -680,6 +1004,18 @@ int main(int argc, char** argv) {
         }
         else if (name == "valid_arithmetic_state_immutability") {
             TestValidArithmeticStateImmutability();
+        }
+        else if (name == "mixed_tower_format") {
+            TestMixedTowerFormat();
+        }
+        else if (name == "untouched_public_pipeline") {
+            TestUntouchedPublicPipeline();
+        }
+        else if (name == "declared_basis_mismatch") {
+            TestDeclaredBasisMismatch();
+        }
+        else if (name == "terminal_rejections") {
+            TestTerminalRejections();
         }
         else {
             throw TestFailure("unknown RS2 case: " + name);

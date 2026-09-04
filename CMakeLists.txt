@@ -140,6 +140,10 @@ add_test(NAME relin2_tensor2_requires_first_lifecycle COMMAND relin2_test tensor
 add_test(NAME rs2_wrong_lifecycle COMMAND rs2_test wrong_lifecycle)
 add_test(NAME rs2_valid_arithmetic_state_immutability
          COMMAND rs2_test valid_arithmetic_state_immutability)
+add_test(NAME rs2_mixed_tower_format COMMAND rs2_test mixed_tower_format)
+add_test(NAME rs2_untouched_public_pipeline COMMAND rs2_test untouched_public_pipeline)
+add_test(NAME rs2_declared_basis_mismatch COMMAND rs2_test declared_basis_mismatch)
+add_test(NAME rs2_terminal_rejections COMMAND rs2_test terminal_rejections)
 
 add_test(NAME mult2_composition_contract COMMAND mult2_test composition_contract)
 add_test(NAME mult2_e2e_hybrid_real COMMAND mult2_e2e_oracle_test hybrid_real)

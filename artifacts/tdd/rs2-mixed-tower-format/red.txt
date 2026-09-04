@@ -1,0 +1,52 @@
+# RS2 mixed tower format red evidence
+
+Source: cd2165a40fe3c54c3a7c38de2e990d2670442bff
+OpenFHE: df495ba2e91739a6dc8f1de254fc5a41155ce504 (official 1.5.0)
+Run: https://github.com/leemaple/20231788./actions/runs/33832462125
+Linux job: 100898145947; Windows job: 100898146270.
+Command: ctest --test-dir <workflow project build> --output-on-failure
+Both CTest commands exit 8; 39/40 passed, only rs2_mixed_tower_format failed.
+This is behavioral red: the first high-member fixture retains aggregate Evaluation
+format but has one Coefficient-format tower. RS2 returned without rejecting it.
+The old shared assertion helper labels this 'wrong lifecycle'; the fixture and
+registered case show it is the mixed-tower-format case. The helper wording is
+corrected with the green patch, without changing the expected exception contract.
+The low-member iteration is not reached in the red run and is not claimed as a
+separately observed red. It is covered by the shared validation green test.
+Mac did not compile or run OpenFHE. Evidence was retained before adding the guard.
+
+## linux
+
+2026-09-04T03:15:50.9398373Z       Start 39: rs2_valid_arithmetic_state_immutability
+2026-09-04T03:15:50.9444041Z 39/40 Test #39: rs2_valid_arithmetic_state_immutability ......   Passed    0.00 sec
+2026-09-04T03:15:50.9444762Z       Start 40: rs2_mixed_tower_format
+2026-09-04T03:15:50.9543404Z 40/40 Test #40: rs2_mixed_tower_format .......................***Failed    0.01 sec
+2026-09-04T03:15:50.9544063Z RS2 test failure: RS2 wrong lifecycle did not fail fast
+2026-09-04T03:15:50.9544364Z 
+2026-09-04T03:15:50.9545411Z 
+2026-09-04T03:15:50.9545909Z 98% tests passed, 1 tests failed out of 40
+2026-09-04T03:15:50.9546186Z 
+2026-09-04T03:15:50.9546295Z Total Test time (real) =   0.45 sec
+2026-09-04T03:15:50.9546475Z 
+2026-09-04T03:15:50.9546634Z The following tests FAILED:
+2026-09-04T03:15:50.9548471Z 	 40 - rs2_mixed_tower_format (Failed)
+2026-09-04T03:15:50.9548777Z Errors while running CTest
+2026-09-04T03:15:51.0013293Z ##[error]Process completed with exit code 8.
+
+## windows
+
+2026-09-04T03:20:44.6345356Z       Start 39: rs2_valid_arithmetic_state_immutability
+2026-09-04T03:20:44.6589010Z 39/40 Test #39: rs2_valid_arithmetic_state_immutability ......   Passed    0.02 sec
+2026-09-04T03:20:44.6592072Z       Start 40: rs2_mixed_tower_format
+2026-09-04T03:20:44.6803864Z 40/40 Test #40: rs2_mixed_tower_format .......................***Failed    0.02 sec
+2026-09-04T03:20:44.6804505Z RS2 test failure: RS2 wrong lifecycle did not fail fast
+2026-09-04T03:20:44.6804797Z 
+2026-09-04T03:20:44.6816695Z 
+2026-09-04T03:20:44.6817076Z 98% tests passed, 1 tests failed out of 40
+2026-09-04T03:20:44.6818037Z 
+2026-09-04T03:20:44.6818129Z Total Test time (real) =   1.00 sec
+2026-09-04T03:20:44.6818308Z 
+2026-09-04T03:20:44.6818409Z The following tests FAILED:
+2026-09-04T03:20:44.6836632Z 	 40 - rs2_mixed_tower_format (Failed)
+2026-09-04T03:20:44.6844074Z Errors while running CTest
+2026-09-04T03:20:44.6956245Z ##[error]Process completed with exit code 8.

@@ -322,6 +322,11 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
     if (level > fullModuli_.size() || orderedModuli.size() != fullModuli_.size() - level) {
         Invalid(std::string(label) + " level and active-basis size disagree");
     }
+    auto expectedBasis =
+        std::make_shared<lbcrypto::DCRTPoly::Params>(*parameters_->GetElementParams());
+    for (std::size_t dropped = 0; dropped < level; ++dropped) {
+        expectedBasis->PopLastParam();
+    }
 
     for (const auto& element : ciphertext->GetElements()) {
         if (element.GetFormat() != Format::EVALUATION) {
@@ -332,10 +337,17 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
         }
         const auto& towers = element.GetAllElements();
         for (std::size_t index = 0; index < towers.size(); ++index) {
+            if (towers[index].GetFormat() != Format::EVALUATION) {
+                Invalid(std::string(label) + " tower must be in evaluation format");
+            }
             if (towers[index].GetRootOfUnity() != expectedTowerParameters[index]->GetRootOfUnity() ||
                 towers[index].GetCyclotomicOrder() != expectedTowerParameters[index]->GetCyclotomicOrder()) {
                 Invalid(std::string(label) + " tower parameters do not match the bound context");
             }
+        }
+        const auto& declaredBasis = element.GetParams();
+        if (!declaredBasis || !(*declaredBasis == *expectedBasis)) {
+            Invalid(std::string(label) + " declared RNS basis mismatch");
         }
     }
 }
