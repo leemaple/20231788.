@@ -1,0 +1,130 @@
+{
+  "root_reproduction": "PASS_BYTE_IDENTICAL_TO_PACKAGED_STATIC_CHECKS",
+  "output_bytes": 29653,
+  "output_sha256": "27b01f925b34430d47929189933af71a394f9e544b9f0a515c0be67e4f6732b1",
+  "input": {
+    "zip_bytes": 1695665,
+    "sha256": "0ac0a162e5cb1d1412b9ee4307fed42c13ea7f94edb581b9f841010c54a630a9",
+    "members": 226,
+    "manifest_payloads": 225,
+    "exact_git_blob_checks": 58,
+    "crc_safety_paths_manifest": "PASS",
+    "task_sha256": "f8a07a5f08d767667944ddb0d02cc2d1ff5805de0a386932f30a8e41501f2ccd",
+    "input_archive_and_sidecar_unchanged": "PASS",
+    "historical_manifests": {
+      "historical/input/": {
+        "payloads": 127,
+        "status": "PASS"
+      },
+      "historical/pro-return/": {
+        "payloads": 31,
+        "status": "PASS"
+      }
+    },
+    "official_original_files": 53,
+    "exception_supplement_files": 1,
+    "paper": {
+      "pdf": {
+        "bytes": 759375,
+        "sha256": "61d9b948b17b6a624d3bf3372462555288308011226d2893e9e6bc3d6d197eac"
+      },
+      "txt": {
+        "bytes": 90235,
+        "sha256": "60dd871a2769fddfe7ce7b2562d031d7c8d819a679eff3c2b6ebf3d7ea5769ae"
+      }
+    }
+  },
+  "identities": {
+    "source": "d09f15f535f0dbf22ef89b33255e947166cc392a",
+    "evidence": "019588513452c5e153d891cf7d787555a7a0c013",
+    "red": "7399db55b799a166aee9b72b8f89bcded373b540",
+    "baseline": "80d771c52df10bce1c60992b5e0edb4e64f145ca",
+    "official_pin": "df495ba2e91739a6dc8f1de254fc5a41155ce504"
+  },
+  "source_checks": {
+    "historical_baseline_prefix": "historical/input/project/",
+    "current_project_files": 30,
+    "legacy_test_files_byte_identical": 19,
+    "original_bindings": 57,
+    "current_bindings": 58,
+    "ordered_57_prefix": "PASS",
+    "three_frozen_tests_and_workflow": "PASS",
+    "four_setter_two_comment_only_correction": "PASS",
+    "seed_calls_checked_against_all_disabled_CKKS_overrides": 23,
+    "red_to_green_paths": [
+      "CMakeLists.txt",
+      "include/openfhe_2023_1788/double_ckks.h",
+      "include/openfhe_2023_1788/repeated_mult2.h",
+      "src/double_ckks.cpp",
+      "src/repeated_mult2.cpp"
+    ],
+    "red_patch_reversed_in_memory": "PASS",
+    "red_cmake_sha256": "c0f03945d54715639f655fe31acc82994047381b6b484e4ac70b137b45ee7f4a",
+    "cmake_delta": "one comment plus one target_sources statement"
+  },
+  "frozen_vectors": {
+    "json_sha256": "6a0dae07b55adf8552272407d4e8885b1e993808d9914fc250b508ecc8d772e6",
+    "identical_copies": 2,
+    "Z_products": 16,
+    "W_squares": 16,
+    "complex_deltas": 2,
+    "cpp_header_transcription": "PASS",
+    "canonical_dyadics_and_payload_digest": "PASS",
+    "delta_squared_norm_exceeds_16_times_limit_squared": "PASS"
+  },
+  "records_count": 32,
+  "record_summary": [
+    {
+      "host": "LINUX",
+      "invocation": "focused",
+      "records": 8,
+      "max_slot_error": "2.5750438251822196213863837365047086990816382450697E-27",
+      "max_delta_error": "4.4468041896633945060815792734722408468117973626503E-28",
+      "max_slot_to_limit_ratio": {
+        "numerator": "412007012029155139421821397840753391853062119211152",
+        "denominator": "132348898008484427979425390731194056570529937744140625"
+      }
+    },
+    {
+      "host": "LINUX",
+      "invocation": "full",
+      "records": 8,
+      "max_slot_error": "8.6567109302555721098149377073950460148577469675532E-28",
+      "max_delta_error": "8.5301073231695579538471189903613719707812675503209E-28",
+      "max_slot_to_limit_ratio": {
+        "numerator": "692536874420445768785195016591603681188619757404256",
+        "denominator": "661744490042422139897126953655970282852649688720703125"
+      }
+    },
+    {
+      "host": "WINDOWS",
+      "invocation": "focused",
+      "records": 8,
+      "max_slot_error": "3.0483958933624023397152969194357462509672964693086E-27",
+      "max_delta_error": "8.6335021892918749412581511324313322525731015959879E-28",
+      "max_slot_to_limit_ratio": {
+        "numerator": "487743342937984374354447507109719400154767435089376",
+        "denominator": "132348898008484427979425390731194056570529937744140625"
+      }
+    },
+    {
+      "host": "WINDOWS",
+      "invocation": "full",
+      "records": 8,
+      "max_slot_error": "1.2420908838119371233575498958151277040636092070454E-27",
+      "max_delta_error": "4.6744102256671584533188415907311253444894222617939E-28",
+      "max_slot_to_limit_ratio": {
+        "numerator": "198734541409909939737207983330420432650177473127264",
+        "denominator": "132348898008484427979425390731194056570529937744140625"
+      }
+    }
+  ],
+  "not_run": [
+    "C++ compilation",
+    "CTest",
+    "OpenFHE cryptography",
+    "Linux/Windows hosted workflows",
+    "full raw-log hash revalidation",
+    "security/performance experiments"
+  ]
+}
