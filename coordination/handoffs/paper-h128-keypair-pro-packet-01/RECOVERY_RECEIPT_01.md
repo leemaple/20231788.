@@ -33,3 +33,14 @@ and unchanged source ZIP/sidecar were supplied again.
 Preserve this running task. The original four-patch/TDD, exact h128, official
 primitive, frozen-profile/oracle and dual-platform 58/58 gates remain intact.
 This recovery does not authorize a metadata substitute or paper-completion claim.
+
+## Recovery progress observed at 09:01:36
+
+Pro explicitly reported a healthy channel, no retained implementation, and
+successful verification of the renamed archive and all 96 manifest payloads.
+It proceeded to source/API inspection with Stop answering present. This is
+reported external evidence, not a returned patch or independently run test.
+The existing automation now includes this exact recovery record and the new
+repeated-task URL. No extra scheduled task or repeated recovery was created.
+At the same time a read-only GitHub API check still showed run 33892550947 at
+4ecbd972 as the newest completed/success engineering CI; no new run was claimed.
