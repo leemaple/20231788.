@@ -101,7 +101,13 @@ add_executable(precision_first_mult2_contract_test
     tests/precision_dcp_rcb_fixture.cpp)
 target_link_libraries(precision_first_mult2_contract_test PRIVATE openfhe_2023_1788)
 
+add_executable(repeated_mult2_semantic_two_square_test EXCLUDE_FROM_ALL
+    tests/repeated_mult2_semantic_two_square_test.cpp
+    tests/precision_dcp_rcb_fixture.cpp)
+target_link_libraries(repeated_mult2_semantic_two_square_test PRIVATE openfhe_2023_1788)
+
 if(MSVC)
+    target_compile_options(repeated_mult2_semantic_two_square_test PRIVATE /W4 /WX)
     target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
     target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
     target_compile_options(tensor2_api_contract_test PRIVATE /W4 /WX)
@@ -121,6 +127,7 @@ if(MSVC)
     target_compile_options(precision_dcp_rcb_contract_test PRIVATE /W4 /WX)
     target_compile_options(precision_first_mult2_contract_test PRIVATE /W4 /WX)
 else()
+    target_compile_options(repeated_mult2_semantic_two_square_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(tensor2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
@@ -207,3 +214,6 @@ add_test(NAME mult2_pair_add_input_hybrid_complex
          COMMAND mult2_e2e_oracle_test pair_add_input_hybrid_complex)
 add_test(NAME mult2_pair_sub_input_hybrid_complex
          COMMAND mult2_e2e_oracle_test pair_sub_input_hybrid_complex)
+
+add_test(NAME repeated_mult2_semantic_two_square_contract
+         COMMAND repeated_mult2_semantic_two_square_test)

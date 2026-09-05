@@ -3,6 +3,7 @@ name: OpenFHE 2023/1788 TDD
 on:
   push:
     branches:
+      - codex/repeated-mult2-semantic-01
       - agent/codex-dcp-rcb-01
       - agent/codex-tensor2-01
       - agent/codex-relin2-01
@@ -110,8 +111,8 @@ jobs:
       - name: Run focused Pair Add and Sub inputs to first Mult2
         run: ctest --test-dir build --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
 
-      - name: Run clean-room project tests
-        run: ctest --test-dir build --verbose --output-on-failure
+      - name: Run legacy 57-test checkpoint
+        run: ctest --test-dir build --verbose --output-on-failure -E '^repeated_mult2_semantic_two_square_contract$'
 
       - name: Build Mult2 public API contract
         run: cmake --build build --target mult2_api_contract_test --parallel 2
@@ -121,6 +122,18 @@ jobs:
 
       - name: Build Sub public API contract
         run: cmake --build build --target sub_api_contract_test --parallel 2
+
+      - name: Record all CTest bindings
+        run: ctest --test-dir build --show-only=json-v1
+
+      - name: Build repeated-Mult2 semantic contract
+        run: cmake --build build --target repeated_mult2_semantic_two_square_test --parallel 2
+
+      - name: Run focused repeated-Mult2 two-operation semantic contract
+        run: ctest --test-dir build --verbose --output-on-failure -R '^repeated_mult2_semantic_two_square_contract$'
+
+      - name: Run clean-room project tests
+        run: ctest --test-dir build --verbose --output-on-failure
 
   windows-mingw64:
     runs-on: windows-2022
@@ -277,14 +290,14 @@ jobs:
           export PATH="$prefix/bin:$prefix/lib:$PATH"
           ctest --test-dir "$build" --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
 
-      - name: Run clean-room project tests
+      - name: Run legacy 57-test checkpoint
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           build="$(cygpath -u "$PROJECT_BUILD")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
-          ctest --test-dir "$build" --verbose --output-on-failure
+          ctest --test-dir "$build" --verbose --output-on-failure -E '^repeated_mult2_semantic_two_square_contract$'
 
       - name: Build Mult2 public API contract
         shell: msys2 {0}
@@ -306,3 +319,37 @@ jobs:
         run: |
           build="$(cygpath -u "$PROJECT_BUILD")"
           cmake --build "$build" --target sub_api_contract_test --parallel 2
+
+      - name: Record all CTest bindings
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --show-only=json-v1
+
+      - name: Build repeated-Mult2 semantic contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target repeated_mult2_semantic_two_square_test --parallel 2
+
+      - name: Run focused repeated-Mult2 two-operation semantic contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^repeated_mult2_semantic_two_square_contract$'
+
+      - name: Run clean-room project tests
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure
