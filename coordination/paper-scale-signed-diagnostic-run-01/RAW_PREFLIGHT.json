@@ -1,0 +1,47 @@
+{
+  "logs": [
+    {
+      "host": "LINUX",
+      "path": "artifacts/handoffs/paper-scale-signed-diagnostic-run-01/LINUX_RAW.log",
+      "bytes": 906589,
+      "sha256": "44eb5102695106bbe80a693ce4028b4160923f521d683c2d6af293bfc76040fa",
+      "original_decoded_bytes": 906589,
+      "original_decoded_sha256": "44eb5102695106bbe80a693ce4028b4160923f521d683c2d6af293bfc76040fa",
+      "CRLF_count": 0,
+      "byte_preservation": "PASS"
+    },
+    {
+      "host": "WINDOWS",
+      "path": "artifacts/handoffs/paper-scale-signed-diagnostic-run-01/WINDOWS_LF.log",
+      "bytes": 915610,
+      "sha256": "9ff1e0f25faafac5b57da07519b8f81b2a8b765f30ecec9e1c74d838395c1dea",
+      "original_decoded_bytes": 924947,
+      "original_decoded_sha256": "7f781be87251a85da24a8a51ff25b0176f3215789718f528d6472c49a89b27f8",
+      "CRLF_count": 9337,
+      "byte_preservation": "PASS"
+    }
+  ],
+  "framed_bytes": 1831622,
+  "framed_sha256": "3ee174e725b56092bcb4cb9716677316e25fb7b351e0fc91190ba231e4394ca5",
+  "scan_command": [
+    "/opt/homebrew/bin/gitleaks",
+    "stdin",
+    "--ignore-gitleaks-allow",
+    "--gitleaks-ignore-path",
+    "/dev/null",
+    "--max-decode-depth",
+    "5",
+    "--max-archive-depth",
+    "1",
+    "--redact",
+    "--no-banner",
+    "--no-color",
+    "--report-format",
+    "json",
+    "--report-path",
+    "-"
+  ],
+  "scan_exit": 0,
+  "findings": [],
+  "provenance_note": "Original bytes here mean connector-decoded UTF-8 content, not HTTP transport bytes. Linux is unchanged; Windows retains an LF-normalized copy and hashes the original 9337-CRLF decoded content. Original connector captures remain in ignored artifacts; no second download was needed."
+}

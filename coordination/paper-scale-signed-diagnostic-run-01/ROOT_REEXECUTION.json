@@ -1,0 +1,56 @@
+{
+  "completed_before_clock_observation_utc": "2026-09-05T17:04:22Z",
+  "time_note": "All four executions completed before this subsequent observed clock reading; no unobserved exact execution timestamp is claimed.",
+  "repository_head": "a33d5f1fcfeb51cd63021b1ec1d24d6e76187a1c",
+  "repository_status_at_execution": "clean",
+  "tested_source": "9f6c8eae06afb342dfa8c8efff9f64ee45b2ab8e",
+  "root_executed": true,
+  "checks": [
+    {
+      "script": "verify_signed_run.py",
+      "args": [
+        "linux"
+      ],
+      "exit_code": 0,
+      "stdout_bytes": 110987,
+      "stdout_sha256": "e05718a66634305257bdf972ebffa5a90be9aeecc6e8619c23f680e3d70c933f",
+      "byte_identical_to": "LINUX_VERIFICATION.json"
+    },
+    {
+      "script": "verify_signed_run.py",
+      "args": [
+        "windows"
+      ],
+      "exit_code": 0,
+      "stdout_bytes": 112231,
+      "stdout_sha256": "cf0a88677990840811d96f8ffc8b1eb02985d0a5ddc9e737c2a0400059a728f4",
+      "byte_identical_to": "WINDOWS_VERIFICATION.json"
+    },
+    {
+      "script": "verify_signed_error.py",
+      "args": [],
+      "exit_code": 0,
+      "stdout_bytes": 65294,
+      "stdout_sha256": "bceb514b8bb3759ce0a2c2f6f062307867321a1bf80c5965bc5bbe589bcc8b52",
+      "byte_identical_to": "LINUX_SIGNED_ERROR.json"
+    },
+    {
+      "script": "verify_signed_error.py",
+      "args": [
+        "artifacts/handoffs/paper-scale-signed-diagnostic-run-01/WINDOWS_LF.log",
+        "9ff1e0f25faafac5b57da07519b8f81b2a8b765f30ecec9e1c74d838395c1dea"
+      ],
+      "exit_code": 0,
+      "stdout_bytes": 65307,
+      "stdout_sha256": "fda89b1abd9d2f3c12fa9083c0d2357ece4210a83043dac84afcb00143c7d93b",
+      "byte_identical_to": "WINDOWS_SIGNED_ERROR.json"
+    }
+  ],
+  "not_run": [
+    "compiler/build",
+    "FHE/NTT/FFT/codec execution",
+    "new encrypted experiment",
+    "CI rerun/dispatch"
+  ],
+  "scope": "Read-only exact-source/log verification and bounded Fraction/Decimal checks. These successful audit executions are not implementation acceptance."
+}
