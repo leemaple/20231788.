@@ -9,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include <stdexcept>
 #include <type_traits>
 #include <utility>
 
@@ -285,9 +286,9 @@ std::string ContextObservation(const CryptoContext<DCRTPoly>& context) {
     return out.str();
 }
 
-CryptoContext<DCRTPoly> MakeContext() {
+CryptoContext<DCRTPoly> MakeContext(std::uint32_t firstModSize = 55) {
     lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> p;
-    p.SetMultiplicativeDepth(7); p.SetScalingModSize(50); p.SetFirstModSize(55);
+    p.SetMultiplicativeDepth(7); p.SetScalingModSize(50); p.SetFirstModSize(firstModSize);
     p.SetScalingTechnique(lbcrypto::FIXEDMANUAL); p.SetKeySwitchTechnique(lbcrypto::HYBRID);
     p.SetDigitSize(0); p.SetMaxRelinSkDeg(2); p.SetNumLargeDigits(0);
     p.SetSecretKeyDist(lbcrypto::UNIFORM_TERNARY); p.SetSecurityLevel(lbcrypto::HEStd_NotSet);
@@ -304,6 +305,33 @@ CryptoContext<DCRTPoly> MakeContext() {
     context->Enable(lbcrypto::PKE); context->Enable(lbcrypto::KEYSWITCH); context->Enable(lbcrypto::LEVELEDSHE);
     (void)ContextObservation(context);
     return context;
+}
+
+void CheckUnsupportedFirstModulus() {
+    const auto context = MakeContext(56);
+    const auto before = ContextObservation(context);
+    const auto cp = std::dynamic_pointer_cast<Params>(context->GetCryptoParameters());
+    const auto actualFirstBits =
+        cp->GetElementParams()->GetParams().front()->GetModulus().GetMSB();
+    Check(actualFirstBits == 56, "first-modulus fixture did not produce 56 bits");
+    Check(cp->GetScalingFactorReal(0) == std::ldexp(1.0, 50),
+          "first-modulus fixture changed base scaling factor");
+    std::cout << "first_modulus_boundary_fixture ready=1 actual_first_bits="
+              << actualFirstBits << " Q_towers=8 N=64 M=128 fixture_new_keypairs=0"
+              << std::endl;
+    const std::string diagnostic =
+        "HighPrecisionClientIO: unsupported diagnostic Q basis";
+    bool rejected = false;
+    try { (void)io::HighPrecisionClientIO(context); }
+    catch (const std::domain_error& error) {
+        Check(error.what() == diagnostic,
+              "wrong first-modulus diagnostic: " + std::string(error.what()));
+        rejected = true;
+    }
+    Check(ContextObservation(context) == before,
+          "first-modulus constructor changed context or tables");
+    Check(rejected, "required rejection was accepted: " + diagnostic);
+    std::cout << "first_modulus_boundary_rejection passed" << std::endl;
 }
 
 void CheckElement(const DCRTPoly& element, const io::OrderedDcrtBasis& expected) {
@@ -578,4 +606,4 @@ void RunContract() {
 }
 }  // namespace
 
-int main() { RunContract(); }
+int main() { RunContract(); CheckUnsupportedFirstModulus(); }
