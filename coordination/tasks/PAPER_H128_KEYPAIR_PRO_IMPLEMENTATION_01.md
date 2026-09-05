@@ -122,9 +122,14 @@ Freeze one deterministic N=256 diagnostic context before writing GREEN:
 - explicit roundtrip and EvalMult tolerances justified as a key-consistency
   smoke, not an 80-bit precision test.
 
+Derive these literals independently from the pinned number-theory/parameter
+source, or use a separate exact-pin discovery result recorded before RED.
+Never populate expected values by reading the same context under test at
+runtime. Freeze the native-integer/backend configuration as well as the pin.
 If exact prime/root literals cannot be proven from the supplied source without
 an authorized compile, return a separately labelled, minimal contract-discovery
-probe instead of guessing. Do not claim a completed GREEN in that case.
+probe instead of guessing. Codex will run that probe remotely and commit the
+observed profile before a new RED. Do not claim a completed GREEN in that case.
 
 Patch `0002-green-paper-h128-client-keypair.patch` must add the smallest adapter
 implementation needed for the frozen valid path. Through public getters and
@@ -155,13 +160,20 @@ Cycle-A literals or expectations.
 Patch `0004-green-paper-h128-client-keypair-guards.patch` adds only the smallest
 validation/lifecycle implementation required to pass those new checks:
 
-- every named unsupported profile rejects before publishing a key;
+- every constructible named unsupported profile rejects before publishing a
+  key; show why each malformed fixture can reach the public seam safely;
 - two valid calls return different nonempty tags and independent objects;
 - generate an unrelated guard EvalMult key, then keys for a returned h=128
   secret; clearing only the adapter-owned tag leaves the guard row and its key
   usable;
 - the adapter itself never clears caches and never mutates an existing key;
 - an exception leaves no half-built pair or new cache entry observable.
+
+Fresh-tag collision handling is a defensive source check, not a requirement
+to force a random ID collision. Test observable two-call uniqueness and owned
+versus unrelated cache isolation. Do not add a tag-injection seam, generic key
+factory, global registry or sampler replacement merely to synthesize a
+collision. Label unexecuted collision branches as source-reviewed, not tested.
 
 The final project must append exactly one new CTest registration at this branch
 stage, named:
