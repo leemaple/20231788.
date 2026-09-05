@@ -2,6 +2,8 @@ This is one recovery from an observed terminal state, not an interruption or dup
 
 The exact same complete input archive and sidecar are reattached below. First verify execution-channel health with one tiny distinguishable command and file write/readback, then inspect any retained source work and its provenance. If tool output is genuinely unavailable, report that exact limitation promptly rather than spending the turn repeating invisible checks. If healthy, complete the original four-patch assignment below. This is an execution recovery; the approved seam, exact source identity and acceptance criteria are unchanged.
 
+Attachment transport note: this conversation automatically renamed the newly reattached files to `paper-h128-keypair-implementation-01-9d21c3a-20260905T0812(1).zip` and `paper-h128-keypair-implementation-01-9d21c3a-20260905T0812.zip(1).sha256`. Their bytes and digests are unchanged. The sidecar's internal basename remains the original ZIP filename below; explicitly map that basename to the new attachment and verify the bytes, rather than treating the UI-added suffix as a different source version.
+
 This is a fresh, complete-context implementation assignment for the OpenFHE
 2023/1788 clean-room project. Do not assume that you can access my filesystem,
 Git repository, private repository, previous chats, or any fact from earlier
@@ -65,4 +67,3 @@ paper precision/security/performance, eight squarings, production I/O or full
 project completion. Take the time needed and finish coherently; do not return a
 generic plan, pseudocode-only answer, weakened test, broad exception workaround
 or false success.
-
