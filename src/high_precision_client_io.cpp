@@ -12,12 +12,32 @@
 #include <utility>
 
 namespace openfhe_2023_1788::client_io {
+namespace detail {
+
+// Opaque, immutable value snapshot shared by this client's receipts. Context
+// and Params remain upstream-owned shared objects, not transitive deep copies.
+struct ClientContextBinding final {
+    lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context;
+    std::shared_ptr<lbcrypto::CryptoParametersCKKSRNS> parameters;
+    ClientContextProfile profile;
+    OrderedDcrtBasis fullBasis;
+    OrderedDcrtBasis pBasis;
+    OrderedDcrtBasis qpBasis;
+    OrderedDcrtBasis pkBasis;
+    std::vector<OrderedDcrtBasis> partitionBases;
+    std::uint32_t numPartQ;
+    std::uint32_t numPerPartQ;
+    std::vector<lbcrypto::NativeInteger> pModq;
+};
+
+}  // namespace detail
 namespace {
 
 using lbcrypto::Ciphertext;
 using lbcrypto::CryptoContext;
 using lbcrypto::DCRTPoly;
 using Parameters = lbcrypto::CryptoParametersCKKSRNS;
+using ContextBinding = detail::ClientContextBinding;
 template <unsigned Digits>
 using WorkReal = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<Digits>>;
 using Primary = WorkReal<160>;
@@ -93,6 +113,23 @@ OrderedDcrtBasis ReadBasis(const std::shared_ptr<DCRTPoly::Params>& params) {
     return result;
 }
 
+// Unlike ReadBasis, a live comparison must turn every structural mismatch
+// into the one boundary diagnostic before using an upstream primitive.
+bool MatchesBasis(const std::shared_ptr<DCRTPoly::Params>& params, const OrderedDcrtBasis& expected) {
+    if (!params || params->GetCyclotomicOrder() != expected.cyclotomicOrder ||
+        params->GetRingDimension() != expected.ringDimension ||
+        params->GetParams().size() != expected.moduliDecimal.size() ||
+        params->GetModulus().ToString() != CompositeModulus(expected).convert_to<std::string>()) return false;
+    for (std::size_t index = 0; index < expected.moduliDecimal.size(); ++index) {
+        const auto& tower = params->GetParams()[index];
+        if (!tower || tower->GetCyclotomicOrder() != expected.cyclotomicOrder ||
+            tower->GetRingDimension() != expected.ringDimension ||
+            tower->GetModulus().ToString() != expected.moduliDecimal[index] ||
+            tower->GetRootOfUnity().ToString() != expected.rootsOfUnityDecimal[index]) return false;
+    }
+    return true;
+}
+
 // This guard cannot use DCRT IsEmpty() (which only detects all-empty towers),
 // DCRT operator== (which dereferences Params), or a NativePoly parameter/value
 // getter before proving that its pointer/value storage exists.
@@ -122,13 +159,6 @@ bool MatchesElement(const DCRTPoly& element, const OrderedDcrtBasis& expected) {
     return true;
 }
 
-struct ContextBinding final {
-    CryptoContext<DCRTPoly> context;
-    std::shared_ptr<Parameters> parameters;
-    ClientContextProfile profile;
-    OrderedDcrtBasis fullBasis;
-};
-
 ContextBinding BindContext(CryptoContext<DCRTPoly> context) {
     Require(context != nullptr, "null context");
     const auto cp = std::dynamic_pointer_cast<Parameters>(context->GetCryptoParameters());
@@ -152,20 +182,24 @@ ContextBinding BindContext(CryptoContext<DCRTPoly> context) {
             cp->GetElementParams()->GetParams().front()->GetModulus().GetMSB() == 55 &&
             q.moduliDecimal.back() == "1125899906843009" &&
             q.moduliDecimal[6] == "1125899906840833", "unsupported diagnostic Q basis");
-    Require(SameBasis(ReadBasis(cp->GetParamsPK()), q), "public-key parameters are not full Q");
+    const auto pk = ReadBasis(cp->GetParamsPK());
+    Require(SameBasis(pk, q), "public-key parameters are not full Q");
     const auto p = ReadBasis(cp->GetParamsP());
     auto expectedQP = q;
     expectedQP.moduliDecimal.insert(expectedQP.moduliDecimal.end(), p.moduliDecimal.begin(), p.moduliDecimal.end());
     expectedQP.rootsOfUnityDecimal.insert(expectedQP.rootsOfUnityDecimal.end(), p.rootsOfUnityDecimal.begin(), p.rootsOfUnityDecimal.end());
-    Require(SameBasis(ReadBasis(cp->GetParamsQP()), expectedQP), "inconsistent HYBRID QP basis");
+    const auto qp = ReadBasis(cp->GetParamsQP());
+    Require(SameBasis(qp, expectedQP), "inconsistent HYBRID QP basis");
     Require(cp->GetNumPartQ() == 3 && cp->GetNumPerPartQ() == 3 && cp->GetNumberOfQPartitions() == 3,
             "unsupported HYBRID partition profile");
     OrderedDcrtBasis partitions{kM, kN, {}, {}};
+    std::vector<OrderedDcrtBasis> partitionBases;
     for (std::uint32_t part = 0; part < 3; ++part) {
         const auto basis = ReadBasis(cp->GetParamsPartQ(part));
         Require(basis.moduliDecimal.size() == (part == 2 ? 2U : 3U), "inconsistent HYBRID partition length");
         partitions.moduliDecimal.insert(partitions.moduliDecimal.end(), basis.moduliDecimal.begin(), basis.moduliDecimal.end());
         partitions.rootsOfUnityDecimal.insert(partitions.rootsOfUnityDecimal.end(), basis.rootsOfUnityDecimal.begin(), basis.rootsOfUnityDecimal.end());
+        partitionBases.push_back(basis);
     }
     Require(SameBasis(partitions, q) && cp->GetPModq().size() == q.moduliDecimal.size(), "uninitialized HYBRID basis tables");
     const ExactInteger pModulus = CompositeModulus(p);
@@ -177,7 +211,24 @@ ContextBinding BindContext(CryptoContext<DCRTPoly> context) {
     ClientContextProfile profile{context.get(), cp.get(), kRequiredFeatures, enabled,
         cp->GetScalingTechnique(), cp->GetKeySwitchTechnique(), cp->GetExecutionMode(),
         cp->GetDecryptionNoiseMode(), cp->GetCKKSDataType()};
-    return {std::move(context), cp, profile, q};
+    return {std::move(context), cp, profile, q, p, qp, pk, std::move(partitionBases),
+            cp->GetNumPartQ(), cp->GetNumPerPartQ(), cp->GetPModq()};
+}
+
+void CheckSharedBasis(const ContextBinding& binding) {
+    const auto& cp = binding.parameters;
+    constexpr auto diagnostic = "shared context basis changed";
+    Require(MatchesBasis(cp->GetElementParams(), binding.fullBasis) &&
+            MatchesBasis(cp->GetParamsP(), binding.pBasis) &&
+            MatchesBasis(cp->GetParamsQP(), binding.qpBasis) &&
+            MatchesBasis(cp->GetParamsPK(), binding.pkBasis) &&
+            cp->GetNumPartQ() == binding.numPartQ && cp->GetNumPerPartQ() == binding.numPerPartQ &&
+            cp->GetNumberOfQPartitions() == binding.partitionBases.size() &&
+            cp->GetPModq() == binding.pModq, diagnostic);
+    // GetParamsPartQ indexes without bounds checks in the pinned upstream;
+    // the live partition count was established above before every access.
+    for (std::uint32_t part = 0; part < binding.partitionBases.size(); ++part)
+        Require(MatchesBasis(cp->GetParamsPartQ(part), binding.partitionBases[part]), diagnostic);
 }
 
 void CheckProfile(const ContextBinding& binding) {
@@ -190,6 +241,7 @@ void CheckProfile(const ContextBinding& binding) {
             cp->GetScalingTechnique() == profile.scalingTechnique && cp->GetKeySwitchTechnique() == profile.keySwitchTechnique &&
             cp->GetExecutionMode() == profile.executionMode && cp->GetDecryptionNoiseMode() == profile.decryptionNoiseMode &&
             cp->GetCKKSDataType() == profile.ckksDataType, "context profile changed");
+    CheckSharedBasis(binding);
 }
 
 bool SameProfile(const ClientContextProfile& left, const ClientContextProfile& right) {
@@ -371,17 +423,23 @@ PositiveRationalScale PositiveRationalScale::FromPositive(ExactInteger numerator
 const ExactInteger& PositiveRationalScale::Numerator() const noexcept { return numerator_; }
 const ExactInteger& PositiveRationalScale::Denominator() const noexcept { return denominator_; }
 
-BoundCiphertext::BoundCiphertext(Ciphertext<DCRTPoly> snapshot, ClientCiphertextState state)
-    : snapshot_(std::move(snapshot)), state_(std::move(state)) {}
+BoundCiphertext::BoundCiphertext(Ciphertext<DCRTPoly> snapshot, ClientCiphertextState state,
+                                 std::shared_ptr<const detail::ClientContextBinding> binding)
+    : snapshot_(std::move(snapshot)), state_(std::move(state)), binding_(std::move(binding)) {}
 
-Ciphertext<DCRTPoly> BoundCiphertext::CloneForEvaluation() const { return snapshot_->Clone(); }
+Ciphertext<DCRTPoly> BoundCiphertext::CloneForEvaluation() const {
+    CheckProfile(*binding_);
+    CheckCiphertext(snapshot_, state_);
+    return snapshot_->Clone();
+}
 const ClientCiphertextState& BoundCiphertext::State() const noexcept { return state_; }
 
 struct HighPrecisionClientIO::Impl final {
-    const ContextBinding binding;
+    const std::shared_ptr<const ContextBinding> binding;
     const TransformTable<Primary> primary;
     const TransformTable<CheckReal> check;
-    explicit Impl(CryptoContext<DCRTPoly> context) : binding(BindContext(std::move(context))) {}
+    explicit Impl(CryptoContext<DCRTPoly> context)
+        : binding(std::make_shared<const ContextBinding>(BindContext(std::move(context)))) {}
 };
 
 HighPrecisionClientIO::HighPrecisionClientIO(CryptoContext<DCRTPoly> context)
@@ -390,7 +448,7 @@ HighPrecisionClientIO::HighPrecisionClientIO(CryptoContext<DCRTPoly> context)
 BoundCiphertext HighPrecisionClientIO::Encrypt(const lbcrypto::PublicKey<DCRTPoly>& publicKey,
                                                const std::vector<ClientComplex>& values,
                                                const FreshEncodingSpec& spec) const {
-    const auto& binding = impl_->binding;
+    const auto& binding = *impl_->binding;
     CheckProfile(binding);
     if (!publicKey || publicKey->GetCryptoContext().get() != binding.context.get() || publicKey->GetKeyTag().empty() ||
         publicKey->GetPublicElements().size() != 2 ||
@@ -439,14 +497,16 @@ BoundCiphertext HighPrecisionClientIO::Encrypt(const lbcrypto::PublicKey<DCRTPol
     ciphertext->SetScalingFactor(state.recordedScalingFactor);
     ciphertext->SetScalingFactorInt(state.scalingFactorInt);
     CheckCiphertext(ciphertext, state);
-    return BoundCiphertext(std::move(ciphertext), std::move(state));
+    return BoundCiphertext(std::move(ciphertext), std::move(state), impl_->binding);
 }
 
 BoundCiphertext HighPrecisionClientIO::BindFirstMult2Rcb(const lbcrypto::ConstCiphertext<DCRTPoly>& recombined,
                                                         const BoundCiphertext& leftFresh,
                                                         const BoundCiphertext& rightFresh) const {
-    const auto& binding = impl_->binding;
+    const auto& binding = *impl_->binding;
     CheckProfile(binding);
+    CheckProfile(*leftFresh.binding_);
+    CheckProfile(*rightFresh.binding_);
     const auto& left = leftFresh.state_;
     const auto& right = rightFresh.state_;
     for (const auto* parent : {&left, &right}) {
@@ -481,13 +541,14 @@ BoundCiphertext HighPrecisionClientIO::BindFirstMult2Rcb(const lbcrypto::ConstCi
     state.origin = ClientCiphertextOrigin::FirstMult2Rcb;
     state.firstMult2ScaleFactors = FirstMult2ScaleFactors{qDiv, qL};
     CheckCiphertext(recombined, state);
-    return BoundCiphertext(recombined->Clone(), std::move(state));
+    return BoundCiphertext(recombined->Clone(), std::move(state), impl_->binding);
 }
 
 DecodedSlots HighPrecisionClientIO::Decrypt(const lbcrypto::PrivateKey<DCRTPoly>& privateKey,
                                             const BoundCiphertext& input) const {
-    const auto& binding = impl_->binding;
+    const auto& binding = *impl_->binding;
     CheckProfile(binding);
+    CheckProfile(*input.binding_);
     if (!privateKey || privateKey->GetCryptoContext().get() != binding.context.get() ||
         privateKey->GetKeyTag().empty() || privateKey->GetKeyTag() != input.state_.keyTag ||
         !MatchesElement(privateKey->GetPrivateElement(), binding.fullBasis))

@@ -88,6 +88,10 @@ struct ClientCiphertextState final {
 
 class HighPrecisionClientIO;
 
+namespace detail {
+struct ClientContextBinding;
+}
+
 class BoundCiphertext final {
 public:
     // Separate coefficients, scalar state and empty metadata map. OpenFHE
@@ -97,9 +101,11 @@ public:
 
 private:
     friend class HighPrecisionClientIO;
-    BoundCiphertext(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> snapshot, ClientCiphertextState state);
+    BoundCiphertext(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> snapshot, ClientCiphertextState state,
+                    std::shared_ptr<const detail::ClientContextBinding> binding);
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> snapshot_;
     ClientCiphertextState state_;
+    std::shared_ptr<const detail::ClientContextBinding> binding_;
 };
 
 struct DecodeDiagnostics final {
