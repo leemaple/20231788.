@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -383,6 +384,63 @@ void CheckBound(const io::BoundCiphertext& bound, const CryptoContext<DCRTPoly>&
     for (const auto& element : ciphertext->GetElements()) CheckElement(element, expected);
 }
 
+// Value snapshots never escape this process. In particular, compare map keys
+// explicitly: official Ciphertext equality compares metadata values, not keys.
+std::string CiphertextObservation(const Ciphertext<DCRTPoly>& ciphertext) {
+    Check(ciphertext != nullptr, "observed null ciphertext");
+    std::ostringstream out;
+    out << std::hexfloat << ciphertext->GetCryptoContext().get() << ':'
+        << ciphertext->GetKeyTag() << ':' << ciphertext->GetEncodingType() << ':'
+        << ciphertext->GetSlots() << ':' << ciphertext->GetLevel() << ':' << ciphertext->GetHopLevel() << ':'
+        << ciphertext->GetNoiseScaleDeg() << ':' << ciphertext->GetScalingFactor()
+        << ':' << ciphertext->GetScalingFactorInt();
+    const auto metadata = ciphertext->GetMetadataMap();
+    out << ':' << static_cast<bool>(metadata);
+    if (metadata) {
+        out << ':' << metadata->size();
+        for (const auto& entry : *metadata) out << ':' << entry.first << ':' << static_cast<bool>(entry.second);
+    }
+    for (const auto& element : ciphertext->GetElements()) out << '|' << ElementObservation(element);
+    return out.str();
+}
+
+void CheckCloneIsolation(const io::BoundCiphertext& bound, const CryptoContext<DCRTPoly>& context,
+                         const std::string& tag, std::uint32_t level, double recorded) {
+    const auto stateBefore = bound.State();
+    const auto changed = bound.CloneForEvaluation(), sibling = bound.CloneForEvaluation();
+    Check(changed.get() != sibling.get() && changed->GetMetadataMap() && sibling->GetMetadataMap() &&
+          changed->GetMetadataMap().get() != sibling->GetMetadataMap().get() &&
+          changed->GetMetadataMap()->empty() && sibling->GetMetadataMap()->empty(), "clones must own empty metadata maps");
+    const auto before = CiphertextObservation(sibling);
+    Check(CiphertextObservation(changed) == before, "initial evaluator clones differ");
+    auto& residue = changed->GetElements().at(0).GetAllElements().at(0).at(0);
+    const auto oldResidue = residue;
+    const auto nextHopLevel = changed->GetHopLevel() + 1;
+    residue = oldResidue == NativeInteger(0) ? NativeInteger(1) : NativeInteger(0);
+    Check(residue != oldResidue, "clone coefficient-storage mutation did not occur");
+    changed->SetLevel(level + 1);
+    changed->SetHopLevel(nextHopLevel);
+    changed->SetSlots(8);
+    changed->SetNoiseScaleDeg(3);
+    changed->SetScalingFactor(1.0);
+    changed->SetScalingFactorInt(NativeInteger(2));
+    changed->SetKeyTag(tag + ":clone-only");
+    changed->SetEncodingType(lbcrypto::COEF_PACKED_ENCODING);
+    Check(changed->GetLevel() == level + 1 && changed->GetHopLevel() == nextHopLevel &&
+          changed->GetSlots() == 8 && changed->GetNoiseScaleDeg() == 3 &&
+          changed->GetScalingFactor() == 1.0 && changed->GetScalingFactorInt() == NativeInteger(2) &&
+          changed->GetKeyTag() == tag + ":clone-only" && changed->GetEncodingType() == lbcrypto::COEF_PACKED_ENCODING,
+          "clone scalar mutations did not occur");
+    changed->SetMetadataByKey("clone-only", std::make_shared<lbcrypto::Metadata>());
+    Check(changed->GetMetadataMap()->size() == 1 && changed->GetMetadataMap()->count("clone-only") == 1 &&
+          changed->GetMetadataMap()->at("clone-only") != nullptr, "clone metadata mutation did not occur");
+    Check(CiphertextObservation(changed) != before, "clone mutation witness unchanged");
+    Check(CiphertextObservation(sibling) == before &&
+          CiphertextObservation(bound.CloneForEvaluation()) == before && SameState(bound.State(), stateBefore),
+          "evaluator clone changed sibling or bound receipt coefficients/scalars/map");
+    CheckBound(bound, context, tag, level, recorded);
+}
+
 struct Observation final {
     io::DecodedSlots decoded;
     BigFloat publicError;
@@ -498,6 +556,171 @@ std::size_t CheckMalformedKeys(const io::HighPrecisionClientIO& client, const Pu
     return count;
 }
 
+template <class Unchanged>
+void CheckSharedParamsDrift(const CryptoContext<DCRTPoly>& originalContext,
+                            double freshRecorded, double outputRecorded, Unchanged originalUnchanged) {
+    using ContextImpl = lbcrypto::CryptoContextImpl<DCRTPoly>;
+    using Factory = lbcrypto::CryptoContextFactory<DCRTPoly>;
+    // Strong references prevent address reuse and keep every original context
+    // alive when only the factory registry is cleared. Never clear eval maps.
+    const auto registeredBefore = Factory::GetAllContexts();
+    const auto multBefore = ContextImpl::GetAllEvalMultKeys();
+    const auto autoBefore = ContextImpl::GetAllEvalAutomorphismKeys();
+    std::vector<std::pair<std::string, std::map<std::uint32_t, lbcrypto::EvalKey<DCRTPoly>>>> autoRowsBefore;
+    for (const auto& row : autoBefore) {
+        Check(row.second != nullptr, "null original automorphism row");
+        autoRowsBefore.emplace_back(row.first, *row.second);
+    }
+    Check(std::find(registeredBefore.begin(), registeredBefore.end(), originalContext) != registeredBefore.end(),
+          "original context missing before disposable fixture");
+    const auto originalParams = std::dynamic_pointer_cast<Params>(originalContext->GetCryptoParameters());
+    Check(originalParams != nullptr, "original context is not CKKS-RNS");
+    std::vector<const void*> originalBases, originalNativeParams;
+    const auto rememberBasis = [&](const std::shared_ptr<DCRTPoly::Params>& basis) {
+        Check(basis != nullptr, "null original fixture basis");
+        originalBases.push_back(basis.get());
+        for (const auto& tower : basis->GetParams()) {
+            Check(tower != nullptr, "null original fixture native parameters");
+            originalNativeParams.push_back(tower.get());
+        }
+    };
+    for (const auto& old : registeredBefore) {
+        const auto cp = std::dynamic_pointer_cast<Params>(old->GetCryptoParameters());
+        Check(cp != nullptr && cp->GetNumPartQ() == 3 && cp->GetNumberOfQPartitions() == 3,
+              "unexpected original factory context");
+        rememberBasis(cp->GetElementParams()); rememberBasis(cp->GetParamsP()); rememberBasis(cp->GetParamsQP());
+        for (std::uint32_t part = 0; part < 3; ++part) rememberBasis(cp->GetParamsPartQ(part));
+    }
+    Factory::ReleaseAllContexts();
+    const auto context = MakeContext(55);
+    const auto cp = std::dynamic_pointer_cast<Params>(context->GetCryptoParameters());
+    Check(cp != nullptr && cp->GetElementParams()->GetParams().front()->GetModulus().GetMSB() == 55,
+          "disposable fixture is not actual firstMod55");
+    for (const auto& old : registeredBefore) {
+        Check(context.get() != old.get() && cp.get() != old->GetCryptoParameters().get() &&
+              context->GetEncodingParams().get() != old->GetEncodingParams().get(),
+              "disposable context/crypto/encoding parameters alias an original context");
+    }
+    Check(*cp == *originalParams && *context->GetEncodingParams() == *originalContext->GetEncodingParams(),
+          "disposable crypto/encoding values differ from original firstMod55");
+    const auto isolatedBasis = [&](const std::shared_ptr<DCRTPoly::Params>& actual,
+                                   const std::shared_ptr<DCRTPoly::Params>& original) {
+        Check(actual != nullptr && SameBasis(Basis(actual), Basis(original)) &&
+              actual->GetModulus() == original->GetModulus(), "disposable basis values differ from original firstMod55");
+        Check(std::find(originalBases.begin(), originalBases.end(), actual.get()) == originalBases.end(),
+              "disposable basis aliases original parameters");
+        for (const auto& tower : actual->GetParams())
+            Check(std::find(originalNativeParams.begin(), originalNativeParams.end(), tower.get()) == originalNativeParams.end(),
+                  "disposable native parameters alias original parameters");
+    };
+    isolatedBasis(cp->GetElementParams(), originalParams->GetElementParams());
+    isolatedBasis(cp->GetParamsP(), originalParams->GetParamsP());
+    isolatedBasis(cp->GetParamsQP(), originalParams->GetParamsQP());
+    for (std::uint32_t part = 0; part < 3; ++part)
+        isolatedBasis(cp->GetParamsPartQ(part), originalParams->GetParamsPartQ(part));
+    Check(ContextImpl::GetAllEvalMultKeys() == multBefore && ContextImpl::GetAllEvalAutomorphismKeys() == autoBefore,
+          "factory registry release changed evaluation maps");
+    originalUnchanged();
+    std::cout << "shared_params_fixture allocation_plan additional_matching_keypairs=1 additional_eval_keygen_calls=1"
+              << " actual_first_bits=55 isolated_context_and_bases=1" << std::endl;
+    const auto keys = context->KeyGen();
+    Check(keys.good() && !keys.publicKey->GetKeyTag().empty() && keys.publicKey->GetKeyTag() == keys.secretKey->GetKeyTag(),
+          "disposable matching keypair");
+    const auto tag = keys.secretKey->GetKeyTag();
+    Check(multBefore.count(tag) == 0 && autoBefore.count(tag) == 0, "disposable key tag collides with an original cache entry");
+    context->EvalMultKeyGen(keys.secretKey);
+    auto expectedMult = multBefore;
+    const auto& ownKeys = ContextImpl::GetAllEvalMultKeys().at(tag);
+    Check(ownKeys.size() == 1 && ownKeys.front() != nullptr && ownKeys.front()->GetCryptoContext().get() == context.get() &&
+          ownKeys.front()->GetKeyTag() == tag, "disposable evaluation key identity");
+    expectedMult.emplace(tag, ownKeys);
+    const auto mapsUnchanged = [&] {
+        Check(ContextImpl::GetAllEvalMultKeys() == expectedMult && ContextImpl::GetAllEvalAutomorphismKeys() == autoBefore,
+              "disposable fixture changed original evaluation maps");
+        for (const auto& row : autoRowsBefore)
+            Check(*ContextImpl::GetAllEvalAutomorphismKeys().at(row.first) == row.second,
+                  "disposable fixture changed an original automorphism row");
+    };
+    const auto leftValues = ClientValues(LeftValues()), rightValues = ClientValues(RightValues());
+    const auto contextBefore = ContextObservation(context), pkBefore = KeyObservation(keys.publicKey), skBefore = KeyObservation(keys.secretKey);
+    const io::FreshEncodingSpec spec{16, io::PositiveRationalScale::FromPositive(Pow2Integer(100), 1)};
+    const io::HighPrecisionClientIO client(context);
+    const auto left = client.Encrypt(keys.publicKey, leftValues, spec);
+    const auto right = client.Encrypt(keys.publicKey, rightValues, spec);
+    CheckBound(left, context, tag, 0, freshRecorded); CheckBound(right, context, tag, 0, freshRecorded);
+    const auto leftView = left.CloneForEvaluation(), rightView = right.CloneForEvaluation();
+    const auto leftBefore = CiphertextObservation(leftView), rightBefore = CiphertextObservation(rightView);
+    const DoubleCKKS evaluator(context);
+    const auto product = evaluator.Mult2(evaluator.DCP(leftView), evaluator.DCP(rightView));
+    Check(product.GetLifecycle() == openfhe_2023_1788::PairLifecycle::RefreshRequired, "disposable first Mult2 lifecycle");
+    const auto rcb = evaluator.RCB(product);
+    const auto result = client.BindFirstMult2Rcb(rcb, left, right);
+    CheckBound(result, context, tag, 2, outputRecorded);
+    const auto decoded = client.Decrypt(keys.secretKey, left);
+    Check(MaximumSlotError(OracleValues(decoded.values), LeftValues()) <= Tolerance(80),
+          "disposable pre-drift public decryption");
+    Check(ContextObservation(context) == contextBefore && KeyObservation(keys.publicKey) == pkBefore &&
+          KeyObservation(keys.secretKey) == skBefore && CiphertextObservation(leftView) == leftBefore &&
+          CiphertextObservation(rightView) == rightBefore && CiphertextObservation(left.CloneForEvaluation()) == leftBefore &&
+          CiphertextObservation(right.CloneForEvaluation()) == rightBefore, "disposable pre-drift operations changed inputs");
+    const auto leftState = left.State(), rightState = right.State(), resultState = result.State();
+    const auto sharedQ = cp->GetElementParams();
+    const auto qBefore = Basis(sharedQ);
+    const BigInt compositeBefore(sharedQ->GetModulus().ToString());
+    Check(qBefore.moduliDecimal.size() == 8 && leftView->GetElements().at(0).GetParams().get() == sharedQ.get() &&
+          rightView->GetElements().at(0).GetParams().get() == sharedQ.get(), "disposable shared Q fixture identity");
+    mapsUnchanged(); originalUnchanged();
+    std::cout << "shared_params_fixture ready=1 valid_clone_bind_decrypt=1 actual_first_bits=55"
+              << " Q_towers=8 fixture_new_keypairs=1 fixture_eval_keygen_calls=1 crypto_complete_before_drift=1" << std::endl;
+    // The sole intentional shared-state mutation; all crypto has finished.
+    // The public PopLastParam requires a nonempty basis, proven above.
+    sharedQ->PopLastParam();
+    auto shortened = qBefore;
+    shortened.moduliDecimal.pop_back(); shortened.rootsOfUnityDecimal.pop_back();
+    const BigInt compositeAfter = compositeBefore / BigInt(qBefore.moduliDecimal.back());
+    Check(SameBasis(Basis(sharedQ), shortened) && sharedQ->GetParams().size() == 7 &&
+          BigInt(sharedQ->GetModulus().ToString()) == compositeAfter,
+          "shared Q mutation did not produce the exact seven-tower prefix");
+    const auto leftAfter = CiphertextObservation(leftView), rightAfter = CiphertextObservation(rightView);
+    const auto rcbAfter = CiphertextObservation(rcb);
+    const auto pkAfter = KeyObservation(keys.publicKey), skAfter = KeyObservation(keys.secretKey);
+    const auto changedBasis = BasisObservation(Basis(sharedQ));
+    const auto driftUnchanged = [&] {
+        Check(SameState(left.State(), leftState) && SameState(right.State(), rightState) &&
+              SameState(result.State(), resultState), "immutable receipt value changed after shared parameter drift");
+        Check(BasisObservation(Basis(sharedQ)) == changedBasis &&
+              CiphertextObservation(leftView) == leftAfter && CiphertextObservation(rightView) == rightAfter &&
+              CiphertextObservation(rcb) == rcbAfter && KeyObservation(keys.publicKey) == pkAfter &&
+              KeyObservation(keys.secretKey) == skAfter, "rejected operation further changed disposable fixture");
+        mapsUnchanged(); originalUnchanged();
+    };
+    driftUnchanged();
+    std::cout << "shared_params_mutation ready=1 Q_towers_before=8 Q_towers_after=7 immutable_receipt_towers=8"
+              << " next_boundary=CloneForEvaluation" << std::endl;
+    const std::string diagnostic = "HighPrecisionClientIO: shared context basis changed";
+    const auto rejectDrift = [&](const char* boundary, auto call) {
+        bool rejected = false;
+        try { call(); }
+        catch (const std::domain_error& error) {
+            Check(error.what() == diagnostic, "wrong shared-Params diagnostic: " + std::string(error.what()));
+            rejected = true;
+        }
+        driftUnchanged();
+        Check(rejected, "required shared-Params rejection was accepted at " + std::string(boundary) + ": " + diagnostic);
+        std::cout << "shared_params_boundary_rejection passed boundary=" << boundary << std::endl;
+    };
+    rejectDrift("CloneForEvaluation", [&] { (void)left.CloneForEvaluation(); });
+    rejectDrift("BindFirstMult2Rcb", [&] { (void)client.BindFirstMult2Rcb(rcb, left, right); });
+    rejectDrift("Decrypt", [&] { (void)client.Decrypt(keys.secretKey, left); });
+    ContextImpl::ClearEvalMultKeys(tag);
+    Check(ContextImpl::GetAllEvalMultKeys() == multBefore && ContextImpl::GetAllEvalAutomorphismKeys() == autoBefore,
+          "owned evaluation-key cleanup changed original maps");
+    for (const auto& row : autoRowsBefore)
+        Check(*ContextImpl::GetAllEvalAutomorphismKeys().at(row.first) == row.second, "cleanup changed original automorphism row");
+    originalUnchanged();
+    std::cout << "shared_params_drift_contract passed boundaries=3 owned_eval_tag_cleanup=1" << std::endl;
+}
+
 void RunContract() {
     const auto left = LeftValues(), right = RightValues(), products = FrozenExpectedProducts();
     CheckRational(); CheckOracles(left, right, products);
@@ -602,8 +825,22 @@ void RunContract() {
               << " max_horner_component_disagreement=" << std::max({leftObservation.componentDisagreement, rightObservation.componentDisagreement, output.componentDisagreement})
               << " cross_precision_error=" << std::max({leftObservation.decoded.diagnostics.maximumCrossPrecisionDisagreement,
                     rightObservation.decoded.diagnostics.maximumCrossPrecisionDisagreement, output.decoded.diagnostics.maximumCrossPrecisionDisagreement})
-              << " centered_headroom=" << output.decoded.diagnostics.centeredHeadroom << " malformed_key_rejections=" << rejected << '\n';
+              << " centered_headroom=" << output.decoded.diagnostics.centeredHeadroom << " malformed_key_rejections=" << rejected << std::endl;
+    // Keep the original contexts, keys, receipts and decoded results alive
+    // through the last disposable fixture. The existing firstMod56 control
+    // still executes exactly once and must pass before any shared-state drift.
+    CheckUnsupportedFirstModulus();
+    CheckCloneIsolation(leftBound, context, keys.publicKey->GetKeyTag(), 0, freshRecorded);
+    CheckCloneIsolation(resultBound, context, keys.publicKey->GetKeyTag(), 2, recorded);
+    const auto originalUnchanged = [&] {
+        receiptsUnchanged();
+        CheckBound(resultBound, context, keys.publicKey->GetKeyTag(), 2, recorded);
+        Check(*resultBound.CloneForEvaluation() == *resultSnapshot, "original result changed during clone/drift checks");
+    };
+    originalUnchanged();
+    std::cout << "clone_isolation_contract passed fresh_and_result=1 coefficients=1 scalars=1 present_empty_maps=1" << std::endl;
+    CheckSharedParamsDrift(context, freshRecorded, recorded, originalUnchanged);
 }
 }  // namespace
 
-int main() { RunContract(); CheckUnsupportedFirstModulus(); }
+int main() { RunContract(); }
