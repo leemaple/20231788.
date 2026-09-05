@@ -17,12 +17,11 @@ Deliver a minimal, tested OpenFHE implementation of the paper's double-precision
 
 ## Coordinate roles and resources
 
-- Codex owns orchestration, integration, evidence, and final accountability.
-- Prefer ChatGPT Pro for nontrivial design and code drafting. Supply a complete sanitized handoff and never assume access to local files or prior chats.
-- Prefer the Windows computer's Z code/Zima agent for independent implementation, builds, and review in a dedicated clean-room folder when its shared quota is available. Never point it at quarantined Mac code.
-- Review substantive code with Codex, ChatGPT Pro, and either Z code/Zima or its current fallback reviewer. Invoke the latest Fable 5.1 only from the terminal, using the CLI's `fable` latest-model alias or a provider-advertised exact 5.1 identifier with fallback disabled; retain and verify the emitted model identity. Ask it promptly when targeted source/test investigation leaves a concrete difficult question unresolved. While Z code is unavailable, use Fable 5.1 as its preferred substitute; if it yields no usable result, record the outcome and continue with available independent review and executable tests. Resume Z code/Zima for subsequent boundaries after quota and service recover. Bind every external review to an exact commit and verify its findings against source and tests.
-- Save each external conversation/task URL or ID and enough state to resume without interrupting or duplicating long-running work.
-- Keep the Mac responsive. Put sustained builds, cryptographic tests, and broad scans on Windows or GitHub Actions; use bounded low-concurrency local checks only when necessary.
+Before allocating work, escalating a difficult issue, or handling model/quota failure, read [references/model-routing.md](references/model-routing.md). It is the authority for task-based model allocation and immediate Codex takeover when Fable 5.1 is unavailable; dated leaderboard evidence informs allocation but never substitutes for tests.
+
+- Codex owns the critical path, orchestration, integration, evidence, and final accountability.
+- Retain ChatGPT Pro's preference for complex design and code drafting, with complete sanitized context and uninterrupted conversations. Assign concrete bounded deliverables; keep independent execution moving while it thinks.
+- Keep the Mac responsive. Put sustained builds and cryptographic tests on GitHub Actions or the dedicated Windows clean-room folder; use only bounded low-concurrency local checks.
 
 Before transferring source or contacting an external agent, read [references/external-collaboration.md](references/external-collaboration.md). Before modifying implementation, tests, build files, or CI, read [references/engineering.md](references/engineering.md).
 
