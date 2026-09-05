@@ -46,6 +46,34 @@ Before acceptance, check complete raw Start/command/result bindings and live
 the original numerical/negative/ownership evidence from each contract.
 The running badge alone proves none of those final results.
 
+## Observed hosted completion and retained evidence
+
+The retained root audit is bound to engineering source
+`9c4d83b5cde16e5c5af89886bd73fe5252a99002`, run `33964209898`, attempt 1,
+Linux job `101301287648` and Windows job `101301287513`. Linux reached terminal
+`success` at 2026-09-05T11:52:16Z; Windows reached terminal `success` at
+2026-09-05T11:57:06Z. The documentation baseline supplied for this release
+preparation is `688b3c406e268994efcc58ecb17faf9c611bf5bb`.
+
+`ROOT_VERIFICATION_01.json` records `PASS_RETAINED_EXECUTION_AUDIT` for both
+retained host logs: each has 123 complete Start/command/result bindings, live
+57-test and 60-test listings with matching source backtraces, five public API
+targets, and the three added I/O, Repeated and h128 contract targets. The final
+suite is 60/60 on each host. The existing root parser was not rewritten or
+rerun during publication preparation.
+
+The six imported evidence files under `evidence/` are byte-for-byte copies
+of the retained handoff artifacts; `evidence/SHA256SUMS` verifies those six
+imports (run `shasum -a 256 -c SHA256SUMS` from `evidence/`).
+`RUN_TERMINAL_01.json` separately retains the lead's fresh GitHub run-status
+read, with both completed job step lists and exact source identity.
+In particular, `windows-job-101301287513-lf.log` is the retained
+LF-normalized, UTF-8 connector-decoded log. It is not original HTTP transport
+bytes. Linux and Windows results establish a cross-host diagnostic co-build
+and regression checkpoint only: they do not prove production I/O-to-Repeated
+integration, same-root paper-scale h128 execution, or completion of the paper.
+No Mac cryptographic run, CI rerun, or additional randomized trial was done.
+
 ## Explicit remaining boundary
 
 This checkpoint puts the three diagnostic modules into one build and regression
@@ -64,5 +92,9 @@ gates, not the representative end-to-end correctness gate.
 
 Final I/O source review remains the single submitted
 [Review Final Implementation](https://chatgpt.com/c/6a9bfcc1-9aa0-83ec-b3c9-22cd8bbc6c6a).
-A read-only check this turn observed additional review activity, not a final
-answer. Do not interrupt, refresh or resend it.
+A read-only check now observes its final `PASS_WITHIN_STATED_SCOPE` response,
+with P0/P1/P2 all zero and the original N64 first-operation scope. The lead
+received the actual 33085-byte return ZIP and matched its displayed SHA256
+`0c372df3c8554d02e8be987dc9b4f8a155ffca1f363fca432daa5ec674723668`.
+Its package/content acceptance is a separate recorded review step, not proof
+of the paper-scale behavior still missing above. Do not resend the review.
