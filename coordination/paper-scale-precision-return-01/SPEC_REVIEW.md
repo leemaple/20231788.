@@ -1,0 +1,14 @@
+# Independent Spec / mathematical review
+
+2026-09-06; GPT-6 Astra, high. Reviewed the two original tests and complete combined candidate, DIAGNOSTIC.patch and PORTABILITY.patch against TASK.md and the frozen production/input/nominal contracts, after reading workflow/engineering/external/model-routing instructions. Candidate was reviewed before consulting Pro's diagnosis; this review does not rely on its claims. Base: `b1b024e3134fbb4e8cac7c0d59cf790a37e4ed89`; supplied documentation HEAD: `797e86dc0ff625c1847543fcbab295b2a330de76`. Candidate remains unapplied. Below, H/C mean `complete/combined/tests/paper_full_eight_square_oracle.h` / `paper_full_eight_square_contract_test.cpp` within the returned package.
+
+**No blocking Spec defect or introduced false-PASS path found.**
+
+- TASK requires “Retain the original end-to-end errors against z^(2^r).” H153–177 computes signed E, I, A, L correctly. C274–282 initializes both histories from independently decrypted fresh anchors; C293–301 squares original expected z and freshPower exactly once per round, uses independently computed S_r, and updates previousAnchors after observing L. Fresh E remains w0−original z (C276–279). The evaluator and its one-chain call graph are unchanged (C177–189); diagnostics stay client-side.
+- TASK permits “Numeric gate failures may be accumulated” while retaining “all original assertions and exit failure.” H188/327 and C236 preserve the exact full-slot, anchor, and witness inequalities. The same referenced counter reaches C381; any recorded miss throws before COMPLETE PASS. Exceptions still exit 1 (C387–392). No threshold or expected-input substitution appears.
+- TASK says “invariant, malformed-state and nonwrap failures must still fail promptly.” Existing structural checks remain Require; H125–127/145–146 reject nonfinite values; codec 2^-120 and positive headroom remain immediate (H191–192); independent/production 2^-80 agreement remains immediate (H330). Scalar controls and output-domain checks remain immediate (C327–338).
+- H286–295 confines allocator-backed, explicitly et_off binary512 to root construction; precision, exponent template defaults, root exponents, and returned Real remain unchanged. Compiler portability remains unverified by this review.
+
+Scope limits: signed residuals distinguish inherited fresh error from added arithmetic, but do not separately measure encoding versus encryption noise. L1 includes any DCP departure. Neither is misrepresented as a separately proven component. Binary512 and 100-digit signed output adequately resolve the expected near-unit/1e-28 residual regime; emitted coefficient/scale ratios should be inspected before interpreting pathological cancellation. No new uniform conditioning proof is supplied.
+
+No build, transform, FHE, numeric experiment, Git, browser, or CI operation was performed. Hosted compilation and actual diagnostic execution remain pending; this is not GREEN.

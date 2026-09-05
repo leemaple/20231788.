@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -130,8 +131,55 @@ inline void Emit(const std::string& field,const Real& value) {
     std::cout << std::scientific << std::setprecision(45)
               << "OBS field=" << field << " value=" << value << '\n' << std::flush;
 }
+// Accumulate finite acceptance misses only. Shape, nonfinite, codec/oracle
+// agreement and nonwrap checks still throw; no invalid-state continuation.
+inline void PrecisionGate(bool condition,const std::string& label,std::size_t& failures) {
+    if (!condition) {
+        ++failures;
+        std::cout << "OBS numeric_gate=FAIL label=" << label << '\n' << std::flush;
+    }
+}
+inline Complex Difference(const Complex& a,const Complex& b) {
+    return {a.real-b.real,a.imag-b.imag};
+}
+inline void EmitSigned(const std::string& field,const Complex& z) {
+    Finite(z.real,field+".real"); Finite(z.imag,field+".imag");
+    // Enough digits to preserve the signed sub-binary64 perturbation in w0.
+    // All arithmetic remains the original binary512 Real, not these strings.
+    std::cout << std::scientific << std::setprecision(100)
+              << "OBS field=" << field << ".real value=" << z.real << '\n'
+              << "OBS field=" << field << ".imag value=" << z.imag << '\n' << std::flush;
+}
+inline void ObserveResiduals(const std::array<Complex,10>& actual,
+                             const std::array<Complex,10>& previous,
+                             const std::array<Complex,10>& freshPower,
+                             const std::vector<Complex>& expected,const std::string& label) {
+    Real inheritedMax=0, addedMax=0, localMax=0;
+    for (std::size_t a=0;a<kAnchors.size();++a) {
+        const auto& z=expected.at(kAnchors[a]);
+        const auto inherited=Difference(freshPower[a],z);
+        const auto added=Difference(actual[a],freshPower[a]);
+        const auto local=Difference(actual[a],Multiply(previous[a],previous[a]));
+        const auto field="diag."+label+".anchor_"+std::to_string(kAnchors[a]);
+        EmitSigned(field+".E",Difference(actual[a],z));
+        EmitSigned(field+".I",inherited);
+        EmitSigned(field+".A",added);
+        EmitSigned(field+".L",local);
+        const Complex zero{Real(0),Real(0)};
+        const Real inheritedError=Error(inherited,zero);
+        const Real addedError=Error(added,zero);
+        const Real localError=Error(local,zero);
+        if (inheritedError>inheritedMax) inheritedMax=inheritedError;
+        if (addedError>addedMax) addedMax=addedError;
+        if (localError>localMax) localMax=localError;
+    }
+    // Diagnostics, never substitute acceptance against freshPower for truth.
+    Emit("diag."+label+".I_anchor_max_component",inheritedMax);
+    Emit("diag."+label+".A_anchor_max_component",addedMax);
+    Emit("diag."+label+".L_anchor_max_component",localMax);
+}
 inline Real CheckFull(const io::DecodedSlots& decoded,const std::vector<Complex>& expected,
-                      const std::string& label) {
+                      const std::string& label,std::size_t& failures) {
     Require(decoded.values.size()==kSlots && expected.size()==kSlots,"full-slot count");
     Real maximum=0;
     for (std::size_t i=0;i<kSlots;++i) {
@@ -139,7 +187,7 @@ inline Real CheckFull(const io::DecodedSlots& decoded,const std::vector<Complex>
         if (error>maximum) maximum=error;
     }
     Emit(label+".full_max_component_error",maximum);
-    Require(maximum<=Pow2(-80),label+" full-slot 2^-80 gate");
+    PrecisionGate(maximum<=Pow2(-80),label+" full-slot 2^-80 gate",failures);
     const Real cross(decoded.diagnostics.maximumCrossPrecisionDisagreement.str(100,std::ios_base::scientific));
     Emit(label+".codec_cross_precision",cross);
     Require(cross>=0 && cross<=Pow2(-120),label+" codec 2^-120 gate");
@@ -213,6 +261,16 @@ inline IntegerPolynomial SparseDecrypt(const Cipher& ciphertext,const SparseSecr
     for (auto& coefficient:result.coefficients) coefficient=Center(coefficient,result.modulus);
     return result;
 }
+inline void ObserveCoefficientScale(const IntegerPolynomial& polynomial,const Scale& scale,
+                                    const std::string& label) {
+    Int maximum=0;
+    for (const auto& c:polynomial.coefficients) {
+        const Int magnitude=c<0?Int(-c):c;
+        if (magnitude>maximum) maximum=magnitude;
+    }
+    Emit("diag."+label+".coefficient_max_over_scale",
+         R(maximum)*R(scale.denominator)/R(scale.numerator));
+}
 inline IntegerPolynomial RecombinedPolynomial(const openfhe_2023_1788::CiphertextPair& pair,
                                               const SparseSecret& secret) {
     auto high=SparseDecrypt(pair.GetHigh(),secret);
@@ -224,12 +282,19 @@ inline IntegerPolynomial RecombinedPolynomial(const openfhe_2023_1788::Ciphertex
 }
 inline std::array<Complex,10> AnchorRoots() {
     std::array<Complex,10> roots;
-    const Real pi=boost::math::constants::pi<Real>();
+    // Avoid the fixed-storage 512 -> 1536 trig-reduction conversion that
+    // triggers GCC's array-bounds diagnostic in Boost 1.83. Storage only:
+    // precision, exponent range, angles and returned binary512 Real stay fixed.
+    using RootReal=boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<
+        512,boost::multiprecision::backends::digit_base_2,
+        std::allocator<boost::multiprecision::limb_type>>,boost::multiprecision::et_off>;
+    const RootReal pi=boost::math::constants::pi<RootReal>();
     for (std::size_t i=0;i<kAnchors.size();++i) {
         std::uint32_t exponent=1;
         for (std::size_t s=0;s<kAnchors[i];++s) exponent=(exponent*5)%kM;
-        const Real angle=Real(2)*pi*exponent/kM;
-        roots[i]={boost::multiprecision::cos(angle),boost::multiprecision::sin(angle)};
+        const RootReal angle=RootReal(2)*pi*exponent/kM;
+        const RootReal re=boost::multiprecision::cos(angle), im=boost::multiprecision::sin(angle);
+        roots[i]={Real(re),Real(im)};
     }
     return roots;
 }
@@ -248,7 +313,8 @@ inline std::array<Complex,10> Horner(const IntegerPolynomial& polynomial,const S
     return values;
 }
 inline void CheckAnchors(const std::array<Complex,10>& actual,const std::vector<Complex>& expected,
-                         const std::string& label,const io::DecodedSlots* production=nullptr) {
+                         const std::string& label,std::size_t& failures,
+                         const io::DecodedSlots* production=nullptr) {
     Real maximum=0, disagreement=0;
     for (std::size_t a=0;a<kAnchors.size();++a) {
         const Real error=Error(actual[a],expected[kAnchors[a]]);
@@ -260,7 +326,7 @@ inline void CheckAnchors(const std::array<Complex,10>& actual,const std::vector<
         }
     }
     Emit(label+".anchor_max_component_error",maximum);
-    Require(maximum<=Pow2(-80),label+" independent anchor 2^-80 gate");
+    PrecisionGate(maximum<=Pow2(-80),label+" independent anchor 2^-80 gate",failures);
     if (production) {
         Emit(label+".anchor_vs_production",disagreement);
         Require(disagreement<=Pow2(-80),label+" anchor vs production 2^-80 gate");

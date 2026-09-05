@@ -227,17 +227,19 @@ void CheckBound(const io::BoundCiphertext& bound,const Plan& plan,const Scale& s
         Require(s.activeBasis.moduliDecimal[j]==std::to_string(kQ[j]) &&
                 s.activeBasis.rootsOfUnityDecimal[j]==std::to_string(kRoots[j]),"bound prefix roots/order");
 }
-void Witness(const io::DecodedSlots& decoded,const std::vector<Complex>& expected,const std::string& label) {
+void Witness(const io::DecodedSlots& decoded,const std::vector<Complex>& expected,
+             const std::string& label,std::size_t& failures) {
     const Real difference=expected[1].real-expected[0].real;
     const Real actual=FromClient(decoded.values[1]).real-FromClient(decoded.values[0]).real;
     Emit(label+".expected_witness_real_difference",difference);
     Emit(label+".actual_witness_real_difference",actual);
-    Require(actual>Pow2(-76) && Abs(actual-difference)<=2*Pow2(-80),label+" retained sub-binary64 witness");
+    PrecisionGate(actual>Pow2(-76) && Abs(actual-difference)<=2*Pow2(-80),
+                  label+" retained sub-binary64 witness",failures);
 }
 
 // Only strings escape. All paper plan, I/O, result and bound owners die before
 // the outer test checks cache cleanup; the independent small setup stays live.
-std::vector<std::string> RunPaper(const RepeatedMult2ClientSetup& foreign) {
+std::vector<std::string> RunPaper(const RepeatedMult2ClientSetup& foreign,std::size_t& failures) {
     const auto scales=Scales();
     auto expected=Inputs();
     const auto roots=AnchorRoots();
@@ -266,9 +268,18 @@ std::vector<std::string> RunPaper(const RepeatedMult2ClientSetup& foreign) {
     CheckCipher(source,setup.plan,0,0,11);
     const auto sourceBefore=source->Clone();
     const auto freshDecoded=client.Decrypt(setup.rootSecret,fresh);
-    CheckFull(freshDecoded,expected,"fresh"); Witness(freshDecoded,expected,"fresh");
+    CheckFull(freshDecoded,expected,"fresh",failures); Witness(freshDecoded,expected,"fresh",failures);
     const auto freshPolynomial=SparseDecrypt(source,secret);
-    CheckAnchors(Horner(freshPolynomial,scales[0],roots),expected,"fresh",&freshDecoded);
+    ObserveCoefficientScale(freshPolynomial,scales[0],"fresh");
+    const auto freshAnchors=Horner(freshPolynomial,scales[0],roots);
+    CheckAnchors(freshAnchors,expected,"fresh",failures,&freshDecoded);
+    for (std::size_t a=0;a<kAnchors.size();++a) {
+        const auto field="diag.fresh.anchor_"+std::to_string(kAnchors[a]);
+        EmitSigned(field+".w0",freshAnchors[a]);
+        EmitSigned(field+".E",Difference(freshAnchors[a],expected.at(kAnchors[a])));
+    }
+    auto previousAnchors=freshAnchors;
+    auto freshPowers=freshAnchors;
 
     const auto evaluation=Evaluate(setup.plan,source);
     CheckPair(evaluation.initial,setup.plan,0,scales[0]);
@@ -281,7 +292,13 @@ std::vector<std::string> RunPaper(const RepeatedMult2ClientSetup& foreign) {
         CheckReceiptChain(pair,previous,round,scales); previous=pair.GetRepeatedReceipt();
         for (auto& z:expected) z=Multiply(z,z);
         const auto polynomial=RecombinedPolynomial(pair,secret);
-        CheckAnchors(Horner(polynomial,scales[round],roots),expected,"round_"+std::to_string(round));
+        const auto label="round_"+std::to_string(round);
+        ObserveCoefficientScale(polynomial,scales[round],label);
+        const auto anchors=Horner(polynomial,scales[round],roots);
+        for (auto& w:freshPowers) w=Multiply(w,w);
+        ObserveResiduals(anchors,previousAnchors,freshPowers,expected,label);
+        CheckAnchors(anchors,expected,label,failures);
+        previousAnchors=anchors;
     }
     Require(source->GetElements()==sourceBefore->GetElements() &&
             source->GetLevel()==sourceBefore->GetLevel() &&
@@ -298,11 +315,12 @@ std::vector<std::string> RunPaper(const RepeatedMult2ClientSetup& foreign) {
     Require(bound.CloneForEvaluation()->GetElements()==evaluation.result.GetCiphertext()->GetElements(),
             "bound snapshot unaffected by mutable evaluation clone");
     const auto decoded=client.Decrypt(setup.rootSecret,bound);
-    CheckFull(decoded,expected,"final"); Witness(decoded,expected,"final");
+    CheckFull(decoded,expected,"final",failures); Witness(decoded,expected,"final",failures);
     const auto finalPolynomial=SparseDecrypt(evaluation.result.GetCiphertext(),secret);
     Require(finalPolynomial.modulus==Int(kQ[0])*kQ[1] &&
             decoded.diagnostics.activeCompositeModulus==finalPolynomial.modulus,"terminal two-Base modulus");
-    CheckAnchors(Horner(finalPolynomial,scales[8],roots),expected,"final",&decoded);
+    ObserveCoefficientScale(finalPolynomial,scales[8],"final");
+    CheckAnchors(Horner(finalPolynomial,scales[8],roots),expected,"final",failures,&decoded);
     const auto wrong=Horner(finalPolynomial,scales[0],roots);
     const Real wrongError=Error(wrong[0],expected[0]);
     Emit("final.wrong_nominal100_error",wrongError);
@@ -345,7 +363,8 @@ void Run() {
         // Small N64 row copies only, never the paper profile's large key rows.
         unrelated.push_back({tag,found->second[0],key->GetAVector(),key->GetBVector()});
     }
-    const auto paperTags=RunPaper(foreign);
+    std::size_t numericFailures=0;
+    const auto paperTags=RunPaper(foreign,numericFailures);
     const auto& rows=lbcrypto::CryptoContextImpl<Poly>::GetAllEvalMultKeys();
     Require(paperTags.size()==8,"eight released owner tags");
     for (const auto& tag:paperTags) Require(rows.count(tag)==0,"paper destructor removes owned row");
@@ -358,6 +377,8 @@ void Run() {
                 "unrelated cache coefficient values survive paper lifetime");
     }
     std::cout << "OBS lifecycle=paper_owner_cleanup owned_absent=8 unrelated_unchanged=2 result=PASS\n";
+    std::cout << "OBS numeric_gate_failures=" << numericFailures << '\n' << std::flush;
+    Require(numericFailures==0,"accumulated numeric acceptance failures: "+std::to_string(numericFailures));
     std::cout << "COMPLETE test=paper_full_eight_square_contract result=PASS source=" << PAPER_SOURCE_COMMIT
               << " openfhe_pin=" << kPin << " chain_count=1 squares=8 full_slots=16384 anchors=10"
               << " error_gate=2^-80 codec_gate=2^-120 gaussian_global_guarantee=false\n" << std::flush;
