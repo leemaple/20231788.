@@ -4,22 +4,30 @@ Git repository, private repository, previous chats, or any fact from earlier
 messages. Everything authorized for this independent task is in the newly
 attached archive and sidecar:
 
-`paper-h128-keypair-implementation-01-2ae375f-20260905T0754.zip`
+`paper-h128-keypair-implementation-01-9d21c3a-20260905T0812.zip`
 
-Expected archive identity: 1,136,056 bytes; SHA-256
-`6e75e24726ec1af7c13c517cd6bb737c1d3f4aaae8ff8db1c7ae46e02f028195`.
+Expected archive identity: 1,185,384 bytes; SHA-256
+`52f0dec88ac9ee854b2a863a60f382f35a6bf7117aada1b39d45637f8e367e8b`.
 The attached `.sha256` sidecar records the same filename and digest.
 
 First extract into a fresh scratch directory. Verify ZIP integrity, one-root
 layout, traversal/duplicate/symlink safety, `MANIFEST.sha256`, all byte sizes,
 SHA-256 values and origins in `MANIFEST.tsv`, plus these mandatory identities:
 
-- `TASK.md`: 12,465 bytes, SHA-256
-  `8a9e1e12a10ba34f040a07bd1433efd7bf74dbdbb3f53eda3e7910aa054b499f`;
+- `TASK.md`: 13,316 bytes, SHA-256
+  `6187380d3031a4f13681ecb1292fd71abb8e8557d9aa39fc65f0cfc7575c7fe0`;
 - clean-room project source commit:
-  `2ae375f514586995512ebbcf3ef29f4868208eae`;
+  `9d21c3a5aea79c31745aca790712a9fd8c7743b2`;
 - pristine official OpenFHE pin:
   `df495ba2e91739a6dc8f1de254fc5a41155ce504`.
+
+The packet includes 51 exact official source files, including number-theory
+template definitions and context/parameter construction. Freeze NATIVEINT=64
+and MATHBACKEND=4 consistently with the hosted contract. Expected prime/root
+literals must be independently derived or separately discovered before RED,
+not read from the context under test and compared to themselves. Observe
+two-call fresh-tag uniqueness/cache isolation; do not invent an injection
+framework to force a random-tag collision.
 
 Then read `TASK.md` completely before editing. It is the sole current
 assignment. Follow every required-read path named there, including the project
