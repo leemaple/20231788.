@@ -1,0 +1,39 @@
+{
+  "scope": "Read-only terminal observations only; no artifact acceptance or engineering advancement on these branches",
+  "browserActions": "Reused task space 122; selected exact existing tabs; read page/DOM. No refresh, stop, prompt, upload, download or dialog acknowledgement.",
+  "observations": [
+    {
+      "observedAt": "2026-09-05T04:06:53.151Z",
+      "title": "Implement Semantic Tests",
+      "url": "https://chatgpt.com/c/6a9b680d-953c-83ec-bb7c-491152fcd3fc",
+      "userMessages": 2,
+      "modelControl": [
+        {
+          "text": "6\nPro",
+          "aria": null,
+          "testid": null
+        }
+      ],
+      "stopControlPresent": false,
+      "lastAssistant": "Disposition: ACCEPT_DIAGNOSTIC\n\nStandards: NO FINDINGS — P0: 0, P1: 0, P2: 0.\nSpec: NO FINDINGS — P0: 0, P1: 0, P2: 0.\n\nNo concrete reachable defect was identified within the frozen N64, two-operation diagnostic. No corrective implementation or additional RED test is requested by this review.\n\nDeliverables\n\nDownload the verified review ZIP\nSHA-256 sidecar · \nREVIEW.md · \nExact static-check results\n\nZIP size: 38,428 bytes\nSHA-256:\n\n1b0c9c111c0e1d43ecc6315e06f2f87475312f9bf343ffea6f1e24c46c911851\n\nThe ZIP contains six nonempty files: the report, manifest, reviewer-created offline verifier, complete static-check output, hash-bound source references, and input-preservation result.\n\nReview conclusions\n\nThe original four-disabled-setter defect is closed in the corrected source. I traced the unconditional throws through the pinned CKKS specialization and supplied exception.h, verified the required defaults, and checked that supported low-level construction, PrecomputeCRTTables, explicit COMPLEX, PRE NOT_SET, and returned-profile validation remain intact. The remaining 23 seed setter calls contain no disabled CKKS override.\n\nThe exact correction is limited to four setter removals and two explanatory comments. The CMake wiring delta is one comment plus one target_sources statement. Frozen tests, oracle, thresholds, and workflow remain unchanged; the original 57 CTest bindings remain in order, followed by the requested 58th binding.\n\nSource inspection supports the intended public sequence:\n\nC++\nZ = evaluator.Mult2(X, Y);\nW = evaluator.Mult2(Z, Z);\n\nFamily selection and coefficient-preserving re-entry remain implementation-owned. Private-key use is confined to client setup and the final client oracle, with no intermediate decryption, re-encryption, bootstrap, or refresh. The legacy terminal rejection remains intact.\n\nThe withdrawn staged-RS1 observation remains not a finding: its snapshot is supplementary wiring evidence, not a direct observation of the private intermediate. The report separately explains the source-level non-mutation evidence.\n\nChecks performed versus supplied execution\nCheck\tOutcome\nOuter identity, sidecar, CRC, safe unique regular paths\tPASS\nAll 225 manifest payloads and 58 declared Git blob hashes\tPASS\nAll 53 original official source identities plus the supplement\tPASS\nExact source-diff reconstruction and frozen-asset preservation\tPASS\nAll 16 frozen Z products, 16 W squares, both deltas, and C++ transcription\tPASS\nAll 32 records: profile, family/tag relationships, exact S1/S2, decimal error comparisons\tPASS\nFinal preservation of all 226 extracted input files\tPASS\nReviewer C++ builds, CTest, cryptographic execution, hosted workflows\tNOT RUN\n\nAll 32 supplied records satisfy the exact scale formulas and the unchanged ≤ 2^-80 comparisons. The largest reported slot error is approximately 3.0483958933624023 × 10⁻²⁷, below the threshold of approximately 8.2718061255302767 × 10⁻²⁵. These are independently checked reported values—not cryptographic errors recomputed from ciphertexts.\n\nThe supplied GREEN evidence consistently associates run 33940418513, attempt 1, with source d09f15f535f0dbf22ef89b33255e947166cc392a: both Linux and Windows MinGW64 report warning-clean builds, five API targets, legacy 57/57, repeated focus 1/1, and full 58/58. I did not rerun those jobs or fetch the full remote logs.\n\nThe actual return ZIP, manifest, sidecar, and every member were verified. Its packaged verifier was rerun from the unpacked return and reproduced the packaged static-check output exactly.\n\nAcceptance is limited to this diagnostic. It does not establish paper-scale N32768, h128, production I/O, eight no-refresh squares, 1,000-trial precision, security, performance, or merge readiness.",
+      "archiveDownloaded": false
+    },
+    {
+      "observedAt": "2026-09-05T04:06:53.283Z",
+      "title": "Implement Lossless Client IO",
+      "url": "https://chatgpt.com/c/6a9b7241-e52c-83ec-8427-5fd90dd34904",
+      "userMessages": 2,
+      "modelControl": [
+        {
+          "text": "6\nPro",
+          "aria": null,
+          "testid": null
+        }
+      ],
+      "stopControlPresent": false,
+      "lastAssistant": "BLOCKED_EXECUTION_OBSERVABILITY — no verified implementation package was produced in this continuation.\n\nThe current execution tools did not expose usable results. I attempted a directory listing, a marker plus scratch-file write/readback, and equivalent checks through both Python channels. None returned inspectable output to me, including the alternate user-visible channel.\n\nThat establishes a result-observation failure, not its underlying cause. I cannot determine whether those commands executed, whether their scratch files were created, or whether the attached archive is accessible inside the runtime.\n\nWhat this means for the assignment\n\nThe corrected packet is not being rejected for the previous missing-source issue. I have not established another source-level blocker, and I am not applying the old archive identity to the corrected upload.\n\nThe earlier progress messages described verification and source-reading work from the unfinished attempt. They do not establish that its scratch files or results survived into this execution context. My statement that the verified input was “retained” was therefore too strong.\n\nRequired work\tVerified status in this continuation\nCorrected archive extraction and integrity verification\tNot observable\nFour ordered RED/GREEN patches\tNot produced\nComplete final production files and test #58\tNot produced\nFresh patch replay and final-file equality\tNOT RUN\nCompilation, cryptographic/runtime tests, hosted CI\tNOT RUN\nFinal ZIP, sidecar, and package validation\tNot produced\n\nI have no verified downloadable artifact to link. Providing a ZIP path or claiming implementation progress under these conditions would be unsupported.\n\nThe immediate blocker is execution-result visibility, not a demonstrated defect in your corrected source packet. No additional source upload or interface confirmation is justified by the evidence available in this turn.",
+      "archiveDownloaded": false,
+      "separateVisibleToolOutput": "VISIBLE_CHANNEL_CHECK; 'LOSSLESS_RECOVERY_CHANNEL_CHECK_01\\n'; Corrected archive present: True"
+    }
+  ]
+}
