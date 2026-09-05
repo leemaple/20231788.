@@ -1,0 +1,1589 @@
+{
+  "schema_version": 1,
+  "verdict": "ACCEPT_EXECUTED_A_TRACER_LINUX_ONLY_WITH_OPEN_P2",
+  "scope": "Exact current Cycle-A tracer executed GREEN on Linux only; not whole I/O-module acceptance. Known firstModSize=55 validation P2 remains OPEN; Cycle B clone/live-Params drift not implemented.",
+  "reviewed_at_utc": "2026-09-05T07:03:18.229345+00:00",
+  "reviewer": "Codex independent h128_candidate_standards",
+  "repository": "leemaple/20231788.",
+  "project_source_commit": "084ffa0af3cb21623151df0c826736ca84954140",
+  "openfhe_commit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+  "run_id": 33950923304,
+  "run_attempt": 1,
+  "job_id": 101265404189,
+  "run_url": "https://github.com/leemaple/20231788./actions/runs/33950923304",
+  "job_url": "https://github.com/leemaple/20231788./actions/runs/33950923304/job/101265404189",
+  "job_started_at": "2026-09-05T06:50:41Z",
+  "job_completed_at": "2026-09-05T06:56:15Z",
+  "job_duration_api_seconds": 334,
+  "run_api_observation": {
+    "status": "in_progress",
+    "conclusion": null,
+    "note": "Run was still in progress at metadata capture; Linux terminal audit does not assert Windows or whole-run completion.",
+    "json_capture": "artifacts/handoffs/io-cycle-a-green-01/linux-run-33950923304-observed.json",
+    "capture_format": "gh api UTF-8 JSON text with a terminal LF added by apply_patch; metadata is not claimed byte-identical to the original HTTP body."
+  },
+  "raw_log": {
+    "path": "coordination/handoffs/lossless-client-io-pro-packet-01/CYCLE_A_GREEN_LINUX_JOB_01.log",
+    "bytes": 413578,
+    "sha256": "9ad9c0ec5e175809595c2cd050b086f151c45c825fddaff510ef617fc0ff0fbc",
+    "line_count": 5287,
+    "utf8_bom": true,
+    "ends_lf": true,
+    "trailing_whitespace_lines": 390,
+    "raw_api_independent_hash_retrieval_matches": true
+  },
+  "retrieval": {
+    "commands": [
+      "gh api repos/leemaple/20231788./actions/jobs/101265404189",
+      "gh api repos/leemaple/20231788./actions/jobs/101265404189/logs",
+      "gh api repos/leemaple/20231788./actions/runs/33950923304"
+    ],
+    "unified_exec_log_session": 44723,
+    "all_chunks_preserved_until_exit_0": true,
+    "independent_raw_api_hash_session": 65283,
+    "independent_hash_exit_code": 0,
+    "independent_hash_stderr_bytes": 0,
+    "persisted_with": "apply_patch without normalization"
+  },
+  "analysis_normalization": {
+    "stored_as_file": false,
+    "operation": "Remove only leading UTF-8 BOM on the first timestamp, timestamp prefixes, and ANSI CSI escape sequences; preserve trailing whitespace and final LF.",
+    "bytes": 259944,
+    "sha256": "b8022c8ee8d8e6b1461e01310aab101e283a34bb88ca0fc76bb6e6cf0f76dc19"
+  },
+  "environment": {
+    "runner_label": [
+      "ubuntu-24.04"
+    ],
+    "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "cmake": "3.31.6",
+    "nativeint": 64,
+    "mathbackend": 4,
+    "openfhe_cache": "miss; configured, built and installed this job",
+    "project_configuration": "Debug",
+    "openfhe_configuration": "Release",
+    "project_warning_flags": "-Wall -Wextra -Wpedantic -Werror (exact candidate CMake); all project targets built successfully",
+    "compiler_warning_count": 0,
+    "compiler_error_count": 0,
+    "noncompiler_runner_warnings": [
+      {
+        "raw_log_line": 5287,
+        "text": "##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/"
+      }
+    ]
+  },
+  "legacy57": {
+    "baseline_commit": "7b8a9d2164037f9d30e94e3b96d245d27f32c61b",
+    "bindings_format": "name<TAB>executable-basename plus space-joined ordered arguments<LF>; no header",
+    "bindings_bytes": 3869,
+    "bindings_sha256": "3527832e2d46591c46a93d3cb96d5469a9362ec4ca1ba39c8ed0587964e77f8b",
+    "all_names_order_commands_equal_baseline_source": true,
+    "live_ctest_json_and_verbose_commands_equal_source": true,
+    "bindings": [
+      {
+        "name": "dcp_rcb",
+        "command": [
+          "dcp_rcb_test"
+        ]
+      },
+      {
+        "name": "precision_dcp_rcb_high_precision_contract",
+        "command": [
+          "precision_dcp_rcb_contract_test"
+        ]
+      },
+      {
+        "name": "precision_first_mult2_high_precision_contract",
+        "command": [
+          "precision_first_mult2_contract_test"
+        ]
+      },
+      {
+        "name": "pair_add_runtime_behavior",
+        "command": [
+          "pair_add_test"
+        ]
+      },
+      {
+        "name": "pair_sub_runtime_behavior",
+        "command": [
+          "pair_sub_test"
+        ]
+      },
+      {
+        "name": "pair_arithmetic_controlled_oracle",
+        "command": [
+          "pair_arithmetic_test",
+          "controlled_oracle"
+        ]
+      },
+      {
+        "name": "pair_arithmetic_public_lifecycles_keyless",
+        "command": [
+          "pair_arithmetic_test",
+          "public_lifecycles_keyless"
+        ]
+      },
+      {
+        "name": "pair_arithmetic_compatibility_rejections",
+        "command": [
+          "pair_arithmetic_test",
+          "compatibility_rejections"
+        ]
+      },
+      {
+        "name": "tensor2_valid_arithmetic_immutability",
+        "command": [
+          "tensor2_test",
+          "valid_arithmetic_immutability"
+        ]
+      },
+      {
+        "name": "tensor2_result_scale_contract",
+        "command": [
+          "tensor2_test",
+          "result_scale_contract"
+        ]
+      },
+      {
+        "name": "tensor2_right_input_validation",
+        "command": [
+          "tensor2_test",
+          "right_input_validation"
+        ]
+      },
+      {
+        "name": "tensor2_mutual_compatibility",
+        "command": [
+          "tensor2_test",
+          "mutual_compatibility"
+        ]
+      },
+      {
+        "name": "tensor2_prearithmetic_key_compatibility",
+        "command": [
+          "tensor2_test",
+          "prearithmetic_key_compatibility"
+        ]
+      },
+      {
+        "name": "relin2_tensor_validation_order",
+        "command": [
+          "relin2_test",
+          "tensor_validation_order"
+        ]
+      },
+      {
+        "name": "relin2_insufficient_active_basis",
+        "command": [
+          "relin2_test",
+          "insufficient_active_basis"
+        ]
+      },
+      {
+        "name": "relin2_missing_eval_key",
+        "command": [
+          "relin2_test",
+          "missing_eval_key"
+        ]
+      },
+      {
+        "name": "relin2_key_empty",
+        "command": [
+          "relin2_test",
+          "key_empty"
+        ]
+      },
+      {
+        "name": "relin2_key_null_first",
+        "command": [
+          "relin2_test",
+          "key_null_first"
+        ]
+      },
+      {
+        "name": "relin2_key_wrong_context",
+        "command": [
+          "relin2_test",
+          "key_wrong_context"
+        ]
+      },
+      {
+        "name": "relin2_key_wrong_tag",
+        "command": [
+          "relin2_test",
+          "key_wrong_tag"
+        ]
+      },
+      {
+        "name": "relin2_key_wrong_subtype",
+        "command": [
+          "relin2_test",
+          "key_wrong_subtype"
+        ]
+      },
+      {
+        "name": "relin2_key_hybrid_a_length",
+        "command": [
+          "relin2_test",
+          "key_hybrid_a_length"
+        ]
+      },
+      {
+        "name": "relin2_key_hybrid_b_length",
+        "command": [
+          "relin2_test",
+          "key_hybrid_b_length"
+        ]
+      },
+      {
+        "name": "relin2_key_hybrid_entry_basis",
+        "command": [
+          "relin2_test",
+          "key_hybrid_entry_basis"
+        ]
+      },
+      {
+        "name": "relin2_key_hybrid_entry_format",
+        "command": [
+          "relin2_test",
+          "key_hybrid_entry_format"
+        ]
+      },
+      {
+        "name": "relin2_key_bv_zero_digit_a_length",
+        "command": [
+          "relin2_test",
+          "key_bv_zero_digit_a_length"
+        ]
+      },
+      {
+        "name": "relin2_key_bv_zero_digit_b_length",
+        "command": [
+          "relin2_test",
+          "key_bv_zero_digit_b_length"
+        ]
+      },
+      {
+        "name": "relin2_key_bv_nonzero_digit_a_length",
+        "command": [
+          "relin2_test",
+          "key_bv_nonzero_digit_a_length"
+        ]
+      },
+      {
+        "name": "relin2_key_bv_nonzero_digit_b_length",
+        "command": [
+          "relin2_test",
+          "key_bv_nonzero_digit_b_length"
+        ]
+      },
+      {
+        "name": "relin2_key_bv_zero_digit_entry_basis",
+        "command": [
+          "relin2_test",
+          "key_bv_zero_digit_entry_basis"
+        ]
+      },
+      {
+        "name": "relin2_key_bv_nonzero_digit_entry_basis",
+        "command": [
+          "relin2_test",
+          "key_bv_nonzero_digit_entry_basis"
+        ]
+      },
+      {
+        "name": "relin2_key_bv_zero_digit_entry_format",
+        "command": [
+          "relin2_test",
+          "key_bv_zero_digit_entry_format"
+        ]
+      },
+      {
+        "name": "relin2_key_bv_nonzero_digit_entry_format",
+        "command": [
+          "relin2_test",
+          "key_bv_nonzero_digit_entry_format"
+        ]
+      },
+      {
+        "name": "relin2_valid_arithmetic_state_immutability",
+        "command": [
+          "relin2_test",
+          "valid_arithmetic_state_immutability"
+        ]
+      },
+      {
+        "name": "relin2_controlled_witnesses_and_boundaries",
+        "command": [
+          "relin2_test",
+          "controlled_witnesses_and_boundaries"
+        ]
+      },
+      {
+        "name": "relin2_representative_public_input",
+        "command": [
+          "relin2_test",
+          "representative_public_input"
+        ]
+      },
+      {
+        "name": "relin2_key_extra_later_valid",
+        "command": [
+          "relin2_test",
+          "key_extra_later_valid"
+        ]
+      },
+      {
+        "name": "relin2_key_malformed_later_ignored",
+        "command": [
+          "relin2_test",
+          "key_malformed_later_ignored"
+        ]
+      },
+      {
+        "name": "relin2_hybrid_valid_shapes",
+        "command": [
+          "relin2_test",
+          "hybrid_valid_shapes"
+        ]
+      },
+      {
+        "name": "relin2_bv_zero_digit_valid_shapes",
+        "command": [
+          "relin2_test",
+          "bv_zero_digit_valid_shapes"
+        ]
+      },
+      {
+        "name": "relin2_bv_nonzero_digit_valid_shapes",
+        "command": [
+          "relin2_test",
+          "bv_nonzero_digit_valid_shapes"
+        ]
+      },
+      {
+        "name": "relin2_first_recombined_rcb_validation",
+        "command": [
+          "relin2_test",
+          "first_recombined_rcb_validation"
+        ]
+      },
+      {
+        "name": "relin2_first_recombined_tensor2_validation",
+        "command": [
+          "relin2_test",
+          "first_recombined_tensor2_validation"
+        ]
+      },
+      {
+        "name": "relin2_tensor2_requires_first_lifecycle",
+        "command": [
+          "relin2_test",
+          "tensor2_requires_first_lifecycle"
+        ]
+      },
+      {
+        "name": "rs2_wrong_lifecycle",
+        "command": [
+          "rs2_test",
+          "wrong_lifecycle"
+        ]
+      },
+      {
+        "name": "rs2_valid_arithmetic_state_immutability",
+        "command": [
+          "rs2_test",
+          "valid_arithmetic_state_immutability"
+        ]
+      },
+      {
+        "name": "rs2_mixed_tower_format",
+        "command": [
+          "rs2_test",
+          "mixed_tower_format"
+        ]
+      },
+      {
+        "name": "rs2_untouched_public_pipeline",
+        "command": [
+          "rs2_test",
+          "untouched_public_pipeline"
+        ]
+      },
+      {
+        "name": "rs2_declared_basis_mismatch",
+        "command": [
+          "rs2_test",
+          "declared_basis_mismatch"
+        ]
+      },
+      {
+        "name": "rs2_terminal_rejections",
+        "command": [
+          "rs2_test",
+          "terminal_rejections"
+        ]
+      },
+      {
+        "name": "mult2_composition_contract",
+        "command": [
+          "mult2_test",
+          "composition_contract"
+        ]
+      },
+      {
+        "name": "mult2_e2e_hybrid_real",
+        "command": [
+          "mult2_e2e_oracle_test",
+          "hybrid_real"
+        ]
+      },
+      {
+        "name": "mult2_e2e_hybrid_complex",
+        "command": [
+          "mult2_e2e_oracle_test",
+          "hybrid_complex"
+        ]
+      },
+      {
+        "name": "mult2_e2e_bv_real",
+        "command": [
+          "mult2_e2e_oracle_test",
+          "bv_real"
+        ]
+      },
+      {
+        "name": "mult2_e2e_bv_complex",
+        "command": [
+          "mult2_e2e_oracle_test",
+          "bv_complex"
+        ]
+      },
+      {
+        "name": "mult2_pair_add_input_hybrid_complex",
+        "command": [
+          "mult2_e2e_oracle_test",
+          "pair_add_input_hybrid_complex"
+        ]
+      },
+      {
+        "name": "mult2_pair_sub_input_hybrid_complex",
+        "command": [
+          "mult2_e2e_oracle_test",
+          "pair_sub_input_hybrid_complex"
+        ]
+      }
+    ]
+  },
+  "full58": {
+    "only_appended_test": {
+      "name": "precision_client_io_first_mult2_contract",
+      "command": [
+        "precision_client_io_first_mult2_contract_test"
+      ]
+    },
+    "bindings_bytes": 3956,
+    "bindings_sha256": "301570f4f72e0bea89606752d5a484c6af87834ea0a30a440daf148b310f68a8",
+    "ctest_json_log_starts": [
+      1193,
+      3264
+    ],
+    "live_ctest_json_and_verbose_commands_equal_source": true
+  },
+  "suites": [
+    {
+      "count": 1,
+      "passed": 1,
+      "failed": 0,
+      "total_test_time_seconds": "0.26",
+      "summary_raw_log_line": 1139,
+      "total_time_raw_log_line": 1141,
+      "label": "old_focused_first_mult2",
+      "names_order_commands_equal_expected": true,
+      "command_log_lines": [
+        1126
+      ],
+      "test_duration_seconds_in_expected_order": [
+        "0.16"
+      ],
+      "test_result_log_lines": [
+        1134
+      ]
+    },
+    {
+      "count": 2,
+      "passed": 2,
+      "failed": 0,
+      "total_test_time_seconds": "0.19",
+      "summary_raw_log_line": 1182,
+      "total_time_raw_log_line": 1184,
+      "label": "old_focused_pair_add_sub",
+      "names_order_commands_equal_expected": true,
+      "command_log_lines": [
+        1162,
+        1171
+      ],
+      "test_duration_seconds_in_expected_order": [
+        "0.08",
+        "0.11"
+      ],
+      "test_result_log_lines": [
+        1167,
+        1176
+      ]
+    },
+    {
+      "count": 57,
+      "passed": 57,
+      "failed": 0,
+      "total_test_time_seconds": "1.41",
+      "summary_raw_log_line": 3177,
+      "total_time_raw_log_line": 3179,
+      "label": "legacy57",
+      "names_order_commands_equal_expected": true,
+      "command_log_lines": [
+        2650,
+        2658,
+        2670,
+        2682,
+        2690,
+        2698,
+        2706,
+        2714,
+        2722,
+        2730,
+        2738,
+        2746,
+        2754,
+        2762,
+        2770,
+        2778,
+        2786,
+        2794,
+        2802,
+        2810,
+        2818,
+        2826,
+        2834,
+        2842,
+        2850,
+        2858,
+        2866,
+        2874,
+        2882,
+        2890,
+        2898,
+        2906,
+        2914,
+        2922,
+        2930,
+        2938,
+        2946,
+        2954,
+        2962,
+        2970,
+        2978,
+        2986,
+        2994,
+        3002,
+        3010,
+        3018,
+        3026,
+        3034,
+        3042,
+        3050,
+        3058,
+        3066,
+        3075,
+        3084,
+        3093,
+        3102,
+        3111
+      ],
+      "test_duration_seconds_in_expected_order": [
+        "0.05",
+        "0.06",
+        "0.19",
+        "0.01",
+        "0.00",
+        "0.04",
+        "0.09",
+        "0.02",
+        "0.01",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.01",
+        "0.00",
+        "0.01",
+        "0.00",
+        "0.00",
+        "0.01",
+        "0.01",
+        "0.00",
+        "0.00",
+        "0.01",
+        "0.01",
+        "0.00",
+        "0.01",
+        "0.00",
+        "0.01",
+        "0.02",
+        "0.01",
+        "0.03",
+        "0.01",
+        "0.03",
+        "0.02",
+        "0.01",
+        "0.01",
+        "0.00",
+        "0.00",
+        "0.01",
+        "0.00",
+        "0.01",
+        "0.02",
+        "0.01",
+        "0.01",
+        "0.03",
+        "0.01",
+        "0.11",
+        "0.10",
+        "0.07",
+        "0.07",
+        "0.11",
+        "0.09"
+      ],
+      "test_result_log_lines": [
+        2654,
+        2666,
+        2678,
+        2686,
+        2694,
+        2702,
+        2710,
+        2718,
+        2726,
+        2734,
+        2742,
+        2750,
+        2758,
+        2766,
+        2774,
+        2782,
+        2790,
+        2798,
+        2806,
+        2814,
+        2822,
+        2830,
+        2838,
+        2846,
+        2854,
+        2862,
+        2870,
+        2878,
+        2886,
+        2894,
+        2902,
+        2910,
+        2918,
+        2926,
+        2934,
+        2942,
+        2950,
+        2958,
+        2966,
+        2974,
+        2982,
+        2990,
+        2998,
+        3006,
+        3014,
+        3022,
+        3030,
+        3038,
+        3046,
+        3054,
+        3062,
+        3071,
+        3080,
+        3089,
+        3098,
+        3107,
+        3116
+      ]
+    },
+    {
+      "count": 1,
+      "passed": 1,
+      "failed": 0,
+      "total_test_time_seconds": "0.18",
+      "summary_raw_log_line": 3253,
+      "total_time_raw_log_line": 3255,
+      "label": "focused_production_io",
+      "names_order_commands_equal_expected": true,
+      "command_log_lines": [
+        3244
+      ],
+      "test_duration_seconds_in_expected_order": [
+        "0.18"
+      ],
+      "test_result_log_lines": [
+        3248
+      ]
+    },
+    {
+      "count": 58,
+      "passed": 58,
+      "failed": 0,
+      "total_test_time_seconds": "1.57",
+      "summary_raw_log_line": 5221,
+      "total_time_raw_log_line": 5223,
+      "label": "complete58",
+      "names_order_commands_equal_expected": true,
+      "command_log_lines": [
+        4745,
+        4753,
+        4765,
+        4777,
+        4785,
+        4793,
+        4801,
+        4809,
+        4817,
+        4825,
+        4833,
+        4841,
+        4849,
+        4857,
+        4865,
+        4873,
+        4881,
+        4889,
+        4897,
+        4905,
+        4913,
+        4921,
+        4929,
+        4937,
+        4945,
+        4953,
+        4961,
+        4969,
+        4977,
+        4985,
+        4993,
+        5001,
+        5009,
+        5017,
+        5025,
+        5033,
+        5041,
+        5049,
+        5057,
+        5065,
+        5073,
+        5081,
+        5089,
+        5097,
+        5105,
+        5113,
+        5121,
+        5129,
+        5137,
+        5145,
+        5153,
+        5161,
+        5170,
+        5179,
+        5188,
+        5197,
+        5206,
+        5215
+      ],
+      "test_duration_seconds_in_expected_order": [
+        "0.07",
+        "0.06",
+        "0.18",
+        "0.01",
+        "0.00",
+        "0.05",
+        "0.07",
+        "0.04",
+        "0.01",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.01",
+        "0.00",
+        "0.00",
+        "0.00",
+        "0.01",
+        "0.00",
+        "0.01",
+        "0.00",
+        "0.00",
+        "0.02",
+        "0.02",
+        "0.00",
+        "0.00",
+        "0.01",
+        "0.01",
+        "0.00",
+        "0.01",
+        "0.00",
+        "0.01",
+        "0.01",
+        "0.01",
+        "0.01",
+        "0.01",
+        "0.02",
+        "0.05",
+        "0.01",
+        "0.01",
+        "0.00",
+        "0.00",
+        "0.01",
+        "0.00",
+        "0.02",
+        "0.01",
+        "0.02",
+        "0.01",
+        "0.01",
+        "0.01",
+        "0.11",
+        "0.09",
+        "0.07",
+        "0.07",
+        "0.08",
+        "0.11",
+        "0.18"
+      ],
+      "test_result_log_lines": [
+        4749,
+        4761,
+        4773,
+        4781,
+        4789,
+        4797,
+        4805,
+        4813,
+        4821,
+        4829,
+        4837,
+        4845,
+        4853,
+        4861,
+        4869,
+        4877,
+        4885,
+        4893,
+        4901,
+        4909,
+        4917,
+        4925,
+        4933,
+        4941,
+        4949,
+        4957,
+        4965,
+        4973,
+        4981,
+        4989,
+        4997,
+        5005,
+        5013,
+        5021,
+        5029,
+        5037,
+        5045,
+        5053,
+        5061,
+        5069,
+        5077,
+        5085,
+        5093,
+        5101,
+        5109,
+        5117,
+        5125,
+        5133,
+        5141,
+        5149,
+        5157,
+        5166,
+        5175,
+        5184,
+        5193,
+        5202,
+        5211,
+        5219
+      ]
+    }
+  ],
+  "api_contracts": [
+    {
+      "target": "relin2_api_contract_test",
+      "command": "cmake --build build --target relin2_api_contract_test --parallel 2",
+      "command_raw_log_line": 1081,
+      "built_raw_log_line": 1091,
+      "job_step": {
+        "name": "Build Relin2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-09-05T06:55:37Z",
+        "completed_at": "2026-09-05T06:55:39Z"
+      }
+    },
+    {
+      "target": "rs2_api_contract_test",
+      "command": "cmake --build build --target rs2_api_contract_test --parallel 2",
+      "command_raw_log_line": 1092,
+      "built_raw_log_line": 1102,
+      "job_step": {
+        "name": "Build RS2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-09-05T06:55:39Z",
+        "completed_at": "2026-09-05T06:55:42Z"
+      }
+    },
+    {
+      "target": "mult2_api_contract_test",
+      "command": "cmake --build build --target mult2_api_contract_test --parallel 2",
+      "command_raw_log_line": 3180,
+      "built_raw_log_line": 3190,
+      "job_step": {
+        "name": "Build Mult2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-09-05T06:55:44Z",
+        "completed_at": "2026-09-05T06:55:47Z"
+      }
+    },
+    {
+      "target": "add_api_contract_test",
+      "command": "cmake --build build --target add_api_contract_test --parallel 2",
+      "command_raw_log_line": 3191,
+      "built_raw_log_line": 3201,
+      "job_step": {
+        "name": "Build Add public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19,
+        "started_at": "2026-09-05T06:55:47Z",
+        "completed_at": "2026-09-05T06:55:50Z"
+      }
+    },
+    {
+      "target": "sub_api_contract_test",
+      "command": "cmake --build build --target sub_api_contract_test --parallel 2",
+      "command_raw_log_line": 3202,
+      "built_raw_log_line": 3212,
+      "job_step": {
+        "name": "Build Sub public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 20,
+        "started_at": "2026-09-05T06:55:50Z",
+        "completed_at": "2026-09-05T06:55:52Z"
+      }
+    }
+  ],
+  "numeric_records": [
+    {
+      "invocation": "focused",
+      "raw_log_line": 3247,
+      "observed": {
+        "test": "precision_client_io_first_mult2_contract",
+        "result": "PASS",
+        "source": "084ffa0af3cb21623151df0c826736ca84954140",
+        "openfhe_pin": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+        "claim_scope": "low-N-first-operation-production-io-diagnostic",
+        "N": "64",
+        "S": "16",
+        "gap": "2",
+        "native": "64",
+        "backend": "4",
+        "depth": "7",
+        "scaling_bits": "50",
+        "first_bits": "55",
+        "key_switch": "HYBRID",
+        "scaling": "FIXEDMANUAL",
+        "data": "COMPLEX",
+        "execution": "EXEC_EVALUATION",
+        "decrypt_noise": "FIXED_NOISE_DECRYPT",
+        "encryption": "STANDARD",
+        "multiplication": "HPS",
+        "PRE": "NOT_SET",
+        "noise_scale": "1",
+        "secret": "UNIFORM_TERNARY",
+        "security": "HEStd_NotSet",
+        "fresh_keypairs": "1",
+        "eval_keygen_calls": "1",
+        "q_div": "1125899906843009",
+        "q_l": "1125899906840833",
+        "exact_scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+        "exact_scale_denominator": "1267650600226646386227681786497",
+        "max_fresh_public_error": "3.60292430090438514963485800816107694467976955e-28",
+        "max_fresh_oracle_error": "3.60292430090438514963485800816107694467976955e-28",
+        "max_product_public_error": "8.46261698485907647704174802844342560803305919e-28",
+        "max_product_oracle_error": "8.46261698485907647704174802844342560803305919e-28",
+        "input_public_delta_error": "6.89416816665887862811066503883884170974752132e-29",
+        "input_oracle_delta_error": "6.89416816665887862811066503883884170974752132e-29",
+        "product_public_delta_error": "2.70170551632643163514201370718312497215589678e-28",
+        "product_oracle_delta_error": "2.70170551632643163514201370718312497215589678e-28",
+        "max_horner_component_disagreement": "1.032506025503195538719e-107",
+        "cross_precision_error": "9.69978346078924437777254858120615608991801761e-166",
+        "centered_headroom": "32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577064",
+        "malformed_key_rejections": "32"
+      },
+      "all_reported_numeric_bounds_pass": true
+    },
+    {
+      "invocation": "full_suite",
+      "raw_log_line": 5218,
+      "observed": {
+        "test": "precision_client_io_first_mult2_contract",
+        "result": "PASS",
+        "source": "084ffa0af3cb21623151df0c826736ca84954140",
+        "openfhe_pin": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+        "claim_scope": "low-N-first-operation-production-io-diagnostic",
+        "N": "64",
+        "S": "16",
+        "gap": "2",
+        "native": "64",
+        "backend": "4",
+        "depth": "7",
+        "scaling_bits": "50",
+        "first_bits": "55",
+        "key_switch": "HYBRID",
+        "scaling": "FIXEDMANUAL",
+        "data": "COMPLEX",
+        "execution": "EXEC_EVALUATION",
+        "decrypt_noise": "FIXED_NOISE_DECRYPT",
+        "encryption": "STANDARD",
+        "multiplication": "HPS",
+        "PRE": "NOT_SET",
+        "noise_scale": "1",
+        "secret": "UNIFORM_TERNARY",
+        "security": "HEStd_NotSet",
+        "fresh_keypairs": "1",
+        "eval_keygen_calls": "1",
+        "q_div": "1125899906843009",
+        "q_l": "1125899906840833",
+        "exact_scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+        "exact_scale_denominator": "1267650600226646386227681786497",
+        "max_fresh_public_error": "2.06597992010665641548998614811139651235134602e-28",
+        "max_fresh_oracle_error": "2.06597992010665641548998614811139651235134602e-28",
+        "max_product_public_error": "2.54938472486790644047046144279348984953712353e-28",
+        "max_product_oracle_error": "2.54938472486790644047046144279348984953712353e-28",
+        "input_public_delta_error": "6.67542036978785295673920997472424174313040123e-29",
+        "input_oracle_delta_error": "6.67542036978785295673920997472424174313040123e-29",
+        "product_public_delta_error": "1.17964330734157807763674759436135743268988657e-28",
+        "product_oracle_delta_error": "1.17964330734157807763674759436135743268988657e-28",
+        "max_horner_component_disagreement": "1.032506025503259163268e-107",
+        "cross_precision_error": "9.69978346078924437794422022852937830568511348e-166",
+        "centered_headroom": "32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577089",
+        "malformed_key_rejections": "32"
+      },
+      "all_reported_numeric_bounds_pass": true
+    }
+  ],
+  "numeric_ranges_across_two_independent_invocations": {
+    "max_fresh_public_error": {
+      "min": "2.06597992010665641548998614811139651235134602e-28",
+      "max": "3.60292430090438514963485800816107694467976955e-28"
+    },
+    "max_fresh_oracle_error": {
+      "min": "2.06597992010665641548998614811139651235134602e-28",
+      "max": "3.60292430090438514963485800816107694467976955e-28"
+    },
+    "max_product_public_error": {
+      "min": "2.54938472486790644047046144279348984953712353e-28",
+      "max": "8.46261698485907647704174802844342560803305919e-28"
+    },
+    "max_product_oracle_error": {
+      "min": "2.54938472486790644047046144279348984953712353e-28",
+      "max": "8.46261698485907647704174802844342560803305919e-28"
+    },
+    "input_public_delta_error": {
+      "min": "6.67542036978785295673920997472424174313040123e-29",
+      "max": "6.89416816665887862811066503883884170974752132e-29"
+    },
+    "input_oracle_delta_error": {
+      "min": "6.67542036978785295673920997472424174313040123e-29",
+      "max": "6.89416816665887862811066503883884170974752132e-29"
+    },
+    "product_public_delta_error": {
+      "min": "1.17964330734157807763674759436135743268988657e-28",
+      "max": "2.70170551632643163514201370718312497215589678e-28"
+    },
+    "product_oracle_delta_error": {
+      "min": "1.17964330734157807763674759436135743268988657e-28",
+      "max": "2.70170551632643163514201370718312497215589678e-28"
+    },
+    "max_horner_component_disagreement": {
+      "min": "1.032506025503195538719e-107",
+      "max": "1.032506025503259163268e-107"
+    },
+    "cross_precision_error": {
+      "min": "9.69978346078924437777254858120615608991801761e-166",
+      "max": "9.69978346078924437794422022852937830568511348e-166"
+    }
+  },
+  "coverage_evidence": {
+    "all_slot_check": "Source Observe checks exactly 16 slots for public and independent projected-Horner fresh left, fresh right and first-Mult2 product; prints aggregate maxima, not 16 individual slot values. Success marker follows all checks.",
+    "numeric_records_printed": 2,
+    "fresh_keypairs_per_invocation": 1,
+    "total_fresh_keypairs_observed": 2,
+    "malformed_key_rejections_per_invocation": 32,
+    "total_rejection_observations": 64,
+    "static_matrix_breakdown": {
+      "public_key": 22,
+      "private_key": 10,
+      "source_lines": "CheckMalformedKeys, lines 421-466; both public components covered"
+    },
+    "no_exhaustive_key_validation_claim": true,
+    "source_main_check_lines": "Observe lines 367-402; RunContract 469-571",
+    "native64_backend4_static_assert_compiled": true,
+    "existing_red_tests_and_oracle_frozen": true,
+    "profile_log_not_proof_of_rejection_of_other_first_moduli": true
+  },
+  "frozen_vs_actual_red": [
+    {
+      "path": "tests/add_api_contract_test.cpp",
+      "bytes": 494,
+      "sha256": "2255026a51b8adb21f12292d81ccb91a90769d7ca02710f8a9ee82e345a5f11d",
+      "git_blob": "52496977cf5e63db9402ab790a02b94605136080"
+    },
+    {
+      "path": "tests/dcp_rcb_test.cpp",
+      "bytes": 36797,
+      "sha256": "e1c4f7a0f9100bbc3b14d14f7f02c7e63ce639dca157839867c6e5f015accd81",
+      "git_blob": "05bf3b88753be517a27705b32780f46b8b008065"
+    },
+    {
+      "path": "tests/mult2_api_contract_test.cpp",
+      "bytes": 504,
+      "sha256": "d08a4d1805a6e0d3a34201ca979b8ea8feff828daa22547adbf311cbd4511211",
+      "git_blob": "8e97bc9372a08ac7b556ee2dff4b559e0afcfe2a"
+    },
+    {
+      "path": "tests/mult2_e2e_oracle_test.cpp",
+      "bytes": 92802,
+      "sha256": "80720277596d294e392ec4099f44acf162bee712aeb1c85ff837a2f780e3b310",
+      "git_blob": "7f64b9593a771c34589b6258663263e7e6094b0f"
+    },
+    {
+      "path": "tests/mult2_test.cpp",
+      "bytes": 8086,
+      "sha256": "78c61ec9c6d0eb0e7f1015109a4a06f071f1948352a6afdaa4986b9d806f09f8",
+      "git_blob": "f4e2e9f7596896d5a08ba984ae92300ab825143d"
+    },
+    {
+      "path": "tests/pair_add_test.cpp",
+      "bytes": 4819,
+      "sha256": "73a01ecb6211fa4ce58606d72d03301f7a3cf5f2a8cefd7e04ca628603cc9d1e",
+      "git_blob": "2b574ff9d4bc909e513632ac1f8bbdae0f6f5c64"
+    },
+    {
+      "path": "tests/pair_arithmetic_test.cpp",
+      "bytes": 67775,
+      "sha256": "7dccc4b1ee8de2a48501d913623282fd42457bcdf72357fc7f10392a9a15f864",
+      "git_blob": "11eef31b685305926f3d7186313ae265b648e8e8"
+    },
+    {
+      "path": "tests/pair_sub_test.cpp",
+      "bytes": 4367,
+      "sha256": "3b3c434d1e39f489ca6f044e90513f4c764fc7b8b2001d1c2dacaabe4592864f",
+      "git_blob": "08ed91f78bbbdec6cef79512b56a342515a1af8e"
+    },
+    {
+      "path": "tests/precision_client_io_first_mult2_contract_test.cpp",
+      "bytes": 38913,
+      "sha256": "6b3260a35db8715fff2a3d3a4b24137b7d8c12b6101db422c476b0236ed0ea16",
+      "git_blob": "5e09731e1b8899b5241be11183ca1fcaccb575ea"
+    },
+    {
+      "path": "tests/precision_client_io_oracle.h",
+      "bytes": 21211,
+      "sha256": "9f7d8222ef6520bc845ab1b81fe735f5f7a46a48d5de2c2b984c63148e2c42af",
+      "git_blob": "28ffb635375f306dd285cb4049151d5d9179c6ca"
+    },
+    {
+      "path": "tests/precision_dcp_rcb_contract_test.cpp",
+      "bytes": 32555,
+      "sha256": "ad677414499c3e98e7f798ed940d587cb35c6cc791c7b0f81166ca1e6917f854",
+      "git_blob": "7cd1eb345be23ab2bdb4445a66a515b1791f3e3f"
+    },
+    {
+      "path": "tests/precision_dcp_rcb_fixture.cpp",
+      "bytes": 10117,
+      "sha256": "4bcd633c3fb4b6ad4fa5d2088908e7992ccd50dec0d3b826fe976e590a3aa596",
+      "git_blob": "f815a417587cad60dd08a17f4a2106c2dbfd9a31"
+    },
+    {
+      "path": "tests/precision_dcp_rcb_fixture.h",
+      "bytes": 1007,
+      "sha256": "4b7b1c4f2670f5dc93e8d28f1ad585a47bb9cf4b81130bb45200a3af82e6b554",
+      "git_blob": "f974d6c681e3e76ae64c20b36192736405ecf1ee"
+    },
+    {
+      "path": "tests/precision_first_mult2_contract_test.cpp",
+      "bytes": 58273,
+      "sha256": "60a7c27c7f88420b1c55899bbe4d4b3ad54cbbf6a06da90d2fdfb0a0646770db",
+      "git_blob": "44f8a2170c8e6ad1b99f40b2b62fd170708ffe07"
+    },
+    {
+      "path": "tests/relin2_api_contract_test.cpp",
+      "bytes": 912,
+      "sha256": "6728b6cfaa51c84465ff4ca1814310814b0db626dbdaef73ac26e53888dc0cdf",
+      "git_blob": "cba962431fe3da4426feb552c260c6b68aec587d"
+    },
+    {
+      "path": "tests/relin2_test.cpp",
+      "bytes": 273742,
+      "sha256": "8755f906eae1d18cedcca2d8e35879a2f716d46886934ca45d95611692c4bcf0",
+      "git_blob": "266c676bcf5f3e2b34fca9ca95857d42e6979689"
+    },
+    {
+      "path": "tests/rs2_api_contract_test.cpp",
+      "bytes": 609,
+      "sha256": "5dd7a04e87144888d5cee1edd73691cdb2e88995d559f56f4ef111a7042e6515",
+      "git_blob": "d54b8ffe12e95d93f2fdf7baeeed9d3a96de9473"
+    },
+    {
+      "path": "tests/rs2_test.cpp",
+      "bytes": 50770,
+      "sha256": "b728c7a75f60472902f23e1d094208a69309b54672eb8392c8553afd88e71c93",
+      "git_blob": "d530901f804450b4062468d0a02bad6d307f9f59"
+    },
+    {
+      "path": "tests/sub_api_contract_test.cpp",
+      "bytes": 444,
+      "sha256": "fd4c8e824ffd7fc1ddc52ac68300ef9959253a850c05f7ae261bff438bc36658",
+      "git_blob": "a28f0cb6a1de539d1d0d988855e9f60b381d2640"
+    },
+    {
+      "path": "tests/tensor2_api_contract_test.cpp",
+      "bytes": 1156,
+      "sha256": "128959b73a90217076f170a2de11665b75f6e8d906c22d35d9b137d1fe8e4dc8",
+      "git_blob": "5e0aecb5df97a32974e8ee16314108e16fb7ab54"
+    },
+    {
+      "path": "tests/tensor2_test.cpp",
+      "bytes": 32523,
+      "sha256": "17c3b761ab24e670157aa412630099612b254692e4c3036ad0208072611e7a69",
+      "git_blob": "647094f675d9266255d6e457f2d47377ed1a5061"
+    },
+    {
+      "path": ".github/workflows/dcp-rcb.yml",
+      "bytes": 13766,
+      "sha256": "6ef6c424d7b412bc28f94510a1ba70143378b5a3976e1eebb4b68536033e03fa",
+      "git_blob": "cba574faee624c302ac05acad1ecfe3506a5a91d"
+    },
+    {
+      "path": "src/double_ckks.cpp",
+      "bytes": 51962,
+      "sha256": "3ed23f2261cd7d8efea7a76a5724bfe44f6f20c521c20aedccd4fec69e6e916a",
+      "git_blob": "1192be56c7408ed92f47da6a79ec3e71f918fb81"
+    },
+    {
+      "path": "include/openfhe_2023_1788/double_ckks.h",
+      "bytes": 7560,
+      "sha256": "3d089be507d7ea64e64b5ed3eb97b25ec249675c4da19e8e90d517151654bdfb",
+      "git_blob": "fde44f8a90daae7bb07051f5057bc2f53f866470"
+    }
+  ],
+  "first_error": null,
+  "pending": [
+    {
+      "severity": "P2",
+      "status": "OPEN",
+      "issue": "Initial firstModSize=55 binding is not enforced; firstModSize=56 acceptance-hole candidate is source-supported and not covered by current tracer. Passing current tracer does not close it.",
+      "record": "coordination/handoffs/lossless-client-io-pro-packet-01/CYCLE_A_GREEN_CANDIDATE_PREFLIGHT_01.md"
+    },
+    {
+      "status": "NOT_IMPLEMENTED",
+      "issue": "Cycle B clone isolation / shared live Params drift; no current result claimed."
+    },
+    {
+      "status": "OUTSIDE_THIS_AUDIT",
+      "issue": "Windows, dual-host receipt, module final external review, integration/paper-scale eight-step correctness."
+    }
+  ],
+  "observed": [
+    "Exact source and pin in API and raw log; source test static assertions were compiled.",
+    "Five suites pass with exact tests and commands reconciled against fixed baseline.",
+    "Two complete current I/O success markers; 16-slot max checks and delta/reference/precision checks precede markers in frozen test source.",
+    "32 exact malformed-key rejections per invocation; failure/unknown exceptions would abort before marker."
+  ],
+  "inference": [
+    "This exact Cycle-A tracer has executed GREEN on Linux. It does not establish acceptance of the entire approved I/O spec while the known P2 remains open."
+  ],
+  "actions_not_performed": [
+    "No Mac OpenFHE build, NTT or crypto",
+    "No source/test edits",
+    "No CI dispatch/rerun or interruption",
+    "No Windows log retrieval",
+    "No commit/push",
+    "No Pro/external-agent interaction"
+  ],
+  "job_api_evidence": {
+    "id": 101265404189,
+    "run_id": 33950923304,
+    "workflow_name": "OpenFHE 2023/1788 TDD",
+    "head_branch": "codex/lossless-io-implementation-01",
+    "run_url": "https://api.github.com/repos/leemaple/20231788./actions/runs/33950923304",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOUJbKDc8AAAAXk-NxHQ",
+    "head_sha": "084ffa0af3cb21623151df0c826736ca84954140",
+    "url": "https://api.github.com/repos/leemaple/20231788./actions/jobs/101265404189",
+    "html_url": "https://github.com/leemaple/20231788./actions/runs/33950923304/job/101265404189",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-05T06:50:40Z",
+    "started_at": "2026-09-05T06:50:41Z",
+    "completed_at": "2026-09-05T06:56:15Z",
+    "name": "linux-gcc",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T06:50:42Z",
+        "completed_at": "2026-09-05T06:50:43Z"
+      },
+      {
+        "name": "Check out clean-room source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T06:50:43Z",
+        "completed_at": "2026-09-05T06:50:44Z"
+      },
+      {
+        "name": "Check out pristine OpenFHE 1.5.0",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T06:50:44Z",
+        "completed_at": "2026-09-05T06:50:51Z"
+      },
+      {
+        "name": "Verify OpenFHE provenance",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T06:50:51Z",
+        "completed_at": "2026-09-05T06:50:51Z"
+      },
+      {
+        "name": "Install independent-oracle test dependency",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-09-05T06:50:51Z",
+        "completed_at": "2026-09-05T06:51:08Z"
+      },
+      {
+        "name": "Report toolchain versions",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-09-05T06:51:08Z",
+        "completed_at": "2026-09-05T06:51:09Z"
+      },
+      {
+        "name": "Cache pristine OpenFHE install",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-09-05T06:51:09Z",
+        "completed_at": "2026-09-05T06:51:09Z"
+      },
+      {
+        "name": "Configure OpenFHE",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-09-05T06:51:09Z",
+        "completed_at": "2026-09-05T06:51:13Z"
+      },
+      {
+        "name": "Build and install OpenFHE",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-09-05T06:51:13Z",
+        "completed_at": "2026-09-05T06:53:36Z"
+      },
+      {
+        "name": "Configure clean-room project",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-09-05T06:53:36Z",
+        "completed_at": "2026-09-05T06:53:36Z"
+      },
+      {
+        "name": "Record clean-room run provenance",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-09-05T06:53:36Z",
+        "completed_at": "2026-09-05T06:53:36Z"
+      },
+      {
+        "name": "Build warning-clean project",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-09-05T06:53:36Z",
+        "completed_at": "2026-09-05T06:55:37Z"
+      },
+      {
+        "name": "Build Relin2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-09-05T06:55:37Z",
+        "completed_at": "2026-09-05T06:55:39Z"
+      },
+      {
+        "name": "Build RS2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-09-05T06:55:39Z",
+        "completed_at": "2026-09-05T06:55:42Z"
+      },
+      {
+        "name": "Run focused first-Mult2 precision contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-09-05T06:55:42Z",
+        "completed_at": "2026-09-05T06:55:43Z"
+      },
+      {
+        "name": "Run focused Pair Add and Sub inputs to first Mult2",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-09-05T06:55:43Z",
+        "completed_at": "2026-09-05T06:55:43Z"
+      },
+      {
+        "name": "Run clean-room project tests",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-09-05T06:55:43Z",
+        "completed_at": "2026-09-05T06:55:44Z"
+      },
+      {
+        "name": "Build Mult2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-09-05T06:55:44Z",
+        "completed_at": "2026-09-05T06:55:47Z"
+      },
+      {
+        "name": "Build Add public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19,
+        "started_at": "2026-09-05T06:55:47Z",
+        "completed_at": "2026-09-05T06:55:50Z"
+      },
+      {
+        "name": "Build Sub public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 20,
+        "started_at": "2026-09-05T06:55:50Z",
+        "completed_at": "2026-09-05T06:55:52Z"
+      },
+      {
+        "name": "Build production lossless client I/O contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21,
+        "started_at": "2026-09-05T06:55:52Z",
+        "completed_at": "2026-09-05T06:56:11Z"
+      },
+      {
+        "name": "Run focused production lossless client I/O contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 22,
+        "started_at": "2026-09-05T06:56:11Z",
+        "completed_at": "2026-09-05T06:56:11Z"
+      },
+      {
+        "name": "Run complete 58-test suite including production client I/O",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 23,
+        "started_at": "2026-09-05T06:56:11Z",
+        "completed_at": "2026-09-05T06:56:13Z"
+      },
+      {
+        "name": "Post Cache pristine OpenFHE install",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 44,
+        "started_at": "2026-09-05T06:56:13Z",
+        "completed_at": "2026-09-05T06:56:13Z"
+      },
+      {
+        "name": "Post Check out pristine OpenFHE 1.5.0",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 45,
+        "started_at": "2026-09-05T06:56:13Z",
+        "completed_at": "2026-09-05T06:56:14Z"
+      },
+      {
+        "name": "Post Check out clean-room source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 46,
+        "started_at": "2026-09-05T06:56:14Z",
+        "completed_at": "2026-09-05T06:56:14Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 47,
+        "started_at": "2026-09-05T06:56:14Z",
+        "completed_at": "2026-09-05T06:56:14Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/leemaple/20231788./check-runs/101265404189",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000000954,
+    "runner_name": "GitHub Actions 1000000954",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  }
+}
