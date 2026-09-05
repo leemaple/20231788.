@@ -1,0 +1,87 @@
+{
+  "status": "PASS",
+  "scope": "actual offline static checks; no compilation or cryptography",
+  "input": {
+    "archive_size": 1299850,
+    "archive_sha256": "764baddb20d81c1168745ac31eb043d0d94cf1ba6b406d0194f9245a994196a2",
+    "manifest_payloads": 127,
+    "baseline_files": 40,
+    "official_source_payloads": 53,
+    "expanded_prior_files": 24,
+    "origins": {
+      "git": 47,
+      "archive": 78,
+      "user-attachment": 2
+    },
+    "status": "PASS",
+    "provenance_limit": "No external Git fetch/show was performed. Original standalone official/prior ZIPs are not embedded; their compressed archive hashes are producer provenance, not newly rehashed here."
+  },
+  "vectors": {
+    "status": "PASS",
+    "Z_exact_items": 16,
+    "W_exact_items": 16,
+    "complex_deltas": 2,
+    "frozen_json_sha256": "6a0dae07b55adf8552272407d4e8885b1e993808d9914fc250b508ecc8d772e6",
+    "header_transcription": "PASS",
+    "cryptographic_precision": "NOT RUN"
+  },
+  "patch_and_source": {
+    "status": "PASS",
+    "baseline_files": 40,
+    "green_files": 45,
+    "complete_files": 9,
+    "bindings": 58,
+    "preserved_bindings": 57,
+    "red_tests_unchanged": true,
+    "kernel_literal_preservation": true,
+    "structural_scope_checks": "PASS (bounded lexical checks plus separate source review, not compilation)",
+    "events": [
+      {
+        "patch": "0002-green-repeated-mult2-semantic-two-square.patch",
+        "mode": "check",
+        "returncode": 1,
+        "expected_rejection": true,
+        "stderr": "error: patch failed: CMakeLists.txt:105\nerror: CMakeLists.txt: patch does not apply\n"
+      },
+      {
+        "patch": "0001-red-repeated-mult2-semantic-two-square.patch",
+        "mode": "check",
+        "returncode": 0,
+        "expected_rejection": false,
+        "stderr": ""
+      },
+      {
+        "patch": "0001-red-repeated-mult2-semantic-two-square.patch",
+        "mode": "apply",
+        "returncode": 0,
+        "expected_rejection": false,
+        "stderr": ""
+      },
+      {
+        "patch": "0002-green-repeated-mult2-semantic-two-square.patch",
+        "mode": "check",
+        "returncode": 0,
+        "expected_rejection": false,
+        "stderr": ""
+      },
+      {
+        "patch": "0002-green-repeated-mult2-semantic-two-square.patch",
+        "mode": "apply",
+        "returncode": 0,
+        "expected_rejection": false,
+        "stderr": ""
+      }
+    ],
+    "compile": "NOT RUN",
+    "runtime": "NOT RUN",
+    "hosted": "NOT RUN"
+  },
+  "source_lines": {
+    "status": "PASS",
+    "file_line_anchors": 85,
+    "scope": "byte/range authentication, not a correctness proof"
+  },
+  "compile": "NOT RUN",
+  "cryptographic_runtime": "NOT RUN",
+  "hosted": "NOT RUN"
+}

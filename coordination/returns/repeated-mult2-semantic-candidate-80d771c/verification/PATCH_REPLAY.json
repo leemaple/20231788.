@@ -1,0 +1,109 @@
+{
+  "observed_status": "PASS",
+  "red_changed_paths": [
+    ".github/workflows/dcp-rcb.yml",
+    "CMakeLists.txt",
+    "tests/repeated_mult2_exact_vectors.h",
+    "tests/repeated_mult2_semantic_oracle.h",
+    "tests/repeated_mult2_semantic_two_square_test.cpp"
+  ],
+  "green_changed_paths": [
+    "CMakeLists.txt",
+    "include/openfhe_2023_1788/double_ckks.h",
+    "include/openfhe_2023_1788/repeated_mult2.h",
+    "src/double_ckks.cpp",
+    "src/repeated_mult2.cpp"
+  ],
+  "complete_changed_paths": [
+    ".github/workflows/dcp-rcb.yml",
+    "CMakeLists.txt",
+    "include/openfhe_2023_1788/double_ckks.h",
+    "include/openfhe_2023_1788/repeated_mult2.h",
+    "src/double_ckks.cpp",
+    "src/repeated_mult2.cpp",
+    "tests/repeated_mult2_exact_vectors.h",
+    "tests/repeated_mult2_semantic_oracle.h",
+    "tests/repeated_mult2_semantic_two_square_test.cpp"
+  ],
+  "baseline_regular_files": 40,
+  "replay_regular_files": 45,
+  "red_tree_equal": true,
+  "green_tree_equal": true,
+  "green_alone_rejected": true,
+  "compile": "NOT RUN",
+  "cryptographic_runtime": "NOT RUN",
+  "hosted": "NOT RUN",
+  "commands": [
+    {
+      "cwd_role": "green-alone",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "<candidate>/patches/0002-green-repeated-mult2-semantic-two-square.patch"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "error: patch failed: CMakeLists.txt:105\nerror: CMakeLists.txt: patch does not apply\n"
+    },
+    {
+      "cwd_role": "replay",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "<candidate>/patches/0001-red-repeated-mult2-semantic-two-square.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd_role": "replay",
+      "command": [
+        "git",
+        "apply",
+        "<candidate>/patches/0001-red-repeated-mult2-semantic-two-square.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd_role": "replay",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "<candidate>/patches/0002-green-repeated-mult2-semantic-two-square.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd_role": "replay",
+      "command": [
+        "git",
+        "apply",
+        "<candidate>/patches/0002-green-repeated-mult2-semantic-two-square.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd_role": "replay",
+      "command": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "<candidate>/patches/0002-green-repeated-mult2-semantic-two-square.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

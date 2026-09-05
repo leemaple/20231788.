@@ -1,0 +1,11 @@
+# Next gates — not implemented or passed in this candidate
+
+First independently review and run the delivered two-operation diagnostic at its exact baseline, patch hashes and official pin. The present candidate does not establish any later gate. Keep the evaluator call seam unchanged and introduce later work as independently frozen test-first slices.
+
+1. **Production lossless client I/O.** Replace the test-only DCRT input adapter with the independently reviewed production contract. Preserve exact external representations and explicit scale authority; do not serialize/read the fixture's stale binary64 cache. This candidate adds no shipping codec.
+2. **h=128 client setup.** Implement the separately reviewed setup construction behind the existing client boundary, with its actual public-key/evaluation-key distribution and security qualifications. Do not simulate h=128 by relabeling UNIFORM_TERNARY or treat it as a prerequisite for this permitted diagnostic.
+3. **Asymmetric paper prime family.** Freeze actual initial Q ordering, special first/Div primes, per-family alpha-one partitions and actual P/QP profiles. The current depth-9 50/55-bit native diagnostic is not that paper configuration; never carry an initial dnum unchanged into a smaller family.
+4. **Eight semantic operations.** Extend the ordered public family/receipt sequence under a new exact oracle, with no intermediate secret/decrypt/re-encrypt/bootstrap/Section 6.2 refresh. Check every successive output and scale, not only shape or final metadata. The current plan intentionally stops after two operations.
+5. **Paper N and 1000-run precision/performance.** Only after the prior gates, use the paper-scale configuration and registered experiment definition, preserve actual per-run failures, report distributions and precision/performance separately, and qualify security claims with the actual sampler/parameters. No success, speedup, security result or full Section 6.3 reproduction is inferred from this low-N candidate.
+
+A diagnostic failure should yield the smallest exact counterexample and retained log, not a relaxed frozen threshold, a shape probe, or a hidden refresh. Observed finite-trial headroom is not a universal all-key/no-wrap theorem.
