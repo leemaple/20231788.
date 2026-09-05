@@ -1,0 +1,853 @@
+{
+  "schema_version": 1,
+  "verdict": "ACCEPT_EXPECTED_RED",
+  "scope": "Linux job only; exact Cycle A RED source, not dual-platform acceptance or I/O GREEN.",
+  "reviewed_at_utc": "2026-09-05 06:11:19 UTC",
+  "reviewer": "Codex independent bounded Linux evidence audit (h128_candidate_standards)",
+  "project_source_commit": "12d8fae78cc0d0fed5038cf21cdbd2173fe1f1ef",
+  "openfhe_commit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+  "repository": "leemaple/20231788.",
+  "run_id": 33948543866,
+  "run_attempt": 1,
+  "job_id": 101258898386,
+  "run_url": "https://github.com/leemaple/20231788./actions/runs/33948543866",
+  "job_url": "https://github.com/leemaple/20231788./actions/runs/33948543866/job/101258898386",
+  "retrieval": {
+    "command": "gh api repos/leemaple/20231788./actions/jobs/101258898386/logs",
+    "fetched_at_utc": "2026-09-05T06:07:20.204939+00:00",
+    "source": "GitHub REST complete job log; not gh failed-step excerpt",
+    "metadata_command": "gh api repos/leemaple/20231788./actions/jobs/101258898386",
+    "storage": "Exact unnormalized API log archived using apply_patch and its bytes/SHA-256 rechecked; no raw bytes, ANSI, line breaks, trailing whitespace or final LF altered."
+  },
+  "raw_log": {
+    "relative_path": "coordination/handoffs/lossless-client-io-pro-packet-01/CYCLE_A_RED_LINUX_JOB_01.log",
+    "bytes": 277436,
+    "sha256": "4bbfe7af8819d622d68ccea87017d5609139cf1f51f71ea0893b0bd767ee55f4",
+    "lines": 3285,
+    "trailing_newline_preserved": true,
+    "trailing_whitespace_lines_preserved": 204,
+    "crlf_count": 0,
+    "archive_is_byte_identical_to_fetched_API_response": true
+  },
+  "analysis_normalization": {
+    "stored_as_file": false,
+    "method": "Remove leading ISO UTC timestamp plus one following space at each line; remove ANSI CSI escape sequences. Preserve all remaining bytes, line breaks, trailing spaces and terminal LF.",
+    "bytes": 181925,
+    "sha256": "fa1fc1345a3a37a77c5655d531e4d85a5fe0c711b38f0255374436c5927c13ee"
+  },
+  "legacy57": {
+    "count": 57,
+    "passed": 57,
+    "failed": 0,
+    "total_test_time_seconds": "1.40",
+    "live_ctest_json_and_verbose_commands_match_exact_frozen_names_order_commands": true,
+    "bindings_format": "name<TAB>executable-basename plus space-joined ordered arguments<LF>; no header",
+    "bindings_bytes": 3869,
+    "bindings_sha256": "3527832e2d46591c46a93d3cb96d5469a9362ec4ca1ba39c8ed0587964e77f8b",
+    "baseline_commit": "7b8a9d2164037f9d30e94e3b96d245d27f32c61b",
+    "bindings": [
+      {
+        "index": 1,
+        "name": "dcp_rcb",
+        "command": "dcp_rcb_test",
+        "status": "Passed",
+        "test_duration_seconds": "0.06"
+      },
+      {
+        "index": 2,
+        "name": "precision_dcp_rcb_high_precision_contract",
+        "command": "precision_dcp_rcb_contract_test",
+        "status": "Passed",
+        "test_duration_seconds": "0.06"
+      },
+      {
+        "index": 3,
+        "name": "precision_first_mult2_high_precision_contract",
+        "command": "precision_first_mult2_contract_test",
+        "status": "Passed",
+        "test_duration_seconds": "0.18"
+      },
+      {
+        "index": 4,
+        "name": "pair_add_runtime_behavior",
+        "command": "pair_add_test",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 5,
+        "name": "pair_sub_runtime_behavior",
+        "command": "pair_sub_test",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 6,
+        "name": "pair_arithmetic_controlled_oracle",
+        "command": "pair_arithmetic_test controlled_oracle",
+        "status": "Passed",
+        "test_duration_seconds": "0.05"
+      },
+      {
+        "index": 7,
+        "name": "pair_arithmetic_public_lifecycles_keyless",
+        "command": "pair_arithmetic_test public_lifecycles_keyless",
+        "status": "Passed",
+        "test_duration_seconds": "0.05"
+      },
+      {
+        "index": 8,
+        "name": "pair_arithmetic_compatibility_rejections",
+        "command": "pair_arithmetic_test compatibility_rejections",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 9,
+        "name": "tensor2_valid_arithmetic_immutability",
+        "command": "tensor2_test valid_arithmetic_immutability",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 10,
+        "name": "tensor2_result_scale_contract",
+        "command": "tensor2_test result_scale_contract",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 11,
+        "name": "tensor2_right_input_validation",
+        "command": "tensor2_test right_input_validation",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 12,
+        "name": "tensor2_mutual_compatibility",
+        "command": "tensor2_test mutual_compatibility",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 13,
+        "name": "tensor2_prearithmetic_key_compatibility",
+        "command": "tensor2_test prearithmetic_key_compatibility",
+        "status": "Passed",
+        "test_duration_seconds": "0.03"
+      },
+      {
+        "index": 14,
+        "name": "relin2_tensor_validation_order",
+        "command": "relin2_test tensor_validation_order",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 15,
+        "name": "relin2_insufficient_active_basis",
+        "command": "relin2_test insufficient_active_basis",
+        "status": "Passed",
+        "test_duration_seconds": "0.02"
+      },
+      {
+        "index": 16,
+        "name": "relin2_missing_eval_key",
+        "command": "relin2_test missing_eval_key",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 17,
+        "name": "relin2_key_empty",
+        "command": "relin2_test key_empty",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 18,
+        "name": "relin2_key_null_first",
+        "command": "relin2_test key_null_first",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 19,
+        "name": "relin2_key_wrong_context",
+        "command": "relin2_test key_wrong_context",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 20,
+        "name": "relin2_key_wrong_tag",
+        "command": "relin2_test key_wrong_tag",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 21,
+        "name": "relin2_key_wrong_subtype",
+        "command": "relin2_test key_wrong_subtype",
+        "status": "Passed",
+        "test_duration_seconds": "0.02"
+      },
+      {
+        "index": 22,
+        "name": "relin2_key_hybrid_a_length",
+        "command": "relin2_test key_hybrid_a_length",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 23,
+        "name": "relin2_key_hybrid_b_length",
+        "command": "relin2_test key_hybrid_b_length",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 24,
+        "name": "relin2_key_hybrid_entry_basis",
+        "command": "relin2_test key_hybrid_entry_basis",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 25,
+        "name": "relin2_key_hybrid_entry_format",
+        "command": "relin2_test key_hybrid_entry_format",
+        "status": "Passed",
+        "test_duration_seconds": "0.03"
+      },
+      {
+        "index": 26,
+        "name": "relin2_key_bv_zero_digit_a_length",
+        "command": "relin2_test key_bv_zero_digit_a_length",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 27,
+        "name": "relin2_key_bv_zero_digit_b_length",
+        "command": "relin2_test key_bv_zero_digit_b_length",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 28,
+        "name": "relin2_key_bv_nonzero_digit_a_length",
+        "command": "relin2_test key_bv_nonzero_digit_a_length",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 29,
+        "name": "relin2_key_bv_nonzero_digit_b_length",
+        "command": "relin2_test key_bv_nonzero_digit_b_length",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 30,
+        "name": "relin2_key_bv_zero_digit_entry_basis",
+        "command": "relin2_test key_bv_zero_digit_entry_basis",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 31,
+        "name": "relin2_key_bv_nonzero_digit_entry_basis",
+        "command": "relin2_test key_bv_nonzero_digit_entry_basis",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 32,
+        "name": "relin2_key_bv_zero_digit_entry_format",
+        "command": "relin2_test key_bv_zero_digit_entry_format",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 33,
+        "name": "relin2_key_bv_nonzero_digit_entry_format",
+        "command": "relin2_test key_bv_nonzero_digit_entry_format",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 34,
+        "name": "relin2_valid_arithmetic_state_immutability",
+        "command": "relin2_test valid_arithmetic_state_immutability",
+        "status": "Passed",
+        "test_duration_seconds": "0.02"
+      },
+      {
+        "index": 35,
+        "name": "relin2_controlled_witnesses_and_boundaries",
+        "command": "relin2_test controlled_witnesses_and_boundaries",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 36,
+        "name": "relin2_representative_public_input",
+        "command": "relin2_test representative_public_input",
+        "status": "Passed",
+        "test_duration_seconds": "0.02"
+      },
+      {
+        "index": 37,
+        "name": "relin2_key_extra_later_valid",
+        "command": "relin2_test key_extra_later_valid",
+        "status": "Passed",
+        "test_duration_seconds": "0.02"
+      },
+      {
+        "index": 38,
+        "name": "relin2_key_malformed_later_ignored",
+        "command": "relin2_test key_malformed_later_ignored",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 39,
+        "name": "relin2_hybrid_valid_shapes",
+        "command": "relin2_test hybrid_valid_shapes",
+        "status": "Passed",
+        "test_duration_seconds": "0.02"
+      },
+      {
+        "index": 40,
+        "name": "relin2_bv_zero_digit_valid_shapes",
+        "command": "relin2_test bv_zero_digit_valid_shapes",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 41,
+        "name": "relin2_bv_nonzero_digit_valid_shapes",
+        "command": "relin2_test bv_nonzero_digit_valid_shapes",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 42,
+        "name": "relin2_first_recombined_rcb_validation",
+        "command": "relin2_test first_recombined_rcb_validation",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 43,
+        "name": "relin2_first_recombined_tensor2_validation",
+        "command": "relin2_test first_recombined_tensor2_validation",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 44,
+        "name": "relin2_tensor2_requires_first_lifecycle",
+        "command": "relin2_test tensor2_requires_first_lifecycle",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 45,
+        "name": "rs2_wrong_lifecycle",
+        "command": "rs2_test wrong_lifecycle",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 46,
+        "name": "rs2_valid_arithmetic_state_immutability",
+        "command": "rs2_test valid_arithmetic_state_immutability",
+        "status": "Passed",
+        "test_duration_seconds": "0.03"
+      },
+      {
+        "index": 47,
+        "name": "rs2_mixed_tower_format",
+        "command": "rs2_test mixed_tower_format",
+        "status": "Passed",
+        "test_duration_seconds": "0.02"
+      },
+      {
+        "index": 48,
+        "name": "rs2_untouched_public_pipeline",
+        "command": "rs2_test untouched_public_pipeline",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 49,
+        "name": "rs2_declared_basis_mismatch",
+        "command": "rs2_test declared_basis_mismatch",
+        "status": "Passed",
+        "test_duration_seconds": "0.03"
+      },
+      {
+        "index": 50,
+        "name": "rs2_terminal_rejections",
+        "command": "rs2_test terminal_rejections",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 51,
+        "name": "mult2_composition_contract",
+        "command": "mult2_test composition_contract",
+        "status": "Passed",
+        "test_duration_seconds": "0.01"
+      },
+      {
+        "index": 52,
+        "name": "mult2_e2e_hybrid_real",
+        "command": "mult2_e2e_oracle_test hybrid_real",
+        "status": "Passed",
+        "test_duration_seconds": "0.07"
+      },
+      {
+        "index": 53,
+        "name": "mult2_e2e_hybrid_complex",
+        "command": "mult2_e2e_oracle_test hybrid_complex",
+        "status": "Passed",
+        "test_duration_seconds": "0.08"
+      },
+      {
+        "index": 54,
+        "name": "mult2_e2e_bv_real",
+        "command": "mult2_e2e_oracle_test bv_real",
+        "status": "Passed",
+        "test_duration_seconds": "0.07"
+      },
+      {
+        "index": 55,
+        "name": "mult2_e2e_bv_complex",
+        "command": "mult2_e2e_oracle_test bv_complex",
+        "status": "Passed",
+        "test_duration_seconds": "0.07"
+      },
+      {
+        "index": 56,
+        "name": "mult2_pair_add_input_hybrid_complex",
+        "command": "mult2_e2e_oracle_test pair_add_input_hybrid_complex",
+        "status": "Passed",
+        "test_duration_seconds": "0.09"
+      },
+      {
+        "index": 57,
+        "name": "mult2_pair_sub_input_hybrid_complex",
+        "command": "mult2_e2e_oracle_test pair_sub_input_hybrid_complex",
+        "status": "Passed",
+        "test_duration_seconds": "0.08"
+      }
+    ],
+    "summary_log_line": 3176,
+    "total_time_log_line": 3178
+  },
+  "api_contracts": [
+    {
+      "target": "relin2_api_contract_test",
+      "result": "success",
+      "built_target_log_line": 1090,
+      "before_new_target": true
+    },
+    {
+      "target": "rs2_api_contract_test",
+      "result": "success",
+      "built_target_log_line": 1101,
+      "before_new_target": true
+    },
+    {
+      "target": "mult2_api_contract_test",
+      "result": "success",
+      "built_target_log_line": 3189,
+      "before_new_target": true
+    },
+    {
+      "target": "add_api_contract_test",
+      "result": "success",
+      "built_target_log_line": 3200,
+      "before_new_target": true
+    },
+    {
+      "target": "sub_api_contract_test",
+      "result": "success",
+      "built_target_log_line": 3211,
+      "before_new_target": true
+    }
+  ],
+  "first_error": {
+    "raw_log_line": 3221,
+    "utc_timestamp": "2026-09-05T06:03:10.2136661Z",
+    "diagnostic": "/home/runner/work/20231788./20231788./tests/precision_client_io_first_mult2_contract_test.cpp:2:10: fatal error: openfhe_2023_1788/high_precision_client_io.h: No such file or directory",
+    "exit_code": 2,
+    "expected_missing_public_header_at_source_line": 2,
+    "source_header_absence_confirmed": true
+  },
+  "new_target_prevents_downstream_execution": true,
+  "all_checked": true,
+  "observed": {
+    "source_provenance": {
+      "checkout_log_lines": [
+        107,
+        108
+      ],
+      "runtime_provenance_line": 1031,
+      "head_matches_job_api": true
+    },
+    "official_provenance": {
+      "checkout_hash_log_lines": [
+        260,
+        261
+      ],
+      "verification_step": "success",
+      "verification_log_lines": [
+        262,
+        270
+      ],
+      "status_short_output_empty": true,
+      "configure_cache": "miss; official source built and installed in this job"
+    },
+    "backend": {
+      "configure_native_size": 64,
+      "configure_mathbackend": 4,
+      "configure_final_with_be4": "ON",
+      "configuration_log_lines": [
+        443,
+        463,
+        464,
+        465
+      ],
+      "note": "Initial WITH_BE4 OFF summary precedes explicit MATHBACKEND 4 branch enabling WITH_BE4. The new target stops at missing include, so its static_assert type proof has not yet compiled."
+    },
+    "toolchain": {
+      "runner": "ubuntu-24.04",
+      "cmake": "3.31.6",
+      "gcc": "13.3.0",
+      "log_lines": [
+        387,
+        390
+      ]
+    },
+    "warning_clean": {
+      "project_build_step_number": 12,
+      "result": "success",
+      "log_lines": [
+        1032,
+        1079
+      ],
+      "enforcement_source": "CMakeLists.txt at exact source commit: -Wall -Wextra -Wpedantic -Werror on production/contract targets",
+      "compiler_warning_diagnostics_before_expected_error": 0,
+      "note": "Warning-clean concerns C++ project builds. Git default-branch hints and Actions Node/punycode deprecation notices exist and are not hidden or described as compiler warnings."
+    },
+    "focused_first_mult2": {
+      "passed": 1,
+      "failed": 0,
+      "name": "precision_first_mult2_high_precision_contract",
+      "test_duration_seconds": "0.16",
+      "ctest_total_time_seconds": "0.26",
+      "result_log_line": 1133,
+      "total_log_line": 1140,
+      "command": "ctest --test-dir build --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'"
+    },
+    "focused_pair_inputs": {
+      "passed": 2,
+      "failed": 0,
+      "ctest_total_time_seconds": "0.20",
+      "tests": [
+        {
+          "name": "mult2_pair_add_input_hybrid_complex",
+          "duration_seconds": "0.13",
+          "log_line": 1166
+        },
+        {
+          "name": "mult2_pair_sub_input_hybrid_complex",
+          "duration_seconds": "0.07",
+          "log_line": 1175
+        }
+      ],
+      "total_log_line": 1183,
+      "command": "ctest --test-dir build --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'"
+    },
+    "ordering": "Default build, explicit Relin2/RS2, old focused 1, old Pair 2, live legacy57 inventory/run, explicit Mult2/Add/Sub all succeeded before the deliberately missing-header new-target compilation.",
+    "downstream": {
+      "focused_new_io": "skipped (job step 22)",
+      "complete58": "skipped (job step 23)",
+      "new_contract_runtime_started": false,
+      "new_contract_PASS_marker_present": false
+    },
+    "warning_notices": [
+      {
+        "line": 408,
+        "kind": "Actions dependency punycode DeprecationWarning"
+      },
+      {
+        "line": 3285,
+        "kind": "Actions Node.js 20 deprecation warning forced to Node.js 24"
+      }
+    ]
+  },
+  "inference": "The first failing build diagnostic is exactly the intended absent public production-I/O header at test source line 2. All frozen legacy proof prerequisites completed earlier; classify this Linux result as genuine missing-behavior RED, not fixture, unrelated compile or infrastructure failure.",
+  "pending": [
+    "Windows evidence is outside this audit; parent owns dual-platform acceptance.",
+    "The new test body, its static assertions, public I/O runtime, precision thresholds and malformed-key semantics have not run or passed in A RED.",
+    "No production implementation or paper-wide, repeated, security, performance or final-completion claim follows from this result."
+  ],
+  "actions_not_performed": [
+    "No local C++ compilation",
+    "No local cryptographic/NTT execution",
+    "No source edits",
+    "No CI dispatch or rerun",
+    "No git commit or push",
+    "No Pro interaction"
+  ],
+  "job_api_evidence": {
+    "id": 101258898386,
+    "run_id": 33948543866,
+    "workflow_name": "OpenFHE 2023/1788 TDD",
+    "head_branch": "codex/lossless-io-implementation-01",
+    "run_url": "https://api.github.com/repos/leemaple/20231788./actions/runs/33948543866",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOUJbKDc8AAAAXk4Ar0g",
+    "head_sha": "12d8fae78cc0d0fed5038cf21cdbd2173fe1f1ef",
+    "url": "https://api.github.com/repos/leemaple/20231788./actions/jobs/101258898386",
+    "html_url": "https://github.com/leemaple/20231788./actions/runs/33948543866/job/101258898386",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-09-05T05:57:52Z",
+    "started_at": "2026-09-05T05:57:55Z",
+    "completed_at": "2026-09-05T06:03:12Z",
+    "name": "linux-gcc",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T05:57:55Z",
+        "completed_at": "2026-09-05T05:57:56Z"
+      },
+      {
+        "name": "Check out clean-room source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T05:57:56Z",
+        "completed_at": "2026-09-05T05:57:57Z"
+      },
+      {
+        "name": "Check out pristine OpenFHE 1.5.0",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T05:57:57Z",
+        "completed_at": "2026-09-05T05:58:05Z"
+      },
+      {
+        "name": "Verify OpenFHE provenance",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T05:58:05Z",
+        "completed_at": "2026-09-05T05:58:06Z"
+      },
+      {
+        "name": "Install independent-oracle test dependency",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-09-05T05:58:06Z",
+        "completed_at": "2026-09-05T05:58:19Z"
+      },
+      {
+        "name": "Report toolchain versions",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-09-05T05:58:19Z",
+        "completed_at": "2026-09-05T05:58:19Z"
+      },
+      {
+        "name": "Cache pristine OpenFHE install",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-09-05T05:58:19Z",
+        "completed_at": "2026-09-05T05:58:19Z"
+      },
+      {
+        "name": "Configure OpenFHE",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-09-05T05:58:19Z",
+        "completed_at": "2026-09-05T05:58:21Z"
+      },
+      {
+        "name": "Build and install OpenFHE",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-09-05T05:58:21Z",
+        "completed_at": "2026-09-05T06:00:54Z"
+      },
+      {
+        "name": "Configure clean-room project",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-09-05T06:00:54Z",
+        "completed_at": "2026-09-05T06:00:55Z"
+      },
+      {
+        "name": "Record clean-room run provenance",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-09-05T06:00:55Z",
+        "completed_at": "2026-09-05T06:00:55Z"
+      },
+      {
+        "name": "Build warning-clean project",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-09-05T06:00:55Z",
+        "completed_at": "2026-09-05T06:02:52Z"
+      },
+      {
+        "name": "Build Relin2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-09-05T06:02:52Z",
+        "completed_at": "2026-09-05T06:02:55Z"
+      },
+      {
+        "name": "Build RS2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-09-05T06:02:55Z",
+        "completed_at": "2026-09-05T06:02:58Z"
+      },
+      {
+        "name": "Run focused first-Mult2 precision contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-09-05T06:02:58Z",
+        "completed_at": "2026-09-05T06:02:59Z"
+      },
+      {
+        "name": "Run focused Pair Add and Sub inputs to first Mult2",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-09-05T06:02:59Z",
+        "completed_at": "2026-09-05T06:02:59Z"
+      },
+      {
+        "name": "Run clean-room project tests",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-09-05T06:02:59Z",
+        "completed_at": "2026-09-05T06:03:00Z"
+      },
+      {
+        "name": "Build Mult2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-09-05T06:03:00Z",
+        "completed_at": "2026-09-05T06:03:03Z"
+      },
+      {
+        "name": "Build Add public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19,
+        "started_at": "2026-09-05T06:03:03Z",
+        "completed_at": "2026-09-05T06:03:06Z"
+      },
+      {
+        "name": "Build Sub public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 20,
+        "started_at": "2026-09-05T06:03:06Z",
+        "completed_at": "2026-09-05T06:03:09Z"
+      },
+      {
+        "name": "Build production lossless client I/O contract",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 21,
+        "started_at": "2026-09-05T06:03:09Z",
+        "completed_at": "2026-09-05T06:03:10Z"
+      },
+      {
+        "name": "Run focused production lossless client I/O contract",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 22,
+        "started_at": "2026-09-05T06:03:10Z",
+        "completed_at": "2026-09-05T06:03:10Z"
+      },
+      {
+        "name": "Run complete 58-test suite including production client I/O",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 23,
+        "started_at": "2026-09-05T06:03:10Z",
+        "completed_at": "2026-09-05T06:03:10Z"
+      },
+      {
+        "name": "Post Cache pristine OpenFHE install",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 44,
+        "started_at": "2026-09-05T06:03:10Z",
+        "completed_at": "2026-09-05T06:03:10Z"
+      },
+      {
+        "name": "Post Check out pristine OpenFHE 1.5.0",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 45,
+        "started_at": "2026-09-05T06:03:10Z",
+        "completed_at": "2026-09-05T06:03:10Z"
+      },
+      {
+        "name": "Post Check out clean-room source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 46,
+        "started_at": "2026-09-05T06:03:10Z",
+        "completed_at": "2026-09-05T06:03:10Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 47,
+        "started_at": "2026-09-05T06:03:10Z",
+        "completed_at": "2026-09-05T06:03:10Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/leemaple/20231788./check-runs/101258898386",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000000953,
+    "runner_name": "GitHub Actions 1000000953",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  }
+}
