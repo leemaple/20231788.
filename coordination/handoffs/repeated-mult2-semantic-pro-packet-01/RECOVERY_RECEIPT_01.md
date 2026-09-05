@@ -45,3 +45,13 @@ exact-scale/family/secret boundaries and subsequent dual-platform validation.
 
 This is service/session recovery, not an algorithm redesign or scope reduction.
 No project C++ code, test, build, crypto operation or hosted CI was changed/run.
+
+## Recovery progress observed at 09:01:36
+
+The new Pro conversation explicitly reported that execution and all 127
+manifest checks passed and identified the required distinct 58th semantic test.
+It continued reading paper/contracts/source with Stop answering present. This
+is the external agent's reported health/inspection result, not acceptance of
+an implementation or a Codex-run test. The existing automation's active
+repeated URL was updated to this new conversation; the old failed URL is now
+evidence-only. No further recovery was sent.
