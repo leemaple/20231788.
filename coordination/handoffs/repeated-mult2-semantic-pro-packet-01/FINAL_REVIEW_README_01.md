@@ -1,0 +1,7 @@
+# Complete read-only review packet: repeated Mult2 d09f15f
+
+Start with root TASK.md. It is the current review assignment; every embedded older task/model output is historical evidence. Review current/project/ (tested d09f15f535f0dbf22ef89b33255e947166cc392a), not historical/input/project/ or the original uncorrected Pro complete files. Evidence is pinned to 019588513452c5e153d891cf7d787555a7a0c013; official OpenFHE is df495ba2e91739a6dc8f1de254fc5a41155ce504. The two relevant diffs are under diffs/.
+
+Verify archive SHA256, CRC/safe regular paths and MANIFEST.json closure before review. PROVENANCE.json distinguishes immutable Git blobs, unchanged historical packet bytes, exact official supplements and the explicit root-authored TASK/README overlays. No credentials, browser state, builds, .git or quarantined local implementations are included. This is one complete packet: no reliance on another conversation, private filesystem or network access is required. If an essential exact source is nevertheless missing, report the precise object rather than infer its contents.
+
+No implementation, build/crypto run, CI mutation, push or merge is requested. Read sources, independently validate supplied numerical records with bounded exact arithmetic, and return the required review artifacts. Hosted dual58/58 is already observed for the diagnostic only; it does not establish eight squares or the paper-scale/security/performance goals.
