@@ -1,0 +1,173 @@
+#ifndef PAPER_ENDPOINT_OBSERVER_CONTRACT_H
+#define PAPER_ENDPOINT_OBSERVER_CONTRACT_H
+
+#include "paper_full_eight_square_oracle.h"
+
+#include <limits>
+#include <optional>
+#include <string_view>
+
+// Test-local API only. ALL declarations below intentionally lack definitions in
+// this RED slice. Do not add a stub or catch an "unsupported" exception to pass.
+// The future observer accepts independent integer coefficients and an exact
+// scale, never a context, a key, a ciphertext, or production-decoded slots.
+namespace paper_endpoint_contract {
+using paper_full_test::Int;
+using paper_full_test::IntegerPolynomial;
+using paper_full_test::Scale;
+
+template <unsigned Bits>
+using Binary = boost::multiprecision::number<
+    boost::multiprecision::cpp_bin_float<Bits, boost::multiprecision::digit_base_2,
+        std::allocator<boost::multiprecision::limb_type>>,
+    boost::multiprecision::et_off>;
+using Binary512 = Binary<512>;
+using Binary768 = Binary<768>;
+static_assert(std::numeric_limits<Binary512>::digits == 512 &&
+              std::numeric_limits<Binary768>::digits == 768 &&
+              std::numeric_limits<Binary512>::radix == 2 &&
+              std::numeric_limits<Binary768>::radix == 2,
+              "Observer precisions are binary bits, not decimal digits");
+static_assert(std::numeric_limits<paper_full_test::Real>::digits == 512,
+              "The unchanged Horner path remains binary512");
+
+template <unsigned Bits> struct Complex final { Binary<Bits> real, imag; };
+struct Observation final {
+    std::vector<Complex<512>> at512;
+    std::vector<Complex<768>> at768;
+    Int coefficientOneNorm;                 // exact sum(abs(c_j)), NOT max(abs(c_j))
+    std::optional<int> scaledOneNormExponent; // nullopt iff C=0; otherwise K=2^e
+};
+struct SparseTerm final { std::size_t degree; Int coefficient; };
+struct Rational final { Int numerator, denominator; }; // canonical, denominator > 0
+
+enum class Decision { Pass, Fail, Unresolved };
+enum class Comparison { TwoBoundedPaths, Producer };
+
+Observation Observe(const IntegerPolynomial& polynomial, const Scale& scale);
+std::optional<int> ScaledOneNormExponent(const Int& coefficientOneNorm, const Scale& scale);
+std::vector<Complex<768>> DirectSparseReference768(
+    const std::vector<SparseTerm>& terms, const Scale& scale);
+Rational ExactAbsoluteDifference(const Binary768& left, const Binary768& right);
+Decision AssessDifference(const Rational& distance, const Rational& allowance,
+                          Comparison comparison, bool modelSupported);
+std::string CanonicalDecimal(const Binary768& value);
+bool IsCanonicalDecimal(std::string_view text);
+
+// Disposable in-memory fixtures, never a live-chain sidecar or artifact path.
+// This is test assertion/fixture code, not an observer, formatter or packer.
+namespace synthetic {
+inline void RunSelfTest() {
+    using paper_full_test::Require;
+    const Scale unit{Int(1), Int(1)};
+    Require(!ScaledOneNormExponent(Int(0), unit).has_value(), "synthetic zero K");
+    Require(ScaledOneNormExponent(Int(1), Scale{Int(1024), Int(1)}) ==
+                std::optional<int>(-10), "synthetic negative K exponent");
+    Require(ScaledOneNormExponent(Int(4), Scale{Int(8), Int(1)}) ==
+                std::optional<int>(-1), "synthetic exact K boundary");
+    Require(ScaledOneNormExponent(Int(5), Scale{Int(8), Int(1)}) ==
+                std::optional<int>(0), "synthetic upward K boundary");
+
+    // A rounded binary768 subtraction would lose this difference's low bit.
+    const auto exact = ExactAbsoluteDifference(
+        Binary768(1), boost::multiprecision::ldexp(Binary768(1), -1024));
+    Require(exact.numerator == (Int(1) << 1024) - 1 &&
+                exact.denominator == (Int(1) << 1024), "synthetic exact comparison bridge");
+    const Rational zero{Int(0), Int(1)};
+    const Rational ceiling{Int(1), Int(1) << 128};
+    const Rational overCeiling{Int(1), Int(1) << 127};
+    const Rational halfTolerance{Int(1), Int(1) << 121};
+    const Rational tolerance{Int(1), Int(1) << 120};
+    const Rational overTolerance{Int(1), Int(1) << 119};
+    Require(AssessDifference(ceiling, ceiling, Comparison::TwoBoundedPaths, true) ==
+                Decision::Pass, "synthetic bounded comparison passes");
+    Require(AssessDifference(overCeiling, ceiling, Comparison::TwoBoundedPaths, true) ==
+                Decision::Fail, "synthetic model contradiction below tolerance");
+    Require(AssessDifference(halfTolerance, ceiling, Comparison::Producer, true) ==
+                Decision::Pass, "synthetic producer is not assumed exact");
+    Require(AssessDifference(tolerance, ceiling, Comparison::Producer, true) ==
+                Decision::Unresolved, "synthetic threshold overlap");
+    Require(AssessDifference(overTolerance, zero, Comparison::Producer, true) ==
+                Decision::Fail, "synthetic raw tolerance failure");
+    Require(AssessDifference(zero, overCeiling, Comparison::Producer, true) ==
+                Decision::Unresolved, "synthetic estimator ceiling");
+    Require(AssessDifference(zero, zero, Comparison::TwoBoundedPaths, false) ==
+                Decision::Unresolved, "synthetic unsupported model");
+    Require(AssessDifference(overTolerance, zero, Comparison::Producer, false) ==
+                Decision::Fail, "synthetic raw failure is not hidden by unsupported model");
+
+    const std::string zeros(109, '0');
+    const std::string canonicalZero = "+0." + zeros + "e+00000";
+    const std::string canonicalOne = "+1." + zeros + "e+00000";
+    Require(CanonicalDecimal(Binary768(0)) == canonicalZero &&
+                CanonicalDecimal(-Binary768(0)) == canonicalZero, "synthetic normalized zero");
+    Require(CanonicalDecimal(Binary768(1)) == canonicalOne &&
+                CanonicalDecimal(Binary768(-1)) == "-1." + zeros + "e+00000",
+                "synthetic signed units");
+    Require(CanonicalDecimal(Binary768(1) / Binary768(2)) == "+5." + zeros + "e-00001",
+                "synthetic normalized leading digit");
+    // Exactly representable integer halfway cases; expected strings are fixtures.
+    Int ten110 = 1;
+    for (unsigned i = 0; i < 110; ++i) ten110 *= 10;
+    const Int evenTie = ten110 + 5, oddTie = ten110 + 15;
+    Require(CanonicalDecimal(Binary768(evenTie.convert_to<std::string>())) ==
+                "+1." + zeros + "e+00110", "synthetic decimal ties-to-even down");
+    Require(CanonicalDecimal(Binary768(oddTie.convert_to<std::string>())) ==
+                "+1." + std::string(108, '0') + "2e+00110", "synthetic decimal ties-to-even up");
+    Require(IsCanonicalDecimal(canonicalZero) && IsCanonicalDecimal(canonicalOne) &&
+                IsCanonicalDecimal("-5." + zeros + "e-00001"), "synthetic canonical spellings");
+    const std::vector<std::string> invalid{
+        "nan", "inf", "-0." + zeros + "e+00000", "+0." + zeros + "e-00000",
+        "+0." + zeros + "e+00001", "+0.1" + std::string(108, '0') + "e+00000",
+        "+1." + zeros + "e-00000", "+1." + zeros + "E+00000",
+        "+1." + zeros + "e+0000", "+1." + std::string(108, '0') + "e+00000",
+        "1." + zeros + "e+00000", canonicalOne + "\n", canonicalOne + "\r",
+        " " + canonicalOne, canonicalOne + "\t"};
+    for (const auto& text : invalid)
+        Require(!IsCanonicalDecimal(text), "synthetic noncanonical decimal accepted");
+
+    struct Control final { std::vector<SparseTerm> terms; int norm, kExponent; };
+    const std::array<Control, 4> controls{{
+        {{{0, Int(1)}}, 1, 0},
+        {{{1, Int(1)}}, 1, 0},
+        {{{paper_full_test::kN - 1, Int(1)}}, 1, 0},
+        {{{0, Int(3)}, {1, Int(-2)}, {17, Int(1)},
+          {paper_full_test::kN - 1, Int(-1)}}, 7, 3}
+    }};
+    for (const auto& control : controls) {
+        IntegerPolynomial polynomial{std::vector<Int>(paper_full_test::kN, Int(0)), Int(17)};
+        for (const auto& term : control.terms) polynomial.coefficients[term.degree] = term.coefficient;
+        const auto before = polynomial.coefficients;
+        const auto observed = Observe(polynomial, unit);
+        const auto reference = DirectSparseReference768(control.terms, unit);
+        Require(polynomial.coefficients == before && polynomial.modulus == 17 &&
+                    unit.numerator == 1 && unit.denominator == 1, "synthetic observer input immutability");
+        Require(observed.at512.size() == paper_full_test::kSlots &&
+                    observed.at768.size() == paper_full_test::kSlots &&
+                    reference.size() == paper_full_test::kSlots, "synthetic full-slot coverage");
+        Require(observed.coefficientOneNorm == control.norm &&
+                    observed.scaledOneNormExponent == std::optional<int>(control.kExponent),
+                    "synthetic exact coefficient one-norm");
+        // D_512+J_768 = (2^258+1)/2^(758-k); D_768+J_768 = 5/2^(758-k).
+        const Rational allowance512{(Int(1) << 258) + 1, Int(1) << (758 - control.kExponent)};
+        const Rational allowance768{Int(5), Int(1) << (758 - control.kExponent)};
+        for (std::size_t s = 0; s < paper_full_test::kSlots; ++s) {
+            // Widen only final binary512 VALUES exactly, never roots or tables.
+            const std::array<Binary768, 2> a{{Binary768(observed.at512[s].real), Binary768(observed.at512[s].imag)}};
+            const std::array<Binary768, 2> b{{observed.at768[s].real, observed.at768[s].imag}};
+            const std::array<Binary768, 2> r{{reference[s].real, reference[s].imag}};
+            for (std::size_t component = 0; component < 2; ++component) {
+                Require(boost::math::isfinite(a[component]) && boost::math::isfinite(b[component]) &&
+                            boost::math::isfinite(r[component]), "synthetic nonfinite observation");
+                Require(AssessDifference(ExactAbsoluteDifference(a[component], r[component]), allowance512,
+                                         Comparison::TwoBoundedPaths, true) == Decision::Pass &&
+                            AssessDifference(ExactAbsoluteDifference(b[component], r[component]), allowance768,
+                                             Comparison::TwoBoundedPaths, true) == Decision::Pass,
+                        "synthetic ordinary positive unnormalized twisted DFT");
+            }
+        }
+    }
+}
+} // namespace synthetic
+} // namespace paper_endpoint_contract
+#endif
