@@ -1,0 +1,157 @@
+{
+  "schema": "root-lossless-client-io-blocker-verification-v1",
+  "observedAt": "2026-09-05T10:32:55+08:00",
+  "status": "BLOCKED_INPUT_CLOSURE_CONFIRMED",
+  "classification": {
+    "implementationDelivered": false,
+    "semanticRedObserved": false,
+    "algorithmicImpossibilityObserved": false,
+    "compile": "NOT RUN",
+    "cryptographicRuntime": "NOT RUN",
+    "hostedCI": "NOT RUN",
+    "returnedProbeExecutedByThisReview": false
+  },
+  "returnArchive": {
+    "path": "/Users/lifeng/Downloads/lossless-client-io-4ccc8fd-input-blocker.zip",
+    "bytes": 60194,
+    "sha256": "9d01fdf88a884cf9524e654f97240db05120ba3ef827cde4e35c60a6d17932de",
+    "sidecarPath": "/Users/lifeng/Downloads/lossless-client-io-4ccc8fd-input-blocker.zip.sha256",
+    "sidecarBytes": 111,
+    "sidecarDigestAndBasenameMatched": true,
+    "root": "lossless-client-io-4ccc8fd-input-blocker",
+    "entries": 24,
+    "regularFiles": 24,
+    "directoryEntries": 0,
+    "expandedBytes": 141299,
+    "crc": "PASS",
+    "pathTraversalAbsoluteBackslashColon": "PASS",
+    "duplicateNormalizedPath": "PASS",
+    "caseFoldCollision": "PASS",
+    "symlinkDeviceSpecialMode": "PASS",
+    "encryptedMember": "NONE",
+    "manifest": {
+      "schema": "lossless-client-io-blocked-input-receipt-manifest-v1",
+      "sha256": "b23f12a7ebecc6475de9744a2e9fda431416a74bafe8e095ff95632cc0a11328",
+      "payloads": 22,
+      "selfExcluded": [
+        "MANIFEST.json",
+        "MANIFEST.sha256"
+      ],
+      "perFileSizeSha256": "PASS",
+      "exactClosure": "PASS"
+    }
+  },
+  "reviewedReturnFiles": {
+    "blocker": {
+      "path": "BLOCKER.md",
+      "bytes": 4023,
+      "lines": 38,
+      "sha256": "cfc3402a4671d343e5b247303f29ceace88865ff347d5a7bdc75dd388ce0102c",
+      "readCompletely": true
+    },
+    "probe": {
+      "path": "tools/verify_input_closure.py",
+      "bytes": 9596,
+      "lines": 194,
+      "sha256": "dbd6a1eb601fc16870dd680a84d225b426cd1562c90ccbf065c0fd8614f366f2",
+      "readCompletely": true,
+      "executedByThisReview": false
+    },
+    "verbatimInputCopiesCompared": 7,
+    "verbatimInputCopiesResult": "PASS"
+  },
+  "originalInput": {
+    "path": "/private/tmp/lossless-client-io-implementation-01-4ccc8fd.zip",
+    "bytes": 1294234,
+    "sha256": "67cea2db1565550c7d96816d076a5d56be45e82f5175e9578e31ddbb50289f89",
+    "sidecarBytes": 115,
+    "sidecarDigestAndBasenameMatched": true,
+    "root": "lossless-client-io-implementation-01-4ccc8fd",
+    "entries": 113,
+    "regularFiles": 113,
+    "expandedBytes": 3027557,
+    "crcAndSafePathsModesDuplicatesCaseFold": "PASS",
+    "manifestPayloads": 111,
+    "manifestSha256": "d38aa03744754a4c28fe52815b46fdcda29c14134c66c54b2b8c134447a9bcc6",
+    "manifestPerFileSizeSha256": "PASS",
+    "manifestExactClosure": "PASS",
+    "implementationBase": "4ccc8fd2e7617625d27e58a53eb3489e99466ed4",
+    "openfhePin": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+    "taskBytes": 23771,
+    "taskSha256": "707d366dcd4880450ac09ba4c1eb6195daf64def65333c305c20a099f8eadb1f",
+    "projectFiles": 47,
+    "officialFullFiles": 59,
+    "nestedArchives": 1,
+    "nestedArchiveRegularFiles": 7,
+    "nestedManifestPayloads": 6,
+    "nestedCrcSizeSha256Closure": "PASS"
+  },
+  "sourceAudit": {
+    "identitySource": "project/coordination/evidence/production-io-api/main-source-verification-20260904.json",
+    "auditedSources": 25,
+    "presentByContentSha256": 20,
+    "presentSizeAndGitBlobVerified": 20,
+    "missingByCanonicalPathBasenameAndContentSha256": 5,
+    "directlyRequiredMissing": 2,
+    "missing": [
+      {
+        "path": "src/core/include/math/dftransform.h",
+        "bytes": 4719,
+        "sha256": "7492b8d882a421aa3fa28c2dc2d24548bc914d83e04a719e89c0ff7176dde900",
+        "gitBlobSha1": "d4ed3000c11618102aa5415c8561809d3aad0273",
+        "directLedgerReference": null
+      },
+      {
+        "path": "src/core/lib/math/dftransform.cpp",
+        "bytes": 10368,
+        "sha256": "091220ee6b29ca1b0efbe8afa41a90098507720f59abcd0db1ed0a6e70fc26f3",
+        "gitBlobSha1": "ea5b3b2dcc2b9024da0487d3de285c241a8ec8a4",
+        "directLedgerReference": "U-06; official-openfhe/dftransform.cpp:50-69,209-268"
+      },
+      {
+        "path": "src/pke/include/encoding/ckkspackedencoding.h",
+        "bytes": 11651,
+        "sha256": "983981653104dc21680653f3b4e1108b51d0e8a39e40a0d8337f7d6502d0fe6a",
+        "gitBlobSha1": "956a97ff6f214abb2d690c77bceca0ec746f753a",
+        "directLedgerReference": "U-02; official-openfhe/ckkspackedencoding.h:61-101,143-152"
+      },
+      {
+        "path": "src/pke/include/encoding/plaintext.h",
+        "bytes": 13953,
+        "sha256": "8736ff85fa9366cc06a30d43a40e8dcaa55a240c9f2c881c880eb79f3cc340cb",
+        "gitBlobSha1": "19d32771478cd5365248d5a6630e28b7501b47fb",
+        "directLedgerReference": null
+      },
+      {
+        "path": "src/pke/include/encoding/plaintextfactory.h",
+        "bytes": 6826,
+        "sha256": "16f788d3e4cc32e8831bcbe7009f99a05e6ef6f0496c19e6e119e821f98b61a7",
+        "gitBlobSha1": "a28c475d70d786b0f63ced2bcbcd116642b9a703",
+        "directLedgerReference": null
+      }
+    ]
+  },
+  "authority": {
+    "taskLines": "TASK.md:65-71",
+    "sourceLedgerLines": "SOURCE_CLAIM_LEDGER.md:28,32",
+    "conclusion": "The original packet lacks five audited official source byte objects. Two are direct citations that the task requires to be reread, so stopping before design, RED, or production implementation is correct."
+  },
+  "probeReviewDeviations": [
+    {
+      "severity": "LIMITATION",
+      "finding": "members() checks raw exact duplicate names but not normalized duplicate or Unicode/case-fold collisions.",
+      "effect": "No effect on these artifacts; the independent reviewer checked normalized and case-fold collisions for both the return and original input and found none."
+    },
+    {
+      "severity": "MINOR_EVIDENCE_WORDING",
+      "finding": "sameBasenameMembers is computed over outer files only, although BLOCKER.md says basename alternatives were scanned in the nested ZIP too.",
+      "effect": "No effect on the verdict; the independent reviewer enumerated all seven nested members and found no missing-source basename or digest."
+    },
+    {
+      "severity": "DISCLOSED_CLAIM_BOUNDARY",
+      "finding": "Expected identities for absent bytes come from the retained source-audit JSON and were not refetched or compared to the upstream pin by this return or this review.",
+      "effect": "The package discloses this correctly. A corrected source supplement still needs exact pinned-tree provenance."
+    }
+  ],
+  "nextGate": "Provide all five exact pinned source byte objects with hash-bound provenance, then rerun mandatory reading and the original four-patch TDD task without changing its seam, oracle, thresholds, or patch order."
+}
