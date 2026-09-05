@@ -29,6 +29,7 @@ include_directories(SYSTEM
 link_directories(${OpenFHE_LIBDIR} ${OPENMP_LIBRARIES})
 
 add_library(openfhe_2023_1788 src/double_ckks.cpp)
+target_sources(openfhe_2023_1788 PRIVATE src/high_precision_client_io.cpp)
 target_include_directories(openfhe_2023_1788 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(openfhe_2023_1788 PUBLIC ${OpenFHE_SHARED_LIBRARIES})
 if(MINGW)
