@@ -14,6 +14,7 @@ on:
       - codex/precision-01
       - codex/pair-mult2-composition-01
       - codex/lossless-io-implementation-01
+      - codex/three-track-integration-20260905
       - cleanroom/reimplement-mult2-20260831
   workflow_dispatch:
 
@@ -113,10 +114,10 @@ jobs:
       - name: Run focused Pair Add and Sub inputs to first Mult2
         run: ctest --test-dir build --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
 
-      - name: Run clean-room project tests
+      - name: Run legacy 57-test checkpoint
         run: |
-          ctest --test-dir build --show-only=json-v1 -E '^precision_client_io_first_mult2_contract$'
-          ctest --test-dir build --verbose --output-on-failure -E '^precision_client_io_first_mult2_contract$'
+          ctest --test-dir build --show-only=json-v1 -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract)$'
+          ctest --test-dir build --verbose --output-on-failure -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract)$'
 
       - name: Build Mult2 public API contract
         run: cmake --build build --target mult2_api_contract_test --parallel 2
@@ -130,10 +131,19 @@ jobs:
       - name: Build production lossless client I/O contract
         run: cmake --build build --target precision_client_io_first_mult2_contract_test --parallel 2
 
+      - name: Build repeated-Mult2 semantic contract
+        run: cmake --build build --target repeated_mult2_semantic_two_square_test --parallel 2
+
+      - name: Build fixed-Q h128 client keypair contract
+        run: cmake --build build --target paper_h128_client_keypair_contract_test --parallel 2
+
       - name: Run focused production lossless client I/O contract
         run: ctest --test-dir build --verbose --output-on-failure -R '^precision_client_io_first_mult2_contract$'
 
-      - name: Run complete 58-test suite including production client I/O
+      - name: Run focused repeated-Mult2 and h128 contracts
+        run: ctest --test-dir build --verbose --output-on-failure -R '^(repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract)$'
+
+      - name: Run complete 60-test three-track suite
         run: |
           ctest --test-dir build --show-only=json-v1
           ctest --test-dir build --verbose --output-on-failure
@@ -295,15 +305,15 @@ jobs:
           export PATH="$prefix/bin:$prefix/lib:$PATH"
           ctest --test-dir "$build" --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
 
-      - name: Run clean-room project tests
+      - name: Run legacy 57-test checkpoint
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           build="$(cygpath -u "$PROJECT_BUILD")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
-          ctest --test-dir "$build" --show-only=json-v1 -E '^precision_client_io_first_mult2_contract$'
-          ctest --test-dir "$build" --verbose --output-on-failure -E '^precision_client_io_first_mult2_contract$'
+          ctest --test-dir "$build" --show-only=json-v1 -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract)$'
+          ctest --test-dir "$build" --verbose --output-on-failure -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract)$'
 
       - name: Build Mult2 public API contract
         shell: msys2 {0}
@@ -342,7 +352,30 @@ jobs:
           export PATH="$prefix/bin:$prefix/lib:$PATH"
           ctest --test-dir "$build" --verbose --output-on-failure -R '^precision_client_io_first_mult2_contract$'
 
-      - name: Run complete 58-test suite including production client I/O
+      - name: Build repeated-Mult2 semantic contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target repeated_mult2_semantic_two_square_test --parallel 2
+
+      - name: Build fixed-Q h128 client keypair contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target paper_h128_client_keypair_contract_test --parallel 2
+
+      - name: Run focused repeated-Mult2 and h128 contracts
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^(repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract)$'
+
+      - name: Run complete 60-test three-track suite
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
