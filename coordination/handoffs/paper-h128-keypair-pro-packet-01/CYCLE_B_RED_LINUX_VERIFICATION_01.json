@@ -1,0 +1,965 @@
+{
+  "schema": "openfhe-2023-1788-independent-hosted-red-verification-v1",
+  "verifier": "Codex independent h128 Spec reviewer",
+  "verdict": "ACCEPT_EXPECTED_CYCLE_B_RED_LINUX",
+  "scope": "Linux Cycle-B RED only; no B GREEN or paper-completion claim.",
+  "source_commit": "43c2dca45c2305c9b6baf50ae1c32529d35e7f06",
+  "source_branch": "codex/paper-h128-keypair-01",
+  "run_id": 33945243915,
+  "run_attempt": 1,
+  "job_id": 101250030746,
+  "job_url": "https://github.com/leemaple/20231788./actions/runs/33945243915/job/101250030746",
+  "job_status": "completed",
+  "job_conclusion": "failure",
+  "started_at_utc": "2026-09-05T04:41:37Z",
+  "completed_at_utc": "2026-09-05T04:44:16Z",
+  "job_wall_seconds": 159,
+  "raw_log": {
+    "path": "coordination/handoffs/paper-h128-keypair-pro-packet-01/CYCLE_B_RED_LINUX_JOB_01.log",
+    "bytes": 129058,
+    "sha256": "67102e8c6d47ac80db01c3c3aada966ab09d72b5efa9c0c5f7db8a874c644304",
+    "line_count": 1282,
+    "complete": true,
+    "truncated": false,
+    "encoding": "UTF-8 with original BOM",
+    "trailing_newline": true,
+    "identity_method": "Full gh API job-log response retained verbatim; independent second full API retrieval produced the same byte count/hash, with retained file verified after writing."
+  },
+  "provenance": {
+    "project_commit_observed": "43c2dca45c2305c9b6baf50ae1c32529d35e7f06",
+    "openfhe_commit_observed": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+    "provenance_step": "success",
+    "cache_restored": true,
+    "cache_key": "openfhe-1.5.0-Linux-gcc-native64-backend4-df495ba2e91739a6dc8f1de254fc5a41155ce504",
+    "cache_bytes": 2477804,
+    "openfhe_configure_step": "skipped",
+    "openfhe_build_install_step": "skipped",
+    "cache_producer_commit_independently_proven": false,
+    "native64_backend4": "Observed exact cache key; new diagnostic target compiled under its NATIVEINT=64/MATHBACKEND=4/HAVE_INT128/MAX_MODULUS_SIZE=60 compile guards. No claim that OpenFHE was rebuilt in this run."
+  },
+  "observed": {
+    "warning_clean_project_build": "success",
+    "cpp_source_warning_lines": [],
+    "five_api_targets_success": [
+      "relin2_api_contract_test",
+      "rs2_api_contract_test",
+      "mult2_api_contract_test",
+      "add_api_contract_test",
+      "sub_api_contract_test"
+    ],
+    "existing_first_mult2_focused": {
+      "passed": 1,
+      "total": 1,
+      "seconds": 0.3
+    },
+    "existing_pair_add_sub_focused": {
+      "passed": 2,
+      "total": 2,
+      "seconds": 0.2
+    },
+    "legacy": {
+      "passed": 57,
+      "total": 57,
+      "seconds": 1.4,
+      "names_order_commands_match_tested_cmake": true,
+      "bindings": [
+        {
+          "ordinal": 1,
+          "id": 1,
+          "name": "dcp_rcb",
+          "seconds": 0.02,
+          "command": [
+            "dcp_rcb_test"
+          ]
+        },
+        {
+          "ordinal": 2,
+          "id": 2,
+          "name": "precision_dcp_rcb_high_precision_contract",
+          "seconds": 0.06,
+          "command": [
+            "precision_dcp_rcb_contract_test"
+          ]
+        },
+        {
+          "ordinal": 3,
+          "id": 3,
+          "name": "precision_first_mult2_high_precision_contract",
+          "seconds": 0.2,
+          "command": [
+            "precision_first_mult2_contract_test"
+          ]
+        },
+        {
+          "ordinal": 4,
+          "id": 4,
+          "name": "pair_add_runtime_behavior",
+          "seconds": 0,
+          "command": [
+            "pair_add_test"
+          ]
+        },
+        {
+          "ordinal": 5,
+          "id": 5,
+          "name": "pair_sub_runtime_behavior",
+          "seconds": 0,
+          "command": [
+            "pair_sub_test"
+          ]
+        },
+        {
+          "ordinal": 6,
+          "id": 6,
+          "name": "pair_arithmetic_controlled_oracle",
+          "seconds": 0.04,
+          "command": [
+            "pair_arithmetic_test",
+            "controlled_oracle"
+          ]
+        },
+        {
+          "ordinal": 7,
+          "id": 7,
+          "name": "pair_arithmetic_public_lifecycles_keyless",
+          "seconds": 0.08,
+          "command": [
+            "pair_arithmetic_test",
+            "public_lifecycles_keyless"
+          ]
+        },
+        {
+          "ordinal": 8,
+          "id": 8,
+          "name": "pair_arithmetic_compatibility_rejections",
+          "seconds": 0.02,
+          "command": [
+            "pair_arithmetic_test",
+            "compatibility_rejections"
+          ]
+        },
+        {
+          "ordinal": 9,
+          "id": 9,
+          "name": "tensor2_valid_arithmetic_immutability",
+          "seconds": 0.01,
+          "command": [
+            "tensor2_test",
+            "valid_arithmetic_immutability"
+          ]
+        },
+        {
+          "ordinal": 10,
+          "id": 10,
+          "name": "tensor2_result_scale_contract",
+          "seconds": 0,
+          "command": [
+            "tensor2_test",
+            "result_scale_contract"
+          ]
+        },
+        {
+          "ordinal": 11,
+          "id": 11,
+          "name": "tensor2_right_input_validation",
+          "seconds": 0,
+          "command": [
+            "tensor2_test",
+            "right_input_validation"
+          ]
+        },
+        {
+          "ordinal": 12,
+          "id": 12,
+          "name": "tensor2_mutual_compatibility",
+          "seconds": 0,
+          "command": [
+            "tensor2_test",
+            "mutual_compatibility"
+          ]
+        },
+        {
+          "ordinal": 13,
+          "id": 13,
+          "name": "tensor2_prearithmetic_key_compatibility",
+          "seconds": 0,
+          "command": [
+            "tensor2_test",
+            "prearithmetic_key_compatibility"
+          ]
+        },
+        {
+          "ordinal": 14,
+          "id": 14,
+          "name": "relin2_tensor_validation_order",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "tensor_validation_order"
+          ]
+        },
+        {
+          "ordinal": 15,
+          "id": 15,
+          "name": "relin2_insufficient_active_basis",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "insufficient_active_basis"
+          ]
+        },
+        {
+          "ordinal": 16,
+          "id": 16,
+          "name": "relin2_missing_eval_key",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "missing_eval_key"
+          ]
+        },
+        {
+          "ordinal": 17,
+          "id": 17,
+          "name": "relin2_key_empty",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "key_empty"
+          ]
+        },
+        {
+          "ordinal": 18,
+          "id": 18,
+          "name": "relin2_key_null_first",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "key_null_first"
+          ]
+        },
+        {
+          "ordinal": 19,
+          "id": 19,
+          "name": "relin2_key_wrong_context",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "key_wrong_context"
+          ]
+        },
+        {
+          "ordinal": 20,
+          "id": 20,
+          "name": "relin2_key_wrong_tag",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "key_wrong_tag"
+          ]
+        },
+        {
+          "ordinal": 21,
+          "id": 21,
+          "name": "relin2_key_wrong_subtype",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "key_wrong_subtype"
+          ]
+        },
+        {
+          "ordinal": 22,
+          "id": 22,
+          "name": "relin2_key_hybrid_a_length",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "key_hybrid_a_length"
+          ]
+        },
+        {
+          "ordinal": 23,
+          "id": 23,
+          "name": "relin2_key_hybrid_b_length",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "key_hybrid_b_length"
+          ]
+        },
+        {
+          "ordinal": 24,
+          "id": 24,
+          "name": "relin2_key_hybrid_entry_basis",
+          "seconds": 0.02,
+          "command": [
+            "relin2_test",
+            "key_hybrid_entry_basis"
+          ]
+        },
+        {
+          "ordinal": 25,
+          "id": 25,
+          "name": "relin2_key_hybrid_entry_format",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "key_hybrid_entry_format"
+          ]
+        },
+        {
+          "ordinal": 26,
+          "id": 26,
+          "name": "relin2_key_bv_zero_digit_a_length",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "key_bv_zero_digit_a_length"
+          ]
+        },
+        {
+          "ordinal": 27,
+          "id": 27,
+          "name": "relin2_key_bv_zero_digit_b_length",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "key_bv_zero_digit_b_length"
+          ]
+        },
+        {
+          "ordinal": 28,
+          "id": 28,
+          "name": "relin2_key_bv_nonzero_digit_a_length",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "key_bv_nonzero_digit_a_length"
+          ]
+        },
+        {
+          "ordinal": 29,
+          "id": 29,
+          "name": "relin2_key_bv_nonzero_digit_b_length",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "key_bv_nonzero_digit_b_length"
+          ]
+        },
+        {
+          "ordinal": 30,
+          "id": 30,
+          "name": "relin2_key_bv_zero_digit_entry_basis",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "key_bv_zero_digit_entry_basis"
+          ]
+        },
+        {
+          "ordinal": 31,
+          "id": 31,
+          "name": "relin2_key_bv_nonzero_digit_entry_basis",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "key_bv_nonzero_digit_entry_basis"
+          ]
+        },
+        {
+          "ordinal": 32,
+          "id": 32,
+          "name": "relin2_key_bv_zero_digit_entry_format",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "key_bv_zero_digit_entry_format"
+          ]
+        },
+        {
+          "ordinal": 33,
+          "id": 33,
+          "name": "relin2_key_bv_nonzero_digit_entry_format",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "key_bv_nonzero_digit_entry_format"
+          ]
+        },
+        {
+          "ordinal": 34,
+          "id": 34,
+          "name": "relin2_valid_arithmetic_state_immutability",
+          "seconds": 0.08,
+          "command": [
+            "relin2_test",
+            "valid_arithmetic_state_immutability"
+          ]
+        },
+        {
+          "ordinal": 35,
+          "id": 35,
+          "name": "relin2_controlled_witnesses_and_boundaries",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "controlled_witnesses_and_boundaries"
+          ]
+        },
+        {
+          "ordinal": 36,
+          "id": 36,
+          "name": "relin2_representative_public_input",
+          "seconds": 0.02,
+          "command": [
+            "relin2_test",
+            "representative_public_input"
+          ]
+        },
+        {
+          "ordinal": 37,
+          "id": 37,
+          "name": "relin2_key_extra_later_valid",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "key_extra_later_valid"
+          ]
+        },
+        {
+          "ordinal": 38,
+          "id": 38,
+          "name": "relin2_key_malformed_later_ignored",
+          "seconds": 0.03,
+          "command": [
+            "relin2_test",
+            "key_malformed_later_ignored"
+          ]
+        },
+        {
+          "ordinal": 39,
+          "id": 39,
+          "name": "relin2_hybrid_valid_shapes",
+          "seconds": 0.03,
+          "command": [
+            "relin2_test",
+            "hybrid_valid_shapes"
+          ]
+        },
+        {
+          "ordinal": 40,
+          "id": 40,
+          "name": "relin2_bv_zero_digit_valid_shapes",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "bv_zero_digit_valid_shapes"
+          ]
+        },
+        {
+          "ordinal": 41,
+          "id": 41,
+          "name": "relin2_bv_nonzero_digit_valid_shapes",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "bv_nonzero_digit_valid_shapes"
+          ]
+        },
+        {
+          "ordinal": 42,
+          "id": 42,
+          "name": "relin2_first_recombined_rcb_validation",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "first_recombined_rcb_validation"
+          ]
+        },
+        {
+          "ordinal": 43,
+          "id": 43,
+          "name": "relin2_first_recombined_tensor2_validation",
+          "seconds": 0,
+          "command": [
+            "relin2_test",
+            "first_recombined_tensor2_validation"
+          ]
+        },
+        {
+          "ordinal": 44,
+          "id": 44,
+          "name": "relin2_tensor2_requires_first_lifecycle",
+          "seconds": 0.01,
+          "command": [
+            "relin2_test",
+            "tensor2_requires_first_lifecycle"
+          ]
+        },
+        {
+          "ordinal": 45,
+          "id": 45,
+          "name": "rs2_wrong_lifecycle",
+          "seconds": 0,
+          "command": [
+            "rs2_test",
+            "wrong_lifecycle"
+          ]
+        },
+        {
+          "ordinal": 46,
+          "id": 46,
+          "name": "rs2_valid_arithmetic_state_immutability",
+          "seconds": 0.01,
+          "command": [
+            "rs2_test",
+            "valid_arithmetic_state_immutability"
+          ]
+        },
+        {
+          "ordinal": 47,
+          "id": 47,
+          "name": "rs2_mixed_tower_format",
+          "seconds": 0.01,
+          "command": [
+            "rs2_test",
+            "mixed_tower_format"
+          ]
+        },
+        {
+          "ordinal": 48,
+          "id": 48,
+          "name": "rs2_untouched_public_pipeline",
+          "seconds": 0.02,
+          "command": [
+            "rs2_test",
+            "untouched_public_pipeline"
+          ]
+        },
+        {
+          "ordinal": 49,
+          "id": 49,
+          "name": "rs2_declared_basis_mismatch",
+          "seconds": 0.01,
+          "command": [
+            "rs2_test",
+            "declared_basis_mismatch"
+          ]
+        },
+        {
+          "ordinal": 50,
+          "id": 50,
+          "name": "rs2_terminal_rejections",
+          "seconds": 0.02,
+          "command": [
+            "rs2_test",
+            "terminal_rejections"
+          ]
+        },
+        {
+          "ordinal": 51,
+          "id": 51,
+          "name": "mult2_composition_contract",
+          "seconds": 0.01,
+          "command": [
+            "mult2_test",
+            "composition_contract"
+          ]
+        },
+        {
+          "ordinal": 52,
+          "id": 52,
+          "name": "mult2_e2e_hybrid_real",
+          "seconds": 0.08,
+          "command": [
+            "mult2_e2e_oracle_test",
+            "hybrid_real"
+          ]
+        },
+        {
+          "ordinal": 53,
+          "id": 53,
+          "name": "mult2_e2e_hybrid_complex",
+          "seconds": 0.11,
+          "command": [
+            "mult2_e2e_oracle_test",
+            "hybrid_complex"
+          ]
+        },
+        {
+          "ordinal": 54,
+          "id": 54,
+          "name": "mult2_e2e_bv_real",
+          "seconds": 0.08,
+          "command": [
+            "mult2_e2e_oracle_test",
+            "bv_real"
+          ]
+        },
+        {
+          "ordinal": 55,
+          "id": 55,
+          "name": "mult2_e2e_bv_complex",
+          "seconds": 0.07,
+          "command": [
+            "mult2_e2e_oracle_test",
+            "bv_complex"
+          ]
+        },
+        {
+          "ordinal": 56,
+          "id": 56,
+          "name": "mult2_pair_add_input_hybrid_complex",
+          "seconds": 0.09,
+          "command": [
+            "mult2_e2e_oracle_test",
+            "pair_add_input_hybrid_complex"
+          ]
+        },
+        {
+          "ordinal": 57,
+          "id": 57,
+          "name": "mult2_pair_sub_input_hybrid_complex",
+          "seconds": 0.1,
+          "command": [
+            "mult2_e2e_oracle_test",
+            "pair_sub_input_hybrid_complex"
+          ]
+        }
+      ]
+    },
+    "new_target_build": "success",
+    "focused": {
+      "test_id": 58,
+      "name": "paper_h128_client_keypair_contract",
+      "command": [
+        "paper_h128_client_keypair_contract_test"
+      ],
+      "passed": 0,
+      "total": 1,
+      "seconds": 0.22,
+      "termination": "Subprocess aborted after uncaught std::runtime_error",
+      "distinct_what_messages": [
+        "unsupported profile was accepted"
+      ],
+      "what_message_raw_occurrences": 2,
+      "ctest_exit_code": 8,
+      "exact_log": [
+        "##[group]Run ctest --test-dir build --verbose --output-on-failure -R '^paper_h128_client_keypair_contract$'",
+        "ctest --test-dir build --verbose --output-on-failure -R '^paper_h128_client_keypair_contract$'",
+        "shell: /usr/bin/bash -e {0}",
+        "env:",
+        "  OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504",
+        "  OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install",
+        "##[endgroup]",
+        "Internal ctest changing into directory: /home/runner/work/20231788./20231788./build",
+        "UpdateCTestConfiguration  from :/home/runner/work/20231788./20231788./build/DartConfiguration.tcl",
+        "UpdateCTestConfiguration  from :/home/runner/work/20231788./20231788./build/DartConfiguration.tcl",
+        "Test project /home/runner/work/20231788./20231788./build",
+        "Constructing a list of tests",
+        "Done constructing a list of tests",
+        "Updating test list for fixtures",
+        "Added 0 tests to meet fixture requirements",
+        "Checking test dependency graph...",
+        "Checking test dependency graph end",
+        "test 58",
+        "    Start 58: paper_h128_client_keypair_contract",
+        "",
+        "58: Test command: /home/runner/work/20231788./20231788./build/paper_h128_client_keypair_contract_test",
+        "58: Working Directory: /home/runner/work/20231788./20231788./build",
+        "58: Test timeout computed to be: 10000000",
+        "58: terminate called after throwing an instance of 'std::runtime_error'",
+        "58:   what():  unsupported profile was accepted",
+        "1/1 Test #58: paper_h128_client_keypair_contract ...Subprocess aborted***Exception:   0.22 sec",
+        "terminate called after throwing an instance of 'std::runtime_error'",
+        "  what():  unsupported profile was accepted",
+        "",
+        "",
+        "0% tests passed, 1 tests failed out of 1",
+        "",
+        "Total Test time (real) =   0.22 sec",
+        "",
+        "The following tests FAILED:",
+        "\t 58 - paper_h128_client_keypair_contract (Subprocess aborted)",
+        "Errors while running CTest",
+        "##[error]Process completed with exit code 8.",
+        "Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/"
+      ]
+    },
+    "valid_path_marker_occurrences": 0,
+    "full_58_step": "skipped"
+  },
+  "inferred": [
+    {
+      "claim": "ValidPath returned before GuardProfiles reached the failed public rejection assertion.",
+      "basis": "At exact tested source, main calls ValidPath at test line 531 then GuardProfiles at 532; the unique literal unsupported profile was accepted is thrown by ExpectRejected at 421. This is control-flow inference, not an observed valid-path marker."
+    },
+    {
+      "claim": "The failure is the intended missing noiseScale=2 rejection in the first B fixture, not a compilation or infrastructure failure.",
+      "basis": "Source case order begins Fault::NoiseScale at test line 434; fixture is built detached before seam entry (lines 317-333 and 454-456); current A implementation lacks noise-scale validation. Full log observes only the asserted missing-rejection reason after successful target compilation. The log does not print an individual fixture identifier."
+    },
+    {
+      "claim": "Missing stdout marker is consistent with buffering when the process aborts.",
+      "basis": "The frozen marker uses newline without explicit flush; CTest captures stdout. No buffer contents are claimed observed."
+    }
+  ],
+  "pending": [
+    "B GREEN implementation/runtime",
+    "All 50 rejection cases and lifecycle checks completing",
+    "Full 58/58 at a B GREEN source",
+    "Windows verification is owned by root"
+  ],
+  "commands": [
+    "gh api repos/leemaple/20231788./actions/jobs/101250030746",
+    "gh api repos/leemaple/20231788./actions/jobs/101250030746/logs",
+    "git show 43c2dca45c2305c9b6baf50ae1c32529d35e7f06:CMakeLists.txt",
+    "git show 43c2dca45c2305c9b6baf50ae1c32529d35e7f06:tests/paper_h128_client_keypair_contract_test.cpp"
+  ],
+  "job_metadata": {
+    "id": 101250030746,
+    "run_id": 33945243915,
+    "workflow_name": "OpenFHE 2023/1788 TDD",
+    "head_branch": "codex/paper-h128-keypair-01",
+    "run_url": "https://api.github.com/repos/leemaple/20231788./actions/runs/33945243915",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOUJbKDc8AAAAXkvjcmg",
+    "head_sha": "43c2dca45c2305c9b6baf50ae1c32529d35e7f06",
+    "url": "https://api.github.com/repos/leemaple/20231788./actions/jobs/101250030746",
+    "html_url": "https://github.com/leemaple/20231788./actions/runs/33945243915/job/101250030746",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-09-05T04:41:35Z",
+    "started_at": "2026-09-05T04:41:37Z",
+    "completed_at": "2026-09-05T04:44:16Z",
+    "name": "linux-gcc",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T04:41:38Z",
+        "completed_at": "2026-09-05T04:41:39Z"
+      },
+      {
+        "name": "Check out clean-room source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T04:41:39Z",
+        "completed_at": "2026-09-05T04:41:40Z"
+      },
+      {
+        "name": "Check out pristine OpenFHE 1.5.0",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T04:41:40Z",
+        "completed_at": "2026-09-05T04:41:48Z"
+      },
+      {
+        "name": "Verify OpenFHE provenance",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T04:41:48Z",
+        "completed_at": "2026-09-05T04:41:48Z"
+      },
+      {
+        "name": "Install independent-oracle test dependency",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-09-05T04:41:48Z",
+        "completed_at": "2026-09-05T04:42:00Z"
+      },
+      {
+        "name": "Report toolchain versions",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-09-05T04:42:00Z",
+        "completed_at": "2026-09-05T04:42:00Z"
+      },
+      {
+        "name": "Cache pristine OpenFHE install",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-09-05T04:42:00Z",
+        "completed_at": "2026-09-05T04:42:00Z"
+      },
+      {
+        "name": "Configure OpenFHE",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 8,
+        "started_at": "2026-09-05T04:42:00Z",
+        "completed_at": "2026-09-05T04:42:00Z"
+      },
+      {
+        "name": "Build and install OpenFHE",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 9,
+        "started_at": "2026-09-05T04:42:00Z",
+        "completed_at": "2026-09-05T04:42:00Z"
+      },
+      {
+        "name": "Configure clean-room project",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-09-05T04:42:00Z",
+        "completed_at": "2026-09-05T04:42:01Z"
+      },
+      {
+        "name": "Record clean-room run provenance",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-09-05T04:42:01Z",
+        "completed_at": "2026-09-05T04:42:01Z"
+      },
+      {
+        "name": "Build warning-clean project",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-09-05T04:42:01Z",
+        "completed_at": "2026-09-05T04:43:48Z"
+      },
+      {
+        "name": "Build Relin2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-09-05T04:43:48Z",
+        "completed_at": "2026-09-05T04:43:51Z"
+      },
+      {
+        "name": "Build RS2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-09-05T04:43:51Z",
+        "completed_at": "2026-09-05T04:43:53Z"
+      },
+      {
+        "name": "Build Mult2 public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-09-05T04:43:53Z",
+        "completed_at": "2026-09-05T04:43:56Z"
+      },
+      {
+        "name": "Build Add public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-09-05T04:43:56Z",
+        "completed_at": "2026-09-05T04:43:59Z"
+      },
+      {
+        "name": "Build Sub public API contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-09-05T04:43:59Z",
+        "completed_at": "2026-09-05T04:44:01Z"
+      },
+      {
+        "name": "Run focused first-Mult2 precision contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-09-05T04:44:01Z",
+        "completed_at": "2026-09-05T04:44:02Z"
+      },
+      {
+        "name": "Run focused Pair Add and Sub inputs to first Mult2",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19,
+        "started_at": "2026-09-05T04:44:02Z",
+        "completed_at": "2026-09-05T04:44:03Z"
+      },
+      {
+        "name": "Run legacy 57-test regression suite",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 20,
+        "started_at": "2026-09-05T04:44:03Z",
+        "completed_at": "2026-09-05T04:44:04Z"
+      },
+      {
+        "name": "Build fixed-Q h128 client keypair contract",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21,
+        "started_at": "2026-09-05T04:44:04Z",
+        "completed_at": "2026-09-05T04:44:14Z"
+      },
+      {
+        "name": "Run focused fixed-Q h128 client keypair contract",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 22,
+        "started_at": "2026-09-05T04:44:14Z",
+        "completed_at": "2026-09-05T04:44:14Z"
+      },
+      {
+        "name": "Run clean-room project tests",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 23,
+        "started_at": "2026-09-05T04:44:14Z",
+        "completed_at": "2026-09-05T04:44:14Z"
+      },
+      {
+        "name": "Post Cache pristine OpenFHE install",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 44,
+        "started_at": "2026-09-05T04:44:14Z",
+        "completed_at": "2026-09-05T04:44:14Z"
+      },
+      {
+        "name": "Post Check out pristine OpenFHE 1.5.0",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 45,
+        "started_at": "2026-09-05T04:44:14Z",
+        "completed_at": "2026-09-05T04:44:14Z"
+      },
+      {
+        "name": "Post Check out clean-room source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 46,
+        "started_at": "2026-09-05T04:44:14Z",
+        "completed_at": "2026-09-05T04:44:15Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 47,
+        "started_at": "2026-09-05T04:44:15Z",
+        "completed_at": "2026-09-05T04:44:15Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/leemaple/20231788./check-runs/101250030746",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000000949,
+    "runner_name": "GitHub Actions 1000000949",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  "mutation_boundary": "Only the specified raw log and this JSON are written with apply_patch. No source changes, build, crypto execution, CI mutation, commit or push by this audit."
+}
