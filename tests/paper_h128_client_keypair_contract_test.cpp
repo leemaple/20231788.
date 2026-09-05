@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <initializer_list>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -288,9 +290,246 @@ void ValidPath() {
     Check(ContextImpl::GetAllEvalMultKeys() == cacheBefore, "only owned eval key cleanup");
     std::cout << "valid-path assertions passed (diagnostic, not paper evidence)\n";
 }
+
+// Cycle B: owned, non-interned negative fixtures. No live context is modified.
+Basis FixtureBasis(std::uint32_t order, std::initializer_list<std::uint64_t> moduli,
+                   std::initializer_list<std::uint64_t> roots) {
+    std::vector<NativeInteger> m, r;
+    for (auto x : moduli) { m.emplace_back(x); }
+    for (auto x : roots) { r.emplace_back(x); }
+    return std::make_shared<DCRTPoly::Params>(order, m, r);
+}
+
+enum class Fault {
+    NoiseScale, Extended, Scaling, BVSwitch, PRE, Uniform, Gaussian, Encapsulated,
+    SigmaZero, SigmaNegative, SigmaNan, SigmaInfinite, NullQ, EmptyQ, SmallN, NonPowerN,
+    DuplicateQ, CompositeQ, BadRootQ, ReorderedQ, NullPK, MismatchedPK,
+    NullP, EmptyP, OverlapP, NullQP, ReorderedQP,
+    ZeroDigits, TooManyDigits, ZeroAuxBits, WrongWidth, MissingPartition, NullPartition,
+    WrongPartition, PModqSize, PModqValue, PInvSize, PHatSize, BarrettSize, MissingScale
+};
+
+class MalformedParams final : public Params {
+public:
+    // The official RNS copy constructor copies modes but omits CRT tables.
+    // Rebuild a detached valid fixture BEFORE introducing its named fault.
+    // This object is not attached to any context yet; never modify source's basis.
+    MalformedParams(const Params& source, Fault fault) : Params(source) {
+        m_encodingParams = std::make_shared<EncodingParamsImpl>(source.GetPlaintextModulus(),
+                                                               source.GetEncodingParams()->GetBatchSize());
+        m_compositeDegree = source.GetCompositeDegree();
+        m_registerWordSize = source.GetRegisterWordSize();
+        m_ckksDataType = source.GetCKKSDataType();
+        PrecomputeCRTTables(source.GetKeySwitchTechnique(), source.GetScalingTechnique(),
+                            source.GetEncryptionTechnique(), source.GetMultiplicationTechnique(),
+                            source.GetNumPartQ(), source.GetAuxBits(), source.GetExtraBits());
+        Check(m_numPartQ == 3 && m_paramsPartQ.size() == 3 && m_PModq.size() == 3 &&
+                  m_PInvModq.size() == 3 && m_PHatModq.size() == 1 && m_PHatModq[0].size() == 3,
+              "detached negative fixture precomputation shape");
+        CheckBasis(m_paramsP, {kP[0]}, {kPRoots[0]});
+        CheckBasis(m_paramsQP, {kQ[0], kQ[1], kQ[2], kP[0]},
+                   {kQRoots[0], kQRoots[1], kQRoots[2], kPRoots[0]});
+        switch (fault) {
+            case Fault::NoiseScale: m_noiseScale = 2; break;
+            case Fault::Extended: m_encTechnique = EXTENDED; break;
+            case Fault::Scaling: m_scalTechnique = FLEXIBLEAUTO; break;
+            case Fault::BVSwitch: m_ksTechnique = BV; break;
+            case Fault::PRE: m_PREMode = INDCPA; break;
+            case Fault::Uniform: m_secretKeyDist = UNIFORM_TERNARY; break;
+            case Fault::Gaussian: m_secretKeyDist = GAUSSIAN; break;
+            case Fault::Encapsulated: m_secretKeyDist = SPARSE_ENCAPSULATED; break;
+            case Fault::SigmaZero: m_distributionParameter = 0.0f; break;
+            case Fault::SigmaNegative: m_distributionParameter = -1.0f; break;
+            case Fault::SigmaNan: m_distributionParameter = std::numeric_limits<float>::quiet_NaN(); break;
+            case Fault::SigmaInfinite: m_distributionParameter = std::numeric_limits<float>::infinity(); break;
+            case Fault::NullQ: m_params.reset(); break;
+            case Fault::EmptyQ: m_params = FixtureBasis(512, {}, {}); break;
+            case Fault::SmallN:
+                m_params = FixtureBasis(128, {kQ[0], kQ[1], kQ[2]}, {kQRoots[0], kQRoots[1], kQRoots[2]}); break;
+            case Fault::NonPowerN:
+                m_params = FixtureBasis(448, {kQ[0], kQ[1], kQ[2]}, {kQRoots[0], kQRoots[1], kQRoots[2]}); break;
+            case Fault::DuplicateQ:
+                m_params = FixtureBasis(512, {kQ[0], kQ[0], kQ[2]}, {kQRoots[0], kQRoots[0], kQRoots[2]}); break;
+            case Fault::CompositeQ:
+                // 94391809 = 12289*7681; r^256 = -1 mod this composite.
+                m_params = FixtureBasis(512, {94391809, kQ[1], kQ[2]}, {49515781, kQRoots[1], kQRoots[2]}); break;
+            case Fault::BadRootQ:
+                m_params = FixtureBasis(512, {kQ[0], kQ[1], kQ[2]}, {1, kQRoots[1], kQRoots[2]}); break;
+            case Fault::ReorderedQ:
+                m_params = FixtureBasis(512, {kQ[1], kQ[0], kQ[2]}, {kQRoots[1], kQRoots[0], kQRoots[2]}); break;
+            case Fault::NullPK: overridePK_ = true; break;
+            case Fault::MismatchedPK: overridePK_ = true; pk_ = m_paramsQP; break;
+            case Fault::NullP: m_paramsP.reset(); break;
+            case Fault::EmptyP: m_paramsP = FixtureBasis(512, {}, {}); break;
+            case Fault::OverlapP: m_paramsP = FixtureBasis(512, {kQ[0]}, {kQRoots[0]}); break;
+            case Fault::NullQP: m_paramsQP.reset(); break;
+            case Fault::ReorderedQP:
+                m_paramsQP = FixtureBasis(512, {kQ[0], kQ[1], kP[0], kQ[2]},
+                    {kQRoots[0], kQRoots[1], kPRoots[0], kQRoots[2]}); break;
+            case Fault::ZeroDigits: m_numPartQ = 0; break;
+            case Fault::TooManyDigits: m_numPartQ = 4; break;
+            case Fault::ZeroAuxBits: m_auxBits = 0; break;
+            case Fault::WrongWidth: m_numPerPartQ = 2; break;
+            case Fault::MissingPartition: m_paramsPartQ.pop_back(); break;
+            case Fault::NullPartition: m_paramsPartQ[0].reset(); break;
+            case Fault::WrongPartition: m_paramsPartQ[0] = FixtureBasis(512, {kQ[1]}, {kQRoots[1]}); break;
+            case Fault::PModqSize: m_PModq.pop_back(); break;
+            case Fault::PModqValue: m_PModq[0] = NativeInteger(0); break;
+            case Fault::PInvSize: m_PInvModq.pop_back(); break;
+            case Fault::PHatSize: m_PHatModq[0].pop_back(); break;
+            case Fault::BarrettSize: m_modqBarrettMu.pop_back(); break;
+            case Fault::MissingScale: m_approxSF = 0.0; break;
+        }
+    }
+    const Basis GetParamsPK() const override {
+        return overridePK_ ? pk_ : Params::GetParamsPK();
+    }
+private:
+    bool overridePK_ = false;
+    Basis pk_;
+};
+
+// Implements the sole pure method of the non-CKKS base, only for a type rejection.
+class NonCKKSParams final : public CryptoParametersRLWE<DCRTPoly> {
+public:
+    const Basis GetParamsPK() const override { return GetElementParams(); }
+};
+
+std::shared_ptr<SchemeCKKSRNS> FixtureScheme(bool pke = true, bool switching = true,
+                                          bool leveled = true, KeySwitchTechnique technique = HYBRID) {
+    auto scheme = std::make_shared<SchemeCKKSRNS>();
+    if (switching) { scheme->SetKeySwitchingTechnique(technique); }
+    if (pke) { scheme->Enable(PKE); }
+    scheme->Enable(KEYSWITCH);  // A bare Enable is deliberately NOT installation.
+    if (leveled) { scheme->Enable(LEVELEDSHE); }
+    return scheme;
+}
+
+void ExpectRejected(const Context& bad, const char* category, const Context& unchanged) {
+    const auto cacheBefore = ContextImpl::GetAllEvalMultKeys();
+    const auto contextBefore = Snapshot(unchanged);
+    Pair result;
+    bool rejected = false;
+    try {
+        result = CreateFixedQH128ClientKeyPair(bad);
+    }
+    catch (const std::invalid_argument& error) {
+        Check(std::string(error.what()) == std::string("fixed-Q h128: ") + category,
+              "specified public rejection category");
+        rejected = true;
+    }
+    Check(rejected, "unsupported profile was accepted");
+    Check(!result.publicKey && !result.secretKey, "no half pair was published on exception");
+    Check(ContextImpl::GetAllEvalMultKeys() == cacheBefore, "rejection left eval cache unchanged");
+    Check(Snapshot(unchanged) == contextBefore, "rejection did not mutate caller context");
+}
+
+void GuardProfiles() {
+    const auto valid = MakeContext();
+    CheckProfile(valid);
+    const auto source = std::dynamic_pointer_cast<Params>(valid->GetCryptoParameters());
+    struct Case { Fault fault; const char* category; };
+    const Case cases[] = {
+        // First failure in Cycle A: valid Q/sigma/PKE, but ns=2 is not rejected.
+        {Fault::NoiseScale, "noise scale"}, {Fault::Extended, "encryption"},
+        {Fault::Scaling, "scaling"}, {Fault::BVSwitch, "key switching"}, {Fault::PRE, "PRE"},
+        {Fault::Uniform, "secret distribution"}, {Fault::Gaussian, "secret distribution"},
+        {Fault::Encapsulated, "secret distribution"}, {Fault::SigmaZero, "sigma"},
+        {Fault::SigmaNegative, "sigma"}, {Fault::SigmaNan, "sigma"}, {Fault::SigmaInfinite, "sigma"},
+        {Fault::NullQ, "Q basis"}, {Fault::EmptyQ, "Q basis"}, {Fault::SmallN, "ring"},
+        {Fault::NonPowerN, "ring"}, {Fault::DuplicateQ, "Q basis"}, {Fault::CompositeQ, "Q basis"},
+        {Fault::BadRootQ, "Q basis"}, {Fault::ReorderedQ, "QP basis"},
+        {Fault::NullPK, "public-key basis"}, {Fault::MismatchedPK, "public-key basis"},
+        {Fault::NullP, "P basis"}, {Fault::EmptyP, "P basis"}, {Fault::OverlapP, "P basis"},
+        {Fault::NullQP, "QP basis"}, {Fault::ReorderedQP, "QP basis"},
+        {Fault::ZeroDigits, "partitions"}, {Fault::TooManyDigits, "partitions"},
+        {Fault::ZeroAuxBits, "partitions"}, {Fault::WrongWidth, "partitions"},
+        {Fault::MissingPartition, "partitions"}, {Fault::NullPartition, "partitions"},
+        {Fault::WrongPartition, "partitions"}, {Fault::PModqSize, "HYBRID tables"},
+        {Fault::PModqValue, "HYBRID tables"}, {Fault::PInvSize, "HYBRID tables"},
+        {Fault::PHatSize, "HYBRID tables"}, {Fault::BarrettSize, "HYBRID tables"},
+        {Fault::MissingScale, "LEVELEDSHE tables"}
+    };
+    for (const auto& c : cases) {
+        const auto cp = std::make_shared<MalformedParams>(*source, c.fault);
+        // Public context constructor stores pointers without factory comparison/precompute.
+        ExpectRejected(std::make_shared<ContextImpl>(cp, FixtureScheme(), CKKSRNS_SCHEME), c.category, valid);
+    }
+    ExpectRejected(nullptr, "context", valid);
+    ExpectRejected(std::make_shared<ContextImpl>(source, FixtureScheme(), INVALID_SCHEME), "scheme", valid);
+    ExpectRejected(std::make_shared<ContextImpl>(source, std::shared_ptr<SchemeBase<DCRTPoly>>{}, CKKSRNS_SCHEME),
+                   "scheme", valid);
+    ExpectRejected(std::make_shared<ContextImpl>(source, std::make_shared<SchemeBase<DCRTPoly>>(), CKKSRNS_SCHEME),
+                   "scheme", valid);
+    ExpectRejected(std::make_shared<ContextImpl>(std::shared_ptr<CryptoParametersBase<DCRTPoly>>{},
+                   FixtureScheme(), CKKSRNS_SCHEME), "scheme", valid);
+    ExpectRejected(std::make_shared<ContextImpl>(std::make_shared<NonCKKSParams>(), FixtureScheme(), CKKSRNS_SCHEME),
+                   "scheme", valid);
+    ExpectRejected(std::make_shared<ContextImpl>(source, FixtureScheme(false, true, true), CKKSRNS_SCHEME),
+                   "features", valid);
+    ExpectRejected(std::make_shared<ContextImpl>(source, FixtureScheme(true, false, true), CKKSRNS_SCHEME),
+                   "features", valid);
+    ExpectRejected(std::make_shared<ContextImpl>(source, FixtureScheme(true, true, false), CKKSRNS_SCHEME),
+                   "features", valid);
+    // HYBRID metadata and all feature bits, but the actual installed switcher is BV.
+    ExpectRejected(std::make_shared<ContextImpl>(source, FixtureScheme(true, true, true, BV), CKKSRNS_SCHEME),
+                   "implementation", valid);
+    std::cout << "50 named rejection assertions passed (no injected tag collisions)\n";
+}
+
+void Lifecycle() {
+    const auto cc = MakeContext();
+    const auto before = Snapshot(cc);
+    const auto initialCache = ContextImpl::GetAllEvalMultKeys();
+    const auto guard = CreateFixedQH128ClientKeyPair(cc);
+    CheckPair(cc, guard);
+    const auto guardSK = guard.secretKey->GetPrivateElement();
+    const auto guardPK = guard.publicKey->GetPublicElements();
+    const auto guardTag = guard.secretKey->GetKeyTag();
+    cc->EvalMultKeyGen(guard.secretKey);
+    const auto guardCache = ContextImpl::GetAllEvalMultKeys();
+    const auto guardRow = guardCache.at(guardTag);
+    Check(!guardRow.empty(), "unrelated guard eval key exists");
+    const auto first = CreateFixedQH128ClientKeyPair(cc);
+    const auto second = CreateFixedQH128ClientKeyPair(cc);
+    CheckPair(cc, first); CheckPair(cc, second);
+    const auto firstTag = first.secretKey->GetKeyTag(), secondTag = second.secretKey->GetKeyTag();
+    Check(firstTag != secondTag && firstTag != guardTag && secondTag != guardTag &&
+              first.secretKey.get() != second.secretKey.get() && first.publicKey.get() != second.publicKey.get() &&
+              first.secretKey.get() != guard.secretKey.get() && second.secretKey.get() != guard.secretKey.get() &&
+              first.publicKey.get() != guard.publicKey.get() && second.publicKey.get() != guard.publicKey.get(),
+          "two-call fresh tags and independent objects");
+    Check(ContextImpl::GetAllEvalMultKeys() == guardCache, "adapter did not touch unrelated cache");
+    const auto firstSK = first.secretKey->GetPrivateElement();
+    const auto secondSK = second.secretKey->GetPrivateElement();
+    const auto firstPK = first.publicKey->GetPublicElements();
+    const auto secondPK = second.publicKey->GetPublicElements();
+    const auto plaintext = cc->MakeCKKSPackedPlaintext(Input(), 1, 0, nullptr, 128);
+    cc->EvalMultKeyGen(first.secretKey);
+    Check(ContextImpl::GetAllEvalMultKeys().at(guardTag) == guardRow &&
+              ContextImpl::GetAllEvalMultKeys().count(firstTag) == 1, "separate owned and guard rows");
+    const auto own = cc->Encrypt(first.publicKey, plaintext);
+    CheckDecoded(cc, first.secretKey, cc->EvalMult(own, own), true);
+    ContextImpl::ClearEvalMultKeys(firstTag);  // Client test cleanup, never adapter code.
+    Check(ContextImpl::GetAllEvalMultKeys() == guardCache, "owned-tag clear preserved complete guard cache");
+    const auto guardCiphertext = cc->Encrypt(guard.publicKey, plaintext);
+    CheckDecoded(cc, guard.secretKey, cc->EvalMult(guardCiphertext, guardCiphertext), true);
+    CheckDecoded(cc, second.secretKey, cc->Encrypt(second.publicKey, plaintext), false);
+    Check(guard.secretKey->GetPrivateElement() == guardSK && guard.publicKey->GetPublicElements() == guardPK &&
+              first.secretKey->GetPrivateElement() == firstSK && first.publicKey->GetPublicElements() == firstPK &&
+              second.secretKey->GetPrivateElement() == secondSK && second.publicKey->GetPublicElements() == secondPK,
+          "all independently owned keys remain unchanged");
+    Check(Snapshot(cc) == before, "lifecycle context/bases/tables unchanged");
+    ContextImpl::ClearEvalMultKeys(guardTag);
+    Check(ContextImpl::GetAllEvalMultKeys() == initialCache, "test left no owned eval keys behind");
+    std::cout << "two-call uniqueness and owned-tag cache-isolation assertions passed\n";
+}
+
 }  // namespace
 
 int main() {
     ValidPath();
+    GuardProfiles();
+    Lifecycle();
     return 0;
 }
