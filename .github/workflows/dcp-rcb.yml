@@ -13,6 +13,7 @@ on:
       - codex/pair-arithmetic-01
       - codex/precision-01
       - codex/pair-mult2-composition-01
+      - codex/lossless-io-implementation-01
       - cleanroom/reimplement-mult2-20260831
   workflow_dispatch:
 
@@ -62,7 +63,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .ci/openfhe-install
-          key: openfhe-1.5.0-${{ runner.os }}-gcc-${{ env.OPENFHE_COMMIT }}
+          key: openfhe-1.5.0-${{ runner.os }}-gcc-${{ env.OPENFHE_COMMIT }}-native64-backend4
 
       - name: Configure OpenFHE
         if: steps.cache-openfhe.outputs.cache-hit != 'true'
@@ -75,6 +76,8 @@ jobs:
           -DBUILD_BENCHMARKS=OFF
           -DBUILD_EXTRAS=OFF
           -DWITH_OPENMP=ON
+          -DNATIVE_SIZE=64
+          -DMATHBACKEND=4
 
       - name: Build and install OpenFHE
         if: steps.cache-openfhe.outputs.cache-hit != 'true'
@@ -111,7 +114,9 @@ jobs:
         run: ctest --test-dir build --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
 
       - name: Run clean-room project tests
-        run: ctest --test-dir build --verbose --output-on-failure
+        run: |
+          ctest --test-dir build --show-only=json-v1 -E '^precision_client_io_first_mult2_contract$'
+          ctest --test-dir build --verbose --output-on-failure -E '^precision_client_io_first_mult2_contract$'
 
       - name: Build Mult2 public API contract
         run: cmake --build build --target mult2_api_contract_test --parallel 2
@@ -121,6 +126,17 @@ jobs:
 
       - name: Build Sub public API contract
         run: cmake --build build --target sub_api_contract_test --parallel 2
+
+      - name: Build production lossless client I/O contract
+        run: cmake --build build --target precision_client_io_first_mult2_contract_test --parallel 2
+
+      - name: Run focused production lossless client I/O contract
+        run: ctest --test-dir build --verbose --output-on-failure -R '^precision_client_io_first_mult2_contract$'
+
+      - name: Run complete 58-test suite including production client I/O
+        run: |
+          ctest --test-dir build --show-only=json-v1
+          ctest --test-dir build --verbose --output-on-failure
 
   windows-mingw64:
     runs-on: windows-2022
@@ -210,7 +226,9 @@ jobs:
             -DBUILD_EXAMPLES=OFF \
             -DBUILD_BENCHMARKS=OFF \
             -DBUILD_EXTRAS=OFF \
-            -DWITH_OPENMP=ON
+            -DWITH_OPENMP=ON \
+            -DNATIVE_SIZE=64 \
+            -DMATHBACKEND=4
 
       - name: Build and install OpenFHE
         shell: msys2 {0}
@@ -284,7 +302,8 @@ jobs:
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           build="$(cygpath -u "$PROJECT_BUILD")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
-          ctest --test-dir "$build" --verbose --output-on-failure
+          ctest --test-dir "$build" --show-only=json-v1 -E '^precision_client_io_first_mult2_contract$'
+          ctest --test-dir "$build" --verbose --output-on-failure -E '^precision_client_io_first_mult2_contract$'
 
       - name: Build Mult2 public API contract
         shell: msys2 {0}
@@ -306,3 +325,29 @@ jobs:
         run: |
           build="$(cygpath -u "$PROJECT_BUILD")"
           cmake --build "$build" --target sub_api_contract_test --parallel 2
+
+      - name: Build production lossless client I/O contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target precision_client_io_first_mult2_contract_test --parallel 2
+
+      - name: Run focused production lossless client I/O contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^precision_client_io_first_mult2_contract$'
+
+      - name: Run complete 58-test suite including production client I/O
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --show-only=json-v1
+          ctest --test-dir "$build" --verbose --output-on-failure

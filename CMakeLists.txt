@@ -101,6 +101,22 @@ add_executable(precision_first_mult2_contract_test
     tests/precision_dcp_rcb_fixture.cpp)
 target_link_libraries(precision_first_mult2_contract_test PRIVATE openfhe_2023_1788)
 
+# Cycle A RED: preserve the accepted default build/57-test checkpoint before
+# compiling the deliberately absent production client-I/O public header.
+add_executable(precision_client_io_first_mult2_contract_test EXCLUDE_FROM_ALL
+    tests/precision_client_io_first_mult2_contract_test.cpp)
+target_link_libraries(precision_client_io_first_mult2_contract_test PRIVATE openfhe_2023_1788)
+execute_process(COMMAND git rev-parse HEAD
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    OUTPUT_VARIABLE LOSSLESS_IO_SOURCE_COMMIT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    RESULT_VARIABLE LOSSLESS_IO_GIT_RESULT)
+if(NOT LOSSLESS_IO_GIT_RESULT EQUAL 0)
+    message(FATAL_ERROR "Cannot record exact lossless-I/O test source commit")
+endif()
+target_compile_definitions(precision_client_io_first_mult2_contract_test PRIVATE
+    LOSSLESS_IO_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+
 if(MSVC)
     target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
     target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
@@ -120,6 +136,7 @@ if(MSVC)
     target_compile_options(mult2_e2e_oracle_test PRIVATE /W4 /WX)
     target_compile_options(precision_dcp_rcb_contract_test PRIVATE /W4 /WX)
     target_compile_options(precision_first_mult2_contract_test PRIVATE /W4 /WX)
+    target_compile_options(precision_client_io_first_mult2_contract_test PRIVATE /W4 /WX)
 else()
     target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
@@ -139,6 +156,7 @@ else()
     target_compile_options(mult2_e2e_oracle_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(precision_dcp_rcb_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(precision_first_mult2_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(precision_client_io_first_mult2_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
 enable_testing()
@@ -207,3 +225,5 @@ add_test(NAME mult2_pair_add_input_hybrid_complex
          COMMAND mult2_e2e_oracle_test pair_add_input_hybrid_complex)
 add_test(NAME mult2_pair_sub_input_hybrid_complex
          COMMAND mult2_e2e_oracle_test pair_sub_input_hybrid_complex)
+add_test(NAME precision_client_io_first_mult2_contract
+         COMMAND precision_client_io_first_mult2_contract_test)
