@@ -65,3 +65,9 @@ consistent with the chat summary, and provide working downloadable links. If a
 source-level blocker genuinely prevents GREEN, return the exact minimal
 counterexample and blocked ledger required by `TASK.md`; do not substitute a
 generic plan or false success.
+
+Transport filename mapping: the upload interface renamed the two reattached files to
+`lossless-client-io-implementation-01-4ccc8fd(1).zip` and
+`lossless-client-io-implementation-01-4ccc8fd.zip(1).sha256`.
+They are the exact bytes identified above; the sidecar retains the original
+archive basename. Treat these as upload-name aliases, not different inputs.
