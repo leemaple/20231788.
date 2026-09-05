@@ -19,6 +19,7 @@ enum class PairLifecycle : std::uint8_t {
     ReadyForFirstMult,
     ReadyForRS2,
     RefreshRequired,
+    ReadyForRepeatedMult,
 };
 
 struct PaperScaleDescriptor final {
@@ -34,6 +35,8 @@ struct TensorScaleDescriptor final {
 };
 
 class DoubleCKKS;
+class RepeatedMult2Plan;
+class RepeatedMult2Receipt;
 
 class CiphertextPair final {
 public:
@@ -52,6 +55,7 @@ public:
     std::uint32_t GetSlots() const noexcept;
     Format GetFormat() const noexcept;
     std::size_t GetComponentCount() const noexcept;
+    const std::shared_ptr<const RepeatedMult2Receipt>& GetRepeatedReceipt() const noexcept { return receipt_; }
 
 private:
     friend class DoubleCKKS;
@@ -85,6 +89,7 @@ private:
     std::uint32_t slots_;
     Format format_;
     std::size_t componentCount_;
+    std::shared_ptr<const RepeatedMult2Receipt> receipt_;
 };
 
 class TensorCiphertextPair final {
@@ -103,6 +108,7 @@ public:
     std::uint32_t GetSlots() const noexcept;
     Format GetFormat() const noexcept;
     std::size_t GetComponentCount() const noexcept;
+    const std::shared_ptr<const RepeatedMult2Receipt>& GetRepeatedReceipt() const noexcept { return receipt_; }
 
 private:
     friend class DoubleCKKS;
@@ -134,11 +140,15 @@ private:
     std::uint32_t slots_;
     Format format_;
     std::size_t componentCount_;
+    std::shared_ptr<const RepeatedMult2Receipt> receipt_;
 };
 
 class DoubleCKKS final {
 public:
     explicit DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context);
+    explicit DoubleCKKS(std::shared_ptr<const RepeatedMult2Plan> plan);
+    // Keep the original null-context diagnostic unambiguous with the overload.
+    explicit DoubleCKKS(std::nullptr_t) : DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly>{}) {}
 
     CiphertextPair DCP(const ReadOnlyCiphertext& ciphertext) const;
     CiphertextPair Add(const CiphertextPair& left, const CiphertextPair& right) const;
@@ -150,6 +160,12 @@ public:
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> RCB(const CiphertextPair& pair) const;
 
 private:
+    DoubleCKKS(std::shared_ptr<const RepeatedMult2Plan> plan,std::size_t family);
+    void ValidatePlannedPair(const CiphertextPair& pair) const;
+    void ValidatePlannedTensor(const TensorCiphertextPair& pair) const;
+    CiphertextPair Reenter(const CiphertextPair& pair) const;
+    void AttachReceipt(CiphertextPair& pair,const std::shared_ptr<const RepeatedMult2Receipt>& receipt) const;
+    void AttachReceipt(TensorCiphertextPair& pair,const std::shared_ptr<const RepeatedMult2Receipt>& receipt) const;
     void ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const;
     void ValidatePair(const CiphertextPair& pair) const;
     void ValidatePairCompatibility(const CiphertextPair& left, const CiphertextPair& right,
@@ -175,6 +191,8 @@ private:
     std::vector<lbcrypto::NativeInteger> firstPairModuli_;
     lbcrypto::NativeInteger divisor_;
     double expectedInputScalingFactor_;
+    std::shared_ptr<const RepeatedMult2Plan> plan_;
+    std::size_t familyIndex_=0;
 };
 
 }  // namespace openfhe_2023_1788

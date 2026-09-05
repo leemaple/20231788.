@@ -1,4 +1,5 @@
 #include "openfhe_2023_1788/double_ckks.h"
+#include "openfhe_2023_1788/repeated_mult2.h"
 
 #include <cmath>
 #include <memory>
@@ -353,6 +354,13 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
 }
 
 void DoubleCKKS::ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const {
+    if (plan_) {
+        plan_->ValidateFamily(familyIndex_);
+        if (familyIndex_ != 0 || !ciphertext || ciphertext->GetSlots() != 16 ||
+            ciphertext->GetKeyTag() != plan_->GetFamilyKeyTag(0)) {
+            Invalid("planned DCP requires a root-family diagnostic input");
+        }
+    }
     if (!ciphertext) {
         Invalid("DCP input is null");
     }
@@ -433,11 +441,21 @@ CiphertextPair DoubleCKKS::DCP(const ReadOnlyCiphertext& ciphertext) const {
                         firstPairModuli_, 1, paperScale, recordedScalingFactor, 2,
                         PairLifecycle::ReadyForFirstMult, ciphertext->GetKeyTag(), ciphertext->GetSlots(),
                         Format::EVALUATION, 2);
+    if (plan_) {
+        AttachReceipt(pair, plan_->ReceiptFor(0, RepeatedPhase::Input));
+    }
     ValidatePair(pair);
     return pair;
 }
 
 void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
+    if (plan_) {
+        ValidatePlannedPair(pair);
+        return;
+    }
+    if (pair.receipt_) {
+        Invalid("plan-issued pair requires its owning repeated evaluator");
+    }
     if (pair.contextIdentity_ != context_.get()) {
         Invalid("pair belongs to a different context");
     }
@@ -572,6 +590,9 @@ void DoubleCKKS::ValidatePair(const CiphertextPair& pair) const {
 }
 
 void DoubleCKKS::ValidateTensorCompatibility(const CiphertextPair& left, const CiphertextPair& right) const {
+    if (left.receipt_ != right.receipt_) {
+        Invalid("Tensor2 input exact receipts do not match");
+    }
     if (left.contextIdentity_ != right.contextIdentity_) {
         Invalid("Tensor2 input contexts do not match");
     }
@@ -608,6 +629,13 @@ void DoubleCKKS::ValidateTensorCompatibility(const CiphertextPair& left, const C
 }
 
 void DoubleCKKS::ValidateTensorResult(const TensorCiphertextPair& pair) const {
+    if (plan_) {
+        ValidatePlannedTensor(pair);
+        return;
+    }
+    if (pair.receipt_) {
+        Invalid("plan-issued tensor requires its owning repeated evaluator");
+    }
     if (pair.contextIdentity_ != context_.get()) {
         Invalid("Tensor2 result belongs to a different context");
     }
@@ -655,6 +683,12 @@ void DoubleCKKS::ValidateTensorResult(const TensorCiphertextPair& pair) const {
 }
 
 CiphertextPair DoubleCKKS::Add(const CiphertextPair& left, const CiphertextPair& right) const {
+    if (plan_) {
+        const auto family = plan_->RequireReceipt(left.receipt_);
+        if (family != familyIndex_) {
+            return DoubleCKKS(plan_, family).Add(left, right);
+        }
+    }
     ValidatePair(left);
     ValidatePair(right);
     ValidatePairCompatibility(left, right, "Add");
@@ -677,11 +711,20 @@ CiphertextPair DoubleCKKS::Add(const CiphertextPair& left, const CiphertextPair&
                           left.orderedModuli_, left.level_, left.paperScale_,
                           left.recordedScalingFactor_, left.noiseScaleDegree_, left.lifecycle_,
                           left.keyTag_, left.slots_, left.format_, left.componentCount_);
+    if (plan_) {
+        AttachReceipt(result, left.receipt_);
+    }
     ValidatePair(result);
     return result;
 }
 
 CiphertextPair DoubleCKKS::Sub(const CiphertextPair& left, const CiphertextPair& right) const {
+    if (plan_) {
+        const auto family = plan_->RequireReceipt(left.receipt_);
+        if (family != familyIndex_) {
+            return DoubleCKKS(plan_, family).Sub(left, right);
+        }
+    }
     ValidatePair(left);
     ValidatePair(right);
     ValidatePairCompatibility(left, right, "Sub");
@@ -703,12 +746,18 @@ CiphertextPair DoubleCKKS::Sub(const CiphertextPair& left, const CiphertextPair&
                           left.orderedModuli_, left.level_, left.paperScale_,
                           left.recordedScalingFactor_, left.noiseScaleDegree_, left.lifecycle_,
                           left.keyTag_, left.slots_, left.format_, left.componentCount_);
+    if (plan_) {
+        AttachReceipt(result, left.receipt_);
+    }
     ValidatePair(result);
     return result;
 }
 
 void DoubleCKKS::ValidatePairCompatibility(const CiphertextPair& left, const CiphertextPair& right,
                                            const char* operationName) const {
+    if (left.receipt_ != right.receipt_) {
+        Invalid(std::string(operationName) + " input exact receipts do not match");
+    }
     const std::string operation(operationName);
     if (left.contextIdentity_ != right.contextIdentity_) {
         Invalid(operation + " input contexts do not match");
@@ -761,11 +810,25 @@ void DoubleCKKS::ValidatePairCompatibility(const CiphertextPair& left, const Cip
 }
 
 TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const CiphertextPair& right) const {
+    if (plan_) {
+        const auto family = plan_->RequireReceipt(left.receipt_);
+        if (family != familyIndex_) {
+            return DoubleCKKS(plan_, family).Tensor2(left, right);
+        }
+    }
     ValidatePair(left);
     ValidatePair(right);
-    if (left.lifecycle_ != PairLifecycle::ReadyForFirstMult ||
-        right.lifecycle_ != PairLifecycle::ReadyForFirstMult) {
-        Invalid("Tensor2 requires ReadyForFirstMult inputs");
+    if (plan_) {
+        const auto phase = familyIndex_ == 0 ? RepeatedPhase::Input : RepeatedPhase::Reentry;
+        if (left.receipt_ != plan_->ReceiptFor(familyIndex_, phase) || right.receipt_ != left.receipt_) {
+            Invalid("Tensor2 requires a ready input receipt from this family");
+        }
+    }
+    else {
+        if (left.lifecycle_ != PairLifecycle::ReadyForFirstMult ||
+            right.lifecycle_ != PairLifecycle::ReadyForFirstMult) {
+            Invalid("Tensor2 requires ReadyForFirstMult inputs");
+        }
     }
     ValidateTensorCompatibility(left, right);
 
@@ -807,11 +870,20 @@ TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const Ciphe
     TensorCiphertextPair result(std::move(high3), std::move(low3), context_.get(), divisor_, left.orderedModuli_,
                                 left.level_, tensorScale, normalizedRecordedScalingFactor,
                                 normalizedNoiseScaleDegree, left.keyTag_, left.slots_, Format::EVALUATION, 3);
+    if (plan_) {
+        AttachReceipt(result, plan_->ReceiptFor(familyIndex_, RepeatedPhase::Tensor));
+    }
     ValidateTensorResult(result);
     return result;
 }
 
 CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
+    if (plan_) {
+        const auto family = plan_->RequireReceipt(tensor.receipt_);
+        if (family != familyIndex_) {
+            return DoubleCKKS(plan_, family).Relin2(tensor);
+        }
+    }
     ValidateTensorResult(tensor);
     if (tensor.GetOrderedModuli().size() < tensor.GetNoiseScaleDegree()) {
         Invalid("Relin2 requires at least as many active Q_l towers as the Tensor noise-scale degree");
@@ -984,11 +1056,20 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
                           tensor.recordedScalingFactor_, tensor.noiseScaleDegree_,
                           PairLifecycle::ReadyForRS2, tensor.keyTag_, tensor.slots_,
                           Format::EVALUATION, 2);
+    if (plan_) {
+        AttachReceipt(result, plan_->ReceiptFor(familyIndex_, RepeatedPhase::Relinearized));
+    }
     ValidatePair(result);
     return result;
 }
 
 CiphertextPair DoubleCKKS::RS2(const CiphertextPair& relinearized) const {
+    if (plan_) {
+        const auto family = plan_->RequireReceipt(relinearized.receipt_);
+        if (family != familyIndex_) {
+            return DoubleCKKS(plan_, family).RS2(relinearized);
+        }
+    }
     ValidatePair(relinearized);
     if (relinearized.lifecycle_ != PairLifecycle::ReadyForRS2) {
         Invalid("RS2 requires ReadyForRS2 input");
@@ -1108,15 +1189,34 @@ CiphertextPair DoubleCKKS::RS2(const CiphertextPair& relinearized) const {
                           outputRecordedScalingFactor, outputNoiseScaleDegree,
                           PairLifecycle::RefreshRequired, relinearized.keyTag_,
                           relinearized.slots_, Format::EVALUATION, 2);
+    if (plan_) {
+        AttachReceipt(result, plan_->ReceiptFor(familyIndex_, RepeatedPhase::Rescaled));
+    }
     ValidatePair(result);
     return result;
 }
 
 CiphertextPair DoubleCKKS::Mult2(const CiphertextPair& left, const CiphertextPair& right) const {
-    return RS2(Relin2(Tensor2(left, right)));
+    if (plan_) {
+        const auto family = plan_->RequireReceipt(left.receipt_);
+        if (family != familyIndex_) {
+            return DoubleCKKS(plan_, family).Mult2(left, right);
+        }
+    }
+    auto result = RS2(Relin2(Tensor2(left, right)));
+    if (plan_ && !result.receipt_->IsTerminal()) {
+        return Reenter(result);
+    }
+    return result;
 }
 
 lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& pair) const {
+    if (plan_) {
+        const auto family = plan_->RequireReceipt(pair.receipt_);
+        if (family != familyIndex_) {
+            return DoubleCKKS(plan_, family).RCB(pair);
+        }
+    }
     ValidatePair(pair);
 
     auto result = pair.high_->Clone();

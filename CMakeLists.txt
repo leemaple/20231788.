@@ -105,6 +105,8 @@ add_executable(repeated_mult2_semantic_two_square_test EXCLUDE_FROM_ALL
     tests/repeated_mult2_semantic_two_square_test.cpp
     tests/precision_dcp_rcb_fixture.cpp)
 target_link_libraries(repeated_mult2_semantic_two_square_test PRIVATE openfhe_2023_1788)
+# Production implementation for the preceding red-first public seam.
+target_sources(openfhe_2023_1788 PRIVATE src/repeated_mult2.cpp)
 
 if(MSVC)
     target_compile_options(repeated_mult2_semantic_two_square_test PRIVATE /W4 /WX)
