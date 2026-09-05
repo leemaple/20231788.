@@ -101,7 +101,16 @@ add_executable(precision_first_mult2_contract_test
     tests/precision_dcp_rcb_fixture.cpp)
 target_link_libraries(precision_first_mult2_contract_test PRIVATE openfhe_2023_1788)
 
+# Source-mapping exploration only: not a production API or a CTest binding.
+# Explicitly built and run by the isolated profile-probe workflow branch.
+add_executable(table3_profile_probe EXCLUDE_FROM_ALL probes/table3_profile_probe.cpp)
+target_link_libraries(table3_profile_probe PRIVATE ${OpenFHE_SHARED_LIBRARIES})
+if(MINGW)
+    target_compile_definitions(table3_profile_probe PRIVATE _USE_MATH_DEFINES)
+endif()
+
 if(MSVC)
+    target_compile_options(table3_profile_probe PRIVATE /W4 /WX)
     target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
     target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
     target_compile_options(tensor2_api_contract_test PRIVATE /W4 /WX)
@@ -121,6 +130,7 @@ if(MSVC)
     target_compile_options(precision_dcp_rcb_contract_test PRIVATE /W4 /WX)
     target_compile_options(precision_first_mult2_contract_test PRIVATE /W4 /WX)
 else()
+    target_compile_options(table3_profile_probe PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(tensor2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)

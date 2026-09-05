@@ -122,6 +122,13 @@ jobs:
       - name: Build Sub public API contract
         run: cmake --build build --target sub_api_contract_test --parallel 2
 
+      - name: Inspect paper-scale parameter candidate without cryptography
+        env:
+          OMP_NUM_THREADS: 2
+        run: |
+          cmake --build build --target table3_profile_probe --parallel 2
+          ./build/table3_profile_probe
+
   windows-mingw64:
     runs-on: windows-2022
     timeout-minutes: 60
@@ -306,3 +313,15 @@ jobs:
         run: |
           build="$(cygpath -u "$PROJECT_BUILD")"
           cmake --build "$build" --target sub_api_contract_test --parallel 2
+
+      - name: Inspect paper-scale parameter candidate without cryptography
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        env:
+          OMP_NUM_THREADS: 2
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          cmake --build "$build" --target table3_profile_probe --parallel 2
+          "$build/table3_profile_probe.exe"
