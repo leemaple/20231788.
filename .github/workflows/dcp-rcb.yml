@@ -15,6 +15,7 @@ on:
       - codex/pair-mult2-composition-01
       - codex/lossless-io-implementation-01
       - codex/three-track-integration-20260905
+      - codex/paper-scale-implementation-20260905
       - cleanroom/reimplement-mult2-20260831
   workflow_dispatch:
 
@@ -116,8 +117,8 @@ jobs:
 
       - name: Run legacy 57-test checkpoint
         run: |
-          ctest --test-dir build --show-only=json-v1 -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract)$'
-          ctest --test-dir build --verbose --output-on-failure -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract)$'
+          ctest --test-dir build --show-only=json-v1 -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract|paper_full_eight_square_contract)$'
+          ctest --test-dir build --verbose --output-on-failure -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract|paper_full_eight_square_contract)$'
 
       - name: Build Mult2 public API contract
         run: cmake --build build --target mult2_api_contract_test --parallel 2
@@ -145,8 +146,16 @@ jobs:
 
       - name: Run complete 60-test three-track suite
         run: |
+          ctest --test-dir build --show-only=json-v1 -E '^paper_full_eight_square_contract$'
+          ctest --test-dir build --verbose --output-on-failure -E '^paper_full_eight_square_contract$'
+
+      - name: Build paper full eight-square contract
+        run: cmake --build build --target paper_full_eight_square_contract_test --parallel 2
+
+      - name: Run paper full eight-square contract once
+        run: |
           ctest --test-dir build --show-only=json-v1
-          ctest --test-dir build --verbose --output-on-failure
+          ctest --test-dir build --verbose --output-on-failure -R '^paper_full_eight_square_contract$'
 
   windows-mingw64:
     runs-on: windows-2022
@@ -312,8 +321,8 @@ jobs:
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           build="$(cygpath -u "$PROJECT_BUILD")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
-          ctest --test-dir "$build" --show-only=json-v1 -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract)$'
-          ctest --test-dir "$build" --verbose --output-on-failure -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract)$'
+          ctest --test-dir "$build" --show-only=json-v1 -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract|paper_full_eight_square_contract)$'
+          ctest --test-dir "$build" --verbose --output-on-failure -E '^(precision_client_io_first_mult2_contract|repeated_mult2_semantic_two_square_contract|paper_h128_client_keypair_contract|paper_full_eight_square_contract)$'
 
       - name: Build Mult2 public API contract
         shell: msys2 {0}
@@ -382,5 +391,22 @@ jobs:
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           build="$(cygpath -u "$PROJECT_BUILD")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --show-only=json-v1 -E '^paper_full_eight_square_contract$'
+          ctest --test-dir "$build" --verbose --output-on-failure -E '^paper_full_eight_square_contract$'
+
+      - name: Build paper full eight-square contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target paper_full_eight_square_contract_test --parallel 2
+
+      - name: Run paper full eight-square contract once
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
           ctest --test-dir "$build" --show-only=json-v1
-          ctest --test-dir "$build" --verbose --output-on-failure
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^paper_full_eight_square_contract$'

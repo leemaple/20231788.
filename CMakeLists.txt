@@ -130,7 +130,16 @@ add_executable(paper_h128_client_keypair_contract_test EXCLUDE_FROM_ALL
     tests/paper_h128_client_keypair_contract_test.cpp)
 target_link_libraries(paper_h128_client_keypair_contract_test PRIVATE openfhe_2023_1788)
 
+# One paper-scale end-to-end behavior slice. Keep the accepted 60-test
+# checkpoint buildable before explicitly compiling its new public seam.
+add_executable(paper_full_eight_square_contract_test EXCLUDE_FROM_ALL
+    tests/paper_full_eight_square_contract_test.cpp)
+target_link_libraries(paper_full_eight_square_contract_test PRIVATE openfhe_2023_1788)
+target_compile_definitions(paper_full_eight_square_contract_test PRIVATE
+    PAPER_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+
 if(MSVC)
+    target_compile_options(paper_full_eight_square_contract_test PRIVATE /W4 /WX)
     target_compile_options(repeated_mult2_semantic_two_square_test PRIVATE /W4 /WX)
     target_compile_options(paper_h128_client_keypair_contract_test PRIVATE /W4 /WX)
     target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
@@ -153,6 +162,7 @@ if(MSVC)
     target_compile_options(precision_first_mult2_contract_test PRIVATE /W4 /WX)
     target_compile_options(precision_client_io_first_mult2_contract_test PRIVATE /W4 /WX)
 else()
+    target_compile_options(paper_full_eight_square_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(repeated_mult2_semantic_two_square_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(paper_h128_client_keypair_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
@@ -248,3 +258,9 @@ add_test(NAME repeated_mult2_semantic_two_square_contract
          COMMAND repeated_mult2_semantic_two_square_test)
 add_test(NAME paper_h128_client_keypair_contract
          COMMAND paper_h128_client_keypair_contract_test)
+add_test(NAME paper_full_eight_square_contract
+         COMMAND paper_full_eight_square_contract_test)
+set_tests_properties(paper_full_eight_square_contract PROPERTIES
+    TIMEOUT 1200
+    RUN_SERIAL TRUE
+    ENVIRONMENT "OMP_NUM_THREADS=2")

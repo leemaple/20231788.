@@ -129,7 +129,11 @@ A single paper test per host performs this full sequence:
 6. Verify nonterminal output rejection, a foreign plan/result rejection
    without a second paper keygen (the existing small diagnostic plan is a
    foreign identity), and private-constructor/state ownership by actual
-   supported interfaces. Preserve all existing numerical/negative tests;
+   supported interfaces. A diagnostic-plan evaluator must reject the paper
+   terminal pair at RCBWithReceipt. A valid original N64/Q8 context-based I/O
+   object, needing no additional KeyGen, must reject the paper result at
+   BindRepeatedRcb because it owns no issuing paper plan. This does not add
+   N64/Q10 diagnostic-plan I/O support. Preserve all existing numerical/negative tests;
    add further cycles only for a concrete uncovered failure.
 
 Generate expected z^256 with a separate sufficiently precise plaintext
