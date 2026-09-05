@@ -1,0 +1,56 @@
+{
+  "schema": "h128-final-review-root-reproduction-v1",
+  "observed_at_utc": "2026-09-05T06:57:23Z",
+  "tested_source": "1192200f558c69c0967e8306ed1a8bddf786ca34",
+  "input_zip": {
+    "bytes": 2202028,
+    "sha256": "c4b8012a1f690d40c5571b24ae7828f414a5d05c6715a45fec0f3cb3e6710305"
+  },
+  "return_zip": {
+    "bytes": 47452,
+    "sha256": "31e3bea98c2468a31be2eab1f3688f238e68be393dc6a8ecad2a1d5692a6a416"
+  },
+  "reviewer_verifier": {
+    "bytes": 25852,
+    "sha256": "fae39aefa64b58a10c1a080199c0c1daa825bde6723ae8b1c4b3abed2cc7871c",
+    "root_read_complete": true,
+    "execution": "python3 -I; ambient Git repository/config-count/object and PYTHONPATH variables unset; actual git apply only in fresh temporary non-repository trees",
+    "exit_code": 0
+  },
+  "result": {
+    "path": "artifacts/handoffs/h128-final-review-return-01/root-mechanical-checks.json",
+    "bytes": 295087,
+    "sha256": "e3edb0cf78b5a60ab74583b8818f5883afb55bba020eb7dbdb3dcbc2a2193df1",
+    "comparison": "Entire object equals EVIDENCE_CHECKS.json.mechanical_checks after jq -S canonical pretty-printing; diff exit 0",
+    "regular_input_members": 315,
+    "manifest_payloads": 314,
+    "git_blob_byte_hashes": 259,
+    "hosted_logs": 8,
+    "ctest_invocations": 34,
+    "numbered_test_starts": 718,
+    "patch_replays": 10,
+    "ctest_bindings": 58,
+    "prime_certificates": 39,
+    "skipped_composites": 213,
+    "prime_searches": 5,
+    "root_minima": 4
+  },
+  "source_anchor_verification": "Independent reference audit subsequently PASS: 111 anchors/86 unique/38 input files/0 errors, result SHA256 ec5e29e83d49584a007f1bfb443e7517c8f1d42b4eeef767973210f25958b27c; not a semantic re-review or model identity authentication",
+  "secret_scan": {
+    "tool": "gitleaks8.30.1",
+    "scope": "complete actual return extraction",
+    "bytes": 408649,
+    "findings": 0,
+    "inline_allows": false,
+    "ignore_file": "/dev/null",
+    "decode_depth": 5
+  },
+  "overall_disposition": "BLOCKED_INPUT_CLOSURE remains; static reproduction is not final acceptance",
+  "limits": [
+    "No new C++ build, OpenFHE execution, NTT or cryptographic experiment.",
+    "No new CI run; parsed records are existing hosted evidence.",
+    "Git blob bytes and recorded origin mappings are not independently authenticated commit membership here.",
+    "Windows CRLF reconstruction hash agrees with attested raw identity but does not replace the separately retained original capture.",
+    "The full final goal and initial-profile I/O P2 are not closed by these checks."
+  ]
+}
