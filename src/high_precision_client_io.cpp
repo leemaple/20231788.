@@ -148,7 +148,9 @@ ContextBinding BindContext(CryptoContext<DCRTPoly> context) {
     Require(cp->GetEncodingParams() != nullptr && cp->GetBatchSize() == kSlots && cp->GetPlaintextModulus() == 50,
             "unsupported encoding parameters");
     const auto q = ReadBasis(cp->GetElementParams());
-    Require(q.moduliDecimal.size() == 8 && q.moduliDecimal.back() == "1125899906843009" &&
+    Require(q.moduliDecimal.size() == 8 &&
+            cp->GetElementParams()->GetParams().front()->GetModulus().GetMSB() == 55 &&
+            q.moduliDecimal.back() == "1125899906843009" &&
             q.moduliDecimal[6] == "1125899906840833", "unsupported diagnostic Q basis");
     Require(SameBasis(ReadBasis(cp->GetParamsPK()), q), "public-key parameters are not full Q");
     const auto p = ReadBasis(cp->GetParamsP());
