@@ -37,6 +37,7 @@ struct TensorScaleDescriptor final {
 class DoubleCKKS;
 class RepeatedMult2Plan;
 class RepeatedMult2Receipt;
+class RepeatedMult2Result;
 
 class CiphertextPair final {
 public:
@@ -158,6 +159,7 @@ public:
     CiphertextPair RS2(const CiphertextPair& relinearized) const;
     CiphertextPair Mult2(const CiphertextPair& left, const CiphertextPair& right) const;
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> RCB(const CiphertextPair& pair) const;
+    RepeatedMult2Result RCBWithReceipt(const CiphertextPair& pair) const;
 
 private:
     DoubleCKKS(std::shared_ptr<const RepeatedMult2Plan> plan,std::size_t family);

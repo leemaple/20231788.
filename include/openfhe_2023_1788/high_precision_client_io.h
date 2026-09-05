@@ -12,6 +12,12 @@
 #include <string>
 #include <vector>
 
+namespace openfhe_2023_1788 {
+class RepeatedMult2Plan;
+class RepeatedMult2Receipt;
+class RepeatedMult2Result;
+}
+
 namespace openfhe_2023_1788::client_io {
 
 using ClientReal = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<100>>;
@@ -35,7 +41,7 @@ private:
 };
 
 enum class CanonicalProjection { OpenFhePackedStride };
-enum class ClientCiphertextOrigin { FreshClientEncoding, FirstMult2Rcb };
+enum class ClientCiphertextOrigin { FreshClientEncoding, FirstMult2Rcb, RepeatedMult2Rcb };
 
 struct OrderedDcrtBasis final {
     std::uint32_t cyclotomicOrder;
@@ -102,10 +108,12 @@ public:
 private:
     friend class HighPrecisionClientIO;
     BoundCiphertext(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> snapshot, ClientCiphertextState state,
-                    std::shared_ptr<const detail::ClientContextBinding> binding);
+                    std::shared_ptr<const detail::ClientContextBinding> binding,
+                    std::shared_ptr<const RepeatedMult2Receipt> repeatedReceipt = {});
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> snapshot_;
     ClientCiphertextState state_;
     std::shared_ptr<const detail::ClientContextBinding> binding_;
+    std::shared_ptr<const RepeatedMult2Receipt> repeatedReceipt_;
 };
 
 struct DecodeDiagnostics final {
@@ -121,19 +129,24 @@ struct DecodedSlots final {
     DecodeDiagnostics diagnostics;
 };
 
-// Bounded N64/S16 first-operation client boundary. It never enables features,
+// Explicit N64/S16 first-operation or plan-owned paper full-packing boundary.
+// It never enables features,
 // creates keys, evaluates ciphertexts, or exposes an OpenFHE Plaintext.
 class HighPrecisionClientIO final {
 public:
     explicit HighPrecisionClientIO(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context);
+    explicit HighPrecisionClientIO(std::shared_ptr<const RepeatedMult2Plan> plan);
+    explicit HighPrecisionClientIO(std::nullptr_t)
+        : HighPrecisionClientIO(lbcrypto::CryptoContext<lbcrypto::DCRTPoly>{}) {}
     BoundCiphertext Encrypt(const lbcrypto::PublicKey<lbcrypto::DCRTPoly>& publicKey,
                             const std::vector<ClientComplex>& values,
                             const FreshEncodingSpec& spec) const;
     // Immediate first DCP->Mult2->RCB adoption, not cryptographic lineage proof
-    // or a repeated-family receipt. A future evaluator receipt owns that seam.
+    // or a repeated-family receipt.
     BoundCiphertext BindFirstMult2Rcb(const lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly>& recombined,
                                      const BoundCiphertext& leftFresh,
                                      const BoundCiphertext& rightFresh) const;
+    BoundCiphertext BindRepeatedRcb(const RepeatedMult2Result& result) const;
     DecodedSlots Decrypt(const lbcrypto::PrivateKey<lbcrypto::DCRTPoly>& privateKey,
                         const BoundCiphertext& input) const;
 

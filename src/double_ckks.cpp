@@ -319,6 +319,11 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
         Invalid(std::string(label) + " slots do not match its " + stateLabel + " state");
     }
 
+    if (plan_ && (ciphertext->GetScalingFactorInt() != lbcrypto::NativeInteger(1) ||
+                  !ciphertext->GetMetadataMap() || !ciphertext->GetMetadataMap()->empty())) {
+        Invalid(std::string(label) + " planned ciphertext requires integer factor one and empty metadata");
+    }
+
     const auto& expectedTowerParameters = parameters_->GetElementParams()->GetParams();
     if (level > fullModuli_.size() || orderedModuli.size() != fullModuli_.size() - level) {
         Invalid(std::string(label) + " level and active-basis size disagree");
@@ -332,6 +337,15 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
     for (const auto& element : ciphertext->GetElements()) {
         if (element.GetFormat() != Format::EVALUATION) {
             Invalid(std::string(label) + " must be in evaluation format");
+        }
+        // Upstream NativePoly getters may dereference missing Params/storage.
+        // Establish the actual tower storage before reading identities.
+        for (const auto& tower : element.GetAllElements()) {
+            if (!tower.GetParams() || tower.IsEmpty() ||
+                tower.GetLength() != parameters_->GetElementParams()->GetRingDimension() ||
+                tower.GetValues().GetModulus() != tower.GetModulus()) {
+                Invalid(std::string(label) + " malformed native tower storage");
+            }
         }
         if (!SameOrderedModuli(OrderedModuli(element), orderedModuli)) {
             Invalid(std::string(label) + " ordered RNS basis mismatch");
@@ -356,9 +370,9 @@ void DoubleCKKS::ValidateCiphertext(const ReadOnlyCiphertext& ciphertext,
 void DoubleCKKS::ValidateDcpInput(const ReadOnlyCiphertext& ciphertext) const {
     if (plan_) {
         plan_->ValidateFamily(familyIndex_);
-        if (familyIndex_ != 0 || !ciphertext || ciphertext->GetSlots() != 16 ||
+        if (familyIndex_ != 0 || !ciphertext || ciphertext->GetSlots() != parameters_->GetBatchSize() ||
             ciphertext->GetKeyTag() != plan_->GetFamilyKeyTag(0)) {
-            Invalid("planned DCP requires a root-family diagnostic input");
+            Invalid("planned DCP requires a root-family profile input");
         }
     }
     if (!ciphertext) {
@@ -1227,6 +1241,45 @@ lbcrypto::Ciphertext<lbcrypto::DCRTPoly> DoubleCKKS::RCB(const CiphertextPair& p
         resultElements[index] += lowElements[index];
     }
     return result;
+}
+
+RepeatedMult2Result DoubleCKKS::RCBWithReceipt(const CiphertextPair& pair) const {
+    if (!plan_) Invalid("RCBWithReceipt requires an issuing repeated plan");
+    const auto family = plan_->RequireReceipt(pair.receipt_);
+    const auto& receipt = pair.receipt_;
+    if (!receipt->IsTerminal() || receipt->GetPhase() != RepeatedPhase::Rescaled ||
+        family + 1 != plan_->GetFamilyCount() || receipt->GetOperationIndex() != plan_->GetFamilyCount() ||
+        receipt != plan_->ReceiptFor(family, RepeatedPhase::Rescaled)) {
+        Invalid("RCBWithReceipt requires an issued terminal Rescaled receipt");
+    }
+    const DoubleCKKS source(plan_, family);
+    source.ValidatePair(pair);
+    const auto recombined = source.RCB(pair);  // Existing native d*high+low only.
+    const DoubleCKKS root(plan_, 0);
+    const std::size_t absoluteLevel = plan_->GetFamilyCount() + 1;
+    if (absoluteLevel >= root.fullModuli_.size()) Invalid("terminal root prefix is exhausted");
+    const std::vector<lbcrypto::NativeInteger> prefix(root.fullModuli_.begin(),
+                                                     root.fullModuli_.end() - absoluteLevel);
+    if (pair.orderedModuli_ != prefix || pair.divisor_ != root.divisor_) {
+        Invalid("terminal family is not the original root prefix and Div");
+    }
+    // Only the wrapper changes. The setup already established the same signed
+    // secret under every complete modulus/root/phi family identity; no secret,
+    // key switch, DCP, encryption, decryption or refresh is used here.
+    auto wrapped = std::make_shared<lbcrypto::CiphertextImpl<lbcrypto::DCRTPoly>>(
+        root.context_, plan_->GetFamilyKeyTag(0), recombined->GetEncodingType());
+    wrapped->SetElements(recombined->GetElements());
+    wrapped->SetLevel(absoluteLevel);
+    wrapped->SetHopLevel(recombined->GetHopLevel());
+    wrapped->SetNoiseScaleDeg(recombined->GetNoiseScaleDeg());
+    wrapped->SetScalingFactor(recombined->GetScalingFactor());
+    wrapped->SetScalingFactorInt(recombined->GetScalingFactorInt());
+    wrapped->SetSlots(recombined->GetSlots());
+    // The constructor supplies an independently owned empty metadata map.
+    root.ValidateCiphertext(wrapped, prefix, absoluteLevel, 2, std::ldexp(1.0, 100),
+                            plan_->GetFamilyKeyTag(0), root.parameters_->GetBatchSize(), 2,
+                            "terminal RCB", "root snapshot");
+    return RepeatedMult2Result(plan_, std::move(wrapped), receipt);
 }
 
 }  // namespace openfhe_2023_1788

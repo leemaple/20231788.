@@ -1,10 +1,10 @@
 #include "openfhe_2023_1788/high_precision_client_io.h"
+#include "openfhe_2023_1788/repeated_mult2.h"
 #include "scheme/ckksrns/ckksrns-cryptoparameters.h"
 
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
@@ -13,6 +13,11 @@
 
 namespace openfhe_2023_1788::client_io {
 namespace detail {
+
+// Only the legacy strided geometry and the explicit paper full packing exist.
+struct ClientGeometry final {
+    std::uint32_t slots, n, m, gap;
+};
 
 // Opaque, immutable value snapshot shared by this client's receipts. Context
 // and Params remain upstream-owned shared objects, not transitive deep copies.
@@ -28,6 +33,11 @@ struct ClientContextBinding final {
     std::uint32_t numPartQ;
     std::uint32_t numPerPartQ;
     std::vector<lbcrypto::NativeInteger> pModq;
+    ClientGeometry geometry;
+    std::shared_ptr<const RepeatedMult2Plan> plan;
+    void ValidatePlan() const;
+    void ValidateState(const ClientCiphertextState& state,
+                       const std::shared_ptr<const RepeatedMult2Receipt>& receipt) const;
 };
 
 }  // namespace detail
@@ -38,6 +48,7 @@ using lbcrypto::CryptoContext;
 using lbcrypto::DCRTPoly;
 using Parameters = lbcrypto::CryptoParametersCKKSRNS;
 using ContextBinding = detail::ClientContextBinding;
+using Geometry = detail::ClientGeometry;
 template <unsigned Digits>
 using WorkReal = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<Digits>>;
 using Primary = WorkReal<160>;
@@ -96,12 +107,13 @@ bool SameBasis(const OrderedDcrtBasis& left, const OrderedDcrtBasis& right) {
 
 OrderedDcrtBasis ReadBasis(const std::shared_ptr<DCRTPoly::Params>& params) {
     Require(params != nullptr, "null context basis");
-    Require(params->GetCyclotomicOrder() == kM && params->GetRingDimension() == kN &&
+    const auto m = params->GetCyclotomicOrder(), n = params->GetRingDimension();
+    Require(((m == kM && n == kN) || (m == 65536 && n == 32768)) &&
             !params->GetParams().empty(), "unsupported context basis geometry");
-    OrderedDcrtBasis result{kM, kN, {}, {}};
+    OrderedDcrtBasis result{m, n, {}, {}};
     for (const auto& tower : params->GetParams()) {
         Require(tower != nullptr, "null context tower parameters");
-        Require(tower->GetCyclotomicOrder() == kM && tower->GetRingDimension() == kN &&
+        Require(tower->GetCyclotomicOrder() == m && tower->GetRingDimension() == n &&
                 tower->GetModulus() > lbcrypto::NativeInteger(2) &&
                 tower->GetRootOfUnity() > lbcrypto::NativeInteger(0) &&
                 tower->GetRootOfUnity() < tower->GetModulus(), "invalid context tower parameters");
@@ -159,7 +171,10 @@ bool MatchesElement(const DCRTPoly& element, const OrderedDcrtBasis& expected) {
     return true;
 }
 
-ContextBinding BindContext(CryptoContext<DCRTPoly> context) {
+ContextBinding BindContext(CryptoContext<DCRTPoly> context,
+                           std::shared_ptr<const RepeatedMult2Plan> plan = {}) {
+    const bool paper = static_cast<bool>(plan);
+    const Geometry geometry = paper ? Geometry{16384, 32768, 65536, 1} : Geometry{kSlots, kN, kM, kGap};
     Require(context != nullptr, "null context");
     const auto cp = std::dynamic_pointer_cast<Parameters>(context->GetCryptoParameters());
     Require(cp != nullptr && context->GetScheme() != nullptr && context->getSchemeId() == lbcrypto::CKKSRNS_SCHEME,
@@ -171,17 +186,26 @@ ContextBinding BindContext(CryptoContext<DCRTPoly> context) {
             cp->GetPREMode() == lbcrypto::NOT_SET && cp->GetCKKSDataType() == lbcrypto::COMPLEX &&
             cp->GetExecutionMode() == lbcrypto::EXEC_EVALUATION &&
             cp->GetDecryptionNoiseMode() == lbcrypto::FIXED_NOISE_DECRYPT && cp->GetNoiseScale() == 1 &&
-            cp->GetSecretKeyDist() == lbcrypto::UNIFORM_TERNARY && cp->GetStdLevel() == lbcrypto::HEStd_NotSet &&
-            cp->GetDigitSize() == 0 && cp->GetMaxRelinSkDeg() == 2 && cp->GetMultiplicativeDepth() == 7 &&
+            cp->GetSecretKeyDist() == (paper ? lbcrypto::SPARSE_TERNARY : lbcrypto::UNIFORM_TERNARY) && cp->GetStdLevel() == lbcrypto::HEStd_NotSet &&
+            cp->GetDigitSize() == 0 && cp->GetMaxRelinSkDeg() == 2 && cp->GetMultiplicativeDepth() == (paper ? 10U : 7U) &&
             cp->GetMultipartyMode() == lbcrypto::FIXED_NOISE_MULTIPARTY && cp->GetThresholdNumOfParties() == 1,
             "unsupported diagnostic profile");
-    Require(cp->GetEncodingParams() != nullptr && cp->GetBatchSize() == kSlots && cp->GetPlaintextModulus() == 50,
+    Require(cp->GetEncodingParams() != nullptr && cp->GetBatchSize() == geometry.slots && cp->GetPlaintextModulus() == 50,
             "unsupported encoding parameters");
     const auto q = ReadBasis(cp->GetElementParams());
-    Require(q.moduliDecimal.size() == 8 &&
-            cp->GetElementParams()->GetParams().front()->GetModulus().GetMSB() == 55 &&
-            q.moduliDecimal.back() == "1125899906843009" &&
-            q.moduliDecimal[6] == "1125899906840833", "unsupported diagnostic Q basis");
+    Require(q.ringDimension == geometry.n && q.cyclotomicOrder == geometry.m,
+            "unsupported context basis geometry");
+    if (paper) {
+        // The plan independently checks every frozen Q/P/root/partition and
+        // mode; this binding owns its additional live I/O basis snapshot.
+        Require(q.moduliDecimal.size() == 11, "unsupported paper Q basis");
+    }
+    else {
+        Require(q.moduliDecimal.size() == 8 &&
+                cp->GetElementParams()->GetParams().front()->GetModulus().GetMSB() == 55 &&
+                q.moduliDecimal.back() == "1125899906843009" &&
+                q.moduliDecimal[6] == "1125899906840833", "unsupported diagnostic Q basis");
+    }
     const auto pk = ReadBasis(cp->GetParamsPK());
     Require(SameBasis(pk, q), "public-key parameters are not full Q");
     const auto p = ReadBasis(cp->GetParamsP());
@@ -190,13 +214,14 @@ ContextBinding BindContext(CryptoContext<DCRTPoly> context) {
     expectedQP.rootsOfUnityDecimal.insert(expectedQP.rootsOfUnityDecimal.end(), p.rootsOfUnityDecimal.begin(), p.rootsOfUnityDecimal.end());
     const auto qp = ReadBasis(cp->GetParamsQP());
     Require(SameBasis(qp, expectedQP), "inconsistent HYBRID QP basis");
-    Require(cp->GetNumPartQ() == 3 && cp->GetNumPerPartQ() == 3 && cp->GetNumberOfQPartitions() == 3,
-            "unsupported HYBRID partition profile");
-    OrderedDcrtBasis partitions{kM, kN, {}, {}};
+    const std::uint32_t partCount = paper ? 11 : 3, partWidth = paper ? 1 : 3;
+    Require(cp->GetNumPartQ() == partCount && cp->GetNumPerPartQ() == partWidth &&
+            cp->GetNumberOfQPartitions() == partCount, "unsupported HYBRID partition profile");
+    OrderedDcrtBasis partitions{geometry.m, geometry.n, {}, {}};
     std::vector<OrderedDcrtBasis> partitionBases;
-    for (std::uint32_t part = 0; part < 3; ++part) {
+    for (std::uint32_t part = 0; part < partCount; ++part) {
         const auto basis = ReadBasis(cp->GetParamsPartQ(part));
-        Require(basis.moduliDecimal.size() == (part == 2 ? 2U : 3U), "inconsistent HYBRID partition length");
+        Require(basis.moduliDecimal.size() == (paper ? 1U : (part == 2 ? 2U : 3U)), "inconsistent HYBRID partition length");
         partitions.moduliDecimal.insert(partitions.moduliDecimal.end(), basis.moduliDecimal.begin(), basis.moduliDecimal.end());
         partitions.rootsOfUnityDecimal.insert(partitions.rootsOfUnityDecimal.end(), basis.rootsOfUnityDecimal.begin(), basis.rootsOfUnityDecimal.end());
         partitionBases.push_back(basis);
@@ -211,8 +236,10 @@ ContextBinding BindContext(CryptoContext<DCRTPoly> context) {
     ClientContextProfile profile{context.get(), cp.get(), kRequiredFeatures, enabled,
         cp->GetScalingTechnique(), cp->GetKeySwitchTechnique(), cp->GetExecutionMode(),
         cp->GetDecryptionNoiseMode(), cp->GetCKKSDataType()};
-    return {std::move(context), cp, profile, q, p, qp, pk, std::move(partitionBases),
-            cp->GetNumPartQ(), cp->GetNumPerPartQ(), cp->GetPModq()};
+    ContextBinding binding{std::move(context), cp, profile, q, p, qp, pk, std::move(partitionBases),
+                           cp->GetNumPartQ(), cp->GetNumPerPartQ(), cp->GetPModq(), geometry, std::move(plan)};
+    binding.ValidatePlan();
+    return binding;
 }
 
 void CheckSharedBasis(const ContextBinding& binding) {
@@ -232,6 +259,7 @@ void CheckSharedBasis(const ContextBinding& binding) {
 }
 
 void CheckProfile(const ContextBinding& binding) {
+    binding.ValidatePlan();
     const auto& context = binding.context;
     const auto& cp = binding.parameters;
     const auto& profile = binding.profile;
@@ -275,7 +303,7 @@ double FreshRecorded(const ContextBinding& binding) {
 
 ClientCiphertextState FreshState(const ContextBinding& binding, const std::string& tag) {
     return {binding.profile, tag, binding.fullBasis, lbcrypto::CKKS_PACKED_ENCODING,
-        Format::EVALUATION, kSlots, kGap, 0, 2, true, 2, FreshRecorded(binding), lbcrypto::NativeInteger(1),
+        Format::EVALUATION, binding.geometry.slots, binding.geometry.gap, 0, 2, true, 2, FreshRecorded(binding), lbcrypto::NativeInteger(1),
         PositiveRationalScale::FromPositive(ExactInteger(1) << 100, 1), CanonicalProjection::OpenFhePackedStride,
         ClientCiphertextOrigin::FreshClientEncoding, std::nullopt};
 }
@@ -303,26 +331,36 @@ Complex<Real> Multiply(const Complex<Real>& left, const Complex<Real>& right) {
 // Butterfly/order source: official dftransform.cpp:50-69,209-268 at df495ba.
 template <class Real>
 struct TransformTable final {
-    std::array<std::uint32_t, kSlots> powersOfFive{};
-    std::array<Complex<Real>, kM + 1> roots{};
+    const Geometry geometry;
+    std::vector<std::uint32_t> powersOfFive;
+    std::vector<Complex<Real>> roots;
 
-    TransformTable() {
+    explicit TransformTable(Geometry dimensions)
+        : geometry(dimensions), powersOfFive(dimensions.slots), roots(dimensions.m + 1) {
         std::uint32_t power = 1;
-        for (auto& exponent : powersOfFive) { exponent = power; power = (5 * power) % kM; }
+        for (auto& exponent : powersOfFive) { exponent = power; power = (5 * power) % geometry.m; }
         const Real pi = boost::math::constants::pi<Real>();
-        for (std::uint32_t exponent = 0; exponent < kM; ++exponent) {
-            const Real angle = Real(2) * pi * Real(exponent) / Real(kM);
-            roots[exponent] = {boost::multiprecision::cos(angle), boost::multiprecision::sin(angle)};
-            RequireFinite(roots[exponent].real); RequireFinite(roots[exponent].imag);
+        roots[0] = {Real(1), Real(0)};
+        // Generate each precision's own dyadic-angle seeds. Balanced products
+        // need at most log2(M) factors per root, not an M-step accumulated
+        // recurrence or M transcendental calls. No binary64 roots are reused.
+        for (std::uint32_t span = 1; span < geometry.m; span *= 2) {
+            const Real angle = Real(2) * pi * Real(span) / Real(geometry.m);
+            const Complex<Real> step{boost::multiprecision::cos(angle), boost::multiprecision::sin(angle)};
+            RequireFinite(step.real); RequireFinite(step.imag);
+            for (std::uint32_t index = 0; index < span; ++index) {
+                roots[index + span] = Multiply(roots[index], step);
+                RequireFinite(roots[index + span].real); RequireFinite(roots[index + span].imag);
+            }
         }
-        roots[kM] = roots[0];
+        roots[geometry.m] = roots[0];
     }
 };
 
 template <class Real>
-void BitReverse(std::array<Complex<Real>, kSlots>& values) {
-    for (std::size_t index = 1, reversed = 0; index < kSlots; ++index) {
-        std::size_t bit = kSlots / 2;
+void BitReverse(std::vector<Complex<Real>>& values) {
+    for (std::size_t index = 1, reversed = 0; index < values.size(); ++index) {
+        std::size_t bit = values.size() / 2;
         while ((reversed & bit) != 0) { reversed ^= bit; bit >>= 1; }
         reversed ^= bit;
         if (index < reversed) std::swap(values[index], values[reversed]);
@@ -330,12 +368,14 @@ void BitReverse(std::array<Complex<Real>, kSlots>& values) {
 }
 
 template <class Real>
-void Transform(std::array<Complex<Real>, kSlots>& values, const TransformTable<Real>& table, bool inverse) {
+void Transform(std::vector<Complex<Real>>& values, const TransformTable<Real>& table, bool inverse) {
+    const std::size_t slots = table.geometry.slots;
+    Require(values.size() == slots, "transform geometry mismatch");
     if (!inverse) BitReverse(values);
-    for (std::size_t length = inverse ? kSlots : 2; length >= 2 && length <= kSlots;
+    for (std::size_t length = inverse ? slots : 2; length >= 2 && length <= slots;
          length = inverse ? length / 2 : length * 2) {
-        const std::size_t half = length / 2, quarter = length * 4, gap = kM / quarter;
-        for (std::size_t offset = 0; offset < kSlots; offset += length) {
+        const std::size_t half = length / 2, quarter = length * 4, gap = table.geometry.m / quarter;
+        for (std::size_t offset = 0; offset < slots; offset += length) {
             for (std::size_t index = 0; index < half; ++index) {
                 const auto left = values[offset + index], right = values[offset + index + half];
                 const auto exponent = table.powersOfFive[index] % quarter;
@@ -355,15 +395,16 @@ void Transform(std::array<Complex<Real>, kSlots>& values, const TransformTable<R
     }
     if (inverse) {
         BitReverse(values);
-        for (auto& value : values) { value.real /= Real(kSlots); value.imag /= Real(kSlots); }
+        for (auto& value : values) { value.real /= Real(slots); value.imag /= Real(slots); }
     }
 }
 
 template <class Real>
-std::array<Complex<Real>, kSlots> Inverse(const std::vector<ClientComplex>& values,
+std::vector<Complex<Real>> Inverse(const std::vector<ClientComplex>& values,
                                          const TransformTable<Real>& table) {
-    std::array<Complex<Real>, kSlots> result{};
-    for (std::size_t slot = 0; slot < kSlots; ++slot) result[slot] = {Real(values[slot].real), Real(values[slot].imag)};
+    Require(values.size() == table.geometry.slots, "inverse input size mismatch");
+    std::vector<Complex<Real>> result(table.geometry.slots);
+    for (std::size_t slot = 0; slot < result.size(); ++slot) result[slot] = {Real(values[slot].real), Real(values[slot].imag)};
     Transform(result, table, true);
     return result;
 }
@@ -392,14 +433,15 @@ ExactInteger StableRound(const Primary& primary, const CheckReal& check) {
 }
 
 template <class Real>
-std::array<Complex<Real>, kSlots> Forward(const std::vector<ExactInteger>& coefficients,
+std::vector<Complex<Real>> Forward(const std::vector<ExactInteger>& coefficients,
                                          const PositiveRationalScale& scale, const TransformTable<Real>& table) {
     const Real normalization = Real(scale.Denominator().convert_to<std::string>()) /
                                Real(scale.Numerator().convert_to<std::string>());
-    std::array<Complex<Real>, kSlots> result{};
-    for (std::size_t slot = 0; slot < kSlots; ++slot) {
-        result[slot] = {Real(coefficients[kGap * slot].convert_to<std::string>()) * normalization,
-                        Real(coefficients[kGap * slot + kN / 2].convert_to<std::string>()) * normalization};
+    Require(coefficients.size() == table.geometry.n, "forward coefficient size mismatch");
+    std::vector<Complex<Real>> result(table.geometry.slots);
+    for (std::size_t slot = 0; slot < result.size(); ++slot) {
+        result[slot] = {Real(coefficients[table.geometry.gap * slot].template convert_to<std::string>()) * normalization,
+                        Real(coefficients[table.geometry.gap * slot + table.geometry.n / 2].template convert_to<std::string>()) * normalization};
         RequireFinite(result[slot].real); RequireFinite(result[slot].imag);
     }
     Transform(result, table, false);
@@ -407,6 +449,44 @@ std::array<Complex<Real>, kSlots> Forward(const std::vector<ExactInteger>& coeff
 }
 
 }  // namespace
+
+void detail::ClientContextBinding::ValidatePlan() const {
+    if (!plan) return;  // The original context-only profile is unchanged.
+    plan->ValidatePaperProfile();
+    if (context != plan->GetFamilyContext(0))
+        throw std::invalid_argument("HighPrecisionClientIO: paper context is not issuing B0");
+}
+void detail::ClientContextBinding::ValidateState(
+    const ClientCiphertextState& state, const std::shared_ptr<const RepeatedMult2Receipt>& receipt) const {
+    if (!plan) {
+        if (receipt || state.origin == ClientCiphertextOrigin::RepeatedMult2Rcb)
+            throw std::invalid_argument("HighPrecisionClientIO: repeated state requires its issuing plan");
+        return;
+    }
+    auto expected = fullBasis;
+    bool valid = SameProfile(state.contextProfile, profile) && state.keyTag == plan->GetFamilyKeyTag(0) &&
+        state.slots == geometry.slots && state.strideGap == geometry.gap && state.componentCount == 2 &&
+        state.encodingType == lbcrypto::CKKS_PACKED_ENCODING && state.componentFormat == Format::EVALUATION &&
+        state.noiseScaleDegree == 2 && state.recordedScalingFactor == std::ldexp(1.0, 100) &&
+        state.scalingFactorInt == lbcrypto::NativeInteger(1) && state.metadataMapEmpty &&
+        state.projection == CanonicalProjection::OpenFhePackedStride && !state.firstMult2ScaleFactors.has_value();
+    if (state.origin == ClientCiphertextOrigin::FreshClientEncoding) {
+        valid = valid && !receipt && state.level == 0 && state.logicalScale.Numerator() == (ExactInteger(1) << 100) &&
+            state.logicalScale.Denominator() == 1;
+    }
+    else if (state.origin == ClientCiphertextOrigin::RepeatedMult2Rcb) {
+        const auto family = plan->RequireReceipt(receipt);
+        valid = valid && family == 7 && receipt->GetOperationIndex() == 8 && receipt->IsTerminal() &&
+            receipt == plan->ReceiptFor(7, RepeatedPhase::Rescaled) && state.level == 9 &&
+            state.logicalScale.Numerator() == receipt->GetExactScale().GetNumerator() &&
+            state.logicalScale.Denominator() == receipt->GetExactScale().GetDenominator();
+        expected.moduliDecimal.resize(2);
+        expected.rootsOfUnityDecimal.resize(2);
+    }
+    else valid = false;
+    if (!valid || !SameBasis(state.activeBasis, expected))
+        throw std::invalid_argument("HighPrecisionClientIO: paper state disagrees with issued normalization");
+}
 
 PositiveRationalScale::PositiveRationalScale(ExactInteger numerator, ExactInteger denominator)
     : numerator_(std::move(numerator)), denominator_(std::move(denominator)) {}
@@ -424,11 +504,16 @@ const ExactInteger& PositiveRationalScale::Numerator() const noexcept { return n
 const ExactInteger& PositiveRationalScale::Denominator() const noexcept { return denominator_; }
 
 BoundCiphertext::BoundCiphertext(Ciphertext<DCRTPoly> snapshot, ClientCiphertextState state,
-                                 std::shared_ptr<const detail::ClientContextBinding> binding)
-    : snapshot_(std::move(snapshot)), state_(std::move(state)), binding_(std::move(binding)) {}
+                                 std::shared_ptr<const detail::ClientContextBinding> binding,
+                                 std::shared_ptr<const RepeatedMult2Receipt> repeatedReceipt)
+    : snapshot_(std::move(snapshot)), state_(std::move(state)), binding_(std::move(binding)),
+      repeatedReceipt_(std::move(repeatedReceipt)) {
+    binding_->ValidateState(state_, repeatedReceipt_);
+}
 
 Ciphertext<DCRTPoly> BoundCiphertext::CloneForEvaluation() const {
     CheckProfile(*binding_);
+    binding_->ValidateState(state_, repeatedReceipt_);
     CheckCiphertext(snapshot_, state_);
     return snapshot_->Clone();
 }
@@ -438,25 +523,36 @@ struct HighPrecisionClientIO::Impl final {
     const std::shared_ptr<const ContextBinding> binding;
     const TransformTable<Primary> primary;
     const TransformTable<CheckReal> check;
-    explicit Impl(CryptoContext<DCRTPoly> context)
-        : binding(std::make_shared<const ContextBinding>(BindContext(std::move(context)))) {}
+    explicit Impl(ContextBinding context)
+        : binding(std::make_shared<const ContextBinding>(std::move(context))),
+          primary(binding->geometry), check(binding->geometry) {}
 };
 
 HighPrecisionClientIO::HighPrecisionClientIO(CryptoContext<DCRTPoly> context)
-    : impl_(std::make_shared<const Impl>(std::move(context))) {}
+    : impl_(std::make_shared<const Impl>(BindContext(std::move(context)))) {}
+
+HighPrecisionClientIO::HighPrecisionClientIO(std::shared_ptr<const RepeatedMult2Plan> plan) {
+    if (!plan) throw std::invalid_argument("HighPrecisionClientIO: null paper plan");
+    plan->ValidatePaperProfile();
+    const auto context = plan->GetFamilyContext(0);
+    impl_ = std::make_shared<const Impl>(BindContext(context, std::move(plan)));
+}
 
 BoundCiphertext HighPrecisionClientIO::Encrypt(const lbcrypto::PublicKey<DCRTPoly>& publicKey,
                                                const std::vector<ClientComplex>& values,
                                                const FreshEncodingSpec& spec) const {
     const auto& binding = *impl_->binding;
+    const auto& geometry = binding.geometry;
     CheckProfile(binding);
     if (!publicKey || publicKey->GetCryptoContext().get() != binding.context.get() || publicKey->GetKeyTag().empty() ||
         publicKey->GetPublicElements().size() != 2 ||
         !MatchesElement(publicKey->GetPublicElements()[0], binding.fullBasis) ||
-        !MatchesElement(publicKey->GetPublicElements()[1], binding.fullBasis))
+        !MatchesElement(publicKey->GetPublicElements()[1], binding.fullBasis) ||
+        (binding.plan && publicKey->GetKeyTag() != binding.plan->GetFamilyKeyTag(0)))
         throw std::invalid_argument("HighPrecisionClientIO: malformed public key");
-    if (values.size() != kSlots || spec.slots != kSlots)
-        throw std::invalid_argument("HighPrecisionClientIO: expected exactly 16 slots");
+    if (values.size() != geometry.slots || spec.slots != geometry.slots)
+        throw std::invalid_argument(binding.plan ? "HighPrecisionClientIO: expected exactly 16384 slots" :
+                                                  "HighPrecisionClientIO: expected exactly 16 slots");
     Require(spec.logicalScale.Numerator() == (ExactInteger(1) << 100) && spec.logicalScale.Denominator() == 1,
             "unsupported fresh exact scale");
     for (const auto& value : values) { RequireFinite(value.real); RequireFinite(value.imag); }
@@ -464,15 +560,15 @@ BoundCiphertext HighPrecisionClientIO::Encrypt(const lbcrypto::PublicKey<DCRTPol
     const auto check = Inverse(values, impl_->check);
     const Primary primaryScale(spec.logicalScale.Numerator().convert_to<std::string>());
     const CheckReal checkScale(spec.logicalScale.Numerator().convert_to<std::string>());
-    std::vector<ExactInteger> coefficients(kN, 0);
-    for (std::size_t slot = 0; slot < kSlots; ++slot) {
-        coefficients[kGap * slot] = StableRound(Primary(primary[slot].real * primaryScale), CheckReal(check[slot].real * checkScale));
-        coefficients[kGap * slot + kN / 2] = StableRound(Primary(primary[slot].imag * primaryScale), CheckReal(check[slot].imag * checkScale));
+    std::vector<ExactInteger> coefficients(geometry.n, 0);
+    for (std::size_t slot = 0; slot < geometry.slots; ++slot) {
+        coefficients[geometry.gap * slot] = StableRound(Primary(primary[slot].real * primaryScale), CheckReal(check[slot].real * checkScale));
+        coefficients[geometry.gap * slot + geometry.n / 2] = StableRound(Primary(primary[slot].imag * primaryScale), CheckReal(check[slot].imag * checkScale));
     }
     const ExactInteger modulus = CompositeModulus(binding.fullBasis);
     const lbcrypto::BigInteger officialModulus(modulus.convert_to<std::string>());
-    lbcrypto::BigVector residues(kN, officialModulus);
-    for (std::size_t coefficient = 0; coefficient < kN; ++coefficient) {
+    lbcrypto::BigVector residues(geometry.n, officialModulus);
+    for (std::size_t coefficient = 0; coefficient < geometry.n; ++coefficient) {
         if (2 * Absolute(coefficients[coefficient]) >= modulus)
             throw std::range_error("HighPrecisionClientIO: encoding coefficient would wrap");
         const ExactInteger residue = coefficients[coefficient] < 0 ? ExactInteger(coefficients[coefficient] + modulus) : coefficients[coefficient];
@@ -504,6 +600,8 @@ BoundCiphertext HighPrecisionClientIO::BindFirstMult2Rcb(const lbcrypto::ConstCi
                                                         const BoundCiphertext& leftFresh,
                                                         const BoundCiphertext& rightFresh) const {
     const auto& binding = *impl_->binding;
+    if (binding.plan)
+        throw std::invalid_argument("HighPrecisionClientIO: first-operation binder requires the context-only profile");
     CheckProfile(binding);
     CheckProfile(*leftFresh.binding_);
     CheckProfile(*rightFresh.binding_);
@@ -544,11 +642,34 @@ BoundCiphertext HighPrecisionClientIO::BindFirstMult2Rcb(const lbcrypto::ConstCi
     return BoundCiphertext(recombined->Clone(), std::move(state), impl_->binding);
 }
 
+BoundCiphertext HighPrecisionClientIO::BindRepeatedRcb(const RepeatedMult2Result& result) const {
+    const auto& binding = *impl_->binding;
+    if (!binding.plan || result.plan_ != binding.plan)
+        throw std::invalid_argument("HighPrecisionClientIO: result belongs to another issuing plan");
+    CheckProfile(binding);
+    result.Validate();  // Live result/receipt/context/basis; no cached-state bypass.
+    const auto& receipt = result.GetReceipt();
+    auto state = FreshState(binding, binding.plan->GetFamilyKeyTag(0));
+    state.activeBasis.moduliDecimal.resize(2);
+    state.activeBasis.rootsOfUnityDecimal.resize(2);
+    state.level = 9;
+    state.logicalScale = PositiveRationalScale::FromPositive(receipt->GetExactScale().GetNumerator(),
+                                                            receipt->GetExactScale().GetDenominator());
+    state.origin = ClientCiphertextOrigin::RepeatedMult2Rcb;
+    binding.ValidateState(state, receipt);
+    CheckCiphertext(result.GetCiphertext(), state);
+    return BoundCiphertext(result.GetCiphertext()->Clone(), std::move(state), impl_->binding, receipt);
+}
+
 DecodedSlots HighPrecisionClientIO::Decrypt(const lbcrypto::PrivateKey<DCRTPoly>& privateKey,
                                             const BoundCiphertext& input) const {
     const auto& binding = *impl_->binding;
+    const auto& geometry = binding.geometry;
     CheckProfile(binding);
     CheckProfile(*input.binding_);
+    if (binding.plan != input.binding_->plan)
+        throw std::invalid_argument("HighPrecisionClientIO: bound input belongs to another issuing plan");
+    binding.ValidateState(input.state_, input.repeatedReceipt_);
     if (!privateKey || privateKey->GetCryptoContext().get() != binding.context.get() ||
         privateKey->GetKeyTag().empty() || privateKey->GetKeyTag() != input.state_.keyTag ||
         !MatchesElement(privateKey->GetPrivateElement(), binding.fullBasis))
@@ -564,12 +685,12 @@ DecodedSlots HighPrecisionClientIO::Decrypt(const lbcrypto::PrivateKey<DCRTPoly>
     Require(decrypted.isValid, "official decryption returned invalid");
     const ExactInteger modulus = CompositeModulus(input.state_.activeBasis);
     Require(polynomial.GetParams() != nullptr && !polynomial.IsEmpty() && polynomial.GetFormat() == Format::COEFFICIENT &&
-            polynomial.GetParams()->GetCyclotomicOrder() == kM && polynomial.GetParams()->GetRingDimension() == kN &&
+            polynomial.GetParams()->GetCyclotomicOrder() == geometry.m && polynomial.GetParams()->GetRingDimension() == geometry.n &&
             polynomial.GetParams()->GetModulus().ToString() == modulus.convert_to<std::string>() &&
-            polynomial.GetValues().GetLength() == kN, "invalid decrypted polynomial");
-    std::vector<ExactInteger> coefficients(kN);
+            polynomial.GetValues().GetLength() == geometry.n, "invalid decrypted polynomial");
+    std::vector<ExactInteger> coefficients(geometry.n);
     ExactInteger maximum = 0;
-    for (std::size_t coefficient = 0; coefficient < kN; ++coefficient) {
+    for (std::size_t coefficient = 0; coefficient < geometry.n; ++coefficient) {
         ExactInteger residue(polynomial.GetValues()[coefficient].ToString());
         if (residue < 0 || residue >= modulus)
             throw std::range_error("HighPrecisionClientIO: decrypted residue outside active modulus");
@@ -582,8 +703,8 @@ DecodedSlots HighPrecisionClientIO::Decrypt(const lbcrypto::PrivateKey<DCRTPoly>
     const CheckReal tolerance = NegativePowerOfTwo<CheckReal>(120);
     CheckReal maximumDisagreement = 0;
     std::vector<ClientComplex> values;
-    values.reserve(kSlots);
-    for (std::size_t slot = 0; slot < kSlots; ++slot) {
+    values.reserve(geometry.slots);
+    for (std::size_t slot = 0; slot < geometry.slots; ++slot) {
         const CheckReal real = Absolute(CheckReal(check[slot].real - CheckReal(primary[slot].real)));
         const CheckReal imag = Absolute(CheckReal(check[slot].imag - CheckReal(primary[slot].imag)));
         RequireFinite(real); RequireFinite(imag);
