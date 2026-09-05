@@ -1,0 +1,137 @@
+{
+  "engineering_commit": "4648da463c6ec77f6f23acb1a56c5dce88c7732e",
+  "base": "b3e026ea2617eb5070e8d503aeee98c21620e86f",
+  "initial_candidate": {
+    "base": "b3e026ea2617eb5070e8d503aeee98c21620e86f",
+    "candidate": {
+      "path": "tests/precision_client_io_first_mult2_contract_test.cpp",
+      "bytes": 56994,
+      "lines": 846,
+      "sha256": "cef0bc5f074c8c791f6e407ca1c2441958abbcacfc5476e6b4d88661d43e8c6b"
+    },
+    "diff": {
+      "bytes": 18797,
+      "sha256": "9f3ea113c0484051323593339cced37e99bb2098317ed4cb94dfc0bb4c59bc05",
+      "numstat": "239\t2\ttests/precision_client_io_first_mult2_contract_test.cpp"
+    },
+    "original_A_firstMod_reconstruction": "BYTE_IDENTICAL",
+    "original_sha256": "e6d795c5789ce9728eaa8e7fdb00b2f093f1de41964791167b2ea98897b61746",
+    "unchanged_paths": {
+      "tests/precision_client_io_oracle.h": {
+        "bytes": 21211,
+        "sha256": "9f7d8222ef6520bc845ab1b81fe735f5f7a46a48d5de2c2b984c63148e2c42af"
+      },
+      "src/high_precision_client_io.cpp": {
+        "bytes": 30860,
+        "sha256": "72ae54f668667312f1c2f9af9d980f3a40715d828a5723d48f8f15f359370f5e"
+      },
+      "include/openfhe_2023_1788/high_precision_client_io.h": {
+        "bytes": 4834,
+        "sha256": "1121b1b1a5a79370b3fcce6f59f6b59ef1d4a25795a210bd8daf0c53941b4504"
+      },
+      "src/double_ckks.cpp": {
+        "bytes": 51962,
+        "sha256": "3ed23f2261cd7d8efea7a76a5724bfe44f6f20c521c20aedccd4fec69e6e916a"
+      },
+      "CMakeLists.txt": {
+        "bytes": 13690,
+        "sha256": "e437e40d3b7ee8958ca212ba85d4022998a473ed29026064d8c0ed546bbd9275"
+      },
+      ".github/workflows/dcp-rcb.yml": {
+        "bytes": 13766,
+        "sha256": "6ef6c424d7b412bc28f94510a1ba70143378b5a3976e1eebb4b68536033e03fa"
+      }
+    },
+    "diff_check": "PASS",
+    "secret_scan": {
+      "command": [
+        "/opt/homebrew/bin/gitleaks",
+        "stdin",
+        "--ignore-gitleaks-allow",
+        "--gitleaks-ignore-path",
+        "/dev/null",
+        "--max-decode-depth",
+        "5",
+        "--max-archive-depth",
+        "1",
+        "--redact",
+        "--no-banner",
+        "--no-color"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "6:12PM INF scanned ~18797 bytes (18.80 KB) in 21.1ms\n6:12PM INF no leaks found\n"
+    },
+    "compile_crypto_ci": "NOT RUN"
+  },
+  "public_api_correction": {
+    "candidate": {
+      "path": "tests/precision_client_io_first_mult2_contract_test.cpp",
+      "bytes": 56986,
+      "lines": 846,
+      "sha256": "93640b6c7ba49b4594ad2f84309cbaf48e31974039d403f6941e375558f7d950"
+    },
+    "delta_from_previous": "exactly protected CompareTo call to public value operator==",
+    "inverse_delta_restores_previous_sha256": "cef0bc5f074c8c791f6e407ca1c2441958abbcacfc5476e6b4d88661d43e8c6b",
+    "diff": {
+      "bytes": 18789,
+      "sha256": "feb06fea56e5dff6f0bc4778f560e69328dbc26a9da1980f3cbc9a410911068f",
+      "numstat": "239\t2\ttests/precision_client_io_first_mult2_contract_test.cpp"
+    },
+    "diff_check": "PASS",
+    "base": "b3e026ea2617eb5070e8d503aeee98c21620e86f",
+    "gitleaks_version": "8.30.1"
+  },
+  "final_staged_scan": {
+    "candidate_sha256": "93640b6c7ba49b4594ad2f84309cbaf48e31974039d403f6941e375558f7d950",
+    "staged_paths": [
+      "tests/precision_client_io_first_mult2_contract_test.cpp"
+    ],
+    "staged_bytes": 18789,
+    "staged_sha256": "feb06fea56e5dff6f0bc4778f560e69328dbc26a9da1980f3cbc9a410911068f",
+    "scanner_version": "8.30.1",
+    "scanner_command": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact",
+      "--no-banner",
+      "--no-color"
+    ],
+    "scanner_exit": 0,
+    "scanner_stdout": "",
+    "scanner_stderr": "6:17PM INF scanned ~18789 bytes (18.79 KB) in 26.2ms\n6:17PM INF no leaks found\n",
+    "diff_check": "PASS"
+  },
+  "review": {
+    "root": "Complete diff and relevant exact-pin API inspection; discovered and fixed protected CompareTo call before commit; no remaining known finding in this slice",
+    "standards": {
+      "reviewer": "/root/io_b_red_standards",
+      "candidate_sha256": "93640b6c7ba49b4594ad2f84309cbaf48e31974039d403f6941e375558f7d950",
+      "status": "ACCEPT_STATIC_RED_CANDIDATE",
+      "open_findings": 0,
+      "fixed_finding": "P1 protected CompareTo:155 at rns-cryptoparameters.h replaced by public value operator== at base-cryptoparameters.h:115; root discovery independently confirmed"
+    },
+    "spec": {
+      "reviewer": "/root/h128_candidate_spec",
+      "candidate_sha256": "93640b6c7ba49b4594ad2f84309cbaf48e31974039d403f6941e375558f7d950",
+      "status": "ACCEPT_STATIC_RED_CANDIDATE",
+      "open_findings": 0,
+      "correction": "Initial zero-finding report missed protected API access; superseded by explicit acknowledgment and exact one-line delta recheck"
+    }
+  },
+  "expected_red": {
+    "first_missing_behavior": "CloneForEvaluation does not reject shared context Q basis drift",
+    "diagnostic": "HighPrecisionClientIO: shared context basis changed",
+    "later_boundaries": "BindFirstMult2Rcb and Decrypt plus cleanup unexecuted if first assertion fails",
+    "actual_red": "NOT OBSERVED AT DISPATCH"
+  },
+  "no_mac_build_crypto": true,
+  "scope": "Correctness-focused; no 1000-trial or benchmark gate"
+}
