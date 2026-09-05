@@ -1,0 +1,77 @@
+{
+  "observed_utc": "2026-09-05T21:13:36.543078+00:00",
+  "head": "82bdccda3b67301bf2c9fa41d14946391c00bb88",
+  "records": [
+    {
+      "platform": "LINUX",
+      "job_id": 101373319837,
+      "capture_path": "artifacts/handoffs/fs-residual-endpoint-red-run-01/LINUX_CAPTURE.json",
+      "capture_bytes": 472487,
+      "capture_sha256": "60190170283ef54f999098f04b003f199e6598b32677f62b981925471541051f",
+      "decoded_bytes": 460571,
+      "decoded_sha256": "c2fe6cc6167d1648798cbc0d2a8f416369897f6d1458211cc0b447c70fa06b6e",
+      "crlf": 0,
+      "bom": true,
+      "checked_in_path": "coordination/fs-residual-endpoint-red-run-01/LINUX_RAW.log",
+      "checked_in_bytes": 460571,
+      "checked_in_sha256": "c2fe6cc6167d1648798cbc0d2a8f416369897f6d1458211cc0b447c70fa06b6e",
+      "fetch_times": {
+        "started": {
+          "current_time": "2026-09-05 21:11:53 UTC"
+        },
+        "observedAfter": {
+          "current_time": "2026-09-05 21:11:58 UTC"
+        }
+      }
+    },
+    {
+      "platform": "WINDOWS",
+      "job_id": 101373319710,
+      "capture_path": "artifacts/handoffs/fs-residual-endpoint-red-run-01/WINDOWS_CAPTURE.json",
+      "capture_bytes": 496813,
+      "capture_sha256": "25139215e8ed4ee2e546f8f278d4af144e15953d4e27ec8bb7c0d8c00426b389",
+      "decoded_bytes": 477042,
+      "decoded_sha256": "b49549088d34397f24dc9350b12f88c9b531a1bf6d65994bf5138f3e5f05733d",
+      "crlf": 5813,
+      "bom": true,
+      "checked_in_path": "coordination/fs-residual-endpoint-red-run-01/WINDOWS_LF.log",
+      "checked_in_bytes": 471229,
+      "checked_in_sha256": "3317309b60eacdee6175dceee7a62ad3c85eab4b76df4d79965b59aa01390764",
+      "fetch_times": {
+        "started": {
+          "current_time": "2026-09-05 21:11:53 UTC"
+        },
+        "observedAfter": {
+          "current_time": "2026-09-05 21:11:58 UTC"
+        }
+      }
+    }
+  ],
+  "scanner": {
+    "version": "8.30.1",
+    "argv": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact",
+      "--no-banner",
+      "--no-color",
+      "--report-format",
+      "json",
+      "--report-path",
+      "-"
+    ],
+    "framed_bytes": 937673,
+    "framed_sha256": "df9449427b5ba09680b5043cc116ff504c29fd5e1c7ca261a5237715ecdc8451",
+    "exit_code": 0,
+    "findings": [],
+    "stderr": "5:13AM INF scanned ~937673 bytes (937.67 KB) in 480ms\n5:13AM INF no leaks found\n"
+  },
+  "claim": "Decoded connector text preserved; capture JSON is lossless for that text, not original HTTP transport. Windows checked-in copy normalizes CRLF only."
+}
