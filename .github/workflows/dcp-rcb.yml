@@ -13,6 +13,7 @@ on:
       - codex/pair-arithmetic-01
       - codex/precision-01
       - codex/pair-mult2-composition-01
+      - codex/paper-h128-keypair-01
       - cleanroom/reimplement-mult2-20260831
   workflow_dispatch:
 
@@ -62,7 +63,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .ci/openfhe-install
-          key: openfhe-1.5.0-${{ runner.os }}-gcc-${{ env.OPENFHE_COMMIT }}
+          key: openfhe-1.5.0-${{ runner.os }}-gcc-native64-backend4-${{ env.OPENFHE_COMMIT }}
 
       - name: Configure OpenFHE
         if: steps.cache-openfhe.outputs.cache-hit != 'true'
@@ -74,6 +75,8 @@ jobs:
           -DBUILD_EXAMPLES=OFF
           -DBUILD_BENCHMARKS=OFF
           -DBUILD_EXTRAS=OFF
+          -DNATIVE_SIZE=64
+          -DMATHBACKEND=4
           -DWITH_OPENMP=ON
 
       - name: Build and install OpenFHE
@@ -102,17 +105,6 @@ jobs:
       - name: Build RS2 public API contract
         run: cmake --build build --target rs2_api_contract_test --parallel 2
 
-      - name: Run focused first-Mult2 precision contract
-        run: |
-          cmake --build build --target precision_first_mult2_contract_test --parallel 2
-          ctest --test-dir build --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
-
-      - name: Run focused Pair Add and Sub inputs to first Mult2
-        run: ctest --test-dir build --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
-
-      - name: Run clean-room project tests
-        run: ctest --test-dir build --verbose --output-on-failure
-
       - name: Build Mult2 public API contract
         run: cmake --build build --target mult2_api_contract_test --parallel 2
 
@@ -121,6 +113,26 @@ jobs:
 
       - name: Build Sub public API contract
         run: cmake --build build --target sub_api_contract_test --parallel 2
+
+      - name: Run focused first-Mult2 precision contract
+        run: |
+          cmake --build build --target precision_first_mult2_contract_test --parallel 2
+          ctest --test-dir build --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
+
+      - name: Run focused Pair Add and Sub inputs to first Mult2
+        run: ctest --test-dir build --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
+
+      - name: Run legacy 57-test regression suite
+        run: ctest --test-dir build --verbose --output-on-failure -E '^paper_h128_client_keypair_contract$'
+
+      - name: Build fixed-Q h128 client keypair contract
+        run: cmake --build build --target paper_h128_client_keypair_contract_test --parallel 2
+
+      - name: Run focused fixed-Q h128 client keypair contract
+        run: ctest --test-dir build --verbose --output-on-failure -R '^paper_h128_client_keypair_contract$'
+
+      - name: Run clean-room project tests
+        run: ctest --test-dir build --verbose --output-on-failure
 
   windows-mingw64:
     runs-on: windows-2022
@@ -210,6 +222,8 @@ jobs:
             -DBUILD_EXAMPLES=OFF \
             -DBUILD_BENCHMARKS=OFF \
             -DBUILD_EXTRAS=OFF \
+            -DNATIVE_SIZE=64 \
+            -DMATHBACKEND=4 \
             -DWITH_OPENMP=ON
 
       - name: Build and install OpenFHE
@@ -258,34 +272,6 @@ jobs:
           build="$(cygpath -u "$PROJECT_BUILD")"
           cmake --build "$build" --target rs2_api_contract_test --parallel 2
 
-      - name: Run focused first-Mult2 precision contract
-        shell: msys2 {0}
-        working-directory: C:/openfhe-2023-1788/cleanroom
-        run: |
-          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
-          build="$(cygpath -u "$PROJECT_BUILD")"
-          export PATH="$prefix/bin:$prefix/lib:$PATH"
-          cmake --build "$build" --target precision_first_mult2_contract_test --parallel 2
-          ctest --test-dir "$build" --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
-
-      - name: Run focused Pair Add and Sub inputs to first Mult2
-        shell: msys2 {0}
-        working-directory: C:/openfhe-2023-1788/cleanroom
-        run: |
-          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
-          build="$(cygpath -u "$PROJECT_BUILD")"
-          export PATH="$prefix/bin:$prefix/lib:$PATH"
-          ctest --test-dir "$build" --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
-
-      - name: Run clean-room project tests
-        shell: msys2 {0}
-        working-directory: C:/openfhe-2023-1788/cleanroom
-        run: |
-          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
-          build="$(cygpath -u "$PROJECT_BUILD")"
-          export PATH="$prefix/bin:$prefix/lib:$PATH"
-          ctest --test-dir "$build" --verbose --output-on-failure
-
       - name: Build Mult2 public API contract
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
@@ -306,3 +292,56 @@ jobs:
         run: |
           build="$(cygpath -u "$PROJECT_BUILD")"
           cmake --build "$build" --target sub_api_contract_test --parallel 2
+
+      - name: Run focused first-Mult2 precision contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          cmake --build "$build" --target precision_first_mult2_contract_test --parallel 2
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^precision_first_mult2_high_precision_contract$'
+
+      - name: Run focused Pair Add and Sub inputs to first Mult2
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^mult2_pair_(add|sub)_input_hybrid_complex$'
+
+      - name: Run legacy 57-test regression suite
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure -E '^paper_h128_client_keypair_contract$'
+
+      - name: Build fixed-Q h128 client keypair contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target paper_h128_client_keypair_contract_test --parallel 2
+
+      - name: Run focused fixed-Q h128 client keypair contract
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure -R '^paper_h128_client_keypair_contract$'
+
+      - name: Run clean-room project tests
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          export PATH="$prefix/bin:$prefix/lib:$PATH"
+          ctest --test-dir "$build" --verbose --output-on-failure
