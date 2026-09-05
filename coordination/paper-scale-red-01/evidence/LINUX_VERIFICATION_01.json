@@ -1,0 +1,2526 @@
+{
+  "audit": "independent exact-source retained hosted API-RED parser",
+  "host": "linux",
+  "source": "448e9d3067796b64656f0746f4be5c4153b1271d",
+  "run_id": "33968576607",
+  "run_attempt": 1,
+  "job_id": "101312943097",
+  "log": "/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905/artifacts/handoffs/paper-scale-red-01/linux-job-101312943097.log",
+  "bytes": 466976,
+  "sha256": "bf6343f35f61b53905cdc9764392c56a04c96e059dc86900de0808954f799595",
+  "connector_capture": "/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905/artifacts/handoffs/paper-scale-red-01/LINUX_CONNECTOR_CAPTURE.json",
+  "connector_decoded_bytes": 466976,
+  "connector_decoded_sha256": "bf6343f35f61b53905cdc9764392c56a04c96e059dc86900de0808954f799595",
+  "connector_transform": "identity",
+  "encoding": "retained UTF-8 BOM, LF-only; connector decoded content, not HTTP raw bytes",
+  "terminal": {
+    "status": "completed",
+    "conclusion": "failure",
+    "completed_at": "2026-09-05T13:26:01Z",
+    "sole_failed_step": "Build paper full eight-square contract"
+  },
+  "status": "PASS_EXPECTED_COMPILE_TIME_API_RED",
+  "live_listings": [
+    {
+      "line": 1195,
+      "count": 57,
+      "source_backtraces_match": true
+    },
+    {
+      "line": 3349,
+      "count": 60,
+      "source_backtraces_match": true
+    }
+  ],
+  "actual_pass_bindings": [
+    {
+      "number": 3,
+      "name": "precision_first_mult2_high_precision_contract",
+      "start_line": 1126,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/precision_first_mult2_contract_test"
+      ],
+      "command_line": 1128,
+      "result": "Passed",
+      "result_line": 1136,
+      "ordinal": 1,
+      "group_size": 1,
+      "seconds": "0.16"
+    },
+    {
+      "number": 56,
+      "name": "mult2_pair_add_input_hybrid_complex",
+      "start_line": 1162,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "pair_add_input_hybrid_complex"
+      ],
+      "command_line": 1164,
+      "result": "Passed",
+      "result_line": 1169,
+      "ordinal": 1,
+      "group_size": 2,
+      "seconds": "0.10"
+    },
+    {
+      "number": 57,
+      "name": "mult2_pair_sub_input_hybrid_complex",
+      "start_line": 1171,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "pair_sub_input_hybrid_complex"
+      ],
+      "command_line": 1173,
+      "result": "Passed",
+      "result_line": 1178,
+      "ordinal": 2,
+      "group_size": 2,
+      "seconds": "0.12"
+    },
+    {
+      "number": 1,
+      "name": "dcp_rcb",
+      "start_line": 2650,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/dcp_rcb_test"
+      ],
+      "command_line": 2652,
+      "result": "Passed",
+      "result_line": 2656,
+      "ordinal": 1,
+      "group_size": 57,
+      "seconds": "0.08"
+    },
+    {
+      "number": 2,
+      "name": "precision_dcp_rcb_high_precision_contract",
+      "start_line": 2658,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/precision_dcp_rcb_contract_test"
+      ],
+      "command_line": 2660,
+      "result": "Passed",
+      "result_line": 2668,
+      "ordinal": 2,
+      "group_size": 57,
+      "seconds": "0.06"
+    },
+    {
+      "number": 3,
+      "name": "precision_first_mult2_high_precision_contract",
+      "start_line": 2670,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/precision_first_mult2_contract_test"
+      ],
+      "command_line": 2672,
+      "result": "Passed",
+      "result_line": 2680,
+      "ordinal": 3,
+      "group_size": 57,
+      "seconds": "0.17"
+    },
+    {
+      "number": 4,
+      "name": "pair_add_runtime_behavior",
+      "start_line": 2682,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/pair_add_test"
+      ],
+      "command_line": 2684,
+      "result": "Passed",
+      "result_line": 2688,
+      "ordinal": 4,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 5,
+      "name": "pair_sub_runtime_behavior",
+      "start_line": 2690,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/pair_sub_test"
+      ],
+      "command_line": 2692,
+      "result": "Passed",
+      "result_line": 2696,
+      "ordinal": 5,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 6,
+      "name": "pair_arithmetic_controlled_oracle",
+      "start_line": 2698,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/pair_arithmetic_test",
+        "controlled_oracle"
+      ],
+      "command_line": 2700,
+      "result": "Passed",
+      "result_line": 2704,
+      "ordinal": 6,
+      "group_size": 57,
+      "seconds": "0.04"
+    },
+    {
+      "number": 7,
+      "name": "pair_arithmetic_public_lifecycles_keyless",
+      "start_line": 2706,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/pair_arithmetic_test",
+        "public_lifecycles_keyless"
+      ],
+      "command_line": 2708,
+      "result": "Passed",
+      "result_line": 2712,
+      "ordinal": 7,
+      "group_size": 57,
+      "seconds": "0.04"
+    },
+    {
+      "number": 8,
+      "name": "pair_arithmetic_compatibility_rejections",
+      "start_line": 2714,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/pair_arithmetic_test",
+        "compatibility_rejections"
+      ],
+      "command_line": 2716,
+      "result": "Passed",
+      "result_line": 2720,
+      "ordinal": 8,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 9,
+      "name": "tensor2_valid_arithmetic_immutability",
+      "start_line": 2722,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/tensor2_test",
+        "valid_arithmetic_immutability"
+      ],
+      "command_line": 2724,
+      "result": "Passed",
+      "result_line": 2728,
+      "ordinal": 9,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 10,
+      "name": "tensor2_result_scale_contract",
+      "start_line": 2730,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/tensor2_test",
+        "result_scale_contract"
+      ],
+      "command_line": 2732,
+      "result": "Passed",
+      "result_line": 2736,
+      "ordinal": 10,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 11,
+      "name": "tensor2_right_input_validation",
+      "start_line": 2738,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/tensor2_test",
+        "right_input_validation"
+      ],
+      "command_line": 2740,
+      "result": "Passed",
+      "result_line": 2744,
+      "ordinal": 11,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 12,
+      "name": "tensor2_mutual_compatibility",
+      "start_line": 2746,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/tensor2_test",
+        "mutual_compatibility"
+      ],
+      "command_line": 2748,
+      "result": "Passed",
+      "result_line": 2752,
+      "ordinal": 12,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 13,
+      "name": "tensor2_prearithmetic_key_compatibility",
+      "start_line": 2754,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/tensor2_test",
+        "prearithmetic_key_compatibility"
+      ],
+      "command_line": 2756,
+      "result": "Passed",
+      "result_line": 2760,
+      "ordinal": 13,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 14,
+      "name": "relin2_tensor_validation_order",
+      "start_line": 2762,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "tensor_validation_order"
+      ],
+      "command_line": 2764,
+      "result": "Passed",
+      "result_line": 2768,
+      "ordinal": 14,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 15,
+      "name": "relin2_insufficient_active_basis",
+      "start_line": 2770,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "insufficient_active_basis"
+      ],
+      "command_line": 2772,
+      "result": "Passed",
+      "result_line": 2776,
+      "ordinal": 15,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 16,
+      "name": "relin2_missing_eval_key",
+      "start_line": 2778,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "missing_eval_key"
+      ],
+      "command_line": 2780,
+      "result": "Passed",
+      "result_line": 2784,
+      "ordinal": 16,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 17,
+      "name": "relin2_key_empty",
+      "start_line": 2786,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_empty"
+      ],
+      "command_line": 2788,
+      "result": "Passed",
+      "result_line": 2792,
+      "ordinal": 17,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 18,
+      "name": "relin2_key_null_first",
+      "start_line": 2794,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_null_first"
+      ],
+      "command_line": 2796,
+      "result": "Passed",
+      "result_line": 2800,
+      "ordinal": 18,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 19,
+      "name": "relin2_key_wrong_context",
+      "start_line": 2802,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_wrong_context"
+      ],
+      "command_line": 2804,
+      "result": "Passed",
+      "result_line": 2808,
+      "ordinal": 19,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 20,
+      "name": "relin2_key_wrong_tag",
+      "start_line": 2810,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_wrong_tag"
+      ],
+      "command_line": 2812,
+      "result": "Passed",
+      "result_line": 2816,
+      "ordinal": 20,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 21,
+      "name": "relin2_key_wrong_subtype",
+      "start_line": 2818,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_wrong_subtype"
+      ],
+      "command_line": 2820,
+      "result": "Passed",
+      "result_line": 2824,
+      "ordinal": 21,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 22,
+      "name": "relin2_key_hybrid_a_length",
+      "start_line": 2826,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_hybrid_a_length"
+      ],
+      "command_line": 2828,
+      "result": "Passed",
+      "result_line": 2832,
+      "ordinal": 22,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 23,
+      "name": "relin2_key_hybrid_b_length",
+      "start_line": 2834,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_hybrid_b_length"
+      ],
+      "command_line": 2836,
+      "result": "Passed",
+      "result_line": 2840,
+      "ordinal": 23,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 24,
+      "name": "relin2_key_hybrid_entry_basis",
+      "start_line": 2842,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_hybrid_entry_basis"
+      ],
+      "command_line": 2844,
+      "result": "Passed",
+      "result_line": 2848,
+      "ordinal": 24,
+      "group_size": 57,
+      "seconds": "0.02"
+    },
+    {
+      "number": 25,
+      "name": "relin2_key_hybrid_entry_format",
+      "start_line": 2850,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_hybrid_entry_format"
+      ],
+      "command_line": 2852,
+      "result": "Passed",
+      "result_line": 2856,
+      "ordinal": 25,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 26,
+      "name": "relin2_key_bv_zero_digit_a_length",
+      "start_line": 2858,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_zero_digit_a_length"
+      ],
+      "command_line": 2860,
+      "result": "Passed",
+      "result_line": 2864,
+      "ordinal": 26,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 27,
+      "name": "relin2_key_bv_zero_digit_b_length",
+      "start_line": 2866,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_zero_digit_b_length"
+      ],
+      "command_line": 2868,
+      "result": "Passed",
+      "result_line": 2872,
+      "ordinal": 27,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 28,
+      "name": "relin2_key_bv_nonzero_digit_a_length",
+      "start_line": 2874,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_nonzero_digit_a_length"
+      ],
+      "command_line": 2876,
+      "result": "Passed",
+      "result_line": 2880,
+      "ordinal": 28,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 29,
+      "name": "relin2_key_bv_nonzero_digit_b_length",
+      "start_line": 2882,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_nonzero_digit_b_length"
+      ],
+      "command_line": 2884,
+      "result": "Passed",
+      "result_line": 2888,
+      "ordinal": 29,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 30,
+      "name": "relin2_key_bv_zero_digit_entry_basis",
+      "start_line": 2890,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_zero_digit_entry_basis"
+      ],
+      "command_line": 2892,
+      "result": "Passed",
+      "result_line": 2896,
+      "ordinal": 30,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 31,
+      "name": "relin2_key_bv_nonzero_digit_entry_basis",
+      "start_line": 2898,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_nonzero_digit_entry_basis"
+      ],
+      "command_line": 2900,
+      "result": "Passed",
+      "result_line": 2904,
+      "ordinal": 31,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 32,
+      "name": "relin2_key_bv_zero_digit_entry_format",
+      "start_line": 2906,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_zero_digit_entry_format"
+      ],
+      "command_line": 2908,
+      "result": "Passed",
+      "result_line": 2912,
+      "ordinal": 32,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 33,
+      "name": "relin2_key_bv_nonzero_digit_entry_format",
+      "start_line": 2914,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_nonzero_digit_entry_format"
+      ],
+      "command_line": 2916,
+      "result": "Passed",
+      "result_line": 2920,
+      "ordinal": 33,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 34,
+      "name": "relin2_valid_arithmetic_state_immutability",
+      "start_line": 2922,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "valid_arithmetic_state_immutability"
+      ],
+      "command_line": 2924,
+      "result": "Passed",
+      "result_line": 2928,
+      "ordinal": 34,
+      "group_size": 57,
+      "seconds": "0.03"
+    },
+    {
+      "number": 35,
+      "name": "relin2_controlled_witnesses_and_boundaries",
+      "start_line": 2930,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "controlled_witnesses_and_boundaries"
+      ],
+      "command_line": 2932,
+      "result": "Passed",
+      "result_line": 2936,
+      "ordinal": 35,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 36,
+      "name": "relin2_representative_public_input",
+      "start_line": 2938,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "representative_public_input"
+      ],
+      "command_line": 2940,
+      "result": "Passed",
+      "result_line": 2944,
+      "ordinal": 36,
+      "group_size": 57,
+      "seconds": "0.04"
+    },
+    {
+      "number": 37,
+      "name": "relin2_key_extra_later_valid",
+      "start_line": 2946,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_extra_later_valid"
+      ],
+      "command_line": 2948,
+      "result": "Passed",
+      "result_line": 2952,
+      "ordinal": 37,
+      "group_size": 57,
+      "seconds": "0.03"
+    },
+    {
+      "number": 38,
+      "name": "relin2_key_malformed_later_ignored",
+      "start_line": 2954,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_malformed_later_ignored"
+      ],
+      "command_line": 2956,
+      "result": "Passed",
+      "result_line": 2960,
+      "ordinal": 38,
+      "group_size": 57,
+      "seconds": "0.04"
+    },
+    {
+      "number": 39,
+      "name": "relin2_hybrid_valid_shapes",
+      "start_line": 2962,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "hybrid_valid_shapes"
+      ],
+      "command_line": 2964,
+      "result": "Passed",
+      "result_line": 2968,
+      "ordinal": 39,
+      "group_size": 57,
+      "seconds": "0.02"
+    },
+    {
+      "number": 40,
+      "name": "relin2_bv_zero_digit_valid_shapes",
+      "start_line": 2970,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "bv_zero_digit_valid_shapes"
+      ],
+      "command_line": 2972,
+      "result": "Passed",
+      "result_line": 2976,
+      "ordinal": 40,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 41,
+      "name": "relin2_bv_nonzero_digit_valid_shapes",
+      "start_line": 2978,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "bv_nonzero_digit_valid_shapes"
+      ],
+      "command_line": 2980,
+      "result": "Passed",
+      "result_line": 2984,
+      "ordinal": 41,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 42,
+      "name": "relin2_first_recombined_rcb_validation",
+      "start_line": 2986,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "first_recombined_rcb_validation"
+      ],
+      "command_line": 2988,
+      "result": "Passed",
+      "result_line": 2992,
+      "ordinal": 42,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 43,
+      "name": "relin2_first_recombined_tensor2_validation",
+      "start_line": 2994,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "first_recombined_tensor2_validation"
+      ],
+      "command_line": 2996,
+      "result": "Passed",
+      "result_line": 3000,
+      "ordinal": 43,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 44,
+      "name": "relin2_tensor2_requires_first_lifecycle",
+      "start_line": 3002,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "tensor2_requires_first_lifecycle"
+      ],
+      "command_line": 3004,
+      "result": "Passed",
+      "result_line": 3008,
+      "ordinal": 44,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 45,
+      "name": "rs2_wrong_lifecycle",
+      "start_line": 3010,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "wrong_lifecycle"
+      ],
+      "command_line": 3012,
+      "result": "Passed",
+      "result_line": 3016,
+      "ordinal": 45,
+      "group_size": 57,
+      "seconds": "0.00"
+    },
+    {
+      "number": 46,
+      "name": "rs2_valid_arithmetic_state_immutability",
+      "start_line": 3018,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "valid_arithmetic_state_immutability"
+      ],
+      "command_line": 3020,
+      "result": "Passed",
+      "result_line": 3024,
+      "ordinal": 46,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 47,
+      "name": "rs2_mixed_tower_format",
+      "start_line": 3026,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "mixed_tower_format"
+      ],
+      "command_line": 3028,
+      "result": "Passed",
+      "result_line": 3032,
+      "ordinal": 47,
+      "group_size": 57,
+      "seconds": "0.05"
+    },
+    {
+      "number": 48,
+      "name": "rs2_untouched_public_pipeline",
+      "start_line": 3034,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "untouched_public_pipeline"
+      ],
+      "command_line": 3036,
+      "result": "Passed",
+      "result_line": 3040,
+      "ordinal": 48,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 49,
+      "name": "rs2_declared_basis_mismatch",
+      "start_line": 3042,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "declared_basis_mismatch"
+      ],
+      "command_line": 3044,
+      "result": "Passed",
+      "result_line": 3048,
+      "ordinal": 49,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 50,
+      "name": "rs2_terminal_rejections",
+      "start_line": 3050,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "terminal_rejections"
+      ],
+      "command_line": 3052,
+      "result": "Passed",
+      "result_line": 3056,
+      "ordinal": 50,
+      "group_size": 57,
+      "seconds": "0.06"
+    },
+    {
+      "number": 51,
+      "name": "mult2_composition_contract",
+      "start_line": 3058,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_test",
+        "composition_contract"
+      ],
+      "command_line": 3060,
+      "result": "Passed",
+      "result_line": 3064,
+      "ordinal": 51,
+      "group_size": 57,
+      "seconds": "0.01"
+    },
+    {
+      "number": 52,
+      "name": "mult2_e2e_hybrid_real",
+      "start_line": 3066,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "hybrid_real"
+      ],
+      "command_line": 3068,
+      "result": "Passed",
+      "result_line": 3073,
+      "ordinal": 52,
+      "group_size": 57,
+      "seconds": "0.10"
+    },
+    {
+      "number": 53,
+      "name": "mult2_e2e_hybrid_complex",
+      "start_line": 3075,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "hybrid_complex"
+      ],
+      "command_line": 3077,
+      "result": "Passed",
+      "result_line": 3082,
+      "ordinal": 53,
+      "group_size": 57,
+      "seconds": "0.10"
+    },
+    {
+      "number": 54,
+      "name": "mult2_e2e_bv_real",
+      "start_line": 3084,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "bv_real"
+      ],
+      "command_line": 3086,
+      "result": "Passed",
+      "result_line": 3091,
+      "ordinal": 54,
+      "group_size": 57,
+      "seconds": "0.07"
+    },
+    {
+      "number": 55,
+      "name": "mult2_e2e_bv_complex",
+      "start_line": 3093,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "bv_complex"
+      ],
+      "command_line": 3095,
+      "result": "Passed",
+      "result_line": 3100,
+      "ordinal": 55,
+      "group_size": 57,
+      "seconds": "0.07"
+    },
+    {
+      "number": 56,
+      "name": "mult2_pair_add_input_hybrid_complex",
+      "start_line": 3102,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "pair_add_input_hybrid_complex"
+      ],
+      "command_line": 3104,
+      "result": "Passed",
+      "result_line": 3109,
+      "ordinal": 56,
+      "group_size": 57,
+      "seconds": "0.09"
+    },
+    {
+      "number": 57,
+      "name": "mult2_pair_sub_input_hybrid_complex",
+      "start_line": 3111,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "pair_sub_input_hybrid_complex"
+      ],
+      "command_line": 3113,
+      "result": "Passed",
+      "result_line": 3118,
+      "ordinal": 57,
+      "group_size": 57,
+      "seconds": "0.13"
+    },
+    {
+      "number": 58,
+      "name": "precision_client_io_first_mult2_contract",
+      "start_line": 3267,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/precision_client_io_first_mult2_contract_test"
+      ],
+      "command_line": 3269,
+      "result": "Passed",
+      "result_line": 3283,
+      "ordinal": 1,
+      "group_size": 1,
+      "seconds": "0.33"
+    },
+    {
+      "number": 59,
+      "name": "repeated_mult2_semantic_two_square_contract",
+      "start_line": 3309,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/repeated_mult2_semantic_two_square_test"
+      ],
+      "command_line": 3311,
+      "result": "Passed",
+      "result_line": 3322,
+      "ordinal": 1,
+      "group_size": 2,
+      "seconds": "0.89"
+    },
+    {
+      "number": 60,
+      "name": "paper_h128_client_keypair_contract",
+      "start_line": 3324,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/paper_h128_client_keypair_contract_test"
+      ],
+      "command_line": 3326,
+      "result": "Passed",
+      "result_line": 3332,
+      "ordinal": 2,
+      "group_size": 2,
+      "seconds": "0.04"
+    },
+    {
+      "number": 1,
+      "name": "dcp_rcb",
+      "start_line": 4876,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/dcp_rcb_test"
+      ],
+      "command_line": 4878,
+      "result": "Passed",
+      "result_line": 4882,
+      "ordinal": 1,
+      "group_size": 60,
+      "seconds": "0.05"
+    },
+    {
+      "number": 2,
+      "name": "precision_dcp_rcb_high_precision_contract",
+      "start_line": 4884,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/precision_dcp_rcb_contract_test"
+      ],
+      "command_line": 4886,
+      "result": "Passed",
+      "result_line": 4894,
+      "ordinal": 2,
+      "group_size": 60,
+      "seconds": "0.06"
+    },
+    {
+      "number": 3,
+      "name": "precision_first_mult2_high_precision_contract",
+      "start_line": 4896,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/precision_first_mult2_contract_test"
+      ],
+      "command_line": 4898,
+      "result": "Passed",
+      "result_line": 4906,
+      "ordinal": 3,
+      "group_size": 60,
+      "seconds": "0.18"
+    },
+    {
+      "number": 4,
+      "name": "pair_add_runtime_behavior",
+      "start_line": 4908,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/pair_add_test"
+      ],
+      "command_line": 4910,
+      "result": "Passed",
+      "result_line": 4914,
+      "ordinal": 4,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 5,
+      "name": "pair_sub_runtime_behavior",
+      "start_line": 4916,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/pair_sub_test"
+      ],
+      "command_line": 4918,
+      "result": "Passed",
+      "result_line": 4922,
+      "ordinal": 5,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 6,
+      "name": "pair_arithmetic_controlled_oracle",
+      "start_line": 4924,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/pair_arithmetic_test",
+        "controlled_oracle"
+      ],
+      "command_line": 4926,
+      "result": "Passed",
+      "result_line": 4930,
+      "ordinal": 6,
+      "group_size": 60,
+      "seconds": "0.05"
+    },
+    {
+      "number": 7,
+      "name": "pair_arithmetic_public_lifecycles_keyless",
+      "start_line": 4932,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/pair_arithmetic_test",
+        "public_lifecycles_keyless"
+      ],
+      "command_line": 4934,
+      "result": "Passed",
+      "result_line": 4938,
+      "ordinal": 7,
+      "group_size": 60,
+      "seconds": "0.07"
+    },
+    {
+      "number": 8,
+      "name": "pair_arithmetic_compatibility_rejections",
+      "start_line": 4940,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/pair_arithmetic_test",
+        "compatibility_rejections"
+      ],
+      "command_line": 4942,
+      "result": "Passed",
+      "result_line": 4946,
+      "ordinal": 8,
+      "group_size": 60,
+      "seconds": "0.04"
+    },
+    {
+      "number": 9,
+      "name": "tensor2_valid_arithmetic_immutability",
+      "start_line": 4948,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/tensor2_test",
+        "valid_arithmetic_immutability"
+      ],
+      "command_line": 4950,
+      "result": "Passed",
+      "result_line": 4954,
+      "ordinal": 9,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 10,
+      "name": "tensor2_result_scale_contract",
+      "start_line": 4956,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/tensor2_test",
+        "result_scale_contract"
+      ],
+      "command_line": 4958,
+      "result": "Passed",
+      "result_line": 4962,
+      "ordinal": 10,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 11,
+      "name": "tensor2_right_input_validation",
+      "start_line": 4964,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/tensor2_test",
+        "right_input_validation"
+      ],
+      "command_line": 4966,
+      "result": "Passed",
+      "result_line": 4970,
+      "ordinal": 11,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 12,
+      "name": "tensor2_mutual_compatibility",
+      "start_line": 4972,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/tensor2_test",
+        "mutual_compatibility"
+      ],
+      "command_line": 4974,
+      "result": "Passed",
+      "result_line": 4978,
+      "ordinal": 12,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 13,
+      "name": "tensor2_prearithmetic_key_compatibility",
+      "start_line": 4980,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/tensor2_test",
+        "prearithmetic_key_compatibility"
+      ],
+      "command_line": 4982,
+      "result": "Passed",
+      "result_line": 4986,
+      "ordinal": 13,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 14,
+      "name": "relin2_tensor_validation_order",
+      "start_line": 4988,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "tensor_validation_order"
+      ],
+      "command_line": 4990,
+      "result": "Passed",
+      "result_line": 4994,
+      "ordinal": 14,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 15,
+      "name": "relin2_insufficient_active_basis",
+      "start_line": 4996,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "insufficient_active_basis"
+      ],
+      "command_line": 4998,
+      "result": "Passed",
+      "result_line": 5002,
+      "ordinal": 15,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 16,
+      "name": "relin2_missing_eval_key",
+      "start_line": 5004,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "missing_eval_key"
+      ],
+      "command_line": 5006,
+      "result": "Passed",
+      "result_line": 5010,
+      "ordinal": 16,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 17,
+      "name": "relin2_key_empty",
+      "start_line": 5012,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_empty"
+      ],
+      "command_line": 5014,
+      "result": "Passed",
+      "result_line": 5018,
+      "ordinal": 17,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 18,
+      "name": "relin2_key_null_first",
+      "start_line": 5020,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_null_first"
+      ],
+      "command_line": 5022,
+      "result": "Passed",
+      "result_line": 5026,
+      "ordinal": 18,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 19,
+      "name": "relin2_key_wrong_context",
+      "start_line": 5028,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_wrong_context"
+      ],
+      "command_line": 5030,
+      "result": "Passed",
+      "result_line": 5034,
+      "ordinal": 19,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 20,
+      "name": "relin2_key_wrong_tag",
+      "start_line": 5036,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_wrong_tag"
+      ],
+      "command_line": 5038,
+      "result": "Passed",
+      "result_line": 5042,
+      "ordinal": 20,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 21,
+      "name": "relin2_key_wrong_subtype",
+      "start_line": 5044,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_wrong_subtype"
+      ],
+      "command_line": 5046,
+      "result": "Passed",
+      "result_line": 5050,
+      "ordinal": 21,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 22,
+      "name": "relin2_key_hybrid_a_length",
+      "start_line": 5052,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_hybrid_a_length"
+      ],
+      "command_line": 5054,
+      "result": "Passed",
+      "result_line": 5058,
+      "ordinal": 22,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 23,
+      "name": "relin2_key_hybrid_b_length",
+      "start_line": 5060,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_hybrid_b_length"
+      ],
+      "command_line": 5062,
+      "result": "Passed",
+      "result_line": 5066,
+      "ordinal": 23,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 24,
+      "name": "relin2_key_hybrid_entry_basis",
+      "start_line": 5068,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_hybrid_entry_basis"
+      ],
+      "command_line": 5070,
+      "result": "Passed",
+      "result_line": 5074,
+      "ordinal": 24,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 25,
+      "name": "relin2_key_hybrid_entry_format",
+      "start_line": 5076,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_hybrid_entry_format"
+      ],
+      "command_line": 5078,
+      "result": "Passed",
+      "result_line": 5082,
+      "ordinal": 25,
+      "group_size": 60,
+      "seconds": "0.03"
+    },
+    {
+      "number": 26,
+      "name": "relin2_key_bv_zero_digit_a_length",
+      "start_line": 5084,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_zero_digit_a_length"
+      ],
+      "command_line": 5086,
+      "result": "Passed",
+      "result_line": 5090,
+      "ordinal": 26,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 27,
+      "name": "relin2_key_bv_zero_digit_b_length",
+      "start_line": 5092,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_zero_digit_b_length"
+      ],
+      "command_line": 5094,
+      "result": "Passed",
+      "result_line": 5098,
+      "ordinal": 27,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 28,
+      "name": "relin2_key_bv_nonzero_digit_a_length",
+      "start_line": 5100,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_nonzero_digit_a_length"
+      ],
+      "command_line": 5102,
+      "result": "Passed",
+      "result_line": 5106,
+      "ordinal": 28,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 29,
+      "name": "relin2_key_bv_nonzero_digit_b_length",
+      "start_line": 5108,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_nonzero_digit_b_length"
+      ],
+      "command_line": 5110,
+      "result": "Passed",
+      "result_line": 5114,
+      "ordinal": 29,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 30,
+      "name": "relin2_key_bv_zero_digit_entry_basis",
+      "start_line": 5116,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_zero_digit_entry_basis"
+      ],
+      "command_line": 5118,
+      "result": "Passed",
+      "result_line": 5122,
+      "ordinal": 30,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 31,
+      "name": "relin2_key_bv_nonzero_digit_entry_basis",
+      "start_line": 5124,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_nonzero_digit_entry_basis"
+      ],
+      "command_line": 5126,
+      "result": "Passed",
+      "result_line": 5130,
+      "ordinal": 31,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 32,
+      "name": "relin2_key_bv_zero_digit_entry_format",
+      "start_line": 5132,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_zero_digit_entry_format"
+      ],
+      "command_line": 5134,
+      "result": "Passed",
+      "result_line": 5138,
+      "ordinal": 32,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 33,
+      "name": "relin2_key_bv_nonzero_digit_entry_format",
+      "start_line": 5140,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_bv_nonzero_digit_entry_format"
+      ],
+      "command_line": 5142,
+      "result": "Passed",
+      "result_line": 5146,
+      "ordinal": 33,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 34,
+      "name": "relin2_valid_arithmetic_state_immutability",
+      "start_line": 5148,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "valid_arithmetic_state_immutability"
+      ],
+      "command_line": 5150,
+      "result": "Passed",
+      "result_line": 5154,
+      "ordinal": 34,
+      "group_size": 60,
+      "seconds": "0.04"
+    },
+    {
+      "number": 35,
+      "name": "relin2_controlled_witnesses_and_boundaries",
+      "start_line": 5156,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "controlled_witnesses_and_boundaries"
+      ],
+      "command_line": 5158,
+      "result": "Passed",
+      "result_line": 5162,
+      "ordinal": 35,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 36,
+      "name": "relin2_representative_public_input",
+      "start_line": 5164,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "representative_public_input"
+      ],
+      "command_line": 5166,
+      "result": "Passed",
+      "result_line": 5170,
+      "ordinal": 36,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 37,
+      "name": "relin2_key_extra_later_valid",
+      "start_line": 5172,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_extra_later_valid"
+      ],
+      "command_line": 5174,
+      "result": "Passed",
+      "result_line": 5178,
+      "ordinal": 37,
+      "group_size": 60,
+      "seconds": "0.03"
+    },
+    {
+      "number": 38,
+      "name": "relin2_key_malformed_later_ignored",
+      "start_line": 5180,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "key_malformed_later_ignored"
+      ],
+      "command_line": 5182,
+      "result": "Passed",
+      "result_line": 5186,
+      "ordinal": 38,
+      "group_size": 60,
+      "seconds": "0.02"
+    },
+    {
+      "number": 39,
+      "name": "relin2_hybrid_valid_shapes",
+      "start_line": 5188,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "hybrid_valid_shapes"
+      ],
+      "command_line": 5190,
+      "result": "Passed",
+      "result_line": 5194,
+      "ordinal": 39,
+      "group_size": 60,
+      "seconds": "0.03"
+    },
+    {
+      "number": 40,
+      "name": "relin2_bv_zero_digit_valid_shapes",
+      "start_line": 5196,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "bv_zero_digit_valid_shapes"
+      ],
+      "command_line": 5198,
+      "result": "Passed",
+      "result_line": 5202,
+      "ordinal": 40,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 41,
+      "name": "relin2_bv_nonzero_digit_valid_shapes",
+      "start_line": 5204,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "bv_nonzero_digit_valid_shapes"
+      ],
+      "command_line": 5206,
+      "result": "Passed",
+      "result_line": 5210,
+      "ordinal": 41,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 42,
+      "name": "relin2_first_recombined_rcb_validation",
+      "start_line": 5212,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "first_recombined_rcb_validation"
+      ],
+      "command_line": 5214,
+      "result": "Passed",
+      "result_line": 5218,
+      "ordinal": 42,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 43,
+      "name": "relin2_first_recombined_tensor2_validation",
+      "start_line": 5220,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "first_recombined_tensor2_validation"
+      ],
+      "command_line": 5222,
+      "result": "Passed",
+      "result_line": 5226,
+      "ordinal": 43,
+      "group_size": 60,
+      "seconds": "0.00"
+    },
+    {
+      "number": 44,
+      "name": "relin2_tensor2_requires_first_lifecycle",
+      "start_line": 5228,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/relin2_test",
+        "tensor2_requires_first_lifecycle"
+      ],
+      "command_line": 5230,
+      "result": "Passed",
+      "result_line": 5234,
+      "ordinal": 44,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 45,
+      "name": "rs2_wrong_lifecycle",
+      "start_line": 5236,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "wrong_lifecycle"
+      ],
+      "command_line": 5238,
+      "result": "Passed",
+      "result_line": 5242,
+      "ordinal": 45,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 46,
+      "name": "rs2_valid_arithmetic_state_immutability",
+      "start_line": 5244,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "valid_arithmetic_state_immutability"
+      ],
+      "command_line": 5246,
+      "result": "Passed",
+      "result_line": 5250,
+      "ordinal": 46,
+      "group_size": 60,
+      "seconds": "0.02"
+    },
+    {
+      "number": 47,
+      "name": "rs2_mixed_tower_format",
+      "start_line": 5252,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "mixed_tower_format"
+      ],
+      "command_line": 5254,
+      "result": "Passed",
+      "result_line": 5258,
+      "ordinal": 47,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 48,
+      "name": "rs2_untouched_public_pipeline",
+      "start_line": 5260,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "untouched_public_pipeline"
+      ],
+      "command_line": 5262,
+      "result": "Passed",
+      "result_line": 5266,
+      "ordinal": 48,
+      "group_size": 60,
+      "seconds": "0.02"
+    },
+    {
+      "number": 49,
+      "name": "rs2_declared_basis_mismatch",
+      "start_line": 5268,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "declared_basis_mismatch"
+      ],
+      "command_line": 5270,
+      "result": "Passed",
+      "result_line": 5274,
+      "ordinal": 49,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 50,
+      "name": "rs2_terminal_rejections",
+      "start_line": 5276,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/rs2_test",
+        "terminal_rejections"
+      ],
+      "command_line": 5278,
+      "result": "Passed",
+      "result_line": 5282,
+      "ordinal": 50,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 51,
+      "name": "mult2_composition_contract",
+      "start_line": 5284,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_test",
+        "composition_contract"
+      ],
+      "command_line": 5286,
+      "result": "Passed",
+      "result_line": 5290,
+      "ordinal": 51,
+      "group_size": 60,
+      "seconds": "0.01"
+    },
+    {
+      "number": 52,
+      "name": "mult2_e2e_hybrid_real",
+      "start_line": 5292,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "hybrid_real"
+      ],
+      "command_line": 5294,
+      "result": "Passed",
+      "result_line": 5299,
+      "ordinal": 52,
+      "group_size": 60,
+      "seconds": "0.13"
+    },
+    {
+      "number": 53,
+      "name": "mult2_e2e_hybrid_complex",
+      "start_line": 5301,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "hybrid_complex"
+      ],
+      "command_line": 5303,
+      "result": "Passed",
+      "result_line": 5308,
+      "ordinal": 53,
+      "group_size": 60,
+      "seconds": "0.09"
+    },
+    {
+      "number": 54,
+      "name": "mult2_e2e_bv_real",
+      "start_line": 5310,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "bv_real"
+      ],
+      "command_line": 5312,
+      "result": "Passed",
+      "result_line": 5317,
+      "ordinal": 54,
+      "group_size": 60,
+      "seconds": "0.07"
+    },
+    {
+      "number": 55,
+      "name": "mult2_e2e_bv_complex",
+      "start_line": 5319,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "bv_complex"
+      ],
+      "command_line": 5321,
+      "result": "Passed",
+      "result_line": 5326,
+      "ordinal": 55,
+      "group_size": 60,
+      "seconds": "0.07"
+    },
+    {
+      "number": 56,
+      "name": "mult2_pair_add_input_hybrid_complex",
+      "start_line": 5328,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "pair_add_input_hybrid_complex"
+      ],
+      "command_line": 5330,
+      "result": "Passed",
+      "result_line": 5335,
+      "ordinal": 56,
+      "group_size": 60,
+      "seconds": "0.08"
+    },
+    {
+      "number": 57,
+      "name": "mult2_pair_sub_input_hybrid_complex",
+      "start_line": 5337,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/mult2_e2e_oracle_test",
+        "pair_sub_input_hybrid_complex"
+      ],
+      "command_line": 5339,
+      "result": "Passed",
+      "result_line": 5344,
+      "ordinal": 57,
+      "group_size": 60,
+      "seconds": "0.10"
+    },
+    {
+      "number": 58,
+      "name": "precision_client_io_first_mult2_contract",
+      "start_line": 5346,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/precision_client_io_first_mult2_contract_test"
+      ],
+      "command_line": 5348,
+      "result": "Passed",
+      "result_line": 5362,
+      "ordinal": 58,
+      "group_size": 60,
+      "seconds": "0.32"
+    },
+    {
+      "number": 59,
+      "name": "repeated_mult2_semantic_two_square_contract",
+      "start_line": 5364,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/repeated_mult2_semantic_two_square_test"
+      ],
+      "command_line": 5366,
+      "result": "Passed",
+      "result_line": 5377,
+      "ordinal": 59,
+      "group_size": 60,
+      "seconds": "0.89"
+    },
+    {
+      "number": 60,
+      "name": "paper_h128_client_keypair_contract",
+      "start_line": 5379,
+      "command": [
+        "/home/runner/work/20231788./20231788./build/paper_h128_client_keypair_contract_test"
+      ],
+      "command_line": 5381,
+      "result": "Passed",
+      "result_line": 5387,
+      "ordinal": 60,
+      "group_size": 60,
+      "seconds": "0.04"
+    }
+  ],
+  "execution_partition": [
+    1,
+    2,
+    57,
+    1,
+    2,
+    60
+  ],
+  "api_targets_built": [
+    "relin2_api_contract_test",
+    "rs2_api_contract_test",
+    "mult2_api_contract_test",
+    "add_api_contract_test",
+    "sub_api_contract_test"
+  ],
+  "accepted_contract_targets_built": [
+    "precision_client_io_first_mult2_contract_test",
+    "repeated_mult2_semantic_two_square_test",
+    "paper_h128_client_keypair_contract_test"
+  ],
+  "io_records": [
+    {
+      "numeric": {
+        "test": "precision_client_io_first_mult2_contract",
+        "result": "PASS",
+        "source": "448e9d3067796b64656f0746f4be5c4153b1271d",
+        "openfhe_pin": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+        "claim_scope": "low-N-first-operation-production-io-diagnostic",
+        "N": "64",
+        "S": "16",
+        "gap": "2",
+        "native": "64",
+        "backend": "4",
+        "depth": "7",
+        "scaling_bits": "50",
+        "first_bits": "55",
+        "key_switch": "HYBRID",
+        "scaling": "FIXEDMANUAL",
+        "data": "COMPLEX",
+        "execution": "EXEC_EVALUATION",
+        "decrypt_noise": "FIXED_NOISE_DECRYPT",
+        "encryption": "STANDARD",
+        "multiplication": "HPS",
+        "PRE": "NOT_SET",
+        "noise_scale": "1",
+        "secret": "UNIFORM_TERNARY",
+        "security": "HEStd_NotSet",
+        "fresh_keypairs": "1",
+        "eval_keygen_calls": "1",
+        "q_div": "1125899906843009",
+        "q_l": "1125899906840833",
+        "exact_scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+        "exact_scale_denominator": "1267650600226646386227681786497",
+        "max_fresh_public_error": "2.8399350059865982568555292135050361691124292e-28",
+        "max_fresh_oracle_error": "2.8399350059865982568555292135050361691124292e-28",
+        "max_product_public_error": "2.93363981877074132535634543350527842618528287e-28",
+        "max_product_oracle_error": "2.93363981877074132535634543350527842618528287e-28",
+        "input_public_delta_error": "2.13995366065124072895360162079987087018313069e-28",
+        "input_oracle_delta_error": "2.13995366065124072895360162079987087018313069e-28",
+        "product_public_delta_error": "3.41979733505992780593478050965153248986384346e-29",
+        "product_oracle_delta_error": "3.41979733505992780593478050965153248986384346e-29",
+        "max_horner_component_disagreement": "1.032506025503260168172e-107",
+        "cross_precision_error": "9.69978346078924437415362441821245825400024529e-166",
+        "centered_headroom": "32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577064",
+        "malformed_key_rejections": "32"
+      },
+      "ordered_anchor_lines": [
+        3272,
+        3273,
+        3274,
+        3275,
+        3276,
+        3277,
+        3278,
+        3279,
+        3280,
+        3281,
+        3282
+      ]
+    },
+    {
+      "numeric": {
+        "test": "precision_client_io_first_mult2_contract",
+        "result": "PASS",
+        "source": "448e9d3067796b64656f0746f4be5c4153b1271d",
+        "openfhe_pin": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+        "claim_scope": "low-N-first-operation-production-io-diagnostic",
+        "N": "64",
+        "S": "16",
+        "gap": "2",
+        "native": "64",
+        "backend": "4",
+        "depth": "7",
+        "scaling_bits": "50",
+        "first_bits": "55",
+        "key_switch": "HYBRID",
+        "scaling": "FIXEDMANUAL",
+        "data": "COMPLEX",
+        "execution": "EXEC_EVALUATION",
+        "decrypt_noise": "FIXED_NOISE_DECRYPT",
+        "encryption": "STANDARD",
+        "multiplication": "HPS",
+        "PRE": "NOT_SET",
+        "noise_scale": "1",
+        "secret": "UNIFORM_TERNARY",
+        "security": "HEStd_NotSet",
+        "fresh_keypairs": "1",
+        "eval_keygen_calls": "1",
+        "q_div": "1125899906843009",
+        "q_l": "1125899906840833",
+        "exact_scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+        "exact_scale_denominator": "1267650600226646386227681786497",
+        "max_fresh_public_error": "3.54468850301192341417997017095102022135544092e-28",
+        "max_fresh_oracle_error": "3.54468850301192341417997017095102022135544092e-28",
+        "max_product_public_error": "7.32523495151154450485980829262347872674726293e-28",
+        "max_product_oracle_error": "7.32523495151154450485980829262347872674726293e-28",
+        "input_public_delta_error": "7.50021233911710417725883756558495005785071905e-29",
+        "input_oracle_delta_error": "7.50021233911710417725883756558495005785071905e-29",
+        "product_public_delta_error": "1.25816393502161350053202950074249858196963776e-29",
+        "product_oracle_delta_error": "1.25816393502161350053202950074249858196963776e-29",
+        "max_horner_component_disagreement": "1.032506025503278333487e-107",
+        "cross_precision_error": "9.69978346078924437799335098185355760424185645e-166",
+        "centered_headroom": "32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577037",
+        "malformed_key_rejections": "32"
+      },
+      "ordered_anchor_lines": [
+        5351,
+        5352,
+        5353,
+        5354,
+        5355,
+        5356,
+        5357,
+        5358,
+        5359,
+        5360,
+        5361
+      ]
+    }
+  ],
+  "repeated_stage_records": [
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 0,
+      "stage": 1,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 0,
+      "result_family": 1,
+      "tag": "2eff976c39751df586c79d54e67f8aec-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906840833",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+      "scale_denominator": "1267650600226646386227681786497",
+      "max_slot_error": "2.6292736424099002556007800916272354153402596476669e-28",
+      "delta_error": "1.8349201457975704002897084845457090457661481686346e-28",
+      "observed_product_headroom_bits": 258
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 0,
+      "stage": 2,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 1,
+      "result_family": 1,
+      "tag": "2eff976c39751df586c79d54e67f8aec-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906844161",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "2582249878086908589655919172003011874329705792829223512830659356540647622016841194629645353280137831435903171972747493376",
+      "scale_denominator": "2037035976332875852527482486577051056657800595085080553399799398642248571644790159515303041",
+      "max_slot_error": "2.1507525399092598593506565620884141736103788603504e-27",
+      "delta_error": "2.3948463045263798737866481941441536564252837985081e-28",
+      "observed_product_headroom_bits": 211
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 1,
+      "stage": 1,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 0,
+      "result_family": 1,
+      "tag": "0fba827f985a6a367501d3983c279e7a-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906840833",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+      "scale_denominator": "1267650600226646386227681786497",
+      "max_slot_error": "6.700279143577711667889920286040152241925357952294e-28",
+      "delta_error": "2.7882650268497842918368347925342810462726734351693e-28",
+      "observed_product_headroom_bits": 258
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 1,
+      "stage": 2,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 1,
+      "result_family": 1,
+      "tag": "0fba827f985a6a367501d3983c279e7a-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906844161",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "2582249878086908589655919172003011874329705792829223512830659356540647622016841194629645353280137831435903171972747493376",
+      "scale_denominator": "2037035976332875852527482486577051056657800595085080553399799398642248571644790159515303041",
+      "max_slot_error": "3.0980211132696989799004283430191789754329547226115e-27",
+      "delta_error": "2.2880828122874901296902782713432509494990624451921e-28",
+      "observed_product_headroom_bits": 211
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 2,
+      "stage": 1,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 0,
+      "result_family": 1,
+      "tag": "748ae74c43ee0ec2f4c33931e21c9741-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906840833",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+      "scale_denominator": "1267650600226646386227681786497",
+      "max_slot_error": "4.9827746939856752937855547293674114920105726748624e-28",
+      "delta_error": "4.0577341046229244595485411206436460604691063648843e-28",
+      "observed_product_headroom_bits": 258
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 2,
+      "stage": 2,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 1,
+      "result_family": 1,
+      "tag": "748ae74c43ee0ec2f4c33931e21c9741-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906844161",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "2582249878086908589655919172003011874329705792829223512830659356540647622016841194629645353280137831435903171972747493376",
+      "scale_denominator": "2037035976332875852527482486577051056657800595085080553399799398642248571644790159515303041",
+      "max_slot_error": "8.6514889138216387197737244539148294440161080565232e-28",
+      "delta_error": "7.6543265160519428065143018862660229156686226337356e-28",
+      "observed_product_headroom_bits": 211
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 3,
+      "stage": 1,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 0,
+      "result_family": 1,
+      "tag": "36dd9fbb6d6b267ca1d1eb72eeecc6f3-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906840833",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+      "scale_denominator": "1267650600226646386227681786497",
+      "max_slot_error": "7.9581205845396614124907571526793838557215569131519e-28",
+      "delta_error": "8.2030980501368699519661343126935466225295100808195e-28",
+      "observed_product_headroom_bits": 258
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 3,
+      "stage": 2,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 1,
+      "result_family": 1,
+      "tag": "36dd9fbb6d6b267ca1d1eb72eeecc6f3-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906844161",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "2582249878086908589655919172003011874329705792829223512830659356540647622016841194629645353280137831435903171972747493376",
+      "scale_denominator": "2037035976332875852527482486577051056657800595085080553399799398642248571644790159515303041",
+      "max_slot_error": "1.4763046409099906038565643361113028469070057370561e-27",
+      "delta_error": "1.3793780297655800451005295407884151074580219979262e-27",
+      "observed_product_headroom_bits": 211
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 0,
+      "stage": 1,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 0,
+      "result_family": 1,
+      "tag": "44e7b797552ce13997dad9e0ef51ff92-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906840833",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+      "scale_denominator": "1267650600226646386227681786497",
+      "max_slot_error": "3.6674204915812309484739394176543011449098604028852e-28",
+      "delta_error": "3.1794059778652497398773549696555782072629505568052e-28",
+      "observed_product_headroom_bits": 258
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 0,
+      "stage": 2,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 1,
+      "result_family": 1,
+      "tag": "44e7b797552ce13997dad9e0ef51ff92-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906844161",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "2582249878086908589655919172003011874329705792829223512830659356540647622016841194629645353280137831435903171972747493376",
+      "scale_denominator": "2037035976332875852527482486577051056657800595085080553399799398642248571644790159515303041",
+      "max_slot_error": "8.9768359124293276774779659088126987819431555758314e-28",
+      "delta_error": "1.7091187432703202803669695988519658584527461514236e-28",
+      "observed_product_headroom_bits": 211
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 1,
+      "stage": 1,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 0,
+      "result_family": 1,
+      "tag": "b4df1419f7c0de6c1f156a3f2cd427cd-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906840833",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+      "scale_denominator": "1267650600226646386227681786497",
+      "max_slot_error": "7.3540744090544302893957269812432971337164425725458e-28",
+      "delta_error": "6.1662000895077797856864386368422067828922749527743e-28",
+      "observed_product_headroom_bits": 258
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 1,
+      "stage": 2,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 1,
+      "result_family": 1,
+      "tag": "b4df1419f7c0de6c1f156a3f2cd427cd-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906844161",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "2582249878086908589655919172003011874329705792829223512830659356540647622016841194629645353280137831435903171972747493376",
+      "scale_denominator": "2037035976332875852527482486577051056657800595085080553399799398642248571644790159515303041",
+      "max_slot_error": "1.0107805094638220927920840615727853473186804640348e-27",
+      "delta_error": "4.6771086182481524451920008266038007601548794240983e-29",
+      "observed_product_headroom_bits": 211
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 2,
+      "stage": 1,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 0,
+      "result_family": 1,
+      "tag": "d1800ef097459d94449eeb91e25f3c3a-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906840833",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+      "scale_denominator": "1267650600226646386227681786497",
+      "max_slot_error": "7.5612359799315424283431409615412608114306721817464e-28",
+      "delta_error": "1.367401855849046903679893399245772164325037135504e-28",
+      "observed_product_headroom_bits": 258
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 2,
+      "stage": 2,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 1,
+      "result_family": 1,
+      "tag": "d1800ef097459d94449eeb91e25f3c3a-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906844161",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "2582249878086908589655919172003011874329705792829223512830659356540647622016841194629645353280137831435903171972747493376",
+      "scale_denominator": "2037035976332875852527482486577051056657800595085080553399799398642248571644790159515303041",
+      "max_slot_error": "8.4387416644720881191974444227800111334984628376651e-28",
+      "delta_error": "2.6814946082273852271576581038159930880972365286364e-28",
+      "observed_product_headroom_bits": 211
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 3,
+      "stage": 1,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 0,
+      "result_family": 1,
+      "tag": "2b7dc5efb3d1d5fe49de25e87c43ca20-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906840833",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "1606938044258990275541962092341162602522202993782792835301376",
+      "scale_denominator": "1267650600226646386227681786497",
+      "max_slot_error": "8.4552003897831146594179551505733797465870918699652e-28",
+      "delta_error": "7.2635680711782383409916668283655281776177307293444e-29",
+      "observed_product_headroom_bits": 258
+    },
+    {
+      "test": "repeated_mult2_semantic_two_square_contract",
+      "scope": "low-N-two-operation-diagnostic",
+      "trial": 3,
+      "stage": 2,
+      "N": 64,
+      "batch": 16,
+      "depth": 9,
+      "scaling_bits": 50,
+      "first_bits": 55,
+      "input_scale_bits": 100,
+      "scaling": "FIXEDMANUAL",
+      "key_switch": "HYBRID",
+      "data_type": "COMPLEX",
+      "secret_distribution": "UNIFORM_TERNARY",
+      "security": "HEStd_NotSet",
+      "evaluation_family": 1,
+      "result_family": 1,
+      "tag": "2b7dc5efb3d1d5fe49de25e87c43ca20-mult2-family-1",
+      "d": "1125899906843009",
+      "m": "1125899906844161",
+      "m1": "1125899906840833",
+      "m2": "1125899906844161",
+      "scale_numerator": "2582249878086908589655919172003011874329705792829223512830659356540647622016841194629645353280137831435903171972747493376",
+      "scale_denominator": "2037035976332875852527482486577051056657800595085080553399799398642248571644790159515303041",
+      "max_slot_error": "9.2639527528355708681549624938194571042629011173469e-28",
+      "delta_error": "6.530055269943533149364722160635508084905373081977e-29",
+      "observed_product_headroom_bits": 211
+    }
+  ],
+  "h128_invocations": [
+    {
+      "marker_lines": [
+        3329,
+        3330,
+        3331
+      ],
+      "named_rejections": 50,
+      "scope": "fixed-Q N256 diagnostic; not paper-scale evidence"
+    },
+    {
+      "marker_lines": [
+        5384,
+        5385,
+        5386
+      ],
+      "named_rejections": 50,
+      "scope": "fixed-Q N256 diagnostic; not paper-scale evidence"
+    }
+  ],
+  "paper_red": {
+    "explicit_build_group_line": 5454,
+    "primary_absent_api_diagnostic_lines": {
+      "RepeatedMult2Result": [
+        5463,
+        5469,
+        5475,
+        5481
+      ],
+      "DoubleCKKS::RCBWithReceipt": [
+        5558,
+        5562,
+        5566,
+        5575
+      ],
+      "HighPrecisionClientIO::BindRepeatedRcb": [
+        5579,
+        5593
+      ],
+      "ClientCiphertextOrigin::RepeatedMult2Rcb": [
+        5586
+      ],
+      "CreatePaperRepeatedMult2Setup": [
+        5590
+      ]
+    },
+    "process_exit_code": 2,
+    "process_error_line": 5623,
+    "paper_runtime_invocations": 0,
+    "compiler_error_lines": 40,
+    "independent_unexpected_compiler_errors": [],
+    "interpretation": "expected compile-time RED from intentionally missing production APIs; no paper numerical execution"
+  },
+  "scope": "retained linux diagnostic regressions plus entry-61 compile-time API RED; not paper-scale correctness evidence",
+  "mac_crypto": "NOT_RUN"
+}
