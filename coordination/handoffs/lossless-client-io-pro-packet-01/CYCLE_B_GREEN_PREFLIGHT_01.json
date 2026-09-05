@@ -1,0 +1,97 @@
+{
+  "engineering_commit": "5f26c77598a350bbdce9f572f64aada9d38c4117",
+  "actual_red_source": "4648da463c6ec77f6f23acb1a56c5dce88c7732e",
+  "red_evidence_published_before_implementation": "96f5238c0ef389de122a5258dbf71cbffe50b7d9",
+  "author": "Codex root",
+  "fallback": "Assigned author h128_candidate_standards returned actual model-at-capacity error with no diff. Root verified clean HEAD and took over the two production files; no model substitution or external review claimed.",
+  "preflight": {
+    "base": "96f5238c0ef389de122a5258dbf71cbffe50b7d9",
+    "files": {
+      "include/openfhe_2023_1788/high_precision_client_io.h": {
+        "bytes": 5032,
+        "lines": 147,
+        "sha256": "0b31c76919586b080f4cff116396034321398372f0585602943dd8381504766f"
+      },
+      "src/high_precision_client_io.cpp": {
+        "bytes": 34158,
+        "lines": 598,
+        "sha256": "ba9ba482b14583d4de9b1c63d2ed06b172f9fa7947e91732de4bee05ed5ce264"
+      },
+      "tests/precision_client_io_first_mult2_contract_test.cpp": {
+        "bytes": 56986,
+        "sha256": "93640b6c7ba49b4594ad2f84309cbaf48e31974039d403f6941e375558f7d950",
+        "unchanged": true
+      },
+      "tests/precision_client_io_oracle.h": {
+        "bytes": 21211,
+        "sha256": "9f7d8222ef6520bc845ab1b81fe735f5f7a46a48d5de2c2b984c63148e2c42af",
+        "unchanged": true
+      },
+      "src/double_ckks.cpp": {
+        "bytes": 51962,
+        "sha256": "3ed23f2261cd7d8efea7a76a5724bfe44f6f20c521c20aedccd4fec69e6e916a",
+        "unchanged": true
+      },
+      "CMakeLists.txt": {
+        "bytes": 13690,
+        "sha256": "e437e40d3b7ee8958ca212ba85d4022998a473ed29026064d8c0ed546bbd9275",
+        "unchanged": true
+      },
+      ".github/workflows/dcp-rcb.yml": {
+        "bytes": 13766,
+        "sha256": "6ef6c424d7b412bc28f94510a1ba70143378b5a3976e1eebb4b68536033e03fa",
+        "unchanged": true
+      }
+    },
+    "diff_bytes": 13037,
+    "diff_sha256": "2b6f31e112278ca03fb94c6ee31271ec320fbf88a8666c945b4b3d6f3da4780e",
+    "numstat": "7\t1\tinclude/openfhe_2023_1788/high_precision_client_io.h\n81\t20\tsrc/high_precision_client_io.cpp\n",
+    "numeric_helpers_rational_ciphertext_checks_and_key_shape_checks": "BYTE_IDENTICAL",
+    "public_value_types": "BYTE_IDENTICAL",
+    "state_accessor": "UNCHANGED noexcept cached receipt",
+    "added_catches": 0,
+    "compile_crypto_ci": "NOT RUN"
+  },
+  "final_staged_scan": {
+    "staged_paths": [
+      "include/openfhe_2023_1788/high_precision_client_io.h",
+      "src/high_precision_client_io.cpp"
+    ],
+    "staged_bytes": 13037,
+    "staged_sha256": "2b6f31e112278ca03fb94c6ee31271ec320fbf88a8666c945b4b3d6f3da4780e",
+    "gitleaks_version": "8.30.1",
+    "command": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact",
+      "--no-banner",
+      "--no-color"
+    ],
+    "gitleaks_exit": 0,
+    "gitleaks_stdout": "",
+    "gitleaks_stderr": "6:47PM INF scanned ~13037 bytes (13.04 KB) in 21.4ms\n6:47PM INF no leaks found\n",
+    "diff_check": "PASS"
+  },
+  "reviews": {
+    "standards": {
+      "reviewer": "/root/io_b_red_standards",
+      "verdict": "ACCEPT_STATIC_GREEN_CANDIDATE",
+      "open_findings": 0,
+      "compile_crypto_ci": "NOT RUN"
+    },
+    "spec": {
+      "reviewer": "/root/h128_candidate_spec",
+      "verdict": "ACCEPT_STATIC_GREEN_CANDIDATE",
+      "open_findings": 0,
+      "compile_crypto_ci": "NOT RUN"
+    }
+  },
+  "runtime_status_at_dispatch": "PENDING; do not call B GREEN accepted"
+}
