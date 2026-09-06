@@ -1,0 +1,20 @@
+Observed command exit: 1
+test_all_existing_steps_and_nondefault_branch_behavior_preserved (__main__.EightSquareWiring.test_all_existing_steps_and_nondefault_branch_behavior_preserved) ... ok
+test_default_runs_regressions_without_repeating_numerical_experiments (__main__.EightSquareWiring.test_default_runs_regressions_without_repeating_numerical_experiments) ... FAIL
+test_exact_nonempty_single_ctest_and_timeout_headroom (__main__.EightSquareWiring.test_exact_nonempty_single_ctest_and_timeout_headroom) ... ok
+test_no_old_paper_build_or_endpoint_or_one_op_on_new_ref (__main__.EightSquareWiring.test_no_old_paper_build_or_endpoint_or_one_op_on_new_ref) ... ok
+test_one_new_activation_ref_and_working_ref_stays_untriggered (__main__.EightSquareWiring.test_one_new_activation_ref_and_working_ref_stays_untriggered) ... ok
+test_separate_opt_in_build_after_unchanged_legacy_suite (__main__.EightSquareWiring.test_separate_opt_in_build_after_unchanged_legacy_suite) ... ok
+
+======================================================================
+FAIL: test_default_runs_regressions_without_repeating_numerical_experiments (__main__.EightSquareWiring.test_default_runs_regressions_without_repeating_numerical_experiments)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-precision116-eight-square-20260907/coordination/precision116-eight-square-return-01/check_ci_wiring.py", line 95, in test_default_runs_regressions_without_repeating_numerical_experiments
+    self.assertFalse(enabled(by_name[name], DEFAULT_REF, success, selected), name)
+AssertionError: True is not false : Build paper full eight-square contract
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.027s
+
+FAILED (failures=1)

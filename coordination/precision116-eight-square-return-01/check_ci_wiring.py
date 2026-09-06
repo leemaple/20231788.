@@ -16,6 +16,7 @@ WORKFLOW = ".github/workflows/dcp-rcb.yml"
 BASE = "2a6be7a1ec4528718df47d7c5d6366b3904b3036"
 REF = "refs/heads/codex/precision116-eight-square-observation-20260907"
 WORKING = "codex/precision116-eight-square-20260907"
+DEFAULT_REF = "refs/heads/cleanroom/reimplement-mult2-20260831"
 NAME = "experimental_precision116_eight_square_contract"
 OPTION = "OPENFHE_2023_1788_ENABLE_EXPERIMENTAL_PRECISION116_EIGHT_SQUARE"
 EXTRA = ("Configure opt-in precision116 eight-square test",
@@ -77,7 +78,26 @@ class EightSquareWiring(unittest.TestCase):
                         for selected in ("success", "failure", "skipped"):
                             self.assertFalse(enabled(step, REF, success, selected), step["name"])
 
-    def test_all_existing_steps_and_old_branch_behavior_preserved(self):
+    def test_default_runs_regressions_without_repeating_numerical_experiments(self):
+        excluded = ("Build paper full eight-square contract", "Run and finalize paper endpoint once",
+                    "Select exact endpoint upload", "Upload exact endpoint evidence",
+                    "Run draft endpoint observer self-test once", "Run experimental precision116 profile seam once",
+                    "Reject unexpected precision116 RED build success") + EXTRA
+        ordinary = ("Run complete 60-test three-track suite", "Run legacy 57-test checkpoint",
+                    "Build Relin2 public API contract", "Build RS2 public API contract",
+                    "Build Mult2 public API contract", "Build Add public API contract", "Build Sub public API contract",
+                    "Run focused production lossless client I/O contract", "Run focused repeated-Mult2 and h128 contracts")
+        for job in CURRENT["jobs"].values():
+            by_name = {step["name"]: step for step in job["steps"]}
+            for name in excluded:
+                for success in (False, True):
+                    for selected in ("success", "failure", "skipped"):
+                        self.assertFalse(enabled(by_name[name], DEFAULT_REF, success, selected), name)
+            for name in ordinary:
+                self.assertTrue(enabled(by_name[name], DEFAULT_REF), name)
+                self.assertFalse(enabled(by_name[name], DEFAULT_REF, success=False), name)
+
+    def test_all_existing_steps_and_nondefault_branch_behavior_preserved(self):
         for key, job in CURRENT["jobs"].items():
             old = BASELINE["jobs"][key]
             self.assertEqual({k: v for k, v in job.items() if k != "steps"},
@@ -90,6 +110,8 @@ class EightSquareWiring(unittest.TestCase):
                 if step.get("if") == before.get("if"):
                     continue  # Exact equality already covers unrelated cache predicates.
                 for branch in BASELINE["true"]["push"]["branches"]:
+                    if "refs/heads/" + branch == DEFAULT_REF:
+                        continue  # Explicit delivery-only exception covered above.
                     for success in (False, True):
                         for selected in ("success", "failure", "skipped"):
                             self.assertEqual(enabled(step, "refs/heads/" + branch, success, selected),
