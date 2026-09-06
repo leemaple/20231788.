@@ -277,3 +277,27 @@ set_tests_properties(experimental_precision116_profile_seam PROPERTIES
     TIMEOUT 1200
     RUN_SERIAL TRUE
     ENVIRONMENT "OMP_NUM_THREADS=2")
+
+# Opt-in full eight-square numerical experiment. The default legacy registry
+# and build remain byte-for-byte as above; CI ownership stays with root.
+option(OPENFHE_2023_1788_ENABLE_EXPERIMENTAL_PRECISION116_EIGHT_SQUARE
+    "Register the explicit experimental precision116 eight-square numerical test" OFF)
+if(OPENFHE_2023_1788_ENABLE_EXPERIMENTAL_PRECISION116_EIGHT_SQUARE)
+    add_executable(experimental_precision116_eight_square_test EXCLUDE_FROM_ALL
+        tests/experimental_precision116_eight_square_test.cpp)
+    target_link_libraries(experimental_precision116_eight_square_test PRIVATE openfhe_2023_1788)
+    target_compile_definitions(experimental_precision116_eight_square_test PRIVATE
+        EXPERIMENTAL_PRECISION116_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+    if(MSVC)
+        target_compile_options(experimental_precision116_eight_square_test PRIVATE /W4 /WX)
+    else()
+        target_compile_options(experimental_precision116_eight_square_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME experimental_precision116_eight_square_contract
+        COMMAND experimental_precision116_eight_square_test)
+    set_tests_properties(experimental_precision116_eight_square_contract PROPERTIES
+        TIMEOUT 1200
+        RUN_SERIAL TRUE
+        ENVIRONMENT "OMP_NUM_THREADS=2"
+        LABELS "experimental;precision116;eight-square")
+endif()
