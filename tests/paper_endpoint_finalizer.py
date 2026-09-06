@@ -1,11 +1,13 @@
 """Independent endpoint finalization; no production/FHE/transform imports."""
 import argparse
+import hashlib
 import os
 from pathlib import Path
 import re
 import stat
 import sys
 
+from paper_endpoint_gzip import GzipError, encode_gzip, verify_gzip
 from paper_endpoint_primary_reader import (
     EMPTY_OBSERVATION, MAX_LOG_BYTES, PrimaryIdentity, PrimaryLogError,
     PrimaryObservation, parse_primary_log,
@@ -13,7 +15,9 @@ from paper_endpoint_primary_reader import (
 from paper_endpoint_publication import (
     PublicationError, PublicationIdentity, publish_endpoint_evidence, select_endpoint_uploads,
 )
+from paper_endpoint_reconcile import ReconcileError, reconcile_replay, validate_primary_binding
 from paper_endpoint_sidecar_reader import MAX_BYTES, SidecarError, read_sidecar
+from paper_endpoint_sidecar_replay import ReplayError, replay_sidecar
 from paper_endpoint_status import FIXED, INCOMPLETE_CAUSES, MAX_STATUS_BYTES, encode_status
 
 
@@ -164,7 +168,35 @@ def finalize_endpoint(primary_log, identity, *, ctest_exit_code, capture_exit_co
     except (FinalizationError, SidecarError) as error:
         return publish_endpoint_evidence(
             published_parent, identity, _status(identity, ctest_exit_code, error.reason, observation))
-    raise NotImplementedError("validated sidecar/replay finalization is the next TDD slice")
+    try:
+        validate_primary_binding(primary, sidecar)
+        replay = replay_sidecar(sidecar)
+        reconcile_replay(primary, sidecar, replay)
+    except (ReconcileError, ReplayError) as error:
+        return publish_endpoint_evidence(
+            published_parent, identity, _status(identity, ctest_exit_code, error.reason, observation))
+    try:
+        gzip_bytes = encode_gzip(canonical_bytes)
+        receipt = verify_gzip(
+            gzip_bytes, canonical_size=len(canonical_bytes),
+            canonical_sha256=hashlib.sha256(canonical_bytes).hexdigest(),
+            gzip_size=len(gzip_bytes), gzip_sha256=hashlib.sha256(gzip_bytes).hexdigest())
+        if receipt.canonical != canonical_bytes:
+            raise GzipError("gzip round trip differs from validated canonical bytes")
+    except GzipError:
+        return publish_endpoint_evidence(
+            published_parent, identity, _status(identity, ctest_exit_code, "INTEGRITY", observation))
+    complete_status = dict(
+        initial_status, chain_count=sidecar.meta["chain_count"], evidence_state="COMPLETE",
+        reason="NONE", boost_version=observation.boost_version,
+        E80_disposition=observation.e80_disposition, observer_disposition="PASS",
+        numeric_gate_failures=observation.numeric_gate_failures, row_count=replay.row_count,
+        canonical_bytes=receipt.canonical_size, canonical_sha256=receipt.canonical_sha256,
+        gzip_bytes=receipt.gzip_size, gzip_sha256=receipt.gzip_sha256,
+        gzip_filename=stem + ".tsv.gz", packer_disposition="PASS")
+    return publish_endpoint_evidence(
+        published_parent, identity, complete_status,
+        canonical_bytes=canonical_bytes, gzip_bytes=gzip_bytes)
 
 
 def _write_manifest(published_parent, identity, manifest):

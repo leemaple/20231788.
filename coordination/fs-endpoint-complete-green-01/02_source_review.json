@@ -1,0 +1,25 @@
+{
+  "base": "c1b58dd8a03f5bcb11412f2d317a51843686a766",
+  "reviewer": "/root/endpoint_canonical_writer; independent available Codex context, source-first, no author verdict/test outputs shown before first pass",
+  "source_sha256": "b3061c1b0283598e53e10d60241de77d5e4765743195e80782e4f2a7da507705",
+  "frozen_test_sha256": "d7784038f2bc2ee41b09bffd5665676d8f149a4f079055bb7c2c0447b7d30d89",
+  "decision": "No actionable contract defect in candidate delta; hosted GREEN not yet executed.",
+  "basis": [
+    "Actual parsed primary and same sidecar pass binding, direct full replay and reconciliation with that direct return before compression.",
+    "Typed errors preserve exact reason into truthful incomplete status; unexpected exceptions remain loud.",
+    "Gzip uses captured validated bytes, actual hashes/sizes, structural verification and literal round-trip equality before existing transactional publication.",
+    "Observed/bound chain count, Boost/count/E80, replay row count, CTest status and identity retained. Fixed A NOT_ADOPTED, CONDITIONAL assurance/model not weakened.",
+    "Only stdlib and accepted test-local diagnostic dependencies; no production/FHE/crypto/FFT/NTT import."
+  ],
+  "limits": "Zero positive alone cannot discriminate nonzero serialization/quantum/argmax/signed-tuple or manufactured zero summaries. Independent source review and accepted lower-level discriminating tests support this slice; later targeted integration negatives and live C++/wrapper provenance remain separate, not silently accepted.",
+  "root_static_validation": {
+    "command": "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B - <<'PY'\nimport ast, hashlib, json, pathlib, subprocess\npath='.github/workflows/endpoint-finalizer-complete-gate.yml'\nprior=subprocess.check_output(['git','show','HEAD:'+path])\ncurrent=pathlib.Path(path).read_bytes()\ndef yaml_json(data):\n    return json.loads(subprocess.check_output(['ruby','-e','require \"yaml\";require \"json\";puts JSON.generate(YAML.safe_load(STDIN.read))'],input=data))\na,b=yaml_json(prior),yaml_json(current)\nassert a['on']=={'push':{'branches':['codex/endpoint-finalizer-complete-red-fix-20260906']}}\na['on']['push']['branches']=['codex/endpoint-finalizer-complete-green-20260906']\nassert a==b\nfor p in ['tests/hosted_paper_endpoint_finalizer_complete.py','.github/workflows/dcp-rcb.yml','CMakeLists.txt','tests/paper_endpoint_reconcile.py','tests/paper_endpoint_sidecar_replay.py','tests/paper_endpoint_publication.py']:\n    assert pathlib.Path(p).read_bytes()==subprocess.check_output(['git','show','HEAD:'+p])\nassert 'codex/endpoint-finalizer-complete-green-20260906' not in pathlib.Path('.github/workflows/dcp-rcb.yml').read_text()\nast.parse(pathlib.Path('tests/paper_endpoint_finalizer.py').read_text())\nsubprocess.run(['git','diff','--check'],check=True)\nprint(json.dumps({'result':'PASS','scope':'Exact workflow structure equals accepted RED except sole GREEN branch trigger; named test/dependencies and old workflow/CMake unchanged; finalizer AST only','finalizer_sha256':hashlib.sha256(pathlib.Path('tests/paper_endpoint_finalizer.py').read_bytes()).hexdigest(),'workflow_sha256':hashlib.sha256(current).hexdigest()},indent=2))\nPY",
+    "result": {
+      "chunk_id": "26789d",
+      "wall_time_seconds": 0.192408208,
+      "exit_code": 0,
+      "original_token_count": 93,
+      "output": "{\n  \"result\": \"PASS\",\n  \"scope\": \"Exact workflow structure equals accepted RED except sole GREEN branch trigger; named test/dependencies and old workflow/CMake unchanged; finalizer AST only\",\n  \"finalizer_sha256\": \"b3061c1b0283598e53e10d60241de77d5e4765743195e80782e4f2a7da507705\",\n  \"workflow_sha256\": \"92aa191455e1954e64a3b18d4160380ca77a2a50327d7c4c11aaea641e5b47e8\"\n}\n"
+    }
+  }
+}
