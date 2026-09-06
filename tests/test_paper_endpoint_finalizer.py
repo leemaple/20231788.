@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from dataclasses import replace
+from contextlib import contextmanager
 from unittest.mock import patch
 
 from paper_endpoint_publication import PublicationIdentity, select_endpoint_uploads
@@ -19,6 +20,25 @@ IDENTITY = PublicationIdentity("a" * 40, "linux", "42", "1")
 
 
 class EndpointFinalizerTests(unittest.TestCase):
+    def test_scratch_roles_cannot_be_swapped_or_renamed(self):
+        for canonical_name, published_name, log_name in (
+                ("published", "canonical", "primary.ctest.log"),
+                ("canonical", "published", "other.log"),
+                ("inputs", "outputs", "primary.ctest.log")):
+            with self.subTest(roles=(canonical_name, published_name, log_name)), \
+                    tempfile.TemporaryDirectory(prefix="fs-endpoint-synthetic-roles-") as temp:
+                root = Path(temp).resolve()
+                canonical, published = root / canonical_name, root / published_name
+                canonical.mkdir()
+                published.mkdir()
+                with self.assertRaises(ValueError):
+                    finalizer.finalize_endpoint(
+                        root / log_name, IDENTITY, ctest_exit_code=8,
+                        capture_exit_code=0, expected_scope="synthetic",
+                        canonical_parent=canonical, published_parent=published)
+                self.assertEqual(list(canonical.iterdir()), [])
+                self.assertEqual(list(published.iterdir()), [])
+
     def test_invalid_identity_is_rejected_before_any_output(self):
         invalid = (
             replace(IDENTITY, source_commit=None),
@@ -114,6 +134,23 @@ class EndpointFinalizerTests(unittest.TestCase):
             self.assertIsNone(status["gzip_filename"])
             self.assertEqual(list(canonical.iterdir()), [])
 
+    def test_empty_or_launch_failure_log_retains_observed_execution_cause(self):
+        cases = (
+            (b"", 0, 23, False, "IO_ERROR"),
+            (b"", 137, 0, True, "TIMEOUT"),
+            (b"", 8, 0, False, "CTEST_FATAL"),
+            (b"ctest: command not found\n", 127, 0, False, "CTEST_FATAL"),
+            (b"", 0, 0, False, "NO_CANONICAL"),
+        )
+        for data, ctest_exit, capture_exit, timeout, reason in cases:
+            with self.subTest(ctest=ctest_exit, capture=capture_exit, timeout=timeout):
+                exit_code, status = self.finish_bytes(
+                    data, ctest_exit=ctest_exit, capture_exit=capture_exit, timed_out=timeout)
+                self.assertNotEqual(exit_code, 0)
+                self.assertEqual(status["reason"], reason)
+                self.assertIsNone(status["numeric_gate_failures"])
+                self.assertEqual(status["E80_disposition"], "NOT_OBSERVED")
+
     def test_missing_canonical_retains_complete_primary_e80_observation(self):
         exit_code, status = self.finish_bytes(self.complete_bytes(2))
         self.assertEqual(exit_code, 8)
@@ -133,6 +170,25 @@ class EndpointFinalizerTests(unittest.TestCase):
         self.assertEqual(status["E80_disposition"], "PASS")
         self.assertEqual(status["boost_version"], 108300)
         self.assertIsNone(status["gzip_filename"])
+
+    def test_late_parser_error_retains_only_validated_primary_facts(self):
+        unknown = b"61: FS_ENDPOINT_UNKNOWN\tvalue=1\n"
+        cases = (
+            (self.complete_bytes(2) + unknown, 8, 2, "FAIL", 108300),
+            (self.complete_bytes(0) + unknown, 0, 0, "PASS", 108300),
+            (self.complete_bytes(2).split(b"61: FS_ENDPOINT_SCALE", 1)[0] + unknown,
+             8, None, "NOT_OBSERVED", 108300),
+            (unknown, 8, None, "NOT_OBSERVED", None),
+        )
+        for data, ctest_exit, count, e80, boost in cases:
+            with self.subTest(count=count, boost=boost, exit=ctest_exit):
+                exit_code, status = self.finish_bytes(data, ctest_exit=ctest_exit)
+                self.assertNotEqual(exit_code, 0)
+                self.assertEqual(status["reason"], "FORMAT")
+                self.assertEqual(status["numeric_gate_failures"], count)
+                self.assertEqual(status["E80_disposition"], e80)
+                self.assertEqual(status["boost_version"], boost)
+                self.assertIsNone(status["gzip_filename"])
 
     def test_explicit_earlier_failure_precedes_missing_and_capture(self):
         data = b"61: FS_ENDPOINT_FAILURE reason=NONFINITE detail=synthetic numeric failure\n"
@@ -218,6 +274,41 @@ class EndpointFinalizerTests(unittest.TestCase):
             repeated = subprocess.run(selection_command, cwd=root, capture_output=True, timeout=10)
             self.assertNotEqual(repeated.returncode, 0)
             self.assertEqual(manifest.read_bytes(), expected)
+
+    def test_select_rejects_same_length_manifest_write_corruption(self):
+        with tempfile.TemporaryDirectory(prefix="fs-endpoint-synthetic-manifest-") as temp:
+            root = Path(temp).resolve()
+            canonical, published = root / "canonical", root / "published"
+            canonical.mkdir()
+            published.mkdir()
+            finalizer.finalize_endpoint(
+                root / "primary.ctest.log", IDENTITY, ctest_exit_code=8,
+                capture_exit_code=0, expected_scope="synthetic",
+                canonical_parent=canonical, published_parent=published)
+            paths = select_endpoint_uploads(published, IDENTITY)
+            original_status = paths[0].read_bytes()
+            manifest = root / "upload-paths.txt"
+            original_open = Path.open
+
+            @contextmanager
+            def filesystem_open(path, mode="r", *args, **kwargs):
+                with original_open(path, mode, *args, **kwargs) as stream:
+                    if path == manifest and mode == "xb":
+                        class CorruptingWriter:
+                            def write(self, data):
+                                return stream.write(b"X" * len(data))
+                        yield CorruptingWriter()
+                    else:
+                        yield stream
+
+            with patch.object(Path, "open", filesystem_open), \
+                    self.assertRaises(finalizer.FinalizationError) as caught:
+                finalizer.main(["select", "--source-commit", "a" * 40, "--host", "linux",
+                    "--github-run-id", "42", "--github-run-attempt", "1",
+                    "--published-parent", str(published), "--manifest", str(manifest)])
+            self.assertEqual(caught.exception.reason, "INTEGRITY")
+            self.assertEqual(select_endpoint_uploads(published, IDENTITY), paths)
+            self.assertEqual(paths[0].read_bytes(), original_status)
 
 
 if __name__ == "__main__":

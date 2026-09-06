@@ -65,6 +65,16 @@ class PrimaryIdentity:
 
 
 @dataclass(frozen=True)
+class PrimaryObservation:
+    numeric_gate_failures: int | None
+    e80_disposition: str
+    boost_version: int | None
+
+
+EMPTY_OBSERVATION = PrimaryObservation(None, "NOT_OBSERVED", None)
+
+
+@dataclass(frozen=True)
 class FailureRecord:
     reason: str
     detail: str
@@ -138,55 +148,62 @@ class PrimaryLog:
 
 
 class PrimaryLogError(ValueError):
-    def __init__(self, reason, detail, first_failure=None):
+    def __init__(self, reason, detail, first_failure=None, observation=None):
         super().__init__(f"{reason}: {detail}")
         self.reason = reason
         self.detail = detail
         self.first_failure = first_failure
+        self.observation = EMPTY_OBSERVATION if observation is None else observation
 
 
-def _fail(reason, detail, first_failure=None):
-    raise PrimaryLogError(reason, detail, first_failure)
+def _fail(reason, detail, first_failure=None, observation=None):
+    raise PrimaryLogError(reason, detail, first_failure, observation)
 
 
-def _parse_uint(text, name, *, positive=False, maximum=None, first_failure=None):
+def _parse_uint(text, name, *, positive=False, maximum=None, first_failure=None,
+                observation=None):
     if not _UINT.fullmatch(text):
-        _fail("FORMAT", f"{name} is not a canonical unsigned integer", first_failure)
+        _fail("FORMAT", f"{name} is not a canonical unsigned integer", first_failure,
+              observation)
     value = 0
     for start in range(0, len(text), 9):
         chunk = text[start:start + 9]
         value = value * (10 ** len(chunk)) + int(chunk)
     if positive and value == 0:
-        _fail("FORMAT", f"{name} must be positive", first_failure)
+        _fail("FORMAT", f"{name} must be positive", first_failure, observation)
     if maximum is not None and value > maximum:
-        _fail("FORMAT", f"{name} exceeds {maximum}", first_failure)
+        _fail("FORMAT", f"{name} exceeds {maximum}", first_failure, observation)
     return value
 
 
-def _fields(line, record, names, first_failure=None):
+def _fields(line, record, names, first_failure=None, observation=None):
     pieces = line.split("\t")
     if pieces[0] != record or len(pieces) != len(names) + 1:
-        _fail("FORMAT", f"malformed {record} field count", first_failure)
+        _fail("FORMAT", f"malformed {record} field count", first_failure, observation)
     values = []
     for piece, name in zip(pieces[1:], names):
         prefix = name + "="
         if not piece.startswith(prefix) or len(piece) == len(prefix):
-            _fail("FORMAT", f"malformed {record} field {name}", first_failure)
+            _fail("FORMAT", f"malformed {record} field {name}", first_failure,
+                  observation)
         values.append(piece[len(prefix):])
     return values
 
 
-def _rational(n_text, d_text, name, first_failure=None):
-    n = _parse_uint(n_text, name + " numerator", first_failure=first_failure)
-    d = _parse_uint(d_text, name + " denominator", positive=True, first_failure=first_failure)
+def _rational(n_text, d_text, name, first_failure=None, observation=None):
+    n = _parse_uint(n_text, name + " numerator", first_failure=first_failure,
+                    observation=observation)
+    d = _parse_uint(d_text, name + " denominator", positive=True,
+                    first_failure=first_failure, observation=observation)
     if math.gcd(n, d) != 1:
-        _fail("INTEGRITY", f"{name} is not reduced", first_failure)
+        _fail("INTEGRITY", f"{name} is not reduced", first_failure, observation)
     return Fraction(n, d)
 
 
-def _require_dyadic(value, name, first_failure=None):
+def _require_dyadic(value, name, first_failure=None, observation=None):
     if value.denominator & (value.denominator - 1):
-        _fail("INTEGRITY", f"{name} must be an exact represented dyadic", first_failure)
+        _fail("INTEGRITY", f"{name} must be an exact represented dyadic", first_failure,
+              observation)
 
 
 def _power10(exponent):
@@ -195,12 +212,12 @@ def _power10(exponent):
     return Fraction(1, 10 ** (-exponent))
 
 
-def _canonical(text, name, first_failure=None):
+def _canonical(text, name, first_failure=None, observation=None):
     if text == ZERO:
         return CanonicalValue(text, Fraction(0), Fraction(0))
     match = _CANONICAL.fullmatch(text)
     if not match or (match.group(4) == "-" and match.group(5) == "00000"):
-        _fail("FORMAT", f"{name} is not canonical decimal", first_failure)
+        _fail("FORMAT", f"{name} is not canonical decimal", first_failure, observation)
     exponent = int(match.group(5)) * (-1 if match.group(4) == "-" else 1)
     significand = int(match.group(2) + match.group(3))
     if match.group(1) == "-":
@@ -220,7 +237,7 @@ def _decimal_exponent(value):
     return exponent
 
 
-def _canonical_fraction(value, first_failure=None):
+def _canonical_fraction(value, first_failure=None, observation=None):
     if value == 0:
         return ZERO
     sign = "-" if value < 0 else "+"
@@ -235,10 +252,12 @@ def _canonical_fraction(value, first_failure=None):
         quotient //= 10
         exponent += 1
     if not -99999 <= exponent <= 99999:
-        _fail("FORMAT", "canonical decimal exponent is out of range", first_failure)
+        _fail("FORMAT", "canonical decimal exponent is out of range", first_failure,
+              observation)
     digits = str(quotient)
     if len(digits) != 110:
-        _fail("INTEGRITY", "canonical decimal significand width is invalid", first_failure)
+        _fail("INTEGRITY", "canonical decimal significand width is invalid", first_failure,
+              observation)
     exp_sign = "+" if exponent >= 0 else "-"
     return f"{sign}{digits[0]}.{digits[1:]}e{exp_sign}{abs(exponent):05d}"
 
@@ -265,7 +284,8 @@ def _is_power_two(value):
             value.denominator & (value.denominator - 1) == 0)
 
 
-def _validate_primary_allowance_consistency(checks, maxima, first_failure):
+def _validate_primary_allowance_consistency(checks, maxima, first_failure,
+                                            observation=None):
     power768 = _power_two(270 - 768)
     subtraction768 = _power_two(264 - 768)
     residual768 = tuple(maximum.allowance for maximum in maxima)
@@ -274,16 +294,16 @@ def _validate_primary_allowance_consistency(checks, maxima, first_failure):
     propagated768 = residual768[2] - power768 - subtraction768
     if min(fresh768, terminal768, propagated768) < 0:
         _fail("INTEGRITY", "MAX allowances cannot recover a nonnegative allowance model",
-              first_failure)
+              first_failure, observation)
     if not _is_power_two(fresh768) or not _is_power_two(terminal768):
         _fail("INTEGRITY", "MAX allowances do not recover power-of-two norm bounds",
-              first_failure)
+              first_failure, observation)
     if propagated768 != power768 + (1 << 263) * fresh768:
         _fail("INTEGRITY", "MAX allowances disagree with propagated allowance model",
-              first_failure)
+              first_failure, observation)
     if residual768[3] != terminal768 + propagated768 + subtraction768:
         _fail("INTEGRITY", "MAX A8 allowance disagrees with recovered allowance model",
-              first_failure)
+              first_failure, observation)
 
     factor = 1 << 256
     fresh512 = fresh768 * factor
@@ -316,10 +336,12 @@ def _validate_primary_allowance_consistency(checks, maxima, first_failure):
     expected.extend(left + right for left, right in zip(residual512, residual768))
     expected.extend((identity512, identity768))
     if len(expected) != len(CHECK_IDS):
-        _fail("INTEGRITY", "internal recovered allowance count", first_failure)
+        _fail("INTEGRITY", "internal recovered allowance count", first_failure,
+              observation)
     for check, allowance in zip(checks, expected):
         if check.allowance != allowance:
-            _fail("INTEGRITY", f"{check.check_id} allowance model mismatch", first_failure)
+            _fail("INTEGRITY", f"{check.check_id} allowance model mismatch", first_failure,
+                  observation)
 
 
 def _validate_identity(identity):
@@ -372,33 +394,40 @@ def _parse_receipt(line, expected_operation, scales, first_failure):
     return ScaleReceipt(operation, numerator, denominator)
 
 
-def _parse_check(line, expected_id, first_failure):
+def _parse_check(line, expected_id, first_failure, observation=None):
     names = ("id", "result", "distance_num", "distance_den", "allowance_num",
              "allowance_den", "argmax_slot", "argmax_component")
     check_id, result, dn, dd, an, ad, slot_text, component = _fields(
-        line, "FS_ENDPOINT_CHECK", names, first_failure)
+        line, "FS_ENDPOINT_CHECK", names, first_failure, observation)
     if check_id != expected_id:
-        _fail("REPLAY", "endpoint CHECK is duplicate, foreign, or reordered", first_failure)
+        _fail("REPLAY", "endpoint CHECK is duplicate, foreign, or reordered", first_failure,
+              observation)
     if result != "PASS":
-        _fail("INTEGRITY", f"endpoint CHECK {check_id} is not PASS", first_failure)
-    distance = _rational(dn, dd, "check distance", first_failure)
-    _require_dyadic(distance, "check distance", first_failure)
-    allowance = _rational(an, ad, "check allowance", first_failure)
-    slot = _parse_uint(slot_text, "check argmax_slot", maximum=16383, first_failure=first_failure)
+        _fail("INTEGRITY", f"endpoint CHECK {check_id} is not PASS", first_failure,
+              observation)
+    distance = _rational(dn, dd, "check distance", first_failure, observation)
+    _require_dyadic(distance, "check distance", first_failure, observation)
+    allowance = _rational(an, ad, "check allowance", first_failure, observation)
+    slot = _parse_uint(slot_text, "check argmax_slot", maximum=16383,
+                       first_failure=first_failure, observation=observation)
     if component not in ("real", "imag"):
-        _fail("FORMAT", "check argmax_component is invalid", first_failure)
+        _fail("FORMAT", "check argmax_component is invalid", first_failure, observation)
     if distance == 0 and (slot != 0 or component != "real"):
-        _fail("INTEGRITY", "zero check distance must select slot 0 real", first_failure)
+        _fail("INTEGRITY", "zero check distance must select slot 0 real", first_failure,
+              observation)
     if ".horner." in check_id and slot not in HORNER_SLOTS:
-        _fail("INTEGRITY", "Horner check selected a non-probe slot", first_failure)
+        _fail("INTEGRITY", "Horner check selected a non-probe slot", first_failure,
+              observation)
     if distance > TWO_NEG_120 or allowance > TWO_NEG_128 or distance + allowance > TWO_NEG_120:
-        _fail("INTEGRITY", f"endpoint CHECK {check_id} exceeds its classifier", first_failure)
+        _fail("INTEGRITY", f"endpoint CHECK {check_id} exceeds its classifier",
+              first_failure, observation)
     if ".producer." not in check_id and distance > allowance:
-        _fail("INTEGRITY", f"endpoint CHECK {check_id} exceeds its allowance", first_failure)
+        _fail("INTEGRITY", f"endpoint CHECK {check_id} exceeds its allowance", first_failure,
+              observation)
     return CheckReceipt(check_id, distance, allowance, slot, component)
 
 
-def _parse_maximum(line, expected_id, first_failure):
+def _parse_maximum(line, expected_id, first_failure, observation=None):
     names = [
         "id", "magnitude", "magnitude_exact_num", "magnitude_exact_den",
         "magnitude_quantum_num", "magnitude_quantum_den", "allowance_num",
@@ -409,46 +438,57 @@ def _parse_maximum(line, expected_id, first_failure):
         for component in ("real", "imag"):
             field = residual + "." + component
             names.extend((field, field + "_q_num", field + "_q_den"))
-    values = _fields(line, "FS_ENDPOINT_MAX", names, first_failure)
+    values = _fields(line, "FS_ENDPOINT_MAX", names, first_failure, observation)
     if values[0] != expected_id:
-        _fail("REPLAY", "endpoint MAX is duplicate, foreign, or reordered", first_failure)
-    magnitude = _canonical(values[1], "maximum magnitude", first_failure)
+        _fail("REPLAY", "endpoint MAX is duplicate, foreign, or reordered", first_failure,
+              observation)
+    magnitude = _canonical(values[1], "maximum magnitude", first_failure, observation)
     if magnitude.value < 0:
-        _fail("INTEGRITY", "maximum magnitude is negative", first_failure)
-    magnitude_exact = _rational(values[2], values[3], "magnitude_exact", first_failure)
-    _require_dyadic(magnitude_exact, "magnitude_exact", first_failure)
-    magnitude_quantum = _rational(values[4], values[5], "magnitude_quantum", first_failure)
-    allowance = _rational(values[6], values[7], "maximum allowance", first_failure)
-    lower = _rational(values[8], values[9], "interval_lower", first_failure)
-    upper = _rational(values[10], values[11], "interval_upper", first_failure)
-    slot = _parse_uint(values[12], "maximum argmax_slot", maximum=16383, first_failure=first_failure)
+        _fail("INTEGRITY", "maximum magnitude is negative", first_failure, observation)
+    magnitude_exact = _rational(values[2], values[3], "magnitude_exact", first_failure,
+                                observation)
+    _require_dyadic(magnitude_exact, "magnitude_exact", first_failure, observation)
+    magnitude_quantum = _rational(values[4], values[5], "magnitude_quantum",
+                                   first_failure, observation)
+    allowance = _rational(values[6], values[7], "maximum allowance", first_failure,
+                          observation)
+    lower = _rational(values[8], values[9], "interval_lower", first_failure, observation)
+    upper = _rational(values[10], values[11], "interval_upper", first_failure, observation)
+    slot = _parse_uint(values[12], "maximum argmax_slot", maximum=16383,
+                       first_failure=first_failure, observation=observation)
     component = values[13]
     if component not in ("real", "imag"):
-        _fail("FORMAT", "maximum argmax_component is invalid", first_failure)
-    if magnitude.text != _canonical_fraction(magnitude_exact, first_failure):
-        _fail("INTEGRITY", "maximum decimal does not round from magnitude_exact", first_failure)
+        _fail("FORMAT", "maximum argmax_component is invalid", first_failure, observation)
+    if magnitude.text != _canonical_fraction(magnitude_exact, first_failure, observation):
+        _fail("INTEGRITY", "maximum decimal does not round from magnitude_exact",
+              first_failure, observation)
     if magnitude_quantum != magnitude.quantum:
-        _fail("INTEGRITY", "maximum magnitude quantum mismatch", first_failure)
+        _fail("INTEGRITY", "maximum magnitude quantum mismatch", first_failure, observation)
     if allowance > TWO_NEG_128:
-        _fail("INTEGRITY", "maximum allowance exceeds 2^-128", first_failure)
+        _fail("INTEGRITY", "maximum allowance exceeds 2^-128", first_failure, observation)
     if lower != max(Fraction(0), magnitude_exact - allowance) or upper != magnitude_exact + allowance:
-        _fail("INTEGRITY", "maximum interval mismatch", first_failure)
+        _fail("INTEGRITY", "maximum interval mismatch", first_failure, observation)
     tuple_values = []
     offset = 14
     for residual in MAX_IDS:
         for tuple_component in ("real", "imag"):
-            canonical = _canonical(values[offset], residual + "." + tuple_component, first_failure)
+            canonical = _canonical(values[offset], residual + "." + tuple_component,
+                                   first_failure, observation)
             quantum = _rational(values[offset + 1], values[offset + 2],
-                                residual + "." + tuple_component + " quantum", first_failure)
+                                residual + "." + tuple_component + " quantum", first_failure,
+                                observation)
             if quantum != canonical.quantum:
-                _fail("INTEGRITY", f"{residual}.{tuple_component} quantum mismatch", first_failure)
+                _fail("INTEGRITY", f"{residual}.{tuple_component} quantum mismatch",
+                      first_failure, observation)
             tuple_values.append((residual, tuple_component, canonical))
             offset += 3
     selected = next(v for r, c, v in tuple_values if r == expected_id and c == component)
     if abs(selected.value) != magnitude.value:
-        _fail("INTEGRITY", "selected tuple component does not match maximum magnitude", first_failure)
+        _fail("INTEGRITY", "selected tuple component does not match maximum magnitude",
+              first_failure, observation)
     if magnitude.value == 0 and (slot != 0 or component != "real"):
-        _fail("INTEGRITY", "zero maximum must select slot 0 real", first_failure)
+        _fail("INTEGRITY", "zero maximum must select slot 0 real", first_failure,
+              observation)
     return MaximumRecord(expected_id, magnitude, magnitude_exact, magnitude_quantum,
                          allowance, lower, upper, slot, component, tuple(tuple_values))
 
@@ -484,6 +524,7 @@ def parse_primary_log(log_bytes, expected_identity, *, ctest_exit_code, timed_ou
     first_failure = None
     boost_version = None
     endpoint_scope = None
+    observation = EMPTY_OBSERVATION
 
     physical_lines = log_bytes.split(b"\n")
     for line_number, body in enumerate(physical_lines, 1):
@@ -491,137 +532,163 @@ def parse_primary_log(log_bytes, expected_identity, *, ctest_exit_code, timed_ou
         if not raw.startswith(b"61: "):
             continue
         if len(raw) > MAX_PRIMARY_LINE_BYTES:
-            _fail("FORMAT", "selected primary line exceeds 32768 bytes", first_failure)
+            _fail("FORMAT", "selected primary line exceeds 32768 bytes", first_failure,
+                  observation)
         if expected_identity.host == "windows" and raw.endswith(b"\r\n"):
             payload = raw[4:-2]
         else:
             payload = raw[4:-1] if raw.endswith(b"\n") else raw[4:]
         if b"\r" in payload or b"\0" in payload:
-            _fail("FORMAT", "selected primary line contains CR or NUL", first_failure)
+            _fail("FORMAT", "selected primary line contains CR or NUL", first_failure,
+                  observation)
         try:
             line = payload.decode("ascii")
         except UnicodeDecodeError:
-            _fail("FORMAT", "selected primary line is not ASCII", first_failure)
+            _fail("FORMAT", "selected primary line is not ASCII", first_failure,
+                  observation)
         if line.startswith("FS_ENDPOINT_FAILURE"):
             if original_result is not None:
-                _fail("REPLAY", "typed failure follows legacy COMPLETE", first_failure)
+                _fail("REPLAY", "typed failure follows legacy COMPLETE", first_failure,
+                      observation)
             match = re.fullmatch(r"FS_ENDPOINT_FAILURE reason=([^ ]+) detail=(.+)", line)
             if not match:
-                _fail("FORMAT", "malformed FS_ENDPOINT_FAILURE", first_failure)
+                _fail("FORMAT", "malformed FS_ENDPOINT_FAILURE", first_failure, observation)
             if first_failure is not None:
-                _fail("REPLAY", "duplicate FS_ENDPOINT_FAILURE", first_failure)
+                _fail("REPLAY", "duplicate FS_ENDPOINT_FAILURE", first_failure, observation)
             reason = match.group(1)
             if reason not in UNRESOLVED_REASONS | FATAL_REASONS:
-                _fail("FORMAT", "unknown FS_ENDPOINT_FAILURE reason")
+                _fail("FORMAT", "unknown FS_ENDPOINT_FAILURE reason", observation=observation)
             first_failure = FailureRecord(reason, match.group(2), line_number)
             continue
         if line.startswith("BEGIN "):
             if original_result is not None:
-                _fail("REPLAY", "legacy BEGIN follows legacy COMPLETE", first_failure)
+                _fail("REPLAY", "legacy BEGIN follows legacy COMPLETE", first_failure,
+                      observation)
             if begin:
-                _fail("REPLAY", "duplicate legacy BEGIN", first_failure)
+                _fail("REPLAY", "duplicate legacy BEGIN", first_failure, observation)
             _parse_legacy_begin(line, expected_identity, first_failure)
             begin = True
             continue
         if line.startswith("RECEIPT "):
             if not begin or cleanup or endpoint_begin or original_result is not None:
-                _fail("REPLAY", "legacy RECEIPT is out of order", first_failure)
+                _fail("REPLAY", "legacy RECEIPT is out of order", first_failure, observation)
             legacy_scales.append(_parse_receipt(line, len(legacy_scales), scales, first_failure))
             continue
         if line.startswith("OBS numeric_gate=FAIL label="):
             if not begin or cleanup or original_result is not None:
-                _fail("REPLAY", "numeric gate observation is out of order", first_failure)
+                _fail("REPLAY", "numeric gate observation is out of order", first_failure,
+                      observation)
             label = line[len("OBS numeric_gate=FAIL label="):]
             if label not in NUMERIC_GATE_LABELS:
-                _fail("FORMAT", "numeric gate label is not frozen", first_failure)
+                _fail("FORMAT", "numeric gate label is not frozen", first_failure,
+                      observation)
             position = NUMERIC_GATE_LABELS.index(label)
             if labels and position <= NUMERIC_GATE_LABELS.index(labels[-1]):
-                _fail("REPLAY", "numeric gate label is duplicated or reordered", first_failure)
+                _fail("REPLAY", "numeric gate label is duplicated or reordered", first_failure,
+                      observation)
             labels.append(label)
             continue
         if line.startswith("OBS lifecycle=paper_owner_cleanup"):
             if cleanup or len(legacy_scales) != 9 or original_result is not None:
-                _fail("REPLAY", "cleanup is duplicate or out of order", first_failure)
+                _fail("REPLAY", "cleanup is duplicate or out of order", first_failure,
+                      observation)
             if line != "OBS lifecycle=paper_owner_cleanup owned_absent=8 unrelated_unchanged=2 result=PASS":
-                _fail("INTEGRITY", "owner cleanup record mismatch", first_failure)
+                _fail("INTEGRITY", "owner cleanup record mismatch", first_failure,
+                      observation)
             cleanup = True
             continue
         if line.startswith("OBS numeric_gate_failures="):
             if not cleanup or declared_count is not None or original_result is not None:
-                _fail("REPLAY", "numeric failure count is duplicate or out of order", first_failure)
+                _fail("REPLAY", "numeric failure count is duplicate or out of order",
+                      first_failure, observation)
             declared_count = _parse_uint(line.split("=", 1)[1], "numeric_gate_failures",
                                          first_failure=first_failure)
             if declared_count != len(labels):
-                _fail("INTEGRITY", "numeric failure count does not match observations", first_failure)
+                _fail("INTEGRITY", "numeric failure count does not match observations",
+                      first_failure, observation)
             continue
         if line.startswith("FS_ENDPOINT_BEGIN"):
             if endpoint_begin or declared_count is None or original_result is not None:
-                _fail("REPLAY", "endpoint BEGIN is duplicate or out of order", first_failure)
+                _fail("REPLAY", "endpoint BEGIN is duplicate or out of order", first_failure,
+                      observation)
             values = _fields(line, "FS_ENDPOINT_BEGIN",
                              ("schema", "scope", "source_commit", "host", "github_run_id",
                               "github_run_attempt", "boost_version"), first_failure)
             if values[0] != "fs-residual-endpoint-primary-v1-r1":
-                _fail("FORMAT", "endpoint BEGIN schema mismatch", first_failure)
+                _fail("FORMAT", "endpoint BEGIN schema mismatch", first_failure, observation)
             if values[1] != expected_scope:
-                _fail("IDENTITY", "endpoint BEGIN scope mismatch", first_failure)
+                _fail("IDENTITY", "endpoint BEGIN scope mismatch", first_failure, observation)
             if values[2:6] != [expected_identity.source_commit, expected_identity.host,
                                expected_identity.github_run_id,
                                expected_identity.github_run_attempt]:
-                _fail("IDENTITY", "endpoint BEGIN identity mismatch", first_failure)
+                _fail("IDENTITY", "endpoint BEGIN identity mismatch", first_failure, observation)
             boost_version = _parse_uint(values[6], "boost_version", positive=True,
                                         first_failure=first_failure)
             endpoint_scope = values[1]
             endpoint_begin = True
+            observation = PrimaryObservation(None, "NOT_OBSERVED", boost_version)
             continue
         if line.startswith("FS_ENDPOINT_SCALE"):
             if not endpoint_begin or checks or maxima or endpoint_complete or original_result is not None:
-                _fail("REPLAY", "endpoint SCALE is out of order", first_failure)
+                _fail("REPLAY", "endpoint SCALE is out of order", first_failure, observation)
             index, nt, dt = _fields(line, "FS_ENDPOINT_SCALE",
-                                    ("index", "numerator", "denominator"), first_failure)
-            parsed_index = _parse_uint(index, "scale index", maximum=8, first_failure=first_failure)
+                                    ("index", "numerator", "denominator"), first_failure,
+                                    observation)
+            parsed_index = _parse_uint(index, "scale index", maximum=8,
+                                       first_failure=first_failure, observation=observation)
             if parsed_index != len(endpoint_scales):
-                _fail("REPLAY", "endpoint SCALE is duplicate or reordered", first_failure)
-            numerator = _parse_uint(nt, "scale numerator", positive=True, first_failure=first_failure)
-            denominator = _parse_uint(dt, "scale denominator", positive=True, first_failure=first_failure)
+                _fail("REPLAY", "endpoint SCALE is duplicate or reordered", first_failure,
+                      observation)
+            numerator = _parse_uint(nt, "scale numerator", positive=True,
+                                    first_failure=first_failure, observation=observation)
+            denominator = _parse_uint(dt, "scale denominator", positive=True,
+                                      first_failure=first_failure, observation=observation)
             if math.gcd(numerator, denominator) != 1 or (numerator, denominator) != scales[parsed_index]:
-                _fail("INTEGRITY", f"endpoint SCALE {parsed_index} mismatch", first_failure)
+                _fail("INTEGRITY", f"endpoint SCALE {parsed_index} mismatch", first_failure,
+                      observation)
             endpoint_scales.append(ScaleReceipt(parsed_index, numerator, denominator))
             continue
         if line.startswith("FS_ENDPOINT_CHECK"):
             if len(endpoint_scales) != 9 or maxima or endpoint_complete or original_result is not None:
-                _fail("REPLAY", "endpoint CHECK is out of order", first_failure)
+                _fail("REPLAY", "endpoint CHECK is out of order", first_failure, observation)
             if len(checks) >= len(CHECK_IDS):
-                _fail("REPLAY", "duplicate endpoint CHECK", first_failure)
-            checks.append(_parse_check(line, CHECK_IDS[len(checks)], first_failure))
+                _fail("REPLAY", "duplicate endpoint CHECK", first_failure, observation)
+            checks.append(_parse_check(line, CHECK_IDS[len(checks)], first_failure,
+                                       observation))
             continue
         if line.startswith("FS_ENDPOINT_MAX"):
             if len(checks) != 24 or endpoint_complete or original_result is not None:
-                _fail("REPLAY", "endpoint MAX is out of order", first_failure)
+                _fail("REPLAY", "endpoint MAX is out of order", first_failure, observation)
             if len(maxima) >= len(MAX_IDS):
-                _fail("REPLAY", "duplicate endpoint MAX", first_failure)
-            maxima.append(_parse_maximum(line, MAX_IDS[len(maxima)], first_failure))
+                _fail("REPLAY", "duplicate endpoint MAX", first_failure, observation)
+            maxima.append(_parse_maximum(line, MAX_IDS[len(maxima)], first_failure,
+                                         observation))
             if len(maxima) == len(MAX_IDS):
-                _validate_primary_allowance_consistency(checks, maxima, first_failure)
+                _validate_primary_allowance_consistency(checks, maxima, first_failure,
+                                                        observation)
             continue
         if line.startswith("FS_ENDPOINT_COMPLETE"):
             if endpoint_complete is not None or len(maxima) != 4 or original_result is not None:
-                _fail("REPLAY", "endpoint COMPLETE is duplicate or out of order", first_failure)
+                _fail("REPLAY", "endpoint COMPLETE is duplicate or out of order", first_failure,
+                      observation)
             values = _fields(line, "FS_ENDPOINT_COMPLETE",
                              ("result", "assurance", "row_count", "check_count",
                               "numeric_gate_failures", "E80_disposition", "A_disposition",
-                              "owner_cleanup_confirmed"), first_failure)
+                              "owner_cleanup_confirmed"), first_failure, observation)
             if values[0:4] != ["PASS", "CONDITIONAL", "16384", "24"] or values[6:] != ["NOT_ADOPTED", "true"]:
-                _fail("INTEGRITY", "endpoint COMPLETE fixed fields mismatch", first_failure)
+                _fail("INTEGRITY", "endpoint COMPLETE fixed fields mismatch", first_failure,
+                      observation)
             endpoint_count = _parse_uint(values[4], "endpoint numeric_gate_failures",
-                                         first_failure=first_failure)
+                                         first_failure=first_failure, observation=observation)
             disposition = "PASS" if endpoint_count == 0 else "FAIL"
             if endpoint_count != declared_count or values[5] != disposition:
-                _fail("INTEGRITY", "endpoint E80 summary mismatch", first_failure)
+                _fail("INTEGRITY", "endpoint E80 summary mismatch", first_failure,
+                      observation)
             endpoint_complete = (endpoint_count, disposition)
             continue
         if line.startswith("COMPLETE test=paper_full_eight_square_contract"):
             if original_result is not None:
-                _fail("REPLAY", "duplicate legacy COMPLETE", first_failure)
+                _fail("REPLAY", "duplicate legacy COMPLETE", first_failure, observation)
             pass_line = (
                 "COMPLETE test=paper_full_eight_square_contract result=PASS source=" +
                 expected_identity.source_commit + " openfhe_pin=" + OPENFHE_PIN +
@@ -635,10 +702,18 @@ def parse_primary_log(log_bytes, expected_identity, *, ctest_exit_code, timed_ou
             elif line.startswith(fail_prefix) and len(line) > len(fail_prefix):
                 original_result, original_reason = "FAIL", line[len(fail_prefix):]
             else:
-                _fail("IDENTITY", "legacy COMPLETE identity or grammar mismatch", first_failure)
+                _fail("IDENTITY", "legacy COMPLETE identity or grammar mismatch", first_failure,
+                      observation)
+            if declared_count is not None:
+                expected_result = "PASS" if declared_count == 0 else "FAIL"
+                expected_reason = None if declared_count == 0 else (
+                    f"paper contract: accumulated numeric acceptance failures: {declared_count}")
+                if original_result == expected_result and original_reason == expected_reason:
+                    observation = PrimaryObservation(
+                        declared_count, expected_result, observation.boost_version)
             continue
         if line.startswith("FS_ENDPOINT_"):
-            _fail("FORMAT", "unknown FS_ENDPOINT primary record", first_failure)
+            _fail("FORMAT", "unknown FS_ENDPOINT primary record", first_failure, observation)
 
     legacy_numeric_complete = False
     if declared_count is not None and original_result is not None:
@@ -659,9 +734,11 @@ def parse_primary_log(log_bytes, expected_identity, *, ctest_exit_code, timed_ou
     retained_e80 = ("PASS" if retained_count == 0 else "FAIL") if retained_count is not None else "NOT_OBSERVED"
     if record_set_complete:
         if first_failure is not None:
-            _fail("INTEGRITY", "typed endpoint failure coexists with complete evidence", first_failure)
+            _fail("INTEGRITY", "typed endpoint failure coexists with complete evidence",
+                  first_failure, observation)
         if not legacy_numeric_complete:
-            _fail("INTEGRITY", "legacy COMPLETE disagrees with numeric observations")
+            _fail("INTEGRITY", "legacy COMPLETE disagrees with numeric observations",
+                  observation=observation)
         if timed_out:
             return PrimaryLog("FATAL", "TIMEOUT", expected_identity, ctest_exit_code, True,
                               True, True, tuple(labels), retained_count, retained_e80,

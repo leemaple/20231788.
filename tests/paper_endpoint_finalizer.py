@@ -7,7 +7,8 @@ import stat
 import sys
 
 from paper_endpoint_primary_reader import (
-    MAX_LOG_BYTES, PrimaryIdentity, PrimaryLogError, parse_primary_log,
+    EMPTY_OBSERVATION, MAX_LOG_BYTES, PrimaryIdentity, PrimaryLogError,
+    PrimaryObservation, parse_primary_log,
 )
 from paper_endpoint_publication import (
     PublicationError, PublicationIdentity, publish_endpoint_evidence, select_endpoint_uploads,
@@ -23,17 +24,16 @@ class FinalizationError(ValueError):
         self.detail = detail
 
 
-def _status(identity, exit_code, reason, primary=None):
+def _status(identity, exit_code, reason, observation=EMPTY_OBSERVATION):
     state, observer = INCOMPLETE_CAUSES[reason]
     stem = ("fs-residual-endpoint-01.v1-r1." + identity.source_commit + "." +
             identity.host + "." + identity.github_run_id + "." + identity.github_run_attempt)
-    count = primary.numeric_gate_failures if primary is not None else None
-    boost = primary.endpoint.boost_version if primary is not None and primary.endpoint else None
+    count = observation.numeric_gate_failures
+    boost = observation.boost_version
     return dict(FIXED, source_commit=identity.source_commit, host=identity.host,
                 github_run_id=identity.github_run_id, github_run_attempt=identity.github_run_attempt,
                 chain_count=None, evidence_state=state, reason=reason, boost_version=boost,
-                E80_disposition=("NOT_OBSERVED" if count is None else
-                                 ("PASS" if count == 0 else "FAIL")),
+                E80_disposition=observation.e80_disposition,
                 observer_disposition=observer, numeric_gate_failures=count, row_count=0,
                 canonical_bytes=None, canonical_sha256=None, gzip_bytes=None,
                 gzip_sha256=None, gzip_filename=None, status_filename=stem + ".status.json",
@@ -57,12 +57,12 @@ def _exact_canonical_entry(parent, expected_name):
         raise FinalizationError("NO_CANONICAL", "exact canonical candidate is absent")
 
 
-def _bounded_read(path, maximum):
+def _bounded_read(path, maximum, *, allow_empty=False):
     try:
         info = path.lstat()
         if not stat.S_ISREG(info.st_mode) or path.resolve(strict=True) != path:
             raise FinalizationError("INTEGRITY", "input is not a normalized regular file")
-        if not 0 < info.st_size <= maximum:
+        if not (0 if allow_empty else 1) <= info.st_size <= maximum:
             raise FinalizationError("FORMAT", "input outside bounded byte envelope")
         with path.open("rb") as stream:
             data = stream.read(maximum + 1)
@@ -96,8 +96,10 @@ def finalize_endpoint(primary_log, identity, *, ctest_exit_code, capture_exit_co
         _real_directory(parent)
     if (canonical_parent == published_parent or
             canonical_parent.parent != published_parent.parent or
-            not isinstance(primary_log, Path) or primary_log.parent != published_parent.parent):
-        raise ValueError("distinct canonical/published parents and primary must share one scratch root")
+            canonical_parent.name != "canonical" or published_parent.name != "published" or
+            not isinstance(primary_log, Path) or primary_log.name != "primary.ctest.log" or
+            primary_log.parent != published_parent.parent):
+        raise ValueError("exact canonical/published/primary.ctest.log roles must share one scratch root")
     identity_arguments = dict(expected_source_commit=identity.source_commit,
                               expected_host=identity.host, expected_run_id=identity.github_run_id,
                               expected_run_attempt=identity.github_run_attempt)
@@ -107,7 +109,7 @@ def finalize_endpoint(primary_log, identity, *, ctest_exit_code, capture_exit_co
     primary_identity = PrimaryIdentity(identity.source_commit, identity.host,
                                        identity.github_run_id, identity.github_run_attempt)
     try:
-        data = _bounded_read(primary_log, MAX_LOG_BYTES)
+        data = _bounded_read(primary_log, MAX_LOG_BYTES, allow_empty=True)
     except FinalizationError as error:
         return publish_endpoint_evidence(
             published_parent, identity, _status(identity, ctest_exit_code, error.reason))
@@ -120,14 +122,21 @@ def finalize_endpoint(primary_log, identity, *, ctest_exit_code, capture_exit_co
         else:
             reason = "IO_ERROR" if capture_exit_code else error.reason
         return publish_endpoint_evidence(
-            published_parent, identity, _status(identity, ctest_exit_code, reason))
+            published_parent, identity,
+            _status(identity, ctest_exit_code, reason, error.observation))
+    observation = PrimaryObservation(
+        primary.numeric_gate_failures, primary.e80_disposition,
+        primary.endpoint.boost_version if primary.endpoint is not None else None)
     if capture_exit_code:
         reason = primary.first_failure.reason if primary.first_failure is not None else "IO_ERROR"
     else:
         reason = primary.reason
+        if (reason == "NO_CANONICAL" and ctest_exit_code != 0 and
+                primary.numeric_gate_failures is None):
+            reason = "CTEST_FATAL"
     if primary.evidence_state != "COMPLETE" or capture_exit_code:
         return publish_endpoint_evidence(
-            published_parent, identity, _status(identity, ctest_exit_code, reason, primary))
+            published_parent, identity, _status(identity, ctest_exit_code, reason, observation))
     stem = initial_status["status_filename"].removesuffix(".status.json")
     canonical_directory = canonical_parent / stem
     canonical_path = canonical_directory / (stem + ".tsv")
@@ -151,10 +160,10 @@ def finalize_endpoint(primary_log, identity, *, ctest_exit_code, capture_exit_co
             raise FinalizationError("INTEGRITY", "canonical bytes changed across validation")
     except OSError as error:
         return publish_endpoint_evidence(
-            published_parent, identity, _status(identity, ctest_exit_code, "IO_ERROR", primary))
+            published_parent, identity, _status(identity, ctest_exit_code, "IO_ERROR", observation))
     except (FinalizationError, SidecarError) as error:
         return publish_endpoint_evidence(
-            published_parent, identity, _status(identity, ctest_exit_code, error.reason, primary))
+            published_parent, identity, _status(identity, ctest_exit_code, error.reason, observation))
     raise NotImplementedError("validated sidecar/replay finalization is the next TDD slice")
 
 
@@ -174,6 +183,8 @@ def _write_manifest(published_parent, identity, manifest):
     with manifest.open("xb") as stream:
         if stream.write(data) != len(data):
             raise OSError("incomplete upload manifest write")
+    if _bounded_read(manifest, len(data)) != data:
+        raise FinalizationError("INTEGRITY", "closed manifest differs from exact selected paths")
 
 
 def main(argv=None):
