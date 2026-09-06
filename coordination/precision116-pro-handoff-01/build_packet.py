@@ -286,7 +286,7 @@ def add_git(payloads, path, output_path=None, kind="cleanroom_git_blob"):
 
 
 def decode_manifest_archive(path, expected_bytes, expected_sha, expected_manifest_sha,
-                            expected_members, self_field):
+                            expected_members, self_field, self_value):
     require(path.is_file() and not path.is_symlink(), f"archive absent/non-regular: {path}")
     raw = path.read_bytes()
     require(len(raw) == expected_bytes and sha256(raw) == expected_sha,
@@ -314,7 +314,8 @@ def decode_manifest_archive(path, expected_bytes, expected_sha, expected_manifes
     require(sha256(decoded["MANIFEST.json"]) == expected_manifest_sha,
             f"archive manifest identity changed: {path}")
     manifest = json.loads(decoded["MANIFEST.json"].decode("utf-8"))
-    require(manifest.get(self_field) is True, f"archive manifest is not self-excluding: {path}")
+    require(manifest.get(self_field) == self_value,
+            f"archive manifest self-exclusion differs from pinned schema: {path}")
     rows = manifest.get("files")
     require(isinstance(rows, list) and len(rows) == len(decoded) - 1,
             f"archive manifest count/shape mismatch: {path}")
@@ -435,7 +436,7 @@ def main():
 
     scientific, scientific_rows = decode_manifest_archive(
         SCIENTIFIC_INPUT, SCIENTIFIC_INPUT_BYTES, SCIENTIFIC_INPUT_SHA256,
-        SCIENTIFIC_INPUT_MANIFEST_SHA256, 218, "manifest_self_excluded",
+        SCIENTIFIC_INPUT_MANIFEST_SHA256, 218, "manifest_self_excluded", True,
     )
     require(
         json.loads(scientific["MANIFEST.json"])["official_pin"] == OFFICIAL_PIN,
@@ -452,7 +453,7 @@ def main():
 
     returned, return_rows = decode_manifest_archive(
         SCIENTIFIC_RETURN, SCIENTIFIC_RETURN_BYTES, SCIENTIFIC_RETURN_SHA256,
-        SCIENTIFIC_RETURN_MANIFEST_SHA256, 100, "self_excluded",
+        SCIENTIFIC_RETURN_MANIFEST_SHA256, 100, "self_excluded", ["MANIFEST.json"],
     )
     require(json.loads(returned["MANIFEST.json"])["input_archive_sha256"]
             == SCIENTIFIC_INPUT_SHA256, "scientific return is not bound to the selected input")
