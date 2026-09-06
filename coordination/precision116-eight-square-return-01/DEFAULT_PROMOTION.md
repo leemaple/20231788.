@@ -17,3 +17,16 @@ The canonical local branch therefore intentionally remains behind the remote def
 The default push created[run34057018442](https://github.com/leemaple/20231788./actions/runs/34057018442) at `2026-09-06T20:07:46Z`, exact source`1552ebe...`, initially `in_progress`. This run should build the normal library/API contracts and run the existing60 unique regressions on each host, without compiling/running either expensive full-eight experiment or old endpoint publisher. It verifies final delivery wiring, not another scientific sample.
 
 Retain actual final run/attempt/job evidence and verify the disabled steps before closing delivery. The full goal remains ACTIVE while this check and the final completion audit are pending.
+
+## Actual default-CI closure
+
+Run34057018442/attempt1 at exact source1552ebe completed SUCCESS on both hosts. Linux job101550656406 ran6m1s; Windows job101550656594 ran8m57s. The final60-test suites passed in2.47s and2.96s respectively. Each host recorded123 passing invocations covering60 unique tests, plus the five explicitly built API contracts.
+
+Root retained the final status and both raw logs, checked exact source/attempt/job outcomes and CTest identities, and confirmed all ten numerical/endpoint-related steps SKIPPED on each host, including both always-path publisher steps. Thus this final regression did not repeat either numerical experiment. The read-only watch exited0.
+
+- `DEFAULT_LINUX_JOB_101550656406.log`:461833bytes, SHA256`70371b7b210d61df4fc6c2d6969334ee2e62ce63760c876a755b69a1dbfb7b49`.
+- `DEFAULT_WINDOWS_JOB_101550656594.log`:472585bytes, SHA256`6d0388783447eab3a8deedaf7dc0dfeeb954c140473be70bd079f5a0fd4ed269`.
+- `DEFAULT_RUN_34057018442_STATUS.json`:14607bytes, SHA256`79ac23a54d9bee0e23f07ae21637473a385ead922b20e58cc12663015d223f85`.
+- `ROOT_DEFAULT_RUN_RECEIPT.json` records the exact disabled-step inventory and root reconciliation.
+
+The final-CI evidence gate is closed. Later completion metadata and the reviewed Chinese guide change no source, header, test, CMake or workflow relative to1552ebe; their final default push may use a documentation-only CI skip without concealing an untested code/configuration change.
