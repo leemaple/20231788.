@@ -1,0 +1,23 @@
+{
+  "source_base": "2af8745b8f58898c10570110cf550200f108965c",
+  "command": "PYTHONPATH=tests PYTHONDONTWRITEBYTECODE=1 /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_gzip",
+  "python": "3.12.14",
+  "zlib_build": "1.2.12",
+  "zlib_runtime": "1.2.12",
+  "recorded_at_utc": "2026-09-06 03:18:49 UTC",
+  "result": {
+    "chunk_id": "fbe5a5",
+    "wall_time_seconds": 0.052081875,
+    "exit_code": 0,
+    "original_token_count": 457,
+    "output": "test_accepts_inclusive_16_mib_canonical_limit (test_paper_endpoint_gzip.GzipBoundaryTests.test_accepts_inclusive_16_mib_canonical_limit) ... ok\ntest_decompression_is_bounded_by_expected_size_without_accepting_a_prefix (test_paper_endpoint_gzip.GzipBoundaryTests.test_decompression_is_bounded_by_expected_size_without_accepting_a_prefix) ... ok\ntest_nonzero_synthetic_bytes_roundtrip_with_exact_header_and_external_facts (test_paper_endpoint_gzip.GzipBoundaryTests.test_nonzero_synthetic_bytes_roundtrip_with_exact_header_and_external_facts) ... ok\ntest_rejects_boolean_float_and_false_external_facts (test_paper_endpoint_gzip.GzipBoundaryTests.test_rejects_boolean_float_and_false_external_facts) ... ok\ntest_rejects_compressed_envelope_before_parsing_payload (test_paper_endpoint_gzip.GzipBoundaryTests.test_rejects_compressed_envelope_before_parsing_payload) ... ok\ntest_rejects_crc_and_isize_corruption_even_with_updated_external_gzip_hash (test_paper_endpoint_gzip.GzipBoundaryTests.test_rejects_crc_and_isize_corruption_even_with_updated_external_gzip_hash) ... ok\ntest_rejects_empty_mutable_and_oversized_canonical_input (test_paper_endpoint_gzip.GzipBoundaryTests.test_rejects_empty_mutable_and_oversized_canonical_input) ... ok\ntest_rejects_extra_member_trailing_data_and_missing_trailer (test_paper_endpoint_gzip.GzipBoundaryTests.test_rejects_extra_member_trailing_data_and_missing_trailer) ... ok\ntest_rejects_optional_header_fields_mtime_xfl_os_and_wrong_method (test_paper_endpoint_gzip.GzipBoundaryTests.test_rejects_optional_header_fields_mtime_xfl_os_and_wrong_method) ... ok\ntest_verifier_rejects_mutable_gzip_input (test_paper_endpoint_gzip.GzipBoundaryTests.test_verifier_rejects_mutable_gzip_input) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.091s\n\nOK\n"
+  },
+  "hashes": {
+    "chunk_id": "5333a8",
+    "wall_time_seconds": 0.000003208,
+    "exit_code": 0,
+    "original_token_count": 49,
+    "output": "d5a6825f5a1092b52f07da70f2a09d45065c283b1fe6e6c6d3d6dcf4f199839e  tests/paper_endpoint_gzip.py\n29e7a184e77b86110be75bab1b09bf5ed356b47b3e68f946ad99438b5b1fb32c  tests/test_paper_endpoint_gzip.py\n"
+  },
+  "classification": "Independent review requested three missing boundary tests. First execution passed against unchanged implementation; this is regression coverage, not a new behavioral RED/GREEN fix."
+}
