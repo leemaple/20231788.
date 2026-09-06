@@ -1,0 +1,760 @@
+[
+  {
+    "bytes": 19993,
+    "locators": [
+      {
+        "line": 3,
+        "term": "Assignment and authority",
+        "text": "## 1. Assignment and authority"
+      },
+      {
+        "line": 60,
+        "term": "Required implementation",
+        "text": "## 5. Required implementation, governed by full ENDPOINT_SPEC v1-r1"
+      },
+      {
+        "line": 73,
+        "term": "Test-first delivery",
+        "text": "## 6. Test-first delivery and execution limits"
+      },
+      {
+        "line": 85,
+        "term": "Return artifacts",
+        "text": "## 7. Return artifacts and acceptance"
+      }
+    ],
+    "packet_path": "TASK.md",
+    "sha256": "85d4f0f7d2437d00feed663c7b5c20bbb29a4246e613f6582c03ebdca4d29cfb"
+  },
+  {
+    "bytes": 38570,
+    "locators": [
+      {
+        "line": 111,
+        "term": "2^12",
+        "text": "D_p(K) = 2^12*u_p*K"
+      },
+      {
+        "line": 124,
+        "term": "2^270",
+        "text": "2^256*((1+16u_p)^255-1) < P_p = 2^270*u_p"
+      },
+      {
+        "line": 177,
+        "term": "2^270",
+        "text": "For scalar-only Python replay of the completed sidecar, use local Decimal precision256, ROUND_HALF_EVEN, ample checked exponent range and finite arithmetic. Reconstruct exact dyadic z by integer rational arithmetic (terminating decimal), parse the110-digit residuals exactly, and use only eight explicit scalar complex squarings per power, not a transform. Assume the specified Decimal nearest model with u_dec=10^-255; use P_dec=2^270*u_dec and R_dec=2^264*u_dec. Record Python/Decimal environment in the job log. These are conditional roundoff bounds, not a second encryption."
+      },
+      {
+        "line": 179,
+        "term": "2^158",
+        "text": "Both the exact reconstructed fresh value z+serialized_E0 and the represented Decimal reconstruction must have component one-norm <=3/2, tested by exact rational comparison. With the live5/4 guard and D<=T_budget, the exact fresh value also lies in this disk. Use L_replay=256*(3/2)^255<2^158, checked by integer arithmetic. This sharper fixed radius is not fitted to a measured residual. If the guard fails, replay is UNRESOLVED, not a request for more digits or trials. Let t0,t8 be the worst serialization bounds, and let"
+      },
+      {
+        "line": 171,
+        "term": "119",
+        "text": "Each real/imaginary field is exactly119 ASCII bytes. The sole zero is `+0.` followed by109 zero digits and `e+00000`. A nonzero field has explicit sign, leading digit1\u20139, decimal point, exactly109 fractional digits, lowercase e, exponent sign and exactly5 exponent digits. Nonzero grammar is `[+-][1-9]\\.[0-9]{109}e[+-][0-9]{5}`, with full-string ASCII matching, plus the semantic prohibition of `e-00000`. `e+00000` is the only zero exponent. Negative zero, a leading0 with nonzero fractional digits, alternate zero exponents, spaces, CR, LF, tabs, Unicode digits, infinities, NaNs, excess/missing digits, exponent overflow and trailing bytes are rejected. A zero-spelling is valid only for an exact represented zero; no flush-to-zero formatting."
+      },
+      {
+        "line": 191,
+        "term": "gzip",
+        "text": "The four-row proposal illustration is not live evidence. No synthetic TSV/status/gzip is included in this return. Future file-system tests use fresh disposable temporary directories, a distinct `fs-endpoint-synthetic-` namespace and explicit `scope=synthetic`; none may enter a live artifact upload. A four-row illustration cannot satisfy a16384-row check."
+      },
+      {
+        "line": 298,
+        "term": "gzip",
+        "text": "For complete evidence only, compress the validated bytes as one gzip member, DEFLATE level9, mtime0, no FNAME/FEXTRA/FCOMMENT, XFL2, OS255, fixed ten-byte header `1f8b08000000000002ff`. Validate trailer CRC/ISIZE, reject concatenated members or trailing bytes, and decompress with the16 MiB ceiling; the result must equal the canonical bytes. Compression-library versions may produce different DEFLATE streams: canonical byte identity is authoritative, and the *actual* gzip bytes receive an external hash. Do not falsely require cross-zlib gzip identity."
+      },
+      {
+        "line": 307,
+        "term": "gzip",
+        "text": "canonical_bytes, canonical_sha256, gzip_bytes, gzip_sha256, gzip_filename,"
+      },
+      {
+        "line": 313,
+        "term": "gzip",
+        "text": "Complete status: evidence_state=`COMPLETE`, reason=`NONE`, observer_disposition=`PASS`, packer_disposition=`PASS`, row_count=16384, valid non-null canonical/gzip hashes and sizes, filename exactly the stem, observed numeric_gate_failures, E80 PASS/FAIL consistent with both primary records and CTest status (PASS requires zero; E80 FAIL requires nonzero). Assurance remains CONDITIONAL. A remains NOT_ADOPTED. `packer_disposition=PASS` means complete evidence was validated, not CTest or E80 passed."
+      },
+      {
+        "line": 315,
+        "term": "gzip",
+        "text": "Incomplete status has chain_count=null: a BEGIN declaring a planned chain is not proof that a complete encrypted chain was observed. Incomplete status: evidence_state is `UNRESOLVED`, `FATAL` or `MISSING`; reason is one of `MODEL_UNSUPPORTED`, `ESTIMATOR_CEILING`, `CONDITIONING`, `NONFINITE`, `INTEGRITY`, `IDENTITY`, `FORMAT`, `REPLAY`, `CTEST_FATAL`, `TIMEOUT`, `NO_CANONICAL`, `IO_ERROR`. Choose the first detected cause in execution order; do not overwrite a concrete earlier cause with NO_CANONICAL. Model/ceiling/conditioning causes are UNRESOLVED; malformed/nonfinite/semantic/IO causes are FATAL; absent unexplained canonical evidence is MISSING. `packer_disposition=FAIL`; observer_disposition is UNRESOLVED, FAIL, or NOT_OBSERVED according to that cause. No gzip is published; canonical/gzip sizes, hashes and gzip_filename are null; row_count=0. Numeric count and E80 are retained only when the complete primary E80 record is available, otherwise count=null and E80=`NOT_OBSERVED`. Boost version is null if the process never reported it. No null is replaced by a fake zero hash or invented value. A status write failure remains a failing job, not a successful empty upload. The status is bounded to256 KiB."
+      },
+      {
+        "line": 317,
+        "term": "gzip",
+        "text": "Publish transactionally: validate the closed gzip and status in private staging, rename gzip first and validated status last as the commit marker. On failure, remove any orphan final gzip before publishing incomplete status. Upload selection must read and validate the final status: COMPLETE requires both matching files, incomplete selects status only, and absent/invalid status fails rather than uploading an orphan gzip. Filesystem/cleanup failures remain job failures; no claim of crash-proof durability is made."
+      },
+      {
+        "line": 323,
+        "term": "gzip",
+        "text": "3. Eventual always-run artifact upload runs even after finite E80 failure and targets only the exact intended gzip/status paths for this identity. Incomplete runs upload only the explicit status; absence of both files is an upload error. No recursive wildcard, temporary canonical, synthetic namespace, debug key material or broad working directory upload. A failed upload is not silently ignored. The workflow job remains nonzero when CTest or packing failed."
+      },
+      {
+        "line": 3,
+        "term": "status",
+        "text": "Status: **SPEC_READY for the bounded API/link RED only; candidate for Codex adoption.** Numerical assurance is explicitly **CONDITIONAL**, not an interval or numerical-library certificate. No implementation, compilation, numerical observer execution, new encrypted observation, or project acceptance is asserted by this specification. The two supplied proposals are superseded by the rules below where they differ. Source aliases and physical line references are in SOURCE_MAP.md."
+      },
+      {
+        "line": 69,
+        "term": "status",
+        "text": "`Binary<512>` and `Binary<768>` use `digit_base_2`, allocator-backed storage, explicit `et_off`. The new types' bit counts/radix and the old Real's 512-bit count are statically asserted. All array-sized scratch storage is heap-backed. Definitions of these functions, observer tables, live capture, formatter, status writer, packer, wrapper, and upload remain **absent from RED**. Invalid input must not be turned into expected unsupported-success."
+      },
+      {
+        "line": 102,
+        "term": "status",
+        "text": "For unchanged Horner, `R(Int)` uses a decimal string constructor, not a proven exact cast. Future GREEN must check each actual coefficient and scale integer's **represented result** against the exact integer (relative error <=u_512), plus exponent range, before applying H. This check wraps observations; it must not rewrite Horner. A checked direct binary conversion cannot silently be substituted for that source path. Likewise, the producer-to-observer comparison has a declared absolute transport allowance C_prod=2^-300 per complex value for ClientReal100-to-binary transport while |components|<=2; actual conversion range/finite status must be checked. This transport bound is conditional, NOT a zero-error bound on the producer's algorithm. Lack of applicable support is UNRESOLVED. [O:52,301\u2013313; IOH:23\u201324; IO:701\u2013716]"
+      },
+      {
+        "line": 191,
+        "term": "status",
+        "text": "The four-row proposal illustration is not live evidence. No synthetic TSV/status/gzip is included in this return. Future file-system tests use fresh disposable temporary directories, a distinct `fs-endpoint-synthetic-` namespace and explicit `scope=synthetic`; none may enter a live artifact upload. A four-row illustration cannot satisfy a16384-row check."
+      },
+      {
+        "line": 284,
+        "term": "status",
+        "text": "Primary stdout additionally retains the24 comparisons and all original output, plus max E0/E8/I8/A8 and signed maximizing tuples. For these new diagnostic metrics use the same canonical spelling and include their rounding quantum in replay comparisons. Preserve existing45/100-digit legacy observations verbatim; they are not silently substituted for the new110-digit values. The status writer consumes the actual primary CTest61 stream and ignores its unprefixed failure replay."
+      },
+      {
+        "line": 286,
+        "term": "status",
+        "text": "## 8. External status, compression, and failure-preserving publication"
+      },
+      {
+        "line": 294,
+        "term": "status",
+        "text": "Each invocation owns a newly created, previously nonexistent publication directory and separate staging directory. Refuse preexisting identity outputs, symlinks, path traversal, foreign run IDs and overwrites. Do not reuse a previous run's output. Only `<stem>.tsv.gz` and `<stem>.status.json` may be retained/uploaded for the live endpoint evidence; an incomplete run retains status only. The canonical `.tsv` is private staging, not uploaded. No secret keys, ciphertexts, raw integer polynomials or synthetic fixtures are exported."
+      },
+      {
+        "line": 300,
+        "term": "status",
+        "text": "Status is a single ASCII JSON object, sorted keys, separators `,` and `:`, no indentation, duplicate keys, NaN, floats or BOM, ending with one LF. JSON Booleans are not accepted as integer fields. Every object key below is mandatory and no other key is permitted:"
+      },
+      {
+        "line": 308,
+        "term": "status",
+        "text": "status_filename, ctest_exit_code, exit_code_convention, packer_disposition"
+      },
+      {
+        "line": 311,
+        "term": "status",
+        "text": "`schema` is `fs-residual-endpoint-status-v1-r1`. Identity/model/assurance/name fields have the preceding values; run IDs are decimal **strings** (avoiding JSON range ambiguity), chain_count and byte/row/count/Boost/exit fields are JSON integers when known. `exit_code_convention` is `shell-status`; `ctest_exit_code` records the actual enclosing Bash shell status0..255, including its signal convention, never merely a Boolean. Windows uses the existing MSYS Bash workflow, not a newly invented PowerShell mapping. Status contains its filename for identity but **neither its own SHA nor its own byte count**."
+      },
+      {
+        "line": 313,
+        "term": "status",
+        "text": "Complete status: evidence_state=`COMPLETE`, reason=`NONE`, observer_disposition=`PASS`, packer_disposition=`PASS`, row_count=16384, valid non-null canonical/gzip hashes and sizes, filename exactly the stem, observed numeric_gate_failures, E80 PASS/FAIL consistent with both primary records and CTest status (PASS requires zero; E80 FAIL requires nonzero). Assurance remains CONDITIONAL. A remains NOT_ADOPTED. `packer_disposition=PASS` means complete evidence was validated, not CTest or E80 passed."
+      },
+      {
+        "line": 315,
+        "term": "status",
+        "text": "Incomplete status has chain_count=null: a BEGIN declaring a planned chain is not proof that a complete encrypted chain was observed. Incomplete status: evidence_state is `UNRESOLVED`, `FATAL` or `MISSING`; reason is one of `MODEL_UNSUPPORTED`, `ESTIMATOR_CEILING`, `CONDITIONING`, `NONFINITE`, `INTEGRITY`, `IDENTITY`, `FORMAT`, `REPLAY`, `CTEST_FATAL`, `TIMEOUT`, `NO_CANONICAL`, `IO_ERROR`. Choose the first detected cause in execution order; do not overwrite a concrete earlier cause with NO_CANONICAL. Model/ceiling/conditioning causes are UNRESOLVED; malformed/nonfinite/semantic/IO causes are FATAL; absent unexplained canonical evidence is MISSING. `packer_disposition=FAIL`; observer_disposition is UNRESOLVED, FAIL, or NOT_OBSERVED according to that cause. No gzip is published; canonical/gzip sizes, hashes and gzip_filename are null; row_count=0. Numeric count and E80 are retained only when the complete primary E80 record is available, otherwise count=null and E80=`NOT_OBSERVED`. Boost version is null if the process never reported it. No null is replaced by a fake zero hash or invented value. A status write failure remains a failing job, not a successful empty upload. The status is bounded to256 KiB."
+      },
+      {
+        "line": 317,
+        "term": "status",
+        "text": "Publish transactionally: validate the closed gzip and status in private staging, rename gzip first and validated status last as the commit marker. On failure, remove any orphan final gzip before publishing incomplete status. Upload selection must read and validate the final status: COMPLETE requires both matching files, incomplete selects status only, and absent/invalid status fails rather than uploading an orphan gzip. Filesystem/cleanup failures remain job failures; no claim of crash-proof durability is made."
+      },
+      {
+        "line": 322,
+        "term": "status",
+        "text": "2. Invoke the existing paper CTest exactly once, capturing its primary log and actual return code. Invoke the independent packer/status finalizer once irrespective of that code. Do not invoke the executable again to recover evidence. If CTest was nonzero, propagate that original nonzero status after finalization; if it was zero but packing failed, return a nonzero packaging failure. No success-forcing pipe, `continue-on-error` or unconditional zero exit may hide either failure."
+      },
+      {
+        "line": 323,
+        "term": "status",
+        "text": "3. Eventual always-run artifact upload runs even after finite E80 failure and targets only the exact intended gzip/status paths for this identity. Incomplete runs upload only the explicit status; absence of both files is an upload error. No recursive wildcard, temporary canonical, synthetic namespace, debug key material or broad working directory upload. A failed upload is not silently ignored. The workflow job remains nonzero when CTest or packing failed."
+      },
+      {
+        "line": 325,
+        "term": "status",
+        "text": "The status can be hashed by a later external delivery receipt; no recursive self-hash fixed point is requested. Publishing complete evidence is not guaranteed after process death; truthful incomplete status is the only permitted fallback."
+      },
+      {
+        "line": 144,
+        "term": "replay",
+        "text": "T_obs=2^-120 and T_budget=2^-128 are exact rationals. T_E=2^-80 remains exclusively the old acceptance threshold. Every named D,H,J,P,Q,R,B, transport/replay allowance and combined allowance that is actually used must be <=T_budget. Zero is allowed. Excess is UNRESOLVED, not rounding down or substituting a larger tolerance."
+      },
+      {
+        "line": 169,
+        "term": "replay",
+        "text": "## 6. Canonical decimals and scalar-only replay"
+      },
+      {
+        "line": 177,
+        "term": "replay",
+        "text": "For scalar-only Python replay of the completed sidecar, use local Decimal precision256, ROUND_HALF_EVEN, ample checked exponent range and finite arithmetic. Reconstruct exact dyadic z by integer rational arithmetic (terminating decimal), parse the110-digit residuals exactly, and use only eight explicit scalar complex squarings per power, not a transform. Assume the specified Decimal nearest model with u_dec=10^-255; use P_dec=2^270*u_dec and R_dec=2^264*u_dec. Record Python/Decimal environment in the job log. These are conditional roundoff bounds, not a second encryption."
+      },
+      {
+        "line": 179,
+        "term": "replay",
+        "text": "Both the exact reconstructed fresh value z+serialized_E0 and the represented Decimal reconstruction must have component one-norm <=3/2, tested by exact rational comparison. With the live5/4 guard and D<=T_budget, the exact fresh value also lies in this disk. Use L_replay=256*(3/2)^255<2^158, checked by integer arithmetic. This sharper fixed radius is not fitted to a measured residual. If the guard fails, replay is UNRESOLVED, not a request for more digits or trials. Let t0,t8 be the worst serialization bounds, and let"
+      },
+      {
+        "line": 183,
+        "term": "replay",
+        "text": "B_replay_E0 = B_E0,768 + t0"
+      },
+      {
+        "line": 184,
+        "term": "replay",
+        "text": "B_replay_E8 = B_E8,768 + t8"
+      },
+      {
+        "line": 185,
+        "term": "replay",
+        "text": "B_replay_I8 = L_replay*U0 + 2*P_dec + R_dec"
+      },
+      {
+        "line": 186,
+        "term": "replay",
+        "text": "B_replay_A8 = B_E8,768 + t8 + L_replay*U0 + 2*P_dec + 2*R_dec"
+      },
+      {
+        "line": 189,
+        "term": "replay",
+        "text": "Here replay constructs fresh=z+E0, terminal=z^256+E8, then its I/A. Comparing replay with retained primary live I/A metrics/tuples uses the sum of its B and the corresponding live B, plus any explicitly bounded rounding of the reported metric. Do not compare only maxima when a signed tuple is available. All such sums must satisfy T_budget. For maximum values, the same triangle bound applies; do not require identical argmax when maxima are indistinguishable within these bounds. The exact integer/rational compare and maxima over parsed sidecar values themselves have no rounding error. The Python packer must not import/execute project code, C++ formatter, production codec, FHE, FFT or NTT."
+      },
+      {
+        "line": 284,
+        "term": "replay",
+        "text": "Primary stdout additionally retains the24 comparisons and all original output, plus max E0/E8/I8/A8 and signed maximizing tuples. For these new diagnostic metrics use the same canonical spelling and include their rounding quantum in replay comparisons. Preserve existing45/100-digit legacy observations verbatim; they are not silently substituted for the new110-digit values. The status writer consumes the actual primary CTest61 stream and ignores its unprefixed failure replay."
+      },
+      {
+        "line": 296,
+        "term": "replay",
+        "text": "The packer validates the completed canonical file independently, identity against the actual primary BEGIN/COMPLETE/cleanup/numeric/scale receipts, all9 exact scale receipts, and the scalar replay. It runs **after the single CTest invocation even when CTest fails**. Primary E80 count must equal the number of primary numeric-failure records. A nonzero count requires original COMPLETE FAIL with the accumulated-numeric-failure reason; zero requires original COMPLETE PASS. Any other fatal reason, timeout, absent completion or incomplete cleanup is not complete endpoint evidence even if a staging file exists. Numeric counts are observed, never assumed equal7. [T:379\u2013394; SL:8022\u20138026; SW:8344\u20138348]"
+      },
+      {
+        "line": 315,
+        "term": "replay",
+        "text": "Incomplete status has chain_count=null: a BEGIN declaring a planned chain is not proof that a complete encrypted chain was observed. Incomplete status: evidence_state is `UNRESOLVED`, `FATAL` or `MISSING`; reason is one of `MODEL_UNSUPPORTED`, `ESTIMATOR_CEILING`, `CONDITIONING`, `NONFINITE`, `INTEGRITY`, `IDENTITY`, `FORMAT`, `REPLAY`, `CTEST_FATAL`, `TIMEOUT`, `NO_CANONICAL`, `IO_ERROR`. Choose the first detected cause in execution order; do not overwrite a concrete earlier cause with NO_CANONICAL. Model/ceiling/conditioning causes are UNRESOLVED; malformed/nonfinite/semantic/IO causes are FATAL; absent unexplained canonical evidence is MISSING. `packer_disposition=FAIL`; observer_disposition is UNRESOLVED, FAIL, or NOT_OBSERVED according to that cause. No gzip is published; canonical/gzip sizes, hashes and gzip_filename are null; row_count=0. Numeric count and E80 are retained only when the complete primary E80 record is available, otherwise count=null and E80=`NOT_OBSERVED`. Boost version is null if the process never reported it. No null is replaced by a fake zero hash or invented value. A status write failure remains a failing job, not a successful empty upload. The status is bounded to256 KiB."
+      },
+      {
+        "line": 92,
+        "term": "UNRESOLVED",
+        "text": "Source-only resource accounting: two DFT tables require 98304 complex root pairs total (196608 sin/cos calls). The separate reference cache adds at most 32768 pairs (65536 calls). Mantissa-only storage is at least 15 MiB for DFT tables and 6 MiB for the reference cache; allocator/object overhead and buffers are additional. A live process uses eight control DFTs plus four endpoint DFTs, twelve in total, reusing those tables. A separate explicit self-test process uses eight control DFTs and no crypto. This is O(N log N) plus bounded direct roots, not a timing guarantee. Keep the existing CTest 1200-second timeout, RUN_SERIAL, OMP_NUM_THREADS=2 and job limits. No benchmark campaign, root recurrence optimization, timeout increase or extra chain is authorized. A timeout is failure/unresolved evidence, not PASS. [CM:263\u2013266; WF:32,162]"
+      },
+      {
+        "line": 100,
+        "term": "UNRESOLVED",
+        "text": "The four supplied Boost reference files are version1.83.0; the actual Windows historical package log records **1.92.0-3**. Do not describe that job as tested on pinned1.83. The future process records actual `BOOST_VERSION`; inspect its effective type/rounding configuration. The packet lacks complete `cpp_bin_float/io.hpp`, `cpp_bin_float/transcendental.hpp`, Boost.Math constants closure, and `cpp_dec_float.hpp`/number support needed for a complete parser/producer-library proof. This is an explicit assurance gap, not an invented implementation or permission to fetch substituted sources. Unsupported operation graph, precision, conversions or exponent range produces UNRESOLVED. Accepting the declared conditional premise is distinct from claiming it was tested or proved. [SW:359\u2013375,514\u2013515; WF:204\u2013215]"
+      },
+      {
+        "line": 102,
+        "term": "UNRESOLVED",
+        "text": "For unchanged Horner, `R(Int)` uses a decimal string constructor, not a proven exact cast. Future GREEN must check each actual coefficient and scale integer's **represented result** against the exact integer (relative error <=u_512), plus exponent range, before applying H. This check wraps observations; it must not rewrite Horner. A checked direct binary conversion cannot silently be substituted for that source path. Likewise, the producer-to-observer comparison has a declared absolute transport allowance C_prod=2^-300 per complex value for ClientReal100-to-binary transport while |components|<=2; actual conversion range/finite status must be checked. This transport bound is conditional, NOT a zero-error bound on the producer's algorithm. Lack of applicable support is UNRESOLVED. [O:52,301\u2013313; IOH:23\u201324; IO:701\u2013716]"
+      },
+      {
+        "line": 117,
+        "term": "UNRESOLVED",
+        "text": "At both precisions require the exact sum of the *represented* endpoint component magnitudes <=5/4, and D_p<=2^-128. Use exact dyadic comparison, not a rounded sum at the threshold. Require the same guard for exact z. These conditions imply both exact and approximate endpoint moduli <2. A finite violated conditioning guard means UNRESOLVED for the observer; it changes neither the input nor original gates. The guard does not apply to the large sparse control's magnitude."
+      },
+      {
+        "line": 144,
+        "term": "UNRESOLVED",
+        "text": "T_obs=2^-120 and T_budget=2^-128 are exact rationals. T_E=2^-80 remains exclusively the old acceptance threshold. Every named D,H,J,P,Q,R,B, transport/replay allowance and combined allowance that is actually used must be <=T_budget. Zero is allowed. Excess is UNRESOLVED, not rounding down or substituting a larger tolerance."
+      },
+      {
+        "line": 161,
+        "term": "UNRESOLVED",
+        "text": "1. Malformed identity/shape/order, nonfinite, invalid rational, source mutation or invalid semantic control: FAIL. Negative d or b is invalid, not UNRESOLVED."
+      },
+      {
+        "line": 163,
+        "term": "UNRESOLVED",
+        "text": "3. Unsupported conditional model/preconditions, or b>T_budget: UNRESOLVED."
+      },
+      {
+        "line": 165,
+        "term": "UNRESOLVED",
+        "text": "5. Otherwise d+b<=T_obs: PASS with CONDITIONAL assurance. If d+b>T_obs: UNRESOLVED (threshold overlap)."
+      },
+      {
+        "line": 167,
+        "term": "UNRESOLVED",
+        "text": "Old E80 predicates and `numericFailures` are not passed through this classifier or reinterpreted using B. They execute unchanged. Only their finite numeric misses are deferred, as already implemented. Model FAIL/UNRESOLVED never becomes a new global PASS; absent or fatal evidence is not PASS."
+      },
+      {
+        "line": 179,
+        "term": "UNRESOLVED",
+        "text": "Both the exact reconstructed fresh value z+serialized_E0 and the represented Decimal reconstruction must have component one-norm <=3/2, tested by exact rational comparison. With the live5/4 guard and D<=T_budget, the exact fresh value also lies in this disk. Use L_replay=256*(3/2)^255<2^158, checked by integer arithmetic. This sharper fixed radius is not fitted to a measured residual. If the guard fails, replay is UNRESOLVED, not a request for more digits or trials. Let t0,t8 be the worst serialization bounds, and let"
+      },
+      {
+        "line": 315,
+        "term": "UNRESOLVED",
+        "text": "Incomplete status has chain_count=null: a BEGIN declaring a planned chain is not proof that a complete encrypted chain was observed. Incomplete status: evidence_state is `UNRESOLVED`, `FATAL` or `MISSING`; reason is one of `MODEL_UNSUPPORTED`, `ESTIMATOR_CEILING`, `CONDITIONING`, `NONFINITE`, `INTEGRITY`, `IDENTITY`, `FORMAT`, `REPLAY`, `CTEST_FATAL`, `TIMEOUT`, `NO_CANONICAL`, `IO_ERROR`. Choose the first detected cause in execution order; do not overwrite a concrete earlier cause with NO_CANONICAL. Model/ceiling/conditioning causes are UNRESOLVED; malformed/nonfinite/semantic/IO causes are FATAL; absent unexplained canonical evidence is MISSING. `packer_disposition=FAIL`; observer_disposition is UNRESOLVED, FAIL, or NOT_OBSERVED according to that cause. No gzip is published; canonical/gzip sizes, hashes and gzip_filename are null; row_count=0. Numeric count and E80 are retained only when the complete primary E80 record is available, otherwise count=null and E80=`NOT_OBSERVED`. Boost version is null if the process never reported it. No null is replaced by a fake zero hash or invented value. A status write failure remains a failing job, not a successful empty upload. The status is bounded to256 KiB."
+      },
+      {
+        "line": 333,
+        "term": "UNRESOLVED",
+        "text": "Stop after those bounded observations and classify their evidence. A complete conditional observer result plus small A is diagnostic progress only, with original E80 separately retained. A discrepancy identifies a concrete slot/path to investigate, not automatic permission for another chain. Unsupported model, timeout, missing evidence or integrity failure stops with FAIL/UNRESOLVED. No quota, statistical replication, random retries, key selection, full-slot intermediate campaign, performance project or final acceptance follows automatically."
+      }
+    ],
+    "packet_path": "context/endpoint-red-return/coordination/fs-residual-endpoint-red-return-01/pro/ENDPOINT_SPEC.md",
+    "sha256": "e98f8cda4a04d92be6b42077c6a4cf40083e0616b935954d44a4724e1fb5662c"
+  },
+  {
+    "bytes": 13758,
+    "locators": [
+      {
+        "line": 55,
+        "term": "canonical",
+        "text": "**Expected RED:** the paper target references undefined functions in `paper_endpoint_contract` and fails at linkage/API availability, after the old checkpoint. Typical GNU/MinGW diagnostics should identify unresolved `Observe`, `ScaledOneNormExponent`, `DirectSparseReference768`, `ExactAbsoluteDifference`, `AssessDifference`, `CanonicalDecimal` or `IsCanonicalDecimal` symbols. Exact compiler wording/order is not prescribed. No unsupported exception is expected, and no stub may satisfy the test."
+      },
+      {
+        "line": 89,
+        "term": "canonical",
+        "text": "- External-hash and compression cases: canonical or gzip byte mutation, wrong byte count/SHA, nonzero gzip mtime, forbidden optional header fields, a second concatenated member, trailing data, CRC mismatch and decompression overflow. Cross-zlib byte differences are acceptable only when the canonical bytes are identical and the *actual* gzip is correctly externally hashed. Status cannot hash itself."
+      },
+      {
+        "line": 107,
+        "term": "canonical",
+        "text": "Observer-specific completion requires applicable CONDITIONAL model/preconditions, every prescribed integrity comparison and estimator ceiling, complete canonical rows and independently validated replay, correct external hashes/status, and correct failure propagation. It does **not** require original CTest to become green by weakening E80. A complete observer implementation can pass its own deterministic controls and produce valid failing-chain evidence while the original paper test remains FAIL; the workflow must visibly remain nonzero in that case."
+      },
+      {
+        "line": 89,
+        "term": "gzip",
+        "text": "- External-hash and compression cases: canonical or gzip byte mutation, wrong byte count/SHA, nonzero gzip mtime, forbidden optional header fields, a second concatenated member, trailing data, CRC mismatch and decompression overflow. Cross-zlib byte differences are acceptable only when the canonical bytes are identical and the *actual* gzip is correctly externally hashed. Status cannot hash itself."
+      },
+      {
+        "line": 89,
+        "term": "nonzero",
+        "text": "- External-hash and compression cases: canonical or gzip byte mutation, wrong byte count/SHA, nonzero gzip mtime, forbidden optional header fields, a second concatenated member, trailing data, CRC mismatch and decompression overflow. Cross-zlib byte differences are acceptable only when the canonical bytes are identical and the *actual* gzip is correctly externally hashed. Status cannot hash itself."
+      },
+      {
+        "line": 90,
+        "term": "nonzero",
+        "text": "- Failure propagation cases in a disposable wrapper harness: a simulated finite E80 CTest nonzero code with complete evidence still closes/validates/packs and returns nonzero; simulated CTest zero plus packer failure returns nonzero; missing/fatal/timeout evidence gets truthful incomplete status, no fake sidecar and no PASS. These simulated shell outcomes must be labeled synthetic, not substituted for actual CTest or chain evidence. Test exact-path upload selection so no synthetic/temp/foreign-identity file is retained."
+      },
+      {
+        "line": 107,
+        "term": "nonzero",
+        "text": "Observer-specific completion requires applicable CONDITIONAL model/preconditions, every prescribed integrity comparison and estimator ceiling, complete canonical rows and independently validated replay, correct external hashes/status, and correct failure propagation. It does **not** require original CTest to become green by weakening E80. A complete observer implementation can pass its own deterministic controls and produce valid failing-chain evidence while the original paper test remains FAIL; the workflow must visibly remain nonzero in that case."
+      },
+      {
+        "line": 3,
+        "term": "RED",
+        "text": "## 1. What is delivered now"
+      },
+      {
+        "line": 5,
+        "term": "RED",
+        "text": "This is a specification plus one API/link RED candidate. It does not contain GREEN. The new test-local observer functions, direct reference, exact comparator/classifier, formatter and validator are deliberately declared but undefined. No live endpoint capture, packer/status writer, failure-preserving CTest wrapper, upload implementation or workflow change is delivered."
+      },
+      {
+        "line": 9,
+        "term": "RED",
+        "text": "## 2. Ordered application and local static checks"
+      },
+      {
+        "line": 15,
+        "term": "RED",
+        "text": "3. From the exact project root run `git apply --check <absolute-return-directory>/RED.patch`, then `git apply <absolute-return-directory>/RED.patch`. There is one patch and no prerequisite or GREEN patch. Do not separately copy the complete files after applying; those files are for byte verification, not an additional change."
+      },
+      {
+        "line": 24,
+        "term": "RED",
+        "text": "It checks bytes/manifests, exact integer slot mapping, rational majorants, historical primary log counts, synthetic grammar fixtures and disposable patch application. It executes only its own code plus `git apply`; it imports no project/returned-input code and performs no transform, codec, compiler or crypto operation. Running it is not C++ RED or GREEN. The JSON records actual absolute patch-command paths, so those path strings differ on another machine while arithmetic/source results should agree."
+      },
+      {
+        "line": 28,
+        "term": "RED",
+        "text": "## 3. Hosted RED \u2014 expected sequence and retained result"
+      },
+      {
+        "line": 55,
+        "term": "RED",
+        "text": "**Expected RED:** the paper target references undefined functions in `paper_endpoint_contract` and fails at linkage/API availability, after the old checkpoint. Typical GNU/MinGW diagnostics should identify unresolved `Observe`, `ScaledOneNormExponent`, `DirectSparseReference768`, `ExactAbsoluteDifference`, `AssessDifference`, `CanonicalDecimal` or `IsCanonicalDecimal` symbols. Exact compiler wording/order is not prescribed. No unsupported exception is expected, and no stub may satisfy the test."
+      },
+      {
+        "line": 57,
+        "term": "RED",
+        "text": "No C++ build was run here. A syntax/warning/error before the intended undefined seam, an old60 failure, dependency failure or timeout is a different result and must be retained honestly; it is not the specified RED. Do not claim a numerical algorithm failed merely because linkage failed. Do not execute the normal paper chain or self-test after a failed build. No live endpoint artifact should exist from RED."
+      },
+      {
+        "line": 61,
+        "term": "RED",
+        "text": "After Codex reviews the actual retained RED, a new complete handoff must provide that evidence, current exact source/manifest and this adopted specification before requesting any GREEN implementation. This task stops at authoring the RED candidate."
+      },
+      {
+        "line": 63,
+        "term": "RED",
+        "text": "## 4. Future deterministic observer self-test (GREEN authorization required)"
+      },
+      {
+        "line": 65,
+        "term": "RED",
+        "text": "Once the missing functions have been implemented in the later authorized handoff, a single future invocation of the existing executable with `--endpoint-observer-self-test` must occur after paper build and before the paper CTest. It is not a CTest entry and does not change normal CTest61 argv. The current RED does not add this workflow invocation; the expected build failure prevents it from running in any case."
+      },
+      {
+        "line": 67,
+        "term": "RED",
+        "text": "The self-test dispatch is before `Run()` and therefore before all context/key/encryption setup. It must report `namespace=synthetic chain_count=0`, never a live BEGIN or endpoint-evidence identity. Expected tests are already assertions in the delivered header:"
+      },
+      {
+        "line": 78,
+        "term": "RED",
+        "text": "The flags and assertion labels identify synthetic diagnostics. These controls are not an interval proof, an independent NTT implementation, or a new encrypted trial. The declared root model remains conditional even when controls pass."
+      },
+      {
+        "line": 80,
+        "term": "RED",
+        "text": "Later GREEN must add appropriate malformed-shape/scale/nonfinite tests around the implemented helpers as required by ENDPOINT_SPEC; it must not claim those absent negative execution results were already observed in RED. All file-based evidence tests below use separate disposable synthetic directories and never the live namespace."
+      },
+      {
+        "line": 84,
+        "term": "RED",
+        "text": "Before the next live chain, test the C++ writer validator and independent Python packer/reader against deterministic synthetic data in their own namespace. No production or user key material is needed. All such implementations and tests are deferred to the later GREEN handoff, not included in RED.patch."
+      },
+      {
+        "line": 88,
+        "term": "RED",
+        "text": "- A complete16384-row synthetic candidate with exact identity/order/precision rules; malformed numeric spellings, missing/duplicate/reordered/extra rows, wrong column/header order, mismatched source/run/attempt/scale/check allowances, wrong row counts, nonfinite and oversized inputs must be rejected independently by C++ and Python. A four-row illustration must fail the live row-count rule and must never enter a live upload directory."
+      },
+      {
+        "line": 96,
+        "term": "RED",
+        "text": "After retained hosted RED and an independently reviewed authorized GREEN patch, run the unchanged old60/API checkpoint and the deterministic observer self-test. Then run **the existing normal paper CTest exactly once per host**, with no extra args:"
+      },
+      {
+        "line": 115,
+        "term": "RED",
+        "text": "| Full-slot E0/E8/I8/A8 | Diagnostic maxima, measured argmax/signed tuples and error allowances |"
+      }
+    ],
+    "packet_path": "context/endpoint-red-return/coordination/fs-residual-endpoint-red-return-01/pro/TEST_PLAN.md",
+    "sha256": "3f91ba02334409492d24efdba56fce7efb9936a9c29f4535e2e81cb8e4973295"
+  },
+  {
+    "bytes": 6005,
+    "locators": [
+      {
+        "line": 3,
+        "term": "33991083281",
+        "text": "Decision2026-09-06 Asia/Shanghai: **ACCEPT_EXPECTED_API_LINK_RED_ONLY** for engineering source `2fe655d493dcde5f05aa1515f41ca6823bba30bd`. The actual [run33991083281](https://github.com/leemaple/20231788./actions/runs/33991083281), push/attempt1, remains FAILURE. This acceptance means the intended missing implementation has a preserved discriminating RED baseline; it does not relabel CI as green or establish numerical correctness."
+      },
+      {
+        "line": 7,
+        "term": "123",
+        "text": "| Old runtime checkpoint | 60 unique tests pass;123 actual invocations | 60 unique tests pass;123 actual invocations |"
+      },
+      {
+        "line": 11,
+        "term": "seven",
+        "text": "| Undefined helpers | Exactly seven endpoint functions,28 diagnostic lines | Exactly seven endpoint functions,28 diagnostic lines |"
+      },
+      {
+        "line": 22,
+        "term": "seven",
+        "text": "Root separately inspected the new header/main, unchanged workflow and actual linker diagnostics, then ran `verify_link_red.py`. `ROOT_LINK_AUDIT.md` and `ROOT_LINK_VERIFICATION.json` preserve39 exact tested-source bindings, unchanged production, compiler/link ordering, all seven endpoint names and terminal errors. Both platforms reached actual linking, so the intended RED was not masked by dependency/syntax/warning failures. Linux's linker failure propagated workflow exit2; Windows exit1. No numerical observer result or new paper chain is present."
+      },
+      {
+        "line": 28,
+        "term": "seven",
+        "text": "- The seven helpers, deterministic observer execution, all-slot endpoint capture, conditional-budget checks, canonical evidence writer/reader, failure-preserving wrapper and artifact transport remain unimplemented or unexecuted in this RED slice."
+      },
+      {
+        "line": 37,
+        "term": "seven",
+        "text": "Codex now owns a new complete sanitized exact-source handoff to a new Pro conversation for the minimal GREEN implementation under the adopted `../fs-residual-endpoint-red-return-01/pro/ENDPOINT_SPEC.md` and its full TEST_PLAN. Include the actual RED receipts, all required clean-room source, pinned pristine inputs and complete scientific/acceptance context; source-package gates still apply. Preserve current seven declarations/fixtures and old60/API/oracle/production boundaries. Add required malformed-helper/evidence/status/serialization/compression tests before claiming GREEN; separate synthetic checks from live evidence. If Pro becomes unavailable, Codex owns the same bounded work with an independent review context."
+      },
+      {
+        "line": 1,
+        "term": "RED",
+        "text": "# Hosted endpoint API/link RED \u2014 accepted evidence"
+      },
+      {
+        "line": 3,
+        "term": "RED",
+        "text": "Decision2026-09-06 Asia/Shanghai: **ACCEPT_EXPECTED_API_LINK_RED_ONLY** for engineering source `2fe655d493dcde5f05aa1515f41ca6823bba30bd`. The actual [run33991083281](https://github.com/leemaple/20231788./actions/runs/33991083281), push/attempt1, remains FAILURE. This acceptance means the intended missing implementation has a preserved discriminating RED baseline; it does not relabel CI as green or establish numerical correctness."
+      },
+      {
+        "line": 16,
+        "term": "RED",
+        "text": "`RUN_TERMINAL.json` retains both full job-step lists and exact run/source/attempt identity. The run ended at2026-09-05T20:56:13Z; jobs ended at20:51:44Z and20:56:12Z. The only failed step on each host was the new paper-target build; its following paper execution was skipped. Both original decoded job logs were fetched exactly once at21:11:53\u201321:11:58Z and retained losslessly, with original BOM/Windows CRLF. See `RAW_PREFLIGHT.json` and the original ignored captures for explicit decoded-versus-HTTP and LF normalization boundaries."
+      },
+      {
+        "line": 18,
+        "term": "RED",
+        "text": "The independent configured Sol/high context authored `verify_old_checkpoint.py` and `OLD_CHECKPOINT_AUDIT.md` without reading root's new-link audit. It independently derived the groups from exact tested CMake/workflow blobs, matched both live57/60 inventories including name/order/argv/add_test backtraces, and bound every actual Start/command/Passed record. The result retains246 total host invocation records, five explicit API targets, four other old explicit targets,12 default executables and the production library. Requested selector is not backend attestation or separate-provider validation."
+      },
+      {
+        "line": 20,
+        "term": "RED",
+        "text": "After fully reading the new481-line checker and audit, root executed the unchanged checker on the tracked copy with explicit repo/coordination/capture/output paths at21:21:57.528714\u201321:21:57.789332Z. Exit0, stderr0. Its183,611-byte JSON is byte-identical to the independent result, SHA-256 `ded5d33cb69c76107b857a776bfcc04bd608b592d1f709dfc13a349de80525fe`. `ROOT_OLD_REEXECUTION.json` contains the actual command and timestamps; explicit paths are needed when running the archived copy outside its original ignored directory. No historical checker was re-executed."
+      },
+      {
+        "line": 22,
+        "term": "RED",
+        "text": "Root separately inspected the new header/main, unchanged workflow and actual linker diagnostics, then ran `verify_link_red.py`. `ROOT_LINK_AUDIT.md` and `ROOT_LINK_VERIFICATION.json` preserve39 exact tested-source bindings, unchanged production, compiler/link ordering, all seven endpoint names and terminal errors. Both platforms reached actual linking, so the intended RED was not masked by dependency/syntax/warning failures. Linux's linker failure propagated workflow exit2; Windows exit1. No numerical observer result or new paper chain is present."
+      },
+      {
+        "line": 28,
+        "term": "RED",
+        "text": "- The seven helpers, deterministic observer execution, all-slot endpoint capture, conditional-budget checks, canonical evidence writer/reader, failure-preserving wrapper and artifact transport remain unimplemented or unexecuted in this RED slice."
+      },
+      {
+        "line": 37,
+        "term": "RED",
+        "text": "Codex now owns a new complete sanitized exact-source handoff to a new Pro conversation for the minimal GREEN implementation under the adopted `../fs-residual-endpoint-red-return-01/pro/ENDPOINT_SPEC.md` and its full TEST_PLAN. Include the actual RED receipts, all required clean-room source, pinned pristine inputs and complete scientific/acceptance context; source-package gates still apply. Preserve current seven declarations/fixtures and old60/API/oracle/production boundaries. Add required malformed-helper/evidence/status/serialization/compression tests before claiming GREEN; separate synthetic checks from live evidence. If Pro becomes unavailable, Codex owns the same bounded work with an independent review context."
+      }
+    ],
+    "packet_path": "evidence/current-endpoint-red-run/coordination/fs-residual-endpoint-red-run-01/ACCEPTANCE.md",
+    "sha256": "5b256daac3b5dc4d541420672641330e3c7e3fdbc1261cce9d2791c731f761f1"
+  },
+  {
+    "bytes": 4955,
+    "locators": [
+      {
+        "line": 3,
+        "term": "33978202814",
+        "text": "2026-09-06 Asia/Shanghai. Run [33978202814](https://github.com/leemaple/20231788./actions/runs/33978202814), automatic push attempt 1, tested source `9f6c8eae06afb342dfa8c8efff9f64ee45b2ab8e`. Documentation baseline `a33d5f1fcfeb51cd63021b1ec1d24d6e76187a1c`. Production remains byte-identical to `b1b024e3134fbb4e8cac7c0d59cf790a37e4ed89`; pristine OpenFHE pin `df495ba2e91739a6dc8f1de254fc5a41155ce504`."
+      },
+      {
+        "line": 1,
+        "term": "FAIL",
+        "text": "# Full signed-diagnostic run: evidence accepted, precision contract FAIL"
+      },
+      {
+        "line": 7,
+        "term": "FAIL",
+        "text": "Both hosted jobs completed with FAILURE: Linux 101338538686 at 2026-09-05T16:39:49Z, Windows 101338538587 at 16:41:43Z. Both compiled the paper target and executed one complete eight-square chain. Linux's earlier Boost warning/compile blocker is resolved by the test-only allocator-backed root temporaries on actual GCC 13.3.0. No production arithmetic changed."
+      },
+      {
+        "line": 11,
+        "term": "FAIL",
+        "text": "The unchanged numerical contract still has exactly seven misses on each host: round 4\u20138 independent end-to-end anchors, final full-slot E, and final independent E. The final `numericFailures==0` assertion is reached and throws; only `COMPLETE result=PASS` is not reached. Final full-slot component error is 8.6166359880052555e-24 on Linux and 8.4890276421661587e-24 on Windows, respectively 10.4169 and 10.2626 times 2^-80. Witness, codec disagreement and independent/production agreement gates pass. These passing controls do not cancel the failed precision gates."
+      },
+      {
+        "line": 23,
+        "term": "FAIL",
+        "text": "Accept the new evidence and compiler-portability result; do NOT mark implementation or frozen precision acceptance complete. Preserve both historical failures, source and gates. Do not change thresholds, encryption distribution, scale, input, or keys to obtain a favorable run."
+      },
+      {
+        "line": 25,
+        "term": "FAIL",
+        "text": "Next is a new independent ChatGPT Pro scientific adjudication of the frozen public-encryption noise/input profile and achievable end-to-end precision, separately from evidence of correct paper multiplication. Supply the full exact-source/paper/official-source/archive and both original hosted runs plus full audits. Ask for one technically justified next decision, with any versioned criterion proposal explicit and independently reviewable. Do not request 1,000 trials or repeat the same random experiment. Fable 5.1 remains unavailable after the verified balance failure; Codex and Pro continue without quota polling or ZCode dispatch."
+      }
+    ],
+    "packet_path": "evidence/historical-original-e80/ACCEPTANCE.md",
+    "sha256": "6775482e4f8d1e16aac05819f7b62d403c8b5a95f83bedc4c0c7301b1ba4d015"
+  },
+  {
+    "bytes": 10324,
+    "locators": [
+      {
+        "line": 1,
+        "term": "Observe",
+        "text": "#ifndef PAPER_ENDPOINT_OBSERVER_CONTRACT_H"
+      },
+      {
+        "line": 2,
+        "term": "Observe",
+        "text": "#define PAPER_ENDPOINT_OBSERVER_CONTRACT_H"
+      },
+      {
+        "line": 12,
+        "term": "Observe",
+        "text": "// The future observer accepts independent integer coefficients and an exact"
+      },
+      {
+        "line": 30,
+        "term": "Observe",
+        "text": "              \"Observer precisions are binary bits, not decimal digits\");"
+      },
+      {
+        "line": 47,
+        "term": "Observe",
+        "text": "Observation Observe(const IntegerPolynomial& polynomial, const Scale& scale);"
+      },
+      {
+        "line": 58,
+        "term": "Observe",
+        "text": "// This is test assertion/fixture code, not an observer, formatter or packer."
+      },
+      {
+        "line": 141,
+        "term": "Observe",
+        "text": "        const auto observed = Observe(polynomial, unit);"
+      },
+      {
+        "line": 144,
+        "term": "Observe",
+        "text": "                    unit.numerator == 1 && unit.denominator == 1, \"synthetic observer input immutability\");"
+      },
+      {
+        "line": 145,
+        "term": "Observe",
+        "text": "        Require(observed.at512.size() == paper_full_test::kSlots &&"
+      },
+      {
+        "line": 146,
+        "term": "Observe",
+        "text": "                    observed.at768.size() == paper_full_test::kSlots &&"
+      },
+      {
+        "line": 148,
+        "term": "Observe",
+        "text": "        Require(observed.coefficientOneNorm == control.norm &&"
+      },
+      {
+        "line": 149,
+        "term": "Observe",
+        "text": "                    observed.scaledOneNormExponent == std::optional<int>(control.kExponent),"
+      },
+      {
+        "line": 156,
+        "term": "Observe",
+        "text": "            const std::array<Binary768, 2> a{{Binary768(observed.at512[s].real), Binary768(observed.at512[s].imag)}};"
+      },
+      {
+        "line": 157,
+        "term": "Observe",
+        "text": "            const std::array<Binary768, 2> b{{observed.at768[s].real, observed.at768[s].imag}};"
+      },
+      {
+        "line": 51,
+        "term": "ExactAbsoluteDifference",
+        "text": "Rational ExactAbsoluteDifference(const Binary768& left, const Binary768& right);"
+      },
+      {
+        "line": 72,
+        "term": "ExactAbsoluteDifference",
+        "text": "    const auto exact = ExactAbsoluteDifference("
+      },
+      {
+        "line": 162,
+        "term": "ExactAbsoluteDifference",
+        "text": "                Require(AssessDifference(ExactAbsoluteDifference(a[component], r[component]), allowance512,"
+      },
+      {
+        "line": 164,
+        "term": "ExactAbsoluteDifference",
+        "text": "                            AssessDifference(ExactAbsoluteDifference(b[component], r[component]), allowance768,"
+      },
+      {
+        "line": 60,
+        "term": "RunSelfTest",
+        "text": "inline void RunSelfTest() {"
+      }
+    ],
+    "packet_path": "project/tests/paper_endpoint_observer_contract.h",
+    "sha256": "c8fce07e3a9969d5109f85856b46ce5bc16657447e9d62726cb11b6e294c1d23"
+  },
+  {
+    "bytes": 26420,
+    "locators": [
+      {
+        "line": 243,
+        "term": "RunPaper",
+        "text": "std::vector<std::string> RunPaper(const RepeatedMult2ClientSetup& foreign,std::size_t& failures) {"
+      },
+      {
+        "line": 368,
+        "term": "RunPaper",
+        "text": "    const auto paperTags=RunPaper(foreign,numericFailures);"
+      },
+      {
+        "line": 367,
+        "term": "numericFailures",
+        "text": "    std::size_t numericFailures=0;"
+      },
+      {
+        "line": 368,
+        "term": "numericFailures",
+        "text": "    const auto paperTags=RunPaper(foreign,numericFailures);"
+      },
+      {
+        "line": 381,
+        "term": "numericFailures",
+        "text": "    std::cout << \"OBS numeric_gate_failures=\" << numericFailures << '\\n' << std::flush;"
+      },
+      {
+        "line": 382,
+        "term": "numericFailures",
+        "text": "    Require(numericFailures==0,\"accumulated numeric acceptance failures: \"+std::to_string(numericFailures));"
+      },
+      {
+        "line": 380,
+        "term": "paper_owner_cleanup",
+        "text": "    std::cout << \"OBS lifecycle=paper_owner_cleanup owned_absent=8 unrelated_unchanged=2 result=PASS\\n\";"
+      }
+    ],
+    "packet_path": "project/tests/paper_full_eight_square_contract_test.cpp",
+    "sha256": "b2c966af71d41e198a85004329fd17fc4caa4ec2b3e9c0a9e7ffcfd1d49a230d"
+  },
+  {
+    "bytes": 16392,
+    "locators": [
+      {
+        "line": 301,
+        "term": "Horner",
+        "text": "inline std::array<Complex,10> Horner(const IntegerPolynomial& polynomial,const Scale& scale,"
+      },
+      {
+        "line": 227,
+        "term": "SparseDecrypt",
+        "text": "inline IntegerPolynomial SparseDecrypt(const Cipher& ciphertext,const SparseSecret& secret) {"
+      },
+      {
+        "line": 276,
+        "term": "SparseDecrypt",
+        "text": "    auto high=SparseDecrypt(pair.GetHigh(),secret);"
+      },
+      {
+        "line": 277,
+        "term": "SparseDecrypt",
+        "text": "    const auto low=SparseDecrypt(pair.GetLow(),secret);"
+      },
+      {
+        "line": 78,
+        "term": "Scales",
+        "text": "inline std::array<Scale,9> Scales() {"
+      }
+    ],
+    "packet_path": "project/tests/paper_full_eight_square_oracle.h",
+    "sha256": "08d6c4dfe6761b84d893d90c120418a29d8a2b96aa05304e95728d72e4c3e203"
+  },
+  {
+    "bytes": 2268,
+    "locators": [
+      {
+        "line": 1,
+        "term": "1000",
+        "text": "# Current acceptance scope: correctness, not 1000 trials"
+      },
+      {
+        "line": 3,
+        "term": "1000",
+        "text": "Authority: on 2026-09-05 the user explicitly said: \u201c\u4e0d\u9700\u8981 1000 \u6b21\u5b9e\u9a8c\uff0c\u80fd\u5224\u65ad\u5b9e\u73b0\u7684\u6b63\u786e\u5c31\u884c\u201d."
+      },
+      {
+        "line": 5,
+        "term": "1000",
+        "text": "requires 1000 experiments before completion. Historical evidence and packet"
+      },
+      {
+        "line": 26,
+        "term": "1000",
+        "text": "Do not start or wait for a 1000-run batch. Statistical performance replication,"
+      },
+      {
+        "line": 1,
+        "term": "correctness",
+        "text": "# Current acceptance scope: correctness, not 1000 trials"
+      },
+      {
+        "line": 9,
+        "term": "correctness",
+        "text": "low-N diagnostic or call source review alone proof of correctness. Preserve:"
+      },
+      {
+        "line": 28,
+        "term": "correctness",
+        "text": "gates under this correctness-focused scope. Record observed time/resource"
+      }
+    ],
+    "packet_path": "requirements/CORRECTNESS_ACCEPTANCE_SCOPE_20260905.md",
+    "sha256": "7c252d3d8693ce98fa4af5f1fe11a00dc9952663262c3e43906710ab2ba273cd"
+  }
+]

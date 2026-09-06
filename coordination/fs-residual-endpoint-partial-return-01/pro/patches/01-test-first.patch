@@ -1,0 +1,256 @@
+diff --git a/tests/test_endpoint_evidence_primitives.py b/tests/test_endpoint_evidence_primitives.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_endpoint_evidence_primitives.py
+@@ -0,0 +1,251 @@
++"""Independent deterministic primitive tests; no FFT/FHE/CTest invocation."""
++from fractions import Fraction as F
++import hashlib
++import json
++from pathlib import Path
++import random
++import struct
++import sys
++import unittest
++import zlib
++
++import endpoint_evidence_primitives as ep
++
++
++class ExactArithmetic(unittest.TestCase):
++    def test_K_zero_and_negative_exponents(self):
++        for c, n, d, expected in [(0,1,1,None),(1,1024,1,-10),
++                (4,8,1,-1),(5,8,1,0),(8,1,1,3),(9,1,1,4),
++                (3,7,2,0),(1,7,2,-1),(1,8,3,-1)]:
++            with self.subTest(c=c,n=n,d=d):
++                self.assertEqual(ep.scaled_one_norm_exponent(c,n,d),expected)
++
++    def test_K_bracket_independently(self):
++        rng = random.Random(1729)
++        for _ in range(200):
++            c = rng.randrange(1, 1 << 128)
++            scale = F(rng.randrange(1,1 << 160),rng.randrange(1,1 << 90))
++            k = ep.scaled_one_norm_exponent(c,scale.numerator,scale.denominator)
++            self.assertLess(c/scale, ep.power_two(k)*2)  # independent exact Fraction
++            self.assertLess(ep.power_two(k-1),c/scale)
++            self.assertLessEqual(c/scale,ep.power_two(k))
++
++    def test_K_rejects_malformed_scale(self):
++        for args in [(-1,1,1),(1,0,1),(1,1,0),(1,1,-1),(1,2,2),
++                     (True,1,1),(1,True,1)]:
++            with self.subTest(args=args), self.assertRaises(ep.EvidenceError):
++                ep.scaled_one_norm_exponent(*args)
++
++    def test_exact_subtraction_low_bit(self):
++        # The subtraction is exact BEFORE any comparison, never rounded to 768.
++        d = abs(F(1)-F(1,1<<1024))
++        self.assertEqual(d.numerator,(1<<1024)-1)
++        self.assertEqual(d.denominator,1<<1024)
++        self.assertNotEqual(d,F(1))
++
++    def test_classifier_precedence(self):
++        t,b=F(1,1<<120),F(1,1<<128)
++        cases=[(-F(1),F(0),"producer",False,"FAIL"),
++               (2*t,F(0),"producer",False,"FAIL"),
++               (F(0),F(0),"producer",False,"UNRESOLVED"),
++               (F(0),2*b,"two-bounded-paths",True,"UNRESOLVED"),
++               (b,b/2,"two-bounded-paths",True,"FAIL"),
++               (b,b/2,"producer",True,"PASS"),
++               (b/2,b,"two-bounded-paths",True,"PASS"),
++               (t,b,"producer",True,"UNRESOLVED"),
++               (t,F(0),"producer",True,"PASS")]
++        for d,a,k,s,w in cases:
++            with self.subTest(expected=w,d=d):
++                self.assertEqual(ep.classify(d,a,kind=k,model_supported=s),w)
++        self.assertEqual(ep.classify(F(0),F(0),kind="invalid",model_supported=True),"FAIL")
++        self.assertEqual(ep.classify(True,F(0),kind="producer",model_supported=True),"FAIL")
++        self.assertEqual(ep.classify(F(0),F(0),kind="producer",model_supported=1),"FAIL")
++
++    def test_endpoint_allowance_identities(self):
++        for p in (512,768):
++            a=ep.endpoint_allowances(p,-10,3)
++            u=F(1,1<<p);df=(1<<12)*u/F(1<<10);dt=(1<<12)*u*8
++            P=(1<<270)*u;Q=P+(1<<263)*df;R=(1<<264)*u
++            self.assertEqual(a["D_fresh"],df)
++            self.assertEqual(a["D_terminal"],dt)
++            self.assertEqual(a["H_fresh"],(1<<24)*u/F(1<<10))
++            self.assertEqual(a["E0"],df+R)
++            self.assertEqual(a["E8"],dt+P+R)
++            self.assertEqual(a["I8"],Q+P+R)
++            self.assertEqual(a["A8"],dt+Q+R)
++            self.assertEqual(a["identity"],a["E8"]+a["I8"]+a["A8"]+2*R)
++        self.assertEqual(ep.endpoint_allowances(768,None,None)["D_fresh"],0)
++        with self.assertRaises(ep.EvidenceError): ep.endpoint_allowances(513,0,0)
++
++    def test_replay_allowances_not_replay_certificate(self):
++        t0,t8=F(1,10**120),F(2,10**122)
++        a=ep.replay_allowances(0,0,t0,t8)
++        u=F(1,1<<768);D=(1<<12)*u;P=(1<<270)*u;R=(1<<264)*u
++        Pdec=F(1<<270,10**255);Rdec=F(1<<264,10**255)
++        L=256*F(3,2)**255;U0=D+R+t0+Rdec
++        self.assertLess(L,F(1<<158))
++        self.assertEqual(a["E0"],D+R+t0)
++        self.assertEqual(a["E8"],D+P+R+t8)
++        self.assertEqual(a["I8"],L*U0+2*Pdec+Rdec)
++        self.assertEqual(a["A8"],D+P+R+t8+L*U0+2*Pdec+2*Rdec)
++        with self.assertRaises(ep.EvidenceError): ep.replay_allowances(0,0,-t0,t8)
++
++    def test_bounded_integer_parser(self):
++        text="9"*7707
++        value=ep.parse_uint(text)
++        self.assertEqual(ep.integer_text(value),text)
++        for bad in ["", "00", "01", "-1", "+1", " 1", "1\n", "１", "1"*10001]:
++            with self.subTest(bad=bad[:20]), self.assertRaises(ep.EvidenceError): ep.parse_uint(bad)
++        with self.assertRaises(ep.EvidenceError): ep.parse_uint("0",positive=True)
++        with self.assertRaises(ep.EvidenceError): ep.integer_text(True)
++        for n,d in [(2,2),(0,2),(1,0),(-1,1)]:
++            with self.assertRaises(ep.EvidenceError): ep.reduced_nonnegative(n,d)
++
++
++class CanonicalDecimal(unittest.TestCase):
++    def test_fixed_spellings_and_unique_zero(self):
++        expected=[(F(0),"+0."+"0"*109+"e+00000"),
++                  (F(1),"+1."+"0"*109+"e+00000"),
++                  (-F(1),"-1."+"0"*109+"e+00000"),
++                  (F(1,2),"+5."+"0"*109+"e-00001")]
++        for v,s in expected:
++            self.assertEqual(ep.canonical_decimal(v),s)
++            self.assertEqual(len(s),119)
++            self.assertTrue(ep.is_canonical_decimal(s))
++            printed,q=ep.parse_canonical_decimal(s)
++            self.assertEqual(printed,v)
++            self.assertGreaterEqual(q,0)
++        self.assertEqual(ep.parse_canonical_decimal(expected[0][1]),(F(0),F(0)))
++
++    def test_positive_and_negative_half_even(self):
++        n=10**110
++        for sign in (1,-1):
++            prefix="+" if sign==1 else "-"
++            self.assertEqual(ep.canonical_decimal(F(sign*(n+5))),prefix+"1."+"0"*109+"e+00110")
++            self.assertEqual(ep.canonical_decimal(F(sign*(n+15))),prefix+"1."+"0"*108+"2e+00110")
++        self.assertEqual(ep.canonical_decimal(F(10**111-5)),"+1."+"0"*109+"e+00111")
++
++    def test_exact_rounding_error_within_quantum(self):
++        rng=random.Random(20260906)
++        for _ in range(150):
++            value=F(rng.getrandbits(800)*rng.choice([-1,1]),1<<rng.randrange(0,1500))
++            spelling=ep.canonical_decimal(value)
++            printed,q=ep.parse_canonical_decimal(spelling)
++            self.assertLessEqual(abs(value-printed),q)
++            self.assertNotEqual(spelling,ep.ZERO)
++
++    def test_negative_exponent_and_represented_low_bit(self):
++        value=F((1<<1024)-1,1<<1024)
++        s=ep.canonical_decimal(value)
++        self.assertEqual(s,"+1."+"0"*109+"e+00000")
++        # Serialization legitimately rounds it, but exact arithmetic above did not.
++        self.assertNotEqual(value,F(1))
++        self.assertEqual(ep.canonical_decimal(F(1,1<<1024))[112:],"e-00309")
++
++    def test_malformed_grammar(self):
++        one="+1."+"0"*109+"e+00000"
++        bad=["",one[:-1],one+"0",one+"\n"," "+one,one+" ",one.replace("e","E"),
++             one.replace("e+00000","e-00000"),"-0."+"0"*109+"e+00000",
++             "+0."+"0"*108+"1e+00000","1."+"0"*109+"e+00000",
++             "nan","+inf","-inf",one.replace("1","１",1),one+"\0",
++             one.replace("+00000","+0000"),one.replace("+00000","+000000")]
++        for s in bad:
++            with self.subTest(s=s[:30]):
++                self.assertFalse(ep.is_canonical_decimal(s))
++                with self.assertRaises(ep.EvidenceError): ep.parse_canonical_decimal(s)
++        self.assertFalse(ep.is_canonical_decimal(None))
++        self.assertFalse(ep.is_canonical_decimal(one.encode()))
++
++    def test_ranges_no_silent_flush_or_integer_global_change(self):
++        limit=sys.get_int_max_str_digits() if hasattr(sys,"get_int_max_str_digits") else None
++        s="+1."+"0"*109+"e-99999"
++        self.assertTrue(ep.is_canonical_decimal(s))
++        v,q=ep.parse_canonical_decimal(s)
++        self.assertGreater(v,0);self.assertGreater(q,0)
++        with self.assertRaises(ep.EvidenceError): ep.canonical_decimal(F(1<<400000))
++        with self.assertRaises(ep.EvidenceError): ep.canonical_decimal(float("nan"))
++        self.assertEqual(sys.get_int_max_str_digits() if hasattr(sys,"get_int_max_str_digits") else None,limit)
++
++
++class EnvelopeAndCompression(unittest.TestCase):
++    def test_ASCII_LF_envelope_bounds(self):
++        ep.validate_ascii_lines(b"a\nb\n")
++        ep.validate_ascii_lines(b"x"*32767+b"\n")
++        for bad in [b"",b"a",b"a\r\n",b"\xef\xbb\xbfa\n",b"a\x00\n",b"a\n\n",
++                    b"x"*32768+b"\n",b"x"*(16*1024*1024+1)]:
++            with self.subTest(length=len(bad)), self.assertRaises(ep.EvidenceError): ep.validate_ascii_lines(bad)
++
++    def test_deterministic_gzip_and_external_identities(self):
++        data=b"synthetic-only\n"*16384
++        blob=ep.gzip_bytes(data)
++        self.assertEqual(blob[:10],bytes.fromhex("1f8b08000000000002ff"))
++        self.assertEqual(blob,ep.gzip_bytes(data))
++        self.assertEqual(ep.validate_gzip(blob,canonical_bytes=len(data),
++            canonical_sha256=hashlib.sha256(data).hexdigest(),gzip_bytes_count=len(blob),
++            gzip_sha256=hashlib.sha256(blob).hexdigest()),data)
++        self.assertEqual(zlib.decompress(blob,31),data)
++        self.assertEqual(struct.unpack("<II",blob[-8:]),(zlib.crc32(data),len(data)))
++        for kwargs in [dict(canonical_bytes=len(data)+1),dict(canonical_bytes=True),
++                dict(canonical_sha256="0"*64),dict(gzip_bytes_count=len(blob)+1),
++                dict(gzip_bytes_count=False),dict(gzip_sha256="0"*64),dict(gzip_sha256="A"*64)]:
++            with self.assertRaises(ep.EvidenceError): ep.validate_gzip(blob,**kwargs)
++
++    def test_gzip_header_mutations_and_trailer(self):
++        good=ep.gzip_bytes(b"synthetic\n"*200)
++        for offset in [0,1,2,3,4,5,6,7,8,9,len(good)-8,len(good)-1]:
++            bad=bytearray(good);bad[offset]^=1
++            with self.subTest(offset=offset), self.assertRaises(ep.EvidenceError): ep.validate_gzip(bytes(bad))
++        for bad in [good[:-1],good[:-9],good+b"x",good+good,good+b"\0",b"x"*17]:
++            with self.subTest(length=len(bad)), self.assertRaises(ep.EvidenceError): ep.validate_gzip(bad)
++
++    def test_decompression_limit_before_unbounded_output(self):
++        data=b"x"*(16*1024*1024+1)
++        compressor=zlib.compressobj(9,zlib.DEFLATED,-15)
++        blob=bytes.fromhex("1f8b08000000000002ff")+compressor.compress(data)+compressor.flush()
++        blob+=struct.pack("<II",zlib.crc32(data),len(data))
++        with self.assertRaises(ep.EvidenceError): ep.validate_gzip(blob)
++        with self.assertRaises(ep.EvidenceError): ep.gzip_bytes(data)
++
++    def test_empty_gzip_is_not_a_canonical_sidecar(self):
++        # Compression grammar and endpoint content completeness are different.
++        blob=ep.gzip_bytes(b"")
++        self.assertEqual(ep.validate_gzip(blob),b"")
++        with self.assertRaises(ep.EvidenceError): ep.validate_ascii_lines(b"")
++
++
++class StrictJSON(unittest.TestCase):
++    keys=frozenset({"ctest_exit_code","reason","schema"})
++    good=b'{"ctest_exit_code":8,"reason":"NONE","schema":"primitive-test-only"}\n'
++
++    def test_sorted_compact_ASCII_only(self):
++        parsed=ep.strict_status_json(self.good,exact_keys=self.keys)
++        self.assertEqual(parsed["ctest_exit_code"],8)
++        for bad in [self.good[:-1],b" "+self.good,self.good.replace(b":8",b": 8"),
++                    self.good.replace(b"\n",b"\r\n"),b"\xef\xbb\xbf"+self.good,
++                    b'{"schema":"primitive-test-only","ctest_exit_code":8,"reason":"NONE"}\n',
++                    self.good.replace(b"NONE",b"\\u00e9")]:
++            with self.assertRaises(ep.EvidenceError): ep.strict_status_json(bad,exact_keys=self.keys)
++
++    def test_duplicate_floats_nonfinite_and_boolean_rejected(self):
++        for token in [b"true",b"false",b"8.0",b"NaN",b"Infinity",b"-Infinity"]:
++            with self.subTest(token=token), self.assertRaises(ep.EvidenceError):
++                ep.strict_status_json(self.good.replace(b":8",b":"+token),exact_keys=self.keys)
++        duplicate=b'{"ctest_exit_code":8,"ctest_exit_code":9,"reason":"NONE","schema":"primitive-test-only"}\n'
++        with self.assertRaises(ep.EvidenceError): ep.strict_status_json(duplicate,exact_keys=self.keys)
++
++    def test_no_self_hash_even_when_caller_includes_key(self):
++        for key in ["status_bytes","status_sha256","status_hash","status_size"]:
++            obj={"ctest_exit_code":8,"reason":"NONE","schema":"primitive-test-only",key:1}
++            raw=(json.dumps(obj,sort_keys=True,separators=(",",":"))+"\n").encode()
++            with self.assertRaises(ep.EvidenceError): ep.strict_status_json(raw,exact_keys=self.keys|{key})
++
++    def test_unknown_keys_nested_bool_and_depth(self):
++        for raw in [b'{"a":true}\n',b'{"a":[false]}\n',b'{"a":{"b":true}}\n']:
++            with self.assertRaises(ep.EvidenceError): ep.strict_status_json(raw,exact_keys=frozenset({"a"}))
++        with self.assertRaises(ep.EvidenceError): ep.strict_status_json(self.good,exact_keys=frozenset({"schema"}))
++        nested=b'{"a":'+b'['*10+b'0'+b']'*10+b'}\n'
++        with self.assertRaises(ep.EvidenceError): ep.strict_status_json(nested,exact_keys=frozenset({"a"}))
++
++
++if __name__ == "__main__":
++    unittest.main(verbosity=2)
