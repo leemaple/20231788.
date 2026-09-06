@@ -15,6 +15,10 @@ root = pathlib.Path(os.environ["SYNTHETIC_ENDPOINT_ROOT"])
 kind = pathlib.Path(sys.argv[0]).name
 if kind == "python-fixture":
     if sys.argv[1:2] == ["-c"]:
+        if os.environ["SYNTHETIC_LAUNCH_FAILURE"] == "127":
+            (root / "bin/ctest-fixture").unlink()
+        sys.version_info = (3, int(os.environ["SYNTHETIC_PYTHON_MINOR"]), 0)
+        exec(compile(sys.argv[2], "external-python-version-probe", "exec", optimize=1))
         sys.exit(0)
     assert sys.argv[1] == "-B"
     assert pathlib.Path(sys.argv[2]).name == "paper_endpoint_finalizer.py"
@@ -51,7 +55,8 @@ sys.exit(int(os.environ["SYNTHETIC_CTEST_STATUS"]))
 
 class EndpointWrapperTests(unittest.TestCase):
     def run_fixture(self, ctest_status, finalizer_status, *, capture_status=0,
-                    scratch_extra=False, missing_finalizer=False):
+                    scratch_extra=False, missing_finalizer=False, python_minor=12,
+                    launch_failure=0):
         self.assertTrue(WRAPPER.is_file(), "one-shot wrapper is not implemented")
         with tempfile.TemporaryDirectory(prefix="fs-endpoint-synthetic-wrapper-") as temp:
             root = Path(temp).resolve()
@@ -71,6 +76,9 @@ class EndpointWrapperTests(unittest.TestCase):
             bin_dir.mkdir()
             for name in ("python-fixture", "ctest-fixture"):
                 path = bin_dir / name
+                if name == "ctest-fixture" and launch_failure == 126:
+                    path.mkdir()
+                    continue
                 path.write_text("#!" + sys.executable + "\n" + FAKE_TOOL)
                 path.chmod(0o700)
             if capture_status:
@@ -81,6 +89,8 @@ class EndpointWrapperTests(unittest.TestCase):
             env = dict(os.environ, SYNTHETIC_ENDPOINT_ROOT=str(root),
                        SYNTHETIC_CTEST_STATUS=str(ctest_status),
                        SYNTHETIC_FINALIZER_STATUS=str(finalizer_status),
+                       SYNTHETIC_PYTHON_MINOR=str(python_minor),
+                       SYNTHETIC_LAUNCH_FAILURE=str(launch_failure),
                        GITHUB_SHA="a" * 40, GITHUB_RUN_ID="42", GITHUB_RUN_ATTEMPT="1")
             env["PATH"] = str(bin_dir) + os.pathsep + env["PATH"]
             result = subprocess.run([
@@ -135,6 +145,21 @@ class EndpointWrapperTests(unittest.TestCase):
                 self.assertEqual(calls, [])
                 if arguments.get("scratch_extra"):
                     self.assertEqual(preserved, b"preserve")
+
+    def test_optimized_python_probe_rejects_wrong_version_before_ctest(self):
+        result, ctest_calls, calls, _ = self.run_fixture(0, 0, python_minor=11)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(ctest_calls, [])
+        self.assertEqual(calls, [])
+
+    def test_actual_launch_failures_still_finalize_once_with_enclosing_status(self):
+        for code in (126, 127):
+            with self.subTest(launch_failure=code):
+                result, ctest_calls, calls, _ = self.run_fixture(0, 1, launch_failure=code)
+                self.assertEqual(result.returncode, code, result.stderr.decode())
+                self.assertEqual(ctest_calls, [])
+                self.assertEqual(len(calls), 1)
+                self.assertEqual(calls[0]["--ctest-exit-code"], str(code))
 
 
 if __name__ == "__main__":

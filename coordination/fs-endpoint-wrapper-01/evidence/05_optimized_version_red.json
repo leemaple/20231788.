@@ -1,0 +1,11 @@
+{
+  "command": "shasum -a256 tests/run_paper_endpoint_once.sh tests/test_paper_endpoint_wrapper.py && /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B -m unittest discover -s tests -p test_paper_endpoint_wrapper.py -k optimized -v",
+  "scope": "Independent source finding: external Python fixture executes actual version probe under optimize=1 with simulated sys.version_info3.11; no real3.11 runtime claim",
+  "tool_result": {
+    "chunk_id": "fa7ff5",
+    "wall_time_seconds": 0.729959792,
+    "exit_code": 1,
+    "original_token_count": 283,
+    "output": "1c83afb0c5f332048d2e40df0292b933a3490097ba660d74a054b31798015033  tests/run_paper_endpoint_once.sh\n8d5f83181dd2a848293c74e2cc2368852b4cedcee86a65080b52d21539657a78  tests/test_paper_endpoint_wrapper.py\ntest_optimized_python_probe_rejects_wrong_version_before_ctest (test_paper_endpoint_wrapper.EndpointWrapperTests.test_optimized_python_probe_rejects_wrong_version_before_ctest) ... FAIL\n\n======================================================================\nFAIL: test_optimized_python_probe_rejects_wrong_version_before_ctest (test_paper_endpoint_wrapper.EndpointWrapperTests.test_optimized_python_probe_rejects_wrong_version_before_ctest)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905/tests/test_paper_endpoint_wrapper.py\", line 152, in test_optimized_python_probe_rejects_wrong_version_before_ctest\n    self.assertNotEqual(result.returncode, 0)\nAssertionError: 0 == 0\n\n----------------------------------------------------------------------\nRan 1 test in 0.763s\n\nFAILED (failures=1)\n"
+  }
+}

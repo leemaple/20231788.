@@ -1,0 +1,10 @@
+{
+  "command": "shasum -a256 tests/paper_endpoint_finalizer.py tests/test_paper_endpoint_finalizer.py && /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B -m unittest discover -s tests -p test_paper_endpoint_finalizer.py -k cli -v",
+  "tool_result": {
+    "chunk_id": "336362",
+    "wall_time_seconds": 0.148677042,
+    "exit_code": 1,
+    "original_token_count": 309,
+    "output": "13965beb31c0e9bf06fe69e166809253e240d4d7af669c4d8a232c58e86c06be  tests/paper_endpoint_finalizer.py\n652fc34a196b9b672bf4ea8e80db9d11310ab07493653393953e66c9f6289cb1  tests/test_paper_endpoint_finalizer.py\ntest_cli_finalizes_failure_then_selects_exact_status_manifest (test_paper_endpoint_finalizer.EndpointFinalizerTests.test_cli_finalizes_failure_then_selects_exact_status_manifest) ... FAIL\n\n======================================================================\nFAIL: test_cli_finalizes_failure_then_selects_exact_status_manifest (test_paper_endpoint_finalizer.EndpointFinalizerTests.test_cli_finalizes_failure_then_selects_exact_status_manifest)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905/tests/test_paper_endpoint_finalizer.py\", line 151, in test_cli_finalizes_failure_then_selects_exact_status_manifest\n    self.assertEqual(result.returncode, 8, result.stderr.decode())\nAssertionError: 1 != 8 : finalizer CLI is not implemented; this draft must not run a live chain\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.048s\n\nFAILED (failures=1)\n"
+  }
+}

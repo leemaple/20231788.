@@ -1,0 +1,18 @@
+Command:
+PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B -m unittest -v tests.test_paper_endpoint_error_reasons tests.test_paper_endpoint_sidecar_reader tests.test_paper_endpoint_sidecar_replay
+
+Environment: Python 3.12.14; macOS; RUN_FULL_ENDPOINT_REPLAY unset
+Observed: 2026-09-06T13:12:02+0800
+Source SHA-256:
+  paper_endpoint_sidecar_reader.py 40d00c340f40504722e000d450a6883c01fadf99ebb05678018c01b7267008a0
+  paper_endpoint_sidecar_replay.py 4f44b8012171fc79d5edcae8455f270b161dd354997be0b7bcc96d15b9574d46
+  test_paper_endpoint_error_reasons.py 0e071d53dc55a6456f115634b636e09be716ba92449cbf3830c7c523c8d5c902
+Exit: 0
+
+New typed-reason tests: 11 PASS.
+Existing standalone sidecar-reader tests: 11 PASS.
+Existing scalar-replay tests: 10 PASS, 1 SKIP with the retained message
+`HOSTED NOT RUN: complete 16384-row Decimal256 replay`.
+
+Ran 33 tests in 1.159s
+OK (skipped=1)

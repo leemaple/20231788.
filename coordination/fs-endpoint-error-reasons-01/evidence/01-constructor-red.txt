@@ -1,0 +1,15 @@
+Command:
+PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B -m unittest -v tests.test_paper_endpoint_error_reasons
+
+Environment: Python 3.12.14; macOS; RUN_FULL_ENDPOINT_REPLAY unset
+Test source SHA-256: 0c48774d1d88315da1d5c2b98c13709d5c3d3d281166758bfd5488875d9683d1
+Test mtime: 2026-09-06T12:58:33+0800
+Exit: 1
+
+test_exception_constructors_keep_messages_and_expose_stable_defaults (tests.test_paper_endpoint_error_reasons.EndpointErrorReasonTests.test_exception_constructors_keep_messages_and_expose_stable_defaults) ...
+  SidecarError ... ERROR: AttributeError: 'SidecarError' object has no attribute 'reason'
+  ReplayError ... ERROR: AttributeError: 'ReplayError' object has no attribute 'reason'
+  ReplayUnresolved ... ERROR: AttributeError: 'ReplayUnresolved' object has no attribute 'reason'
+
+Ran 1 test in 0.001s
+FAILED (errors=3)

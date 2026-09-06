@@ -1,0 +1,12 @@
+Command:
+PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B -m unittest -v tests.test_paper_endpoint_error_reasons.EndpointErrorReasonTests.test_sidecar_reports_well_formed_wrong_allowance_as_integrity
+
+Environment: Python 3.12.14; macOS; RUN_FULL_ENDPOINT_REPLAY unset
+Source SHA-256:
+  paper_endpoint_sidecar_reader.py 8180c90d1ffd7a74988c971ca9bcf67b37b1b4b0e5e75a3fcf89d7d8b921f984
+  test_paper_endpoint_error_reasons.py c02f5f934d5f628674f0acf5fbe2d41ad37c4c8b993284ce72ae78a75040dbf4
+Exit: 1
+
+Observed: a reduced, positive, well-formed allowance exactly twice the frozen
+allowance returned `FORMAT`; expected semantic `INTEGRITY`.
+Ran 1 test in 0.033s; FAILED (failures=1)

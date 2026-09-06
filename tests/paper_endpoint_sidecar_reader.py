@@ -57,12 +57,14 @@ HORNER_ANCHORS = frozenset((0, 1, 256, 257, 512, 513, 768, 769, 1023, 16383))
 
 
 class SidecarError(ValueError):
-    pass
+    def __init__(self, message, *, reason="FORMAT"):
+        super().__init__(message)
+        self.reason = reason
 
 
-def _require(condition, message):
+def _require(condition, message, *, reason="FORMAT"):
     if not condition:
-        raise SidecarError(message)
+        raise SidecarError(message, reason=reason)
 
 
 @dataclass(frozen=True)
@@ -196,11 +198,17 @@ def _allowances(fresh_k, terminal_k):
 def _read_bounded(path):
     path = Path(path)
     _require(not path.is_symlink() and path.is_file(), "sidecar must be a regular non-symlink")
-    size = path.stat().st_size
+    try:
+        size = path.stat().st_size
+    except OSError as error:
+        raise SidecarError("cannot stat sidecar", reason="IO_ERROR") from error
     _require(0 < size <= MAX_BYTES, "sidecar byte limit")
-    with path.open("rb") as stream:
-        data = stream.read(MAX_BYTES + 1)
-        trailing = stream.read(1)
+    try:
+        with path.open("rb") as stream:
+            data = stream.read(MAX_BYTES + 1)
+            trailing = stream.read(1)
+    except OSError as error:
+        raise SidecarError("cannot read sidecar", reason="IO_ERROR") from error
     _require(len(data) <= MAX_BYTES and not trailing, "sidecar byte limit")
     _require(len(data) == size, "sidecar changed while reading")
     _require(data.endswith(b"\n") and b"\r" not in data and b"\0" not in data,
@@ -234,6 +242,14 @@ def read_sidecar(path, *, expected_scope, expected_source_commit, expected_host,
                  "ordered metadata schema")
         raw_meta[key] = fields[2]
 
+    _require(raw_meta["scope"] in ("synthetic", "live-single-chain"),
+             "metadata scope grammar")
+    _require(_HEX40.fullmatch(raw_meta["source_commit"]) is not None,
+             "source commit grammar")
+    _require(raw_meta["host"] in ("linux", "windows"), "metadata host grammar")
+    _uint(raw_meta["github_run_id"], positive=True)
+    _uint(raw_meta["github_run_attempt"], positive=True)
+
     fixed = {
         "scope": expected_scope, "source_commit": expected_source_commit,
         "baseline_tested_source": BASELINE, "production_source": PRODUCTION,
@@ -251,10 +267,11 @@ def read_sidecar(path, *, expected_scope, expected_source_commit, expected_host,
         "check_count": "24", "A_disposition": "NOT_ADOPTED",
         "observer_disposition": "PASS",
     }
+    identity_keys = frozenset(("scope", "source_commit", "host",
+                               "github_run_id", "github_run_attempt"))
     for key, value in fixed.items():
-        _require(raw_meta[key] == value, "metadata identity/value mismatch: " + key)
-    _require(_HEX40.fullmatch(raw_meta["source_commit"]) is not None, "source commit grammar")
-
+        _require(raw_meta[key] == value, "metadata identity/value mismatch: " + key,
+                 reason="IDENTITY" if key in identity_keys else "INTEGRITY")
     integer_keys = ("chain_count", "n", "m", "slots", "gap",
                     "primary_precision_bits", "check_precision_bits", "significant_digits",
                     "row_count", "check_count",
@@ -269,13 +286,14 @@ def read_sidecar(path, *, expected_scope, expected_source_commit, expected_host,
               for key in integer_keys}
     scale0 = _rational(raw_meta["scale0_numerator"], raw_meta["scale0_denominator"])
     scale8 = _rational(raw_meta["scale8_numerator"], raw_meta["scale8_denominator"])
-    _require(scale0 == Fraction(1 << 100) and scale8 == _scale8(), "frozen scale mismatch")
+    _require(scale0 == Fraction(1 << 100) and scale8 == _scale8(),
+             "frozen scale mismatch", reason="INTEGRITY")
     fresh_max = _rational(raw_meta["fresh_max_l1_numerator"], raw_meta["fresh_max_l1_denominator"])
     terminal_max = _rational(raw_meta["terminal_max_l1_numerator"], raw_meta["terminal_max_l1_denominator"])
     _require(fresh_max <= Fraction(5, 4) and terminal_max <= Fraction(5, 4),
-             "endpoint radius guard")
+             "endpoint radius guard", reason="CONDITIONING")
     _require(raw_meta["E80_disposition"] == ("PASS" if values["numeric_gate_failures"] == 0 else "FAIL"),
-             "numeric failure/E80 mismatch")
+             "numeric failure/E80 mismatch", reason="INTEGRITY")
 
     fresh_k = _ceiling_power_of_two(values["coefficient_l1_fresh"], scale0)
     terminal_k = _ceiling_power_of_two(values["coefficient_l1_terminal"], scale8)
@@ -287,19 +305,27 @@ def read_sidecar(path, *, expected_scope, expected_source_commit, expected_host,
         _require(len(fields) == 9 and fields[:3] == ["check", check_id, "PASS"],
                  "ordered check schema")
         distance, allowance = _rational(fields[3], fields[4]), _rational(fields[5], fields[6])
-        _require(allowance == allowances[check_id], "rederived allowance mismatch")
-        _require(allowance <= _pow2(-128), "estimator ceiling exceeded")
+        _require(allowance == allowances[check_id], "rederived allowance mismatch",
+                 reason="INTEGRITY")
+        _require(distance <= _pow2(-120), "check classification is not PASS",
+                 reason="INTEGRITY")
+        _require(allowance <= _pow2(-128), "estimator ceiling exceeded",
+                 reason="ESTIMATOR_CEILING")
         producer = ".producer." in check_id
         decision = "FAIL" if distance > _pow2(-120) else (
             "FAIL" if not producer and distance > allowance else
             ("PASS" if distance + allowance <= _pow2(-120) else "UNRESOLVED"))
-        _require(decision == "PASS", "check classification is not PASS")
+        _require(decision == "PASS", "check classification is not PASS",
+                 reason="INTEGRITY")
         slot = _uint(fields[7])
-        _require(slot < ROW_COUNT and fields[8] in ("real", "imag"), "check argmax")
+        _require(slot < ROW_COUNT, "check argmax", reason="INTEGRITY")
+        _require(fields[8] in ("real", "imag"), "check argmax")
         if ".horner." in check_id:
-            _require(slot in HORNER_ANCHORS, "Horner argmax is not a frozen anchor")
+            _require(slot in HORNER_ANCHORS, "Horner argmax is not a frozen anchor",
+                     reason="INTEGRITY")
         if distance == 0:
-            _require(slot == 0 and fields[8] == "real", "zero-distance argmax tie policy")
+            _require(slot == 0 and fields[8] == "real",
+                     "zero-distance argmax tie policy", reason="INTEGRITY")
         checks.append(CheckReceipt(check_id, distance, allowance, slot, fields[8]))
 
     row_header_index = check_start + len(CHECK_IDS)

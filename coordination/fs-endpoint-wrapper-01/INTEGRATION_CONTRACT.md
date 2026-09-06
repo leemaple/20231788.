@@ -149,7 +149,7 @@ The proposed workflow prerequisite in each job is concrete:
   # Linux uses bash; Windows uses the existing msys2 {0} shell.
   run: |
     python --version
-    python -c 'import sys; assert sys.version_info[:2] == (3, 12)'
+    python -c 'import sys; sys.exit(0 if sys.version_info[:2] == (3, 12) else 1)'
 ```
 
 The Windows visibility of this action-provided `python` inside `msys2 {0}` is a

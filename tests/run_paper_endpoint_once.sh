@@ -43,7 +43,7 @@ finalizer="$script_directory/paper_endpoint_finalizer.py"
 if [[ $host == windows ]]; then
     finalizer=$(cygpath -am "$finalizer")
 fi
-"$python_executable" -c 'import sys; assert sys.version_info[:2] == (3, 12)'
+"$python_executable" -c 'import sys; sys.exit(0 if sys.version_info[:2] == (3, 12) else 1)'
 command -v tee >/dev/null || fail 'missing capture executable'
 
 umask 077

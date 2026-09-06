@@ -21,11 +21,14 @@ ComplexFraction = Tuple[Fraction, Fraction]
 
 
 class ReplayError(ValueError):
-    pass
+    def __init__(self, message, *, reason="REPLAY"):
+        super().__init__(message)
+        self.reason = reason
 
 
 class ReplayUnresolved(ReplayError):
-    pass
+    def __init__(self, message, *, reason="CONDITIONING"):
+        super().__init__(message, reason=reason)
 
 
 @dataclass(frozen=True)
@@ -98,15 +101,16 @@ class ReplayResult:
     decimal_rounding: str = "ROUND_HALF_EVEN"
 
 
-def _require(condition, message):
+def _require(condition, message, *, reason="REPLAY"):
     if not condition:
-        raise ReplayError(message)
+        raise ReplayError(message, reason=reason)
 
 
 def _fraction(value):
     if isinstance(value, Fraction):
         return value
-    _require(value.is_finite(), "nonfinite Decimal replay value")
+    _require(value.is_finite(), "nonfinite Decimal replay value",
+             reason="NONFINITE")
     sign, digits, exponent = value.as_tuple()
     coefficient = 0
     for digit in digits:
@@ -120,16 +124,17 @@ def _fraction(value):
 
 def _canonical_decimal(text):
     _require(isinstance(text, str) and len(text) == 119 and text.isascii(),
-             "canonical decimal byte grammar")
+             "canonical decimal byte grammar", reason="FORMAT")
     if text == ZERO:
         return Decimal(0)
     _require(_CANONICAL.fullmatch(text) is not None and not text.endswith("e-00000"),
-             "canonical decimal grammar")
+             "canonical decimal grammar", reason="FORMAT")
     try:
         value = Decimal(text)
     except InvalidOperation as error:
-        raise ReplayError("invalid canonical decimal") from error
-    _require(value.is_finite() and not value.is_zero(), "canonical nonzero semantics")
+        raise ReplayError("invalid canonical decimal", reason="FORMAT") from error
+    _require(value.is_finite() and not value.is_zero(), "canonical nonzero semantics",
+             reason="FORMAT")
     return value
 
 
@@ -172,7 +177,7 @@ def _scalar_kernel(z_decimal, e0_decimal, e8_decimal):
                     e8_decimal[1] - i8[1] - a8[1])
         values = (fresh, z_power, fresh_power, terminal, i8, a8, identity)
         _require(all(part.is_finite() for value in values for part in value),
-                 "nonfinite Decimal replay arithmetic")
+                 "nonfinite Decimal replay arithmetic", reason="NONFINITE")
         return _DecimalReplay(*values)
 
 
@@ -218,17 +223,19 @@ def _serialization_bound(exponent):
 
 
 def _derive_bounds(meta, t0, t8):
-    _require(isinstance(meta, Mapping), "replay metadata mapping")
+    _require(isinstance(meta, Mapping), "replay metadata mapping",
+             reason="INTEGRITY")
     values = []
     for key in ("coefficient_l1_fresh", "coefficient_l1_terminal"):
         value = meta.get(key)
         _require(isinstance(value, int) and not isinstance(value, bool) and value >= 0,
-                 "replay coefficient metadata")
+                 "replay coefficient metadata", reason="INTEGRITY")
         values.append(value)
     scales = []
     for key in ("scale0", "scale8"):
         value = meta.get(key)
-        _require(isinstance(value, Fraction) and value > 0, "replay scale metadata")
+        _require(isinstance(value, Fraction) and value > 0, "replay scale metadata",
+                 reason="INTEGRITY")
         scales.append(value)
 
     fresh_k = _ceiling_power_of_two(values[0], scales[0])
@@ -254,7 +261,8 @@ def _derive_bounds(meta, t0, t8):
                           replay_e0, replay_e8, replay_i8, replay_a8)
     budget = _pow2(-128)
     if any(value > budget for value in bounds.__dict__.values()):
-        raise ReplayUnresolved("scalar replay allowance exceeds 2^-128 budget")
+        raise ReplayUnresolved("scalar replay allowance exceeds 2^-128 budget",
+                               reason="ESTIMATOR_CEILING")
     return bounds
 
 
@@ -264,12 +272,13 @@ def derive_replay_bounds(meta, *, maximum_e0_exponent, maximum_e8_exponent):
         _require(exponent is None or
                  (isinstance(exponent, int) and not isinstance(exponent, bool) and
                   -99999 <= exponent <= 99999),
-                 "canonical serialization exponent")
+                 "canonical serialization exponent", reason="FORMAT")
     # This avoids constructing an enormous positive power that is already many
     # orders of magnitude beyond the exact estimator budget.
     if ((maximum_e0_exponent is not None and maximum_e0_exponent >= 109) or
             (maximum_e8_exponent is not None and maximum_e8_exponent >= 109)):
-        raise ReplayUnresolved("scalar replay serialization budget exceeded")
+        raise ReplayUnresolved("scalar replay serialization budget exceeded",
+                               reason="ESTIMATOR_CEILING")
     return _derive_bounds(
         meta, _serialization_bound(maximum_e0_exponent),
         _serialization_bound(maximum_e8_exponent))
@@ -278,12 +287,14 @@ def derive_replay_bounds(meta, *, maximum_e0_exponent, maximum_e8_exponent):
 def _preflight(sidecar):
     rows = getattr(sidecar, "rows", None)
     _require(isinstance(rows, tuple) and len(rows) == ROW_COUNT,
-             "scalar replay requires exactly 16384 rows")
+             "scalar replay requires exactly 16384 rows", reason="INTEGRITY")
     maximum_e0 = maximum_e8 = None
     for slot, row in enumerate(rows):
-        _require(getattr(row, "slot", None) == slot, "ordered scalar replay rows")
+        _require(getattr(row, "slot", None) == slot, "ordered scalar replay rows",
+                 reason="INTEGRITY")
         values = getattr(row, "values", None)
-        _require(isinstance(values, tuple) and len(values) == 4, "scalar replay row shape")
+        _require(isinstance(values, tuple) and len(values) == 4,
+                 "scalar replay row shape", reason="INTEGRITY")
         for index, value in enumerate(values):
             text = getattr(value, "text", None)
             decimal_value = _canonical_decimal(text)
@@ -303,7 +314,7 @@ def _preflight(sidecar):
 def frozen_input(slot):
     """Return the exact signed dyadic z for one frozen slot."""
     _require(isinstance(slot, int) and not isinstance(slot, bool) and 0 <= slot < ROW_COUNT,
-             "frozen slot range")
+             "frozen slot range", reason="FORMAT")
     half_slot = slot // 2
     real = (Fraction(1015, 1024) - Fraction(half_slot % 16, 65536) +
             Fraction(slot, 1 << 75))
@@ -341,14 +352,15 @@ def _finish_metric(value):
 def summarize_scalars(records):
     """Summarize an explicitly bounded ordered synthetic scalar sequence."""
     _require(isinstance(records, tuple) and len(records) > 0,
-             "bounded scalar summary records")
+             "bounded scalar summary records", reason="FORMAT")
     maxima = {name: None for name in ("E0", "E8", "I8", "A8", "R")}
     previous_slot = -1
     for slot, scalar in records:
         _require(isinstance(slot, int) and not isinstance(slot, bool) and
                  previous_slot < slot < ROW_COUNT,
-                 "ordered bounded scalar summary slots")
-        _require(isinstance(scalar, ScalarReplay), "bounded scalar replay record")
+                 "ordered bounded scalar summary slots", reason="FORMAT")
+        _require(isinstance(scalar, ScalarReplay), "bounded scalar replay record",
+                 reason="FORMAT")
         previous_slot = slot
         vectors = {"E0": scalar.e0, "E8": scalar.e8, "I8": scalar.i8,
                    "A8": scalar.a8, "R": scalar.identity}
@@ -363,8 +375,9 @@ def summarize_scalars(records):
 def replay_complex(*, z, e0_text, e8_text):
     """Replay one scalar using the spec's exact eight-squaring graph."""
     _require(len(z) == 2 and all(isinstance(part, Fraction) for part in z),
-             "exact z shape")
-    _require(len(e0_text) == 2 and len(e8_text) == 2, "residual shape")
+             "exact z shape", reason="FORMAT")
+    _require(len(e0_text) == 2 and len(e8_text) == 2, "residual shape",
+             reason="FORMAT")
     e0_decimal = tuple(_canonical_decimal(text) for text in e0_text)
     e8_decimal = tuple(_canonical_decimal(text) for text in e8_text)
     e0_exact, e8_exact = _complex_fraction(e0_decimal), _complex_fraction(e8_decimal)
@@ -384,10 +397,11 @@ def replay_complex(*, z, e0_text, e8_text):
 
 def replay_row(slot, row):
     """Replay one parsed row selected by a future primary receipt's slot."""
-    _require(getattr(row, "slot", None) == slot, "selected replay row identity")
+    _require(getattr(row, "slot", None) == slot, "selected replay row identity",
+             reason="INTEGRITY")
     values = getattr(row, "values", None)
     _require(isinstance(values, tuple) and len(values) == 4,
-             "selected replay row shape")
+             "selected replay row shape", reason="INTEGRITY")
     return replay_complex(
         z=frozen_input(slot),
         e0_text=(values[0].text, values[1].text),
