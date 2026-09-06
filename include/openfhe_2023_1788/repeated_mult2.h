@@ -58,6 +58,8 @@ private:
 struct RepeatedMult2ClientSetup;
 RepeatedMult2ClientSetup CreateRepeatedMult2DiagnosticSetup();
 RepeatedMult2ClientSetup CreatePaperRepeatedMult2Setup();
+// Experimental correctness profile only; no E80 or security qualification.
+RepeatedMult2ClientSetup CreateExperimentalPrecision116Setup();
 
 // No private-key member or private-key constructor parameter. OpenFHE handles
 // expose mutable upstream types, so all actual returned family profiles and row
@@ -78,10 +80,13 @@ private:
     friend struct client_io::detail::ClientContextBinding;
     friend RepeatedMult2ClientSetup CreateRepeatedMult2DiagnosticSetup();
     friend RepeatedMult2ClientSetup CreatePaperRepeatedMult2Setup();
+    friend RepeatedMult2ClientSetup CreateExperimentalPrecision116Setup();
     struct Data;
     explicit RepeatedMult2Plan(std::unique_ptr<Data> data);
     void ValidateFamily(std::size_t family) const;
     void ValidatePaperProfile() const;
+    int BaseMetadataExponent() const noexcept;
+    double ExpectedRecordedScalingFactor() const noexcept;
     std::size_t RequireReceipt(const std::shared_ptr<const RepeatedMult2Receipt>& receipt) const;
     std::shared_ptr<const RepeatedMult2Receipt> ReceiptFor(std::size_t family,RepeatedPhase phase) const;
     std::unique_ptr<Data> data_;

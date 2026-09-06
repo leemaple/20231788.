@@ -1276,7 +1276,7 @@ RepeatedMult2Result DoubleCKKS::RCBWithReceipt(const CiphertextPair& pair) const
     wrapped->SetScalingFactorInt(recombined->GetScalingFactorInt());
     wrapped->SetSlots(recombined->GetSlots());
     // The constructor supplies an independently owned empty metadata map.
-    root.ValidateCiphertext(wrapped, prefix, absoluteLevel, 2, std::ldexp(1.0, 100),
+    root.ValidateCiphertext(wrapped, prefix, absoluteLevel, 2, plan_->ExpectedRecordedScalingFactor(),
                             plan_->GetFamilyKeyTag(0), root.parameters_->GetBatchSize(), 2,
                             "terminal RCB", "root snapshot");
     return RepeatedMult2Result(plan_, std::move(wrapped), receipt);

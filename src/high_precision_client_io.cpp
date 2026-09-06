@@ -35,6 +35,8 @@ struct ClientContextBinding final {
     std::vector<lbcrypto::NativeInteger> pModq;
     ClientGeometry geometry;
     std::shared_ptr<const RepeatedMult2Plan> plan;
+    static int BaseMetadataExponent(const std::shared_ptr<const RepeatedMult2Plan>& plan);
+    PositiveRationalScale FreshExactScale() const;
     void ValidatePlan() const;
     void ValidateState(const ClientCiphertextState& state,
                        const std::shared_ptr<const RepeatedMult2Receipt>& receipt) const;
@@ -174,6 +176,7 @@ bool MatchesElement(const DCRTPoly& element, const OrderedDcrtBasis& expected) {
 ContextBinding BindContext(CryptoContext<DCRTPoly> context,
                            std::shared_ptr<const RepeatedMult2Plan> plan = {}) {
     const bool paper = static_cast<bool>(plan);
+    const int metadataBits = ContextBinding::BaseMetadataExponent(plan);
     const Geometry geometry = paper ? Geometry{16384, 32768, 65536, 1} : Geometry{kSlots, kN, kM, kGap};
     Require(context != nullptr, "null context");
     const auto cp = std::dynamic_pointer_cast<Parameters>(context->GetCryptoParameters());
@@ -190,7 +193,8 @@ ContextBinding BindContext(CryptoContext<DCRTPoly> context,
             cp->GetDigitSize() == 0 && cp->GetMaxRelinSkDeg() == 2 && cp->GetMultiplicativeDepth() == (paper ? 10U : 7U) &&
             cp->GetMultipartyMode() == lbcrypto::FIXED_NOISE_MULTIPARTY && cp->GetThresholdNumOfParties() == 1,
             "unsupported diagnostic profile");
-    Require(cp->GetEncodingParams() != nullptr && cp->GetBatchSize() == geometry.slots && cp->GetPlaintextModulus() == 50,
+    Require(cp->GetEncodingParams() != nullptr && cp->GetBatchSize() == geometry.slots &&
+            cp->GetPlaintextModulus() == static_cast<std::uint64_t>(metadataBits),
             "unsupported encoding parameters");
     const auto q = ReadBasis(cp->GetElementParams());
     Require(q.ringDimension == geometry.n && q.cyclotomicOrder == geometry.m,
@@ -232,7 +236,7 @@ ContextBinding BindContext(CryptoContext<DCRTPoly> context,
         Require(ExactInteger(cp->GetPModq()[index].ToString()) == pModulus % ExactInteger(q.moduliDecimal[index]),
                 "inconsistent HYBRID PModq table");
     }
-    Require(cp->GetScalingFactorReal(0) == std::ldexp(1.0, 50), "unsupported base scaling factor");
+    Require(cp->GetScalingFactorReal(0) == std::ldexp(1.0, metadataBits), "unsupported base scaling factor");
     ClientContextProfile profile{context.get(), cp.get(), kRequiredFeatures, enabled,
         cp->GetScalingTechnique(), cp->GetKeySwitchTechnique(), cp->GetExecutionMode(),
         cp->GetDecryptionNoiseMode(), cp->GetCKKSDataType()};
@@ -304,7 +308,7 @@ double FreshRecorded(const ContextBinding& binding) {
 ClientCiphertextState FreshState(const ContextBinding& binding, const std::string& tag) {
     return {binding.profile, tag, binding.fullBasis, lbcrypto::CKKS_PACKED_ENCODING,
         Format::EVALUATION, binding.geometry.slots, binding.geometry.gap, 0, 2, true, 2, FreshRecorded(binding), lbcrypto::NativeInteger(1),
-        PositiveRationalScale::FromPositive(ExactInteger(1) << 100, 1), CanonicalProjection::OpenFhePackedStride,
+        binding.FreshExactScale(), CanonicalProjection::OpenFhePackedStride,
         ClientCiphertextOrigin::FreshClientEncoding, std::nullopt};
 }
 
@@ -450,6 +454,14 @@ std::vector<Complex<Real>> Forward(const std::vector<ExactInteger>& coefficients
 
 }  // namespace
 
+int detail::ClientContextBinding::BaseMetadataExponent(const std::shared_ptr<const RepeatedMult2Plan>& plan) {
+    return plan ? plan->BaseMetadataExponent() : 50;
+}
+PositiveRationalScale detail::ClientContextBinding::FreshExactScale() const {
+    if (!plan) return PositiveRationalScale::FromPositive(ExactInteger(1) << 100, 1);
+    const auto& scale = plan->ReceiptFor(0, RepeatedPhase::Input)->GetExactScale();
+    return PositiveRationalScale::FromPositive(scale.GetNumerator(), scale.GetDenominator());
+}
 void detail::ClientContextBinding::ValidatePlan() const {
     if (!plan) return;  // The original context-only profile is unchanged.
     plan->ValidatePaperProfile();
@@ -467,12 +479,13 @@ void detail::ClientContextBinding::ValidateState(
     bool valid = SameProfile(state.contextProfile, profile) && state.keyTag == plan->GetFamilyKeyTag(0) &&
         state.slots == geometry.slots && state.strideGap == geometry.gap && state.componentCount == 2 &&
         state.encodingType == lbcrypto::CKKS_PACKED_ENCODING && state.componentFormat == Format::EVALUATION &&
-        state.noiseScaleDegree == 2 && state.recordedScalingFactor == std::ldexp(1.0, 100) &&
+        state.noiseScaleDegree == 2 && state.recordedScalingFactor == plan->ExpectedRecordedScalingFactor() &&
         state.scalingFactorInt == lbcrypto::NativeInteger(1) && state.metadataMapEmpty &&
         state.projection == CanonicalProjection::OpenFhePackedStride && !state.firstMult2ScaleFactors.has_value();
     if (state.origin == ClientCiphertextOrigin::FreshClientEncoding) {
-        valid = valid && !receipt && state.level == 0 && state.logicalScale.Numerator() == (ExactInteger(1) << 100) &&
-            state.logicalScale.Denominator() == 1;
+        const auto freshScale = FreshExactScale();
+        valid = valid && !receipt && state.level == 0 && state.logicalScale.Numerator() == freshScale.Numerator() &&
+            state.logicalScale.Denominator() == freshScale.Denominator();
     }
     else if (state.origin == ClientCiphertextOrigin::RepeatedMult2Rcb) {
         const auto family = plan->RequireReceipt(receipt);
@@ -553,8 +566,9 @@ BoundCiphertext HighPrecisionClientIO::Encrypt(const lbcrypto::PublicKey<DCRTPol
     if (values.size() != geometry.slots || spec.slots != geometry.slots)
         throw std::invalid_argument(binding.plan ? "HighPrecisionClientIO: expected exactly 16384 slots" :
                                                   "HighPrecisionClientIO: expected exactly 16 slots");
-    Require(spec.logicalScale.Numerator() == (ExactInteger(1) << 100) && spec.logicalScale.Denominator() == 1,
-            "unsupported fresh exact scale");
+    const auto freshScale = binding.FreshExactScale();
+    Require(spec.logicalScale.Numerator() == freshScale.Numerator() &&
+            spec.logicalScale.Denominator() == freshScale.Denominator(), "unsupported fresh exact scale");
     for (const auto& value : values) { RequireFinite(value.real); RequireFinite(value.imag); }
     const auto primary = Inverse(values, impl_->primary);
     const auto check = Inverse(values, impl_->check);
