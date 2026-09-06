@@ -2,6 +2,8 @@
 
 This branch is a greenfield implementation of the `t=2` Double-CKKS multiplication method from IACR ePrint 2023/1788 for official pristine OpenFHE 1.5.0.
 
+中文说明：[实现做了什么、复现命令、结果与限制](REPRODUCE.zh-CN.md)。
+
 The destination repository's previous implementation and every related local code tree are quarantined and are not inputs. Development begins with paper-derived specifications and red-first independent-oracle tests.
 
 ## Live project state
