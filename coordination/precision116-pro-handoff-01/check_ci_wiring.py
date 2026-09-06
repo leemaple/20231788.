@@ -88,7 +88,7 @@ class WiringContract(unittest.TestCase):
             self.assertIn("--no-tests=error", mode["run"])
             self.assertIn("-R '^experimental_precision116_profile_seam$'", mode["run"])
             self.assertEqual(mode["env"]["OMP_NUM_THREADS"], 2)
-            self.assertEqual(mode["timeout-minutes"], 20)
+            self.assertEqual(mode["timeout-minutes"], 25)
             self.assertTrue(enabled(mode, GREEN))
             self.assertFalse(enabled(mode, RED))
             self.assertFalse(enabled(mode, GREEN, success=False))
