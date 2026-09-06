@@ -1,3 +1,4 @@
+#include "experimental_precision116_profile_seam.h"
 #include "paper_full_eight_square_oracle.h"
 #include "paper_endpoint_observer_contract.h"
 #include "paper_endpoint_diagnostics.h"
@@ -436,6 +437,15 @@ void Run() {
 }
 }  // namespace
 int main(int argc, char** argv) {
+    if (argc == 2 && std::string(argv[1]) == "--experimental-precision116-profile-seam") {
+        try { experimental_precision116_test::Run(); return 0; }
+        catch (const std::exception& error) {
+            std::cerr << "EXPERIMENTAL_PRECISION116_PROFILE_SEAM result=FAIL profile=experimental-s116-d56-b58-v1"
+                         " squares=1 full_eight_square_E80=NOT_TESTED security=UNRESOLVED reason="
+                      << error.what() << '\n';
+            return 1;
+        }
+    }
     // Test-only C++/Python boundary: no normal Run(), contexts or legacy receipts.
     if (argc == 6 && std::string(argv[1]) == "--endpoint-cpp-interop") {
         try {

@@ -269,3 +269,11 @@ set_tests_properties(paper_full_eight_square_contract PROPERTIES
     TIMEOUT 1200
     RUN_SERIAL TRUE
     ENVIRONMENT "OMP_NUM_THREADS=2")
+
+# Explicitly built one-operation experimental seam; no original endpoint chain.
+add_test(NAME experimental_precision116_profile_seam
+         COMMAND paper_full_eight_square_contract_test --experimental-precision116-profile-seam)
+set_tests_properties(experimental_precision116_profile_seam PROPERTIES
+    TIMEOUT 1200
+    RUN_SERIAL TRUE
+    ENVIRONMENT "OMP_NUM_THREADS=2")
