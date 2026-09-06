@@ -1,0 +1,50 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+command: shasum -a 256 tests/paper_endpoint_sidecar_reader.py tests/test_paper_endpoint_sidecar_reader.py && /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 --version && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rejects_non_anchor_horner_argmax_and_noncanonical_zero_tie test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_accepts_line_bounded_rational_over_ten_thousand_digits test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rederives_nonzero_fractional_scale_allowances; code=$?; echo EXIT_CODE=$code; exit "$code"
+python: Python 3.12.14
+reader_sha256: 4c39fac8d3e7335f4d1af1a2ff40f16ba1816877944db6f6ef9a60919de37bfc
+test_sha256: 2a453eb3f42c66d6fbc7a2799c818d839a68e4fe2952a42670cc2b909ebd8eb7
+exit_code: 1
+stdout_stderr:
+4c39fac8d3e7335f4d1af1a2ff40f16ba1816877944db6f6ef9a60919de37bfc  tests/paper_endpoint_sidecar_reader.py
+2a453eb3f42c66d6fbc7a2799c818d839a68e4fe2952a42670cc2b909ebd8eb7  tests/test_paper_endpoint_sidecar_reader.py
+Python 3.12.14
+test_rejects_non_anchor_horner_argmax_and_noncanonical_zero_tie (test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rejects_non_anchor_horner_argmax_and_noncanonical_zero_tie) ... FAIL
+test_accepts_line_bounded_rational_over_ten_thousand_digits (test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_accepts_line_bounded_rational_over_ten_thousand_digits) ... ERROR
+test_rederives_nonzero_fractional_scale_allowances (test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rederives_nonzero_fractional_scale_allowances) ... ok
+
+======================================================================
+ERROR: test_accepts_line_bounded_rational_over_ten_thousand_digits (test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_accepts_line_bounded_rational_over_ten_thousand_digits)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_reader.py", line 233, in test_accepts_line_bounded_rational_over_ten_thousand_digits
+    parsed = self.read(("\n".join(lines) + "\n").encode("ascii"))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_reader.py", line 135, in read
+    return reader.read_sidecar(path, **expected)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/paper_endpoint_sidecar_reader.py", line 283, in read_sidecar
+    distance, allowance = _rational(fields[3], fields[4]), _rational(fields[5], fields[6])
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/paper_endpoint_sidecar_reader.py", line 104, in _rational
+    n, d = _uint(numerator), _uint(denominator, positive=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/paper_endpoint_sidecar_reader.py", line 92, in _uint
+    _require(isinstance(text, str) and 0 < len(text) <= INTEGER_DIGITS,
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/paper_endpoint_sidecar_reader.py", line 59, in _require
+    raise SidecarError(message)
+paper_endpoint_sidecar_reader.SidecarError: integer length
+
+======================================================================
+FAIL: test_rejects_non_anchor_horner_argmax_and_noncanonical_zero_tie (test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rejects_non_anchor_horner_argmax_and_noncanonical_zero_tie)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_reader.py", line 221, in test_rejects_non_anchor_horner_argmax_and_noncanonical_zero_tie
+    with self.assertRaises(reader.SidecarError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: SidecarError not raised
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.195s
+
+FAILED (failures=1, errors=1)
+EXIT_CODE=1

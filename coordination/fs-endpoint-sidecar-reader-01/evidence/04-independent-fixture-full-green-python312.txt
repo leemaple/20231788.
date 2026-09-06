@@ -1,0 +1,26 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+command: shasum -a 256 tests/paper_endpoint_sidecar_reader.py tests/test_paper_endpoint_sidecar_reader.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v tests/test_paper_endpoint_sidecar_reader.py; code=$?; echo EXIT_CODE=$code; exit "$code"
+python: Python 3.12.14
+reader_sha256: b24a7d9828a7cc6d086537afd7bec2a04018c3ce2509157d7416e2ff151ebf30
+test_sha256: 84fe5759a2d4ae6cc9dd393ffab105ac44083c0d0ba2e01922d1954245187791
+exit_code: 0
+stdout_stderr:
+b24a7d9828a7cc6d086537afd7bec2a04018c3ce2509157d7416e2ff151ebf30  tests/paper_endpoint_sidecar_reader.py
+84fe5759a2d4ae6cc9dd393ffab105ac44083c0d0ba2e01922d1954245187791  tests/test_paper_endpoint_sidecar_reader.py
+test_accepts_line_bounded_rational_over_ten_thousand_digits (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_accepts_line_bounded_rational_over_ten_thousand_digits) ... ok
+test_live_identity_is_bound_by_caller (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_live_identity_is_bound_by_caller) ... ok
+test_reads_complete_16384_row_synthetic_sidecar (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_reads_complete_16384_row_synthetic_sidecar) ... ok
+test_rederives_nonzero_fractional_scale_allowances (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rederives_nonzero_fractional_scale_allowances) ... ok
+test_rejects_before_unbounded_line_or_file_allocation (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rejects_before_unbounded_line_or_file_allocation) ... ok
+test_rejects_direct_symlink (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rejects_direct_symlink) ... ok
+test_rejects_endpoint_radius_above_five_fourths (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rejects_endpoint_radius_above_five_fourths) ... ok
+test_rejects_metadata_order_scale_and_numeric_inconsistency (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rejects_metadata_order_scale_and_numeric_inconsistency) ... ok
+test_rejects_non_anchor_horner_argmax_and_noncanonical_zero_tie (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rejects_non_anchor_horner_argmax_and_noncanonical_zero_tie) ... ok
+test_rejects_row_order_count_and_decimal_grammar (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rejects_row_order_count_and_decimal_grammar) ... ok
+test_rejects_wrong_allowance_and_failed_check (tests.test_paper_endpoint_sidecar_reader.SidecarReaderTests.test_rejects_wrong_allowance_and_failed_check) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.628s
+
+OK
+EXIT_CODE=0

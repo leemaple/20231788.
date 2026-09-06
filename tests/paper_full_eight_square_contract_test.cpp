@@ -1,5 +1,10 @@
 #include "paper_full_eight_square_oracle.h"
 #include "paper_endpoint_observer_contract.h"
+#include "paper_endpoint_diagnostics.h"
+#include "paper_endpoint_diagnostics_test.h"
+#include "paper_endpoint_scaled_norm_test.h"
+#include "paper_endpoint_exact_scalars_test.h"
+#include "paper_endpoint_transform_negative_contract.h"
 #include <cmath>
 #include <set>
 #include <type_traits>
@@ -238,9 +243,13 @@ void Witness(const io::DecodedSlots& decoded,const std::vector<Complex>& expecte
                   label+" retained sub-binary64 witness",failures);
 }
 
-// Only strings escape. All paper plan, I/O, result and bound owners die before
+// Pure values only. All paper plan, I/O, result and bound owners die before
 // the outer test checks cache cleanup; the independent small setup stays live.
-std::vector<std::string> RunPaper(const RepeatedMult2ClientSetup& foreign,std::size_t& failures) {
+struct PaperEvidence final {
+    std::vector<std::string> ownerTags;
+    paper_endpoint_contract::EndpointEvidence endpoint;
+};
+PaperEvidence RunPaper(const RepeatedMult2ClientSetup& foreign,std::size_t& failures) {
     const auto scales=Scales();
     auto expected=Inputs();
     const auto roots=AnchorRoots();
@@ -272,6 +281,8 @@ std::vector<std::string> RunPaper(const RepeatedMult2ClientSetup& foreign,std::s
     CheckFull(freshDecoded,expected,"fresh",failures); Witness(freshDecoded,expected,"fresh",failures);
     const auto freshPolynomial=SparseDecrypt(source,secret);
     ObserveCoefficientScale(freshPolynomial,scales[0],"fresh");
+    const bool freshHornerSupported=paper_endpoint_contract::internal::HornerConversionsSupported(
+        freshPolynomial,scales[0]);
     const auto freshAnchors=Horner(freshPolynomial,scales[0],roots);
     CheckAnchors(freshAnchors,expected,"fresh",failures,&freshDecoded);
     for (std::size_t a=0;a<kAnchors.size();++a) {
@@ -321,7 +332,10 @@ std::vector<std::string> RunPaper(const RepeatedMult2ClientSetup& foreign,std::s
     Require(finalPolynomial.modulus==Int(kQ[0])*kQ[1] &&
             decoded.diagnostics.activeCompositeModulus==finalPolynomial.modulus,"terminal two-Base modulus");
     ObserveCoefficientScale(finalPolynomial,scales[8],"final");
-    CheckAnchors(Horner(finalPolynomial,scales[8],roots),expected,"final",failures,&decoded);
+    const bool terminalHornerSupported=paper_endpoint_contract::internal::HornerConversionsSupported(
+        finalPolynomial,scales[8]);
+    const auto finalAnchors=Horner(finalPolynomial,scales[8],roots);
+    CheckAnchors(finalAnchors,expected,"final",failures,&decoded);
     const auto wrong=Horner(finalPolynomial,scales[0],roots);
     const Real wrongError=Error(wrong[0],expected[0]);
     Emit("final.wrong_nominal100_error",wrongError);
@@ -340,7 +354,16 @@ std::vector<std::string> RunPaper(const RepeatedMult2ClientSetup& foreign,std::s
     }
     ForeignRejections(evaluation,foreign);
     CheckFamilies(setup.plan);
-    return paperTags;
+    auto endpoint=paper_endpoint_contract::internal::CaptureEndpointEvidenceWithHornerSupport(
+        freshPolynomial,finalPolynomial,scales[0],scales[8],
+        freshAnchors,finalAnchors,freshDecoded.values,decoded.values,
+        freshHornerSupported,terminalHornerSupported);
+    Require(endpoint.freshScale.numerator==scales[0].numerator &&
+            endpoint.freshScale.denominator==scales[0].denominator &&
+            endpoint.terminalScale.numerator==scales[8].numerator &&
+            endpoint.terminalScale.denominator==scales[8].denominator,
+            "capture preserves actual endpoint scales for post-cleanup evidence");
+    return {std::move(paperTags),std::move(endpoint)};
 }
 void Run() {
     std::cout << "BEGIN test=paper_full_eight_square_contract source=" << PAPER_SOURCE_COMMIT
@@ -365,7 +388,8 @@ void Run() {
         unrelated.push_back({tag,found->second[0],key->GetAVector(),key->GetBVector()});
     }
     std::size_t numericFailures=0;
-    const auto paperTags=RunPaper(foreign,numericFailures);
+    const auto paper=RunPaper(foreign,numericFailures);
+    const auto& paperTags=paper.ownerTags;
     const auto& rows=lbcrypto::CryptoContextImpl<Poly>::GetAllEvalMultKeys();
     Require(paperTags.size()==8,"eight released owner tags");
     for (const auto& tag:paperTags) Require(rows.count(tag)==0,"paper destructor removes owned row");
@@ -390,6 +414,10 @@ int main(int argc, char** argv) {
     // No live-chain receipt or evidence filename is emitted by this mode.
     if (argc == 2 && std::string(argv[1]) == "--endpoint-observer-self-test") {
         try {
+            paper_endpoint_contract::synthetic::RunScaledNormBoundaryTests();
+            paper_endpoint_contract::synthetic::exact_scalar_test::RunExactScalarBoundaryTests();
+            paper_endpoint_contract::synthetic::RunEndpointDiagnosticsBoundaryTests();
+            paper_endpoint_contract::synthetic::transform_negative::Run();
             paper_endpoint_contract::synthetic::RunSelfTest();
             std::cout << "FS_RESIDUAL_SELFTEST result=PASS namespace=synthetic chain_count=0\n";
             return 0;
@@ -406,6 +434,9 @@ int main(int argc, char** argv) {
     }
     try { Run(); return 0; }
     catch (const std::exception& error) {
+        if (const auto* endpoint=dynamic_cast<const paper_endpoint_contract::EndpointFailure*>(&error))
+            std::cerr << "FS_ENDPOINT_FAILURE reason=" << endpoint->Reason()
+                      << " detail=" << error.what() << '\n';
         std::cerr << "COMPLETE test=paper_full_eight_square_contract result=FAIL source=" << PAPER_SOURCE_COMMIT
                   << " openfhe_pin=" << kPin << " reason=" << error.what() << '\n';
         return 1;
