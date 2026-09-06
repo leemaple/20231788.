@@ -1,0 +1,334 @@
+name: Endpoint CTest timeout protocol RED
+
+on:
+  push:
+    branches:
+      - codex/endpoint-ctest-protocol-red-20260906
+
+permissions:
+  contents: read
+
+jobs:
+  linux-ctest-timeout-protocol:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      RUN_ENDPOINT_CTEST_PROTOCOL_GATE: '1'
+      ENDPOINT_TEST_HOST: linux
+    steps:
+      - name: Check out exact protocol source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up exact endpoint Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate source and create no-crypto CTest fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -c 'import sys; sys.exit(0 if sys.version_info[:2] == (3, 12) else 1)'
+          actual="$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)"
+          test "$actual" = "$GITHUB_SHA"
+          test -z "$(git -C "$GITHUB_WORKSPACE" status --porcelain)"
+          fixture_source="$RUNNER_TEMP/fs-endpoint-ctest-protocol-source-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          fixture_build="$RUNNER_TEMP/fs-endpoint-ctest-protocol-build-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          marker="$RUNNER_TEMP/fs-endpoint-ctest-protocol-marker-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          scratch="$RUNNER_TEMP/fs-endpoint-synthetic-ctest-protocol-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python -B tests/paper_endpoint_ctest_protocol_gate.py prepare \
+            --source-root "$GITHUB_WORKSPACE" \
+            --fixture-source "$fixture_source" --fixture-build "$fixture_build" \
+            --marker "$marker" --scratch "$scratch" --python-native "$(command -v python)" \
+            --gate-script-native "$GITHUB_WORKSPACE/tests/paper_endpoint_ctest_protocol_gate.py"
+          cmake -S "$fixture_source" -B "$fixture_build"
+
+      - name: Run the real one-shot wrapper against Test 61
+        id: protocol-wrapper
+        shell: bash
+        run: |
+          set -euo pipefail
+          fixture_build="$RUNNER_TEMP/fs-endpoint-ctest-protocol-build-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          scratch="$RUNNER_TEMP/fs-endpoint-synthetic-ctest-protocol-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          wrapper_exit="$RUNNER_TEMP/fs-endpoint-ctest-protocol-wrapper-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit"
+          test ! -e "$scratch" && test ! -L "$scratch"
+          umask 077
+          mkdir -- "$scratch"
+          scratch="$(cd "$scratch" && pwd -P)"
+          set +e
+          bash tests/run_paper_endpoint_once.sh \
+            --scope synthetic --host linux \
+            --build-dir-shell "$fixture_build" \
+            --scratch-shell "$scratch" --scratch-native "$scratch" \
+            --python "$(command -v python)" --ctest "$(command -v ctest)"
+          wrapper_status=$?
+          set -e
+          printf '%s\n' "$wrapper_status" > "$wrapper_exit"
+          exit "$wrapper_status"
+
+      - name: Render bounded escaped CTest transport
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          scratch="$RUNNER_TEMP/fs-endpoint-synthetic-ctest-protocol-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python -B tests/paper_endpoint_ctest_protocol_gate.py inspect \
+            --primary-log "$scratch/primary.ctest.log" \
+            --marker "$RUNNER_TEMP/fs-endpoint-ctest-protocol-marker-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --wrapper-exit "$RUNNER_TEMP/fs-endpoint-ctest-protocol-wrapper-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit"
+
+      - name: Select exact synthetic status after wrapper failure
+        id: endpoint-select
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          scratch="$RUNNER_TEMP/fs-endpoint-synthetic-ctest-protocol-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          manifest="$scratch/upload-paths.txt"
+          python -B tests/paper_endpoint_finalizer.py select \
+            --source-commit "$GITHUB_SHA" --host linux \
+            --github-run-id "$GITHUB_RUN_ID" --github-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --published-parent "$scratch/published" --manifest "$manifest"
+          {
+            echo 'paths<<FS_ENDPOINT_PATHS'
+            cat -- "$manifest"
+            echo 'FS_ENDPOINT_PATHS'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Validate status-only allowlist before upload
+        id: validate-selection
+        if: ${{ always() && steps.endpoint-select.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          scratch="$RUNNER_TEMP/fs-endpoint-synthetic-ctest-protocol-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python -B tests/paper_endpoint_ctest_protocol_gate.py validate-selection \
+            --scratch "$scratch" --manifest "$scratch/upload-paths.txt" \
+            --wrapper-exit "$RUNNER_TEMP/fs-endpoint-ctest-protocol-wrapper-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit"
+
+      - name: Upload the one validated synthetic status
+        id: upload-status
+        if: ${{ always() && steps.validate-selection.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fs-endpoint-synthetic-ctest-protocol-linux-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.endpoint-select.outputs.paths }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+      - name: Download the exact synthetic status
+        id: download-status
+        if: ${{ always() && steps.upload-status.outcome == 'success' }}
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: fs-endpoint-synthetic-ctest-protocol-linux-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/fs-endpoint-ctest-protocol-download-linux-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Require TIMEOUT after status transport
+        if: ${{ always() && steps.download-status.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          scratch="$RUNNER_TEMP/fs-endpoint-synthetic-ctest-protocol-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python -B tests/paper_endpoint_ctest_protocol_gate.py verify-timeout \
+            --scratch "$scratch" --manifest "$scratch/upload-paths.txt" \
+            --wrapper-exit "$RUNNER_TEMP/fs-endpoint-ctest-protocol-wrapper-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit" \
+            --downloaded "$RUNNER_TEMP/fs-endpoint-ctest-protocol-download-linux-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+
+  windows-ctest-timeout-protocol:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    env:
+      RUN_ENDPOINT_CTEST_PROTOCOL_GATE: '1'
+      ENDPOINT_TEST_HOST: windows
+      PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+    steps:
+      - name: Check out exact source outside the trailing-dot workspace
+        shell: pwsh
+        working-directory: C:/
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (Test-Path -LiteralPath $env:PROJECT_SOURCE) {
+            throw "Refusing preexisting project checkout"
+          }
+          New-Item -ItemType Directory -Path $env:PROJECT_SOURCE | Out-Null
+          git init $env:PROJECT_SOURCE
+          if ($LASTEXITCODE -ne 0) { throw "git init failed" }
+          git -C $env:PROJECT_SOURCE config core.autocrlf false
+          if ($LASTEXITCODE -ne 0) { throw "git config failed" }
+          git -C $env:PROJECT_SOURCE remote add origin https://github.com/leemaple/20231788..git
+          if ($LASTEXITCODE -ne 0) { throw "git remote add failed" }
+          git -C $env:PROJECT_SOURCE fetch --depth 1 origin $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { throw "git fetch failed" }
+          git -C $env:PROJECT_SOURCE checkout --detach FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { throw "git checkout failed" }
+          $actual = git -C $env:PROJECT_SOURCE rev-parse HEAD
+          if ($LASTEXITCODE -ne 0) { throw "git rev-parse failed" }
+          if ($actual -ne $env:GITHUB_SHA) {
+            throw "Project checkout mismatch: $actual"
+          }
+          $dirty = @(git -C $env:PROJECT_SOURCE status --porcelain)
+          if ($LASTEXITCODE -ne 0 -or $dirty.Count -ne 0) { throw "Source checkout is not clean" }
+
+      - name: Set up exact endpoint Python
+        id: endpoint-python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the existing MSYS2 CMake shell
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2
+        with:
+          msystem: MINGW64
+          update: true
+          cache: false
+          path-type: inherit
+          install: >-
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+
+      - name: Validate source and create no-crypto CTest fixture
+        env:
+          ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
+        shell: msys2 {0}
+        working-directory: C:/openfhe-endpoint-ctest-protocol/cleanroom
+        run: |
+          set -euo pipefail
+          python_shell="$(command -v python)"
+          python_native="$(cygpath -am "$python_shell")"
+          expected_python_native="$(cygpath -am "$ENDPOINT_PYTHON_NATIVE")"
+          test "$python_native" = "$expected_python_native"
+          "$python_shell" -c 'import os, sys; sys.exit(0 if sys.version_info[:2] == (3, 12) and os.name == "nt" else 1)'
+          source_shell="$(cygpath -u "$PROJECT_SOURCE")"
+          source_native="$(cygpath -am "$source_shell")"
+          actual="$(git -C "$source_shell" rev-parse HEAD)"
+          test "$actual" = "$GITHUB_SHA"
+          runner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"
+          fixture_source_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-source-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          fixture_build_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-build-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          marker_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-marker-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          scratch_shell="$runner_temp_shell/fsew"
+          gate_script_native="$(cygpath -am "$source_shell/tests/paper_endpoint_ctest_protocol_gate.py")"
+          "$python_shell" -B tests/paper_endpoint_ctest_protocol_gate.py prepare \
+            --source-root "$source_native" \
+            --fixture-source "$(cygpath -am "$fixture_source_shell")" \
+            --fixture-build "$(cygpath -am "$fixture_build_shell")" \
+            --marker "$(cygpath -am "$marker_shell")" \
+            --scratch "$(cygpath -am "$scratch_shell")" \
+            --python-native "$python_native" --gate-script-native "$gate_script_native"
+          cmake -G Ninja -S "$fixture_source_shell" -B "$fixture_build_shell"
+
+      - name: Run the real one-shot wrapper against Test 61
+        id: protocol-wrapper
+        shell: msys2 {0}
+        working-directory: C:/openfhe-endpoint-ctest-protocol/cleanroom
+        run: |
+          set -euo pipefail
+          runner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"
+          fixture_build_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-build-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          scratch_shell="$runner_temp_shell/fsew"
+          wrapper_exit_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-wrapper-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit"
+          test ! -e "$scratch_shell" && test ! -L "$scratch_shell"
+          umask 077
+          mkdir -- "$scratch_shell"
+          scratch_shell="$(cd "$scratch_shell" && pwd -P)"
+          scratch_native="$(cygpath -am "$scratch_shell")"
+          set +e
+          bash tests/run_paper_endpoint_once.sh \
+            --scope synthetic --host windows \
+            --build-dir-shell "$fixture_build_shell" \
+            --scratch-shell "$scratch_shell" --scratch-native "$scratch_native" \
+            --python "$(command -v python)" --ctest "$(command -v ctest)"
+          wrapper_status=$?
+          set -e
+          printf '%s\n' "$wrapper_status" > "$wrapper_exit_shell"
+          exit "$wrapper_status"
+
+      - name: Render bounded escaped CTest transport
+        if: ${{ always() }}
+        shell: msys2 {0}
+        working-directory: C:/openfhe-endpoint-ctest-protocol/cleanroom
+        run: |
+          set -euo pipefail
+          runner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"
+          scratch_shell="$runner_temp_shell/fsew"
+          python -B tests/paper_endpoint_ctest_protocol_gate.py inspect \
+            --primary-log "$(cygpath -am "$scratch_shell/primary.ctest.log")" \
+            --marker "$(cygpath -am "$runner_temp_shell/fs-endpoint-ctest-protocol-marker-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}")" \
+            --wrapper-exit "$(cygpath -am "$runner_temp_shell/fs-endpoint-ctest-protocol-wrapper-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit")"
+
+      - name: Select exact synthetic status after wrapper failure
+        id: endpoint-select
+        if: ${{ always() }}
+        shell: msys2 {0}
+        working-directory: C:/openfhe-endpoint-ctest-protocol/cleanroom
+        run: |
+          set -euo pipefail
+          runner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"
+          scratch_shell="$runner_temp_shell/fsew"
+          scratch_native="$(cygpath -am "$scratch_shell")"
+          manifest_native="$scratch_native/upload-paths.txt"
+          manifest_shell="$scratch_shell/upload-paths.txt"
+          github_output_shell="$(cygpath -u "$GITHUB_OUTPUT")"
+          python -B tests/paper_endpoint_finalizer.py select \
+            --source-commit "$GITHUB_SHA" --host windows \
+            --github-run-id "$GITHUB_RUN_ID" --github-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --published-parent "$scratch_native/published" --manifest "$manifest_native"
+          {
+            echo 'paths<<FS_ENDPOINT_PATHS'
+            cat -- "$manifest_shell"
+            echo 'FS_ENDPOINT_PATHS'
+          } >> "$github_output_shell"
+
+      - name: Validate status-only allowlist before upload
+        id: validate-selection
+        if: ${{ always() && steps.endpoint-select.outcome == 'success' }}
+        shell: msys2 {0}
+        working-directory: C:/openfhe-endpoint-ctest-protocol/cleanroom
+        run: |
+          set -euo pipefail
+          runner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"
+          scratch_shell="$runner_temp_shell/fsew"
+          python -B tests/paper_endpoint_ctest_protocol_gate.py validate-selection \
+            --scratch "$(cygpath -am "$scratch_shell")" \
+            --manifest "$(cygpath -am "$scratch_shell/upload-paths.txt")" \
+            --wrapper-exit "$(cygpath -am "$runner_temp_shell/fs-endpoint-ctest-protocol-wrapper-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit")"
+
+      - name: Upload the one validated synthetic status
+        id: upload-status
+        if: ${{ always() && steps.validate-selection.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fs-endpoint-synthetic-ctest-protocol-windows-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.endpoint-select.outputs.paths }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+      - name: Download the exact synthetic status
+        id: download-status
+        if: ${{ always() && steps.upload-status.outcome == 'success' }}
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: fs-endpoint-synthetic-ctest-protocol-windows-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}\fs-endpoint-ctest-protocol-download-windows-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Require TIMEOUT after status transport
+        if: ${{ always() && steps.download-status.outcome == 'success' }}
+        shell: msys2 {0}
+        working-directory: C:/openfhe-endpoint-ctest-protocol/cleanroom
+        run: |
+          set -euo pipefail
+          runner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"
+          scratch_shell="$runner_temp_shell/fsew"
+          download_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-download-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python -B tests/paper_endpoint_ctest_protocol_gate.py verify-timeout \
+            --scratch "$(cygpath -am "$scratch_shell")" \
+            --manifest "$(cygpath -am "$scratch_shell/upload-paths.txt")" \
+            --wrapper-exit "$(cygpath -am "$runner_temp_shell/fs-endpoint-ctest-protocol-wrapper-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit")" \
+            --downloaded "$(cygpath -am "$download_shell")"

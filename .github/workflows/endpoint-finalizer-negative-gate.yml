@@ -1,0 +1,87 @@
+name: Endpoint finalizer discriminating negative Python gate
+
+'on':
+  push:
+    branches:
+      - codex/endpoint-finalizer-negative-gate-20260906
+
+permissions:
+  contents: read
+
+env:
+  RUN_ENDPOINT_NEGATIVE_GATE: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  linux-python:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ENDPOINT_TEST_HOST: linux
+    steps:
+      - name: Check out exact tested source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 resolved 2026-09-06
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Set up native Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5 resolved 2026-09-06
+        with:
+          python-version: '3.12'
+      - name: Verify exact source and execute three negative finalizer cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          python -c 'import sys, platform, decimal, json, zlib; sys.exit("Python 3.12 required") if sys.version_info[:2] != (3, 12) else None; print(json.dumps({"python": sys.version, "implementation": platform.python_implementation(), "platform": sys.platform, "decimal": decimal.__version__, "libmpdec": decimal.__libmpdec_version__, "default_decimal_context": str(decimal.getcontext()), "zlib_build": zlib.ZLIB_VERSION, "zlib_runtime": zlib.ZLIB_RUNTIME_VERSION}, sort_keys=True))'
+          python -B tests/hosted_paper_endpoint_finalizer_negative.py
+
+  windows-python:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    env:
+      ENDPOINT_TEST_HOST: windows
+    steps:
+      - name: Check out exact public source outside the dotted workspace
+        shell: pwsh
+        working-directory: C:/
+        env:
+          ENDPOINT_PROJECT_SOURCE: ${{ runner.temp }}/fs-endpoint-negative-source-${{ github.run_id }}-${{ github.run_attempt }}-windows
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (Test-Path -LiteralPath $env:ENDPOINT_PROJECT_SOURCE) {
+            throw 'Refusing an existing endpoint source directory'
+          }
+          New-Item -ItemType Directory -Path $env:ENDPOINT_PROJECT_SOURCE | Out-Null
+          git init $env:ENDPOINT_PROJECT_SOURCE
+          if ($LASTEXITCODE -ne 0) { throw 'git init failed' }
+          git -C $env:ENDPOINT_PROJECT_SOURCE config core.autocrlf false
+          if ($LASTEXITCODE -ne 0) { throw 'git config autocrlf failed' }
+          git -C $env:ENDPOINT_PROJECT_SOURCE config core.eol lf
+          if ($LASTEXITCODE -ne 0) { throw 'git config eol failed' }
+          git -C $env:ENDPOINT_PROJECT_SOURCE remote add origin https://github.com/leemaple/20231788..git
+          if ($LASTEXITCODE -ne 0) { throw 'git remote failed' }
+          git -C $env:ENDPOINT_PROJECT_SOURCE fetch --depth 1 origin $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'git fetch failed' }
+          git -C $env:ENDPOINT_PROJECT_SOURCE checkout --detach FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'git checkout failed' }
+          $actual = git -C $env:ENDPOINT_PROJECT_SOURCE rev-parse HEAD
+          if ($LASTEXITCODE -ne 0 -or $actual -ne $env:GITHUB_SHA) { throw 'Source identity mismatch' }
+          $dirty = @(git -C $env:ENDPOINT_PROJECT_SOURCE status --porcelain)
+          if ($LASTEXITCODE -ne 0 -or $dirty.Count -ne 0) { throw 'Source checkout is not clean' }
+      - name: Set up native Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5 resolved 2026-09-06
+        with:
+          python-version: '3.12'
+      - name: Execute three negative finalizer cases with native paths
+        shell: pwsh
+        working-directory: ${{ runner.temp }}/fs-endpoint-negative-source-${{ github.run_id }}-${{ github.run_attempt }}-windows
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python -c 'import sys, platform, decimal, json, zlib; sys.exit("Python 3.12 required") if sys.version_info[:2] != (3, 12) else None; print(json.dumps({"python": sys.version, "implementation": platform.python_implementation(), "platform": sys.platform, "decimal": decimal.__version__, "libmpdec": decimal.__libmpdec_version__, "default_decimal_context": str(decimal.getcontext()), "zlib_build": zlib.ZLIB_VERSION, "zlib_runtime": zlib.ZLIB_RUNTIME_VERSION}, sort_keys=True))'
+          if ($LASTEXITCODE -ne 0) { throw 'Python 3.12 environment check failed' }
+          python -B tests/hosted_paper_endpoint_finalizer_negative.py
+          $testExit = $LASTEXITCODE
+          exit $testExit

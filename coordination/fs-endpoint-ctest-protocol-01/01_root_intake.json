@@ -1,0 +1,139 @@
+{
+  "base_commit": "d01e527d51611b79dd8c78a4225d7461bc49e052",
+  "previous_turn_classification": "PROGRESS: complete finalizer minimal implementation and true dual-host GREEN, exact retained logs/review/scan/commit/push; no new scientific chain.",
+  "candidate_scope": "Two independently authored, separately triggered hosted gates: three complete-finalizer negative regression cases, and one real-CTest synthetic timeout protocol RED per host. All existing code/tests/production/workflows frozen.",
+  "authors": [
+    {
+      "owner": "/root/endpoint_writer_review",
+      "scope": "CTest protocol four new files",
+      "worktree": "/Users/lifeng/Documents/20231788-openfhe-endpoint-ctest-protocol-test-20260906"
+    },
+    {
+      "owner": "/root/endpoint_canonical_writer",
+      "scope": "Three negative CLI regressions, four new files",
+      "worktree": "/Users/lifeng/Documents/20231788-openfhe-endpoint-finalizer-negative-test-20260906"
+    }
+  ],
+  "exact_imports": [
+    {
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-ctest-protocol-test-20260906",
+      "path": "tests/paper_endpoint_ctest_protocol_gate.py"
+    },
+    {
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-ctest-protocol-test-20260906",
+      "path": ".github/workflows/endpoint-ctest-protocol-gate.yml"
+    },
+    {
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-ctest-protocol-test-20260906",
+      "path": "coordination/fs-endpoint-ctest-protocol-01/BOUNDARY.md"
+    },
+    {
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-ctest-protocol-test-20260906",
+      "path": "coordination/fs-endpoint-ctest-protocol-01/AUTHOR_NOTE.md"
+    },
+    {
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-finalizer-negative-test-20260906",
+      "path": "tests/hosted_paper_endpoint_finalizer_negative.py"
+    },
+    {
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-finalizer-negative-test-20260906",
+      "path": ".github/workflows/endpoint-finalizer-negative-gate.yml"
+    },
+    {
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-finalizer-negative-test-20260906",
+      "path": "coordination/fs-endpoint-complete-negative-01/BOUNDARY.md"
+    },
+    {
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-finalizer-negative-test-20260906",
+      "path": "coordination/fs-endpoint-complete-negative-01/AUTHOR_NOTE.md"
+    }
+  ],
+  "import_hashes": {
+    "chunk_id": "9f0e6c",
+    "wall_time_seconds": 0.000005209,
+    "exit_code": 0,
+    "original_token_count": 116,
+    "output": "56416df5ae6a459451cb8f00fac295ea4323795538f1b2866679778584ec7baa  tests/paper_endpoint_ctest_protocol_gate.py\n0ca8000fb6cbb33f6d66100490d735f0bcdcdef35869d0f715f027332b0e084e  tests/hosted_paper_endpoint_finalizer_negative.py\n94325945c5802412d8d484df6cd79cac050c24d9412ea5ace3ddd4a1fe43c32d  .github/workflows/endpoint-ctest-protocol-gate.yml\n6dc266a91d51ac3ea176a19308b02e58df2ebbe92b630920f2a380b5f613d01a  .github/workflows/endpoint-finalizer-negative-gate.yml\n"
+  },
+  "root_findings_closed": [
+    "Conditioning fixture initially matched an unanchored slot0 byte suffix also present in slots10/20/etc. Author changed both old/new tokens to include the preceding LF; tiny two-row bytes check only, no full fixture execution.",
+    "Protocol Windows scratch originally gave a 296-character deepest candidate under a typical runner path. Author shortened to RUNNER_TEMP/fsew and added actual deepest-path <=247 preflight before allocation; published identity and synthetic artifact name remain exact.",
+    "PowerShell native Git failures were not individually checked. Author added LASTEXITCODE checks; root independently added first-step working-directory C:/ so process startup itself avoids dotted workspace.",
+    "MSYS default path-type minimal excludes arbitrary setup-python PATH. Author explicitly inherits and compares the native resolved command path with setup-python output.",
+    "Unused require_timeout helper flag/dead branch removed; final assertion kept in verify-timeout only.",
+    "Root pinned Linux checkout ref/depth/nonpersistent credentials, checked clean source on both hosts, and made Windows no-language configure use installed Ninja explicitly. No build added.",
+    "Independent negative reviewer identified an inaccurate BOUNDARY phrase: case3 mutates primary log, not canonical TSV. Root corrected it to frozen input-evidence bytes."
+  ],
+  "root_static": {
+    "command": "/usr/bin/ruby -rjson -ryaml - <<'RUBY'\nrequire 'digest'\nworkflows = {'.github/workflows/endpoint-ctest-protocol-gate.yml' => ['codex/endpoint-ctest-protocol-red-20260906', 10], '.github/workflows/endpoint-finalizer-negative-gate.yml' => ['codex/endpoint-finalizer-negative-gate-20260906', 15]}\nresults = []\nworkflows.each do |path, expected|\n  w = YAML.load_file(path)\n  events = w['on'] || w[true]\n  raise 'unexpected events' unless events.keys == ['push'] && events['push']['branches'] == [expected[0]]\n  raise 'unexpected jobs' unless w['jobs'].length == 2\n  parsed = 0\n  w['jobs'].each do |id, job|\n    raise 'timeout changed' unless job['timeout-minutes'] == expected[1]\n    job.fetch('steps').each do |step|\n      raise 'hidden failure' if step.key?('continue-on-error')\n      next unless step['run'] && ['bash', 'msys2 {0}'].include?(step['shell'])\n      IO.popen(['/bin/bash', '-n'], 'w') { |io| io.write(step['run']) }\n      raise 'Bash syntax failed' unless $?.success?\n      parsed += 1\n    end\n  end\n  results << {path: path, sha256: Digest::SHA256.file(path).hexdigest, yaml_parse: 'PASS', bash_run_steps_parsed: parsed, jobs: 2, exact_trigger: expected[0]}\nend\nputs JSON.pretty_generate(results)\nRUBY\n/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B - <<'PY'\nimport ast,hashlib,json,pathlib,subprocess\nroot=pathlib.Path('.')\nfiles=['tests/paper_endpoint_ctest_protocol_gate.py','tests/hosted_paper_endpoint_finalizer_negative.py']\nparsed={}\nfor f in files:\n b=(root/f).read_bytes(); tree=ast.parse(b)\n parsed[f]={'sha256':hashlib.sha256(b).hexdigest(),'ast':'PASS','test_methods':sum(isinstance(n,ast.FunctionDef) and n.name.startswith('test_') for n in ast.walk(tree))}\nassert parsed[files[1]]['test_methods']==3\nfor f in ['CMakeLists.txt','.github/workflows/dcp-rcb.yml','tests/hosted_paper_endpoint_finalizer_complete.py','tests/run_paper_endpoint_once.sh','tests/paper_endpoint_finalizer.py','tests/paper_endpoint_primary_reader.py','tests/paper_endpoint_sidecar_reader.py','tests/paper_endpoint_sidecar_replay.py','tests/paper_endpoint_reconcile.py','tests/paper_endpoint_publication.py','tests/paper_endpoint_status.py','tests/paper_endpoint_gzip.py']:\n assert (root/f).read_bytes()==subprocess.check_output(['git','show','18f4d32eaa70a0b182fc876e1589856fbbae8552:'+f]),f\nold=(root/'.github/workflows/dcp-rcb.yml').read_text()\nassert 'codex/endpoint-ctest-protocol-red-20260906' not in old\nassert 'codex/endpoint-finalizer-negative-gate-20260906' not in old\nprint(json.dumps({'scope':'source-only AST, exact frozen bytes and trigger exclusion; no fixture or runtime execution','files':parsed,'frozen_dependencies':'PASS'},indent=2))\nPY",
+    "result": {
+      "chunk_id": "8c566e",
+      "wall_time_seconds": 0.626991417,
+      "exit_code": 0,
+      "original_token_count": 287,
+      "output": "[\n  {\n    \"path\": \".github/workflows/endpoint-ctest-protocol-gate.yml\",\n    \"sha256\": \"b7904ee6a8d7c97f93aadbf47a70f6a31235fe27071219f13f99eb2065f4890c\",\n    \"yaml_parse\": \"PASS\",\n    \"bash_run_steps_parsed\": 12,\n    \"jobs\": 2,\n    \"exact_trigger\": \"codex/endpoint-ctest-protocol-red-20260906\"\n  },\n  {\n    \"path\": \".github/workflows/endpoint-finalizer-negative-gate.yml\",\n    \"sha256\": \"6dc266a91d51ac3ea176a19308b02e58df2ebbe92b630920f2a380b5f613d01a\",\n    \"yaml_parse\": \"PASS\",\n    \"bash_run_steps_parsed\": 1,\n    \"jobs\": 2,\n    \"exact_trigger\": \"codex/endpoint-finalizer-negative-gate-20260906\"\n  }\n]\n{\n  \"scope\": \"source-only AST, exact frozen bytes and trigger exclusion; no fixture or runtime execution\",\n  \"files\": {\n    \"tests/paper_endpoint_ctest_protocol_gate.py\": {\n      \"sha256\": \"56416df5ae6a459451cb8f00fac295ea4323795538f1b2866679778584ec7baa\",\n      \"ast\": \"PASS\",\n      \"test_methods\": 0\n    },\n    \"tests/hosted_paper_endpoint_finalizer_negative.py\": {\n      \"sha256\": \"0ca8000fb6cbb33f6d66100490d735f0bcdcdef35869d0f715f027332b0e084e\",\n      \"ast\": \"PASS\",\n      \"test_methods\": 3\n    }\n  },\n  \"frozen_dependencies\": \"PASS\"\n}\n"
+    },
+    "note": "Both local candidate workflows were checked in one read-only AST/YAML/Bash parse command. This is not any hosted runtime or fixture execution."
+  },
+  "official_action_refs": [
+    {
+      "repo": "actions/upload-artifact",
+      "tag": "v4",
+      "result": {
+        "chunk_id": "b32818",
+        "wall_time_seconds": 0.844255583,
+        "exit_code": 0,
+        "original_token_count": 86,
+        "output": "{\"ref\":\"refs/tags/v4\",\"node_id\":\"MDM6UmVmMTkyNjI1OTU1OnJlZnMvdGFncy92NA==\",\"url\":\"https://api.github.com/repos/actions/upload-artifact/git/refs/tags/v4\",\"object\":{\"sha\":\"ea165f8d65b6e75b540449e92b4886f43607fa02\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/actions/upload-artifact/git/commits/ea165f8d65b6e75b540449e92b4886f43607fa02\"}}"
+      }
+    },
+    {
+      "repo": "actions/download-artifact",
+      "tag": "v4",
+      "result": {
+        "chunk_id": "642c11",
+        "wall_time_seconds": 0.745196334,
+        "exit_code": 0,
+        "original_token_count": 87,
+        "output": "{\"ref\":\"refs/tags/v4\",\"node_id\":\"MDM6UmVmMTkyNjI2MjU0OnJlZnMvdGFncy92NA==\",\"url\":\"https://api.github.com/repos/actions/download-artifact/git/refs/tags/v4\",\"object\":{\"sha\":\"d3f86a106a0bac45b974a628896c90dbdf5c8093\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/actions/download-artifact/git/commits/d3f86a106a0bac45b974a628896c90dbdf5c8093\"}}"
+      }
+    },
+    {
+      "repo": "msys2/setup-msys2",
+      "tag": "v2",
+      "result": {
+        "chunk_id": "b95af3",
+        "wall_time_seconds": 0.689508833,
+        "exit_code": 0,
+        "original_token_count": 83,
+        "output": "{\"ref\":\"refs/tags/v2\",\"node_id\":\"MDM6UmVmMjEzMjAzNTAxOnJlZnMvdGFncy92Mg==\",\"url\":\"https://api.github.com/repos/msys2/setup-msys2/git/refs/tags/v2\",\"object\":{\"sha\":\"66cd2cce69caa17b53920067426061ca1de3a884\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/msys2/setup-msys2/git/commits/66cd2cce69caa17b53920067426061ca1de3a884\"}}"
+      }
+    }
+  ],
+  "official_support": [
+    {
+      "url": "https://github.com/msys2/setup-msys2#path-type",
+      "claim": "minimal is default; inherit includes Windows PATH; official install input accepts whitespace-separated packages."
+    },
+    {
+      "url": "https://github.com/actions/setup-python/blob/a26af69be951a213d495a4c3e4e4022e16d87065/action.yml",
+      "claim": "python-path output is absolute interpreter executable path."
+    },
+    {
+      "url": "https://cmake.org/cmake/help/latest/variable/CMAKE_MAKE_PROGRAM.html",
+      "claim": "Ninja generator uses ninja as the native build tool; no build was run."
+    },
+    {
+      "url": "https://packages.msys2.org/packages/mingw-w64-x86_64-ninja",
+      "claim": "Official package listing for the explicitly selected generator tool."
+    }
+  ],
+  "resource_boundary": "Mac only read-only source/Git/AST/YAML/Bash syntax, bounded hash/secret scan, manual edits. No local CMake/CTest, full fixture/replay, C++/OpenFHE/FHE/FFT/NTT.",
+  "activation": "One exact-source push to codex/endpoint-finalizer-negative-gate-20260906 and codex/endpoint-ctest-protocol-red-20260906; each workflow matches only its own ref. No dispatch/rerun. Existing dcp-rcb and positive-gate triggers do not match.",
+  "not_claimed": [
+    "Hosted gate execution or result before actual receipt.",
+    "Original E80 correctness; remains FAIL at prior9f6 source.",
+    "q-only coverage, real writer interoperability, live chain, final Pro semantic review.",
+    "More than one actual CTest invocation per protocol job; no --version/--show-only extra CTest command."
+  ]
+}
