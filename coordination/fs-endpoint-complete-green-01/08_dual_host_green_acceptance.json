@@ -1,0 +1,56 @@
+{
+  "disposition": "ACCEPTED: bounded dual-host synthetic complete-finalizer GREEN; not paper numerical acceptance",
+  "source_commit": "18f4d32eaa70a0b182fc876e1589856fbbae8552",
+  "run_id": 34016855834,
+  "run_attempt": 1,
+  "run_url": "https://github.com/leemaple/20231788./actions/runs/34016855834",
+  "preceding_red": {
+    "source_commit": "e925c3ffcd670d33871ad585db13f1c1387468e8",
+    "run_id": 34016221531,
+    "receipt": "../fs-endpoint-complete-hosted-01/12_dual_host_red_acceptance.json",
+    "frozen_test_unchanged": true
+  },
+  "mechanical_verification": {
+    "command": "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B - <<'PY'\nimport hashlib,json,pathlib,re,subprocess\nroot=pathlib.Path('.')\ndef sha(p):return hashlib.sha256((root/p).read_bytes()).hexdigest()\ndir=root/'coordination/fs-endpoint-complete-green-01'\nrun=json.loads(json.loads((dir/'05_green_run_jobs.json').read_text())['final']['output'])\nassert run['headSha']=='18f4d32eaa70a0b182fc876e1589856fbbae8552' and run['attempt']==1 and run['status']=='completed' and run['conclusion']=='success'\nassert len(run['jobs'])==2 and all(j['conclusion']=='success' for j in run['jobs'])\nreceipts={}\nfor host,job,seconds,ver in [('linux',101442032409,'3.158','3.12.14'),('windows',101442032194,'4.233','3.12.10')]:\n    item=json.loads((dir/('06_green_linux_decoded_log.json' if host=='linux' else '07_green_windows_decoded_log.json')).read_text())\n    assert item['job']==job and item['final']['exit_code']==0\n    log=item['final']['output']\n    assert f'Ran 1 test in {seconds}s' in log and 'test_complete_failing_e80_evidence_is_published_and_remains_nonzero (__main__.' in log\n    assert '... ok' in log and re.search(r'Z OK\\n',log)\n    assert f'Successfully set up CPython ({ver})' in log\n    assert 'Traceback (most recent call last)' not in log and 'FAILED (' not in log\n    runtime_lines=[line.split('Z ',1)[1] for line in log.splitlines() if 'Z {\"decimal\": \"1.70\"' in line]\n    assert len(runtime_lines)==1\n    runtime=json.loads(runtime_lines[0])\n    receipts[host]={'job':job,'test_count':1,'test_seconds':seconds,'runtime':runtime,'decoded_log_utf8_bytes':len(log.encode()),'decoded_log_utf8_sha256':hashlib.sha256(log.encode()).hexdigest()}\nexpected={'tests/paper_endpoint_finalizer.py':'b3061c1b0283598e53e10d60241de77d5e4765743195e80782e4f2a7da507705','tests/hosted_paper_endpoint_finalizer_complete.py':'d7784038f2bc2ee41b09bffd5665676d8f149a4f079055bb7c2c0447b7d30d89','.github/workflows/endpoint-finalizer-complete-gate.yml':'92aa191455e1954e64a3b18d4160380ca77a2a50327d7c4c11aaea641e5b47e8'}\nassert all(sha(p)==s for p,s in expected.items())\nassert subprocess.check_output(['git','show','e925c3ffcd670d33871ad585db13f1c1387468e8:tests/hosted_paper_endpoint_finalizer_complete.py'])==(root/'tests/hosted_paper_endpoint_finalizer_complete.py').read_bytes()\nprint(json.dumps({'result':'PASS','scope':'source/retained log consistency only; no local fixture or replay execution','run':run['databaseId'],'source_sha256':expected,'hosts':receipts},sort_keys=True,indent=2))\nPY",
+    "tool_result": {
+      "chunk_id": "bf1606",
+      "wall_time_seconds": 0.000006792,
+      "exit_code": 0,
+      "original_token_count": 502,
+      "output": "{\n  \"hosts\": {\n    \"linux\": {\n      \"decoded_log_utf8_bytes\": 26699,\n      \"decoded_log_utf8_sha256\": \"1ffa69711efb5a4d3884f2f60072f2f7154f43c1e568bdd0729e09e481f78f7c\",\n      \"job\": 101442032409,\n      \"runtime\": {\n        \"decimal\": \"1.70\",\n        \"default_decimal_context\": \"Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999, Emax=999999, capitals=1, clamp=0, flags=[], traps=[InvalidOperation, DivisionByZero, Overflow])\",\n        \"implementation\": \"CPython\",\n        \"libmpdec\": \"2.5.1\",\n        \"platform\": \"linux\",\n        \"python\": \"3.12.14 (main, Aug 13 2026, 02:47:42) [GCC 13.3.0]\",\n        \"zlib_build\": \"1.3\",\n        \"zlib_runtime\": \"1.3\"\n      },\n      \"test_count\": 1,\n      \"test_seconds\": \"3.158\"\n    },\n    \"windows\": {\n      \"decoded_log_utf8_bytes\": 16400,\n      \"decoded_log_utf8_sha256\": \"a6678b38ac9a6b03e8792491aec797d073d0e9f3144da7914fe4ae71a9d33988\",\n      \"job\": 101442032194,\n      \"runtime\": {\n        \"decimal\": \"1.70\",\n        \"default_decimal_context\": \"Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999, Emax=999999, capitals=1, clamp=0, flags=[], traps=[InvalidOperation, DivisionByZero, Overflow])\",\n        \"implementation\": \"CPython\",\n        \"libmpdec\": \"2.5.1\",\n        \"platform\": \"win32\",\n        \"python\": \"3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]\",\n        \"zlib_build\": \"1.3.1\",\n        \"zlib_runtime\": \"1.3.1\"\n      },\n      \"test_count\": 1,\n      \"test_seconds\": \"4.233\"\n    }\n  },\n  \"result\": \"PASS\",\n  \"run\": 34016855834,\n  \"scope\": \"source/retained log consistency only; no local fixture or replay execution\",\n  \"source_sha256\": {\n    \".github/workflows/endpoint-finalizer-complete-gate.yml\": \"92aa191455e1954e64a3b18d4160380ca77a2a50327d7c4c11aaea641e5b47e8\",\n    \"tests/hosted_paper_endpoint_finalizer_complete.py\": \"d7784038f2bc2ee41b09bffd5665676d8f149a4f079055bb7c2c0447b7d30d89\",\n    \"tests/paper_endpoint_finalizer.py\": \"b3061c1b0283598e53e10d60241de77d5e4765743195e80782e4f2a7da507705\"\n  }\n}\n"
+    }
+  },
+  "independent_review": {
+    "reviewer": "/root/endpoint_canonical_writer; separate Codex context, not a separate model provider",
+    "scope": "Read-only exact committed source and retained whole decoded command outputs; no local fixture/replay/tests, remote retries, or edits",
+    "verdict": "ACCEPTABLE for exact-source bounded synthetic complete-finalizer GREEN.",
+    "observed": "Run 34016855834 attempt 1 succeeded, both jobs succeeded. Linux job 101442032409: Ubuntu 24.04.4, image 20260831.293.1, runner 2.337.0, CPython 3.12.14, Decimal 1.70/libmpdec 2.5.1, zlib build/runtime 1.3; actual named unittest 1 test in 3.158s, OK. Windows job 101442032194: Server 2022 10.0.20348 Datacenter, image 20260830.290.1, runner 2.337.0, CPython 3.12.10, Decimal 1.70/libmpdec 2.5.1, zlib build/runtime 1.3.1; actual named unittest 1 test in 4.233s, OK. Real unittest output follows echoed commands and environment record.",
+    "source_identity": "Committed finalizer b3061c1b0283598e53e10d60241de77d5e4765743195e80782e4f2a7da507705; frozen hosted test d7784038f2bc2ee41b09bffd5665676d8f149a4f079055bb7c2c0447b7d30d89; workflow 92aa191455e1954e64a3b18d4160380ca77a2a50327d7c4c11aaea641e5b47e8.",
+    "interpretation": "Frozen assertions together with reviewed direct source control flow support synthetic count-2/E80-FAIL primary and full 16,384-row zero sidecar passing binding/replay/reconciliation; actual finalize CLI returned status 8 silently; inputs byte-unchanged; exact gzip+status selected; COMPLETE/NONE/observer PASS/packer PASS, chain 1, rows 16384, count 2, E80 FAIL, A NOT_ADOPTED, Boost 108300, CTest 8; actual hashes/sizes and canonical round-trip matched.",
+    "limits": [
+      "No live C++/CTest/encryption/E80 chain was executed.",
+      "No C++ writer/primary provenance, wrapper/MSYS or artifact transport verification.",
+      "Zero fixture alone does not discriminate omitted stages, nonzero rounding/quantum/argmax or signed-tuple coverage.",
+      "Temporary synthetic output artifacts were checked by the test but were not independently retained as GitHub artifacts.",
+      "06/07 are complete gh-decoded textual tool outputs, not underlying raw ZIP bytes."
+    ]
+  },
+  "original_scientific_state": {
+    "source": "9f6c8eae06afb342dfa8c8efff9f64ee45b2ab8e",
+    "run_id": 33978202814,
+    "E80": "FAIL",
+    "A": "NOT_ADOPTED",
+    "new_encrypted_chain": false,
+    "numerical_improvement_claimed": false
+  },
+  "next_bounded_work": {
+    "owner": "/root/endpoint_writer_review authors isolated RED test; root integrates; independent reviewer reviews before hosted execution.",
+    "seam": "Actual run_paper_endpoint_once.sh -> real CTest #61 -> actual finalizer/select CLI -> exact status-only upload/download after failure.",
+    "scope": "Separate fresh synthetic CMake project, 60 nonselected placeholders plus one #61 Python timeout emitter, no build/crypto; one 2-second CTest timeout per host per stage; Linux Bash and Windows MSYS2; maximum 10-minute job.",
+    "expected_missing_behavior": "Current CLI does not derive observed timeout from actual captured CTest bytes. Establish actual grammar first, then minimal finalizer recognition with known failure precedence. Do not infer TIMEOUT from an exit code alone.",
+    "red_status": "Design accepted; authoring delegated. No protocol CTest run, GREEN implementation, upload, or new workflow trigger executed by this receipt.",
+    "paths": "New isolated worktree from 18f4d32; branch codex/endpoint-ctest-protocol-test-20260906. Owned new gate Python/workflow/BOUNDARY/AUTHOR_NOTE only. Exact future activation branch codex/endpoint-ctest-protocol-red-20260906.",
+    "limitations": "A synthetic-only artifact name may retain one incomplete status for the explicit transport test. Never upload canonical or primary log, mix into live artifacts, change original paper timeout/CTest/CMake, repeat a live chain, or conceal wrapper failure. Targeted discriminating complete-finalizer negatives and C++ interoperability remain before live wiring."
+  },
+  "reporting": "Existing September 6 explained-v2 PDF/Telegram confirmation unchanged; do not resend or retroactively change its 09:30 cutoff."
+}

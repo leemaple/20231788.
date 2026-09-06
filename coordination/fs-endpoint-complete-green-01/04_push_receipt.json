@@ -1,0 +1,98 @@
+{
+  "description": "Exact candidate source push and verification; full staged scan covers seven framed Git blobs, including prior scan receipt.",
+  "commit": "18f4d32eaa70a0b182fc876e1589856fbbae8552",
+  "branch": "codex/endpoint-finalizer-complete-green-20260906",
+  "final_scan": {
+    "source_base": "c1b58dd8a03f5bcb11412f2d317a51843686a766",
+    "branch": "codex/paper-scale-implementation-20260905",
+    "scanner_version": "8.30.1",
+    "scanner_argv": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact",
+      "--no-banner",
+      "--no-color"
+    ],
+    "scanner_cwd": "/private/tmp",
+    "selection": "exact staged blobs; paths/NUL/decimal byte count/NUL/body/NUL; no archive created",
+    "manifest": [
+      {
+        "path": ".github/workflows/endpoint-finalizer-complete-gate.yml",
+        "bytes": 4656,
+        "sha256": "92aa191455e1954e64a3b18d4160380ca77a2a50327d7c4c11aaea641e5b47e8"
+      },
+      {
+        "path": "coordination/fs-endpoint-complete-green-01/00_previous_checkpoint.json",
+        "bytes": 4689,
+        "sha256": "f78efac82f0de126771837e350114d3ae4217cec9e8053ff3c87663f34d171ed"
+      },
+      {
+        "path": "coordination/fs-endpoint-complete-green-01/01_incomplete_regression.json",
+        "bytes": 9979,
+        "sha256": "1c9a137fda96d9a6192344a24c40ab7381a92b767593ee3861432cfe4c0fc544"
+      },
+      {
+        "path": "coordination/fs-endpoint-complete-green-01/02_source_review.json",
+        "bytes": 3826,
+        "sha256": "099d2d852f09db4c5bfdacd38d8abaacdd86c5e2914eacf47071fc88a6852621"
+      },
+      {
+        "path": "coordination/fs-endpoint-complete-green-01/03_pre_push_scan.json",
+        "bytes": 2095,
+        "sha256": "99ba3ec31a1395ad214e757ae09d17e02f2af620ac32da40d7cc3e288a874811"
+      },
+      {
+        "path": "coordination/fs-endpoint-complete-green-01/BOUNDARY.md",
+        "bytes": 2425,
+        "sha256": "3af564988fb875bf818ebc2e506427c6e26222e9d9c161c520f273ac1548795c"
+      },
+      {
+        "path": "tests/paper_endpoint_finalizer.py",
+        "bytes": 14229,
+        "sha256": "b3061c1b0283598e53e10d60241de77d5e4765743195e80782e4f2a7da507705"
+      }
+    ],
+    "selected_bytes": 41899,
+    "framed_bytes": 42360,
+    "framed_sha256": "9671317f66c0e2f6fd1d5cb99155b4162cb2900bc06fbec4d9393b891edccad4",
+    "manifest_sha256": "4eb8f90045bb80b23c619e441df384a3f6eb0bd0b68d556ee8af3e63b855af86",
+    "stdout": "",
+    "stderr": "2:34PM INF scanned ~42360 bytes (42.36 KB) in 38.1ms\n2:34PM INF no leaks found\n",
+    "exit_code": 0
+  },
+  "push_initial": {
+    "chunk_id": "cb9f2d",
+    "wall_time_seconds": 1.000797625,
+    "session_id": 24123,
+    "original_token_count": 153,
+    "output": "[codex/paper-scale-implementation-20260905 18f4d32] feat: finalize fully replayed endpoint evidence without hiding numeric failure\n 7 files changed, 264 insertions(+), 2 deletions(-)\n create mode 100644 coordination/fs-endpoint-complete-green-01/00_previous_checkpoint.json\n create mode 100644 coordination/fs-endpoint-complete-green-01/01_incomplete_regression.json\n create mode 100644 coordination/fs-endpoint-complete-green-01/02_source_review.json\n create mode 100644 coordination/fs-endpoint-complete-green-01/03_pre_push_scan.json\n create mode 100644 coordination/fs-endpoint-complete-green-01/BOUNDARY.md\n"
+  },
+  "push_final": {
+    "chunk_id": "5ee6ce",
+    "wall_time_seconds": 0.0000015,
+    "exit_code": 0,
+    "original_token_count": 94,
+    "output": "remote: \nremote: Create a pull request for 'codex/endpoint-finalizer-complete-green-20260906' on GitHub by visiting:        \nremote:      https://github.com/leemaple/20231788./pull/new/codex/endpoint-finalizer-complete-green-20260906        \nremote: \nTo https://github.com/leemaple/20231788..git\n * [new branch]      HEAD -> codex/endpoint-finalizer-complete-green-20260906\n"
+  },
+  "verification_initial": {
+    "chunk_id": "37a1f8",
+    "wall_time_seconds": 1.001780042,
+    "session_id": 20911,
+    "original_token_count": 11,
+    "output": "18f4d32eaa70a0b182fc876e1589856fbbae8552\n"
+  },
+  "verification_final": {
+    "chunk_id": "bab505",
+    "wall_time_seconds": 9.16e-7,
+    "exit_code": 0,
+    "original_token_count": 104,
+    "output": "18f4d32eaa70a0b182fc876e1589856fbbae8552\trefs/heads/codex/endpoint-finalizer-complete-green-20260906\n## codex/paper-scale-implementation-20260905...origin/codex/paper-scale-implementation-20260905 [ahead 17]\n[{\"conclusion\":\"\",\"databaseId\":34016855834,\"event\":\"push\",\"headSha\":\"18f4d32eaa70a0b182fc876e1589856fbbae8552\",\"status\":\"in_progress\",\"url\":\"https://github.com/leemaple/20231788./actions/runs/34016855834\"}]\n"
+  }
+}
