@@ -1,9 +1,9 @@
-name: Endpoint synthetic C++ interop RED
+name: Endpoint synthetic C++ interop GREEN
 
 'on':
   push:
     branches:
-      - codex/endpoint-cpp-interop-red-20260906
+      - codex/endpoint-cpp-interop-green-20260906
 
 permissions:
   contents: read
@@ -134,7 +134,7 @@ jobs:
           python -B tests/hosted_paper_endpoint_cpp_interop.py \
             --producer "$producer" --output-root "$scratch"
 
-      - name: Upload bounded RED diagnostics
+      - name: Upload bounded producer diagnostics
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -341,7 +341,7 @@ jobs:
           "$python_shell" -B tests/hosted_paper_endpoint_cpp_interop.py \
             --producer "$producer_native" --output-root "$scratch_native"
 
-      - name: Upload bounded RED diagnostics
+      - name: Upload bounded producer diagnostics
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

@@ -6,6 +6,7 @@
 #include "paper_endpoint_exact_scalars_test.h"
 #include "paper_endpoint_transform_negative_contract.h"
 #include "paper_endpoint_evidence_writer_test.h"
+#include "paper_endpoint_interop_test.h"
 #include <cmath>
 #include <set>
 #include <type_traits>
@@ -411,6 +412,25 @@ void Run() {
 }
 }  // namespace
 int main(int argc, char** argv) {
+    // Test-only C++/Python boundary: no normal Run(), contexts or legacy receipts.
+    if (argc == 6 && std::string(argv[1]) == "--endpoint-cpp-interop") {
+        try {
+            paper_endpoint_contract::synthetic::interop_test::ProduceCapturedEndpointEvidence(
+                argv[2], argv[3], argv[4], argv[5], std::cout);
+            std::cout << std::flush;
+            paper_full_test::Require(static_cast<bool>(std::cout),
+                                    "synthetic endpoint primary flush failed");
+            return 0;
+        }
+        catch (const std::exception& error) {
+            if (const auto* endpoint=dynamic_cast<const paper_endpoint_contract::EndpointFailure*>(&error))
+                std::cerr << "FS_ENDPOINT_FAILURE reason=" << endpoint->Reason()
+                          << " detail=" << error.what() << '\n';
+            std::cerr << "FS_ENDPOINT_INTEROP result=FAIL namespace=synthetic chain_count=0 reason="
+                      << error.what() << '\n';
+            return 1;
+        }
+    }
     // Dispatch before Run(), hence before ANY context, key or encryption setup.
     // No live-chain receipt or evidence filename is emitted by this mode.
     if (argc == 2 && std::string(argv[1]) == "--endpoint-observer-self-test") {
