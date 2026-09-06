@@ -1,0 +1,113 @@
+{
+  "source": "e925c3ffcd670d33871ad585db13f1c1387468e8",
+  "ref": "codex/endpoint-finalizer-complete-red-fix-20260906",
+  "final_scan": {
+    "source_base": "2035099088cd6f8b083297f019b34f9871dfa7d2",
+    "branch": "codex/paper-scale-implementation-20260905",
+    "scanner_version": "8.30.1",
+    "scanner_argv": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact",
+      "--no-banner",
+      "--no-color"
+    ],
+    "scanner_cwd": "/private/tmp",
+    "selection": "exact staged blobs; paths/NUL/decimal byte count/NUL/body/NUL; no archive created",
+    "manifest": [
+      {
+        "path": ".github/workflows/endpoint-finalizer-complete-gate.yml",
+        "bytes": 4658,
+        "sha256": "2cf5fff455443783c2b088d58d29a44e8c67ae4b4b9fafc9b07070534f945871"
+      },
+      {
+        "path": "coordination/fs-endpoint-complete-hosted-01/05_initial_activation_failure.json",
+        "bytes": 20354,
+        "sha256": "c175c73c3cd8665ee7a43617c97e59abe761424b28b6909c0af7adba9f6ddce6"
+      },
+      {
+        "path": "coordination/fs-endpoint-complete-hosted-01/06_workflow_context_correction.json",
+        "bytes": 1868,
+        "sha256": "a23aa14f1c8c54d8a91fb4e74db4579d989c1708cef65d337d32fef0e754e3ec"
+      },
+      {
+        "path": "coordination/fs-endpoint-complete-hosted-01/07_correction_pre_push_scan.json",
+        "bytes": 1753,
+        "sha256": "51ccf19de43f2627b7a5074cfae0a419de0e06b3ca2189274876366e9f48bb41"
+      },
+      {
+        "path": "coordination/fs-endpoint-complete-hosted-01/WORKFLOW_BOUNDARY.md",
+        "bytes": 4892,
+        "sha256": "2e82fd414283d197f47cdfc57f78d8308ebdadbbbe2c3374b9aa619c4ba162c6"
+      }
+    ],
+    "selected_bytes": 33525,
+    "framed_bytes": 33912,
+    "framed_sha256": "95dcbc7903e627d1fd1660f2c35439cc8526c5e603ffca4ca07825e899f4830e",
+    "manifest_sha256": "d77891bec66f70739c72d24dcf64c16ec41aa3b2d0cb017f0b86ba905a86ccdc",
+    "stdout": "",
+    "stderr": "2:20PM INF scanned ~33912 bytes (33.91 KB) in 47.5ms\n2:20PM INF no leaks found\n",
+    "exit_code": 0
+  },
+  "push_initial": {
+    "chunk_id": "b898e2",
+    "wall_time_seconds": 1.001484083,
+    "session_id": 90313,
+    "original_token_count": 113,
+    "output": "[codex/paper-scale-implementation-20260905 e925c3f] ci: use runner context only in hosted step scope\n 5 files changed, 240 insertions(+), 3 deletions(-)\n create mode 100644 coordination/fs-endpoint-complete-hosted-01/05_initial_activation_failure.json\n create mode 100644 coordination/fs-endpoint-complete-hosted-01/06_workflow_context_correction.json\n create mode 100644 coordination/fs-endpoint-complete-hosted-01/07_correction_pre_push_scan.json\n"
+  },
+  "push_final": {
+    "chunk_id": "882de9",
+    "wall_time_seconds": 0.000002458,
+    "exit_code": 0,
+    "original_token_count": 95,
+    "output": "remote: \nremote: Create a pull request for 'codex/endpoint-finalizer-complete-red-fix-20260906' on GitHub by visiting:        \nremote:      https://github.com/leemaple/20231788./pull/new/codex/endpoint-finalizer-complete-red-fix-20260906        \nremote: \nTo https://github.com/leemaple/20231788..git\n * [new branch]      HEAD -> codex/endpoint-finalizer-complete-red-fix-20260906\n"
+  },
+  "first_read_only_verification": [
+    {
+      "chunk_id": "51c24b",
+      "wall_time_seconds": 1.001700334,
+      "session_id": 72075,
+      "original_token_count": 11,
+      "output": "e925c3ffcd670d33871ad585db13f1c1387468e8\n"
+    },
+    {
+      "chunk_id": "5ca5c8",
+      "wall_time_seconds": 0.000001292,
+      "exit_code": 128,
+      "original_token_count": 36,
+      "output": "fatal: unable to access 'https://github.com/leemaple/20231788..git/': LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to github.com:443 \n"
+    }
+  ],
+  "read_only_remote_retry": {
+    "chunk_id": "dbccb3",
+    "wall_time_seconds": 0.961309375,
+    "exit_code": 0,
+    "original_token_count": 26,
+    "output": "e925c3ffcd670d33871ad585db13f1c1387468e8\trefs/heads/codex/endpoint-finalizer-complete-red-fix-20260906\n"
+  },
+  "run_list": [
+    {
+      "chunk_id": "a4f283",
+      "wall_time_seconds": 1.001494084,
+      "session_id": 11150,
+      "original_token_count": 0,
+      "output": ""
+    },
+    {
+      "chunk_id": "9dae7b",
+      "wall_time_seconds": 0.0000015,
+      "exit_code": 0,
+      "original_token_count": 82,
+      "output": "[{\"conclusion\":\"failure\",\"databaseId\":34016221531,\"event\":\"push\",\"headBranch\":\"codex/endpoint-finalizer-complete-red-fix-20260906\",\"headSha\":\"e925c3ffcd670d33871ad585db13f1c1387468e8\",\"name\":\"Endpoint complete finalizer Python gate\",\"status\":\"completed\",\"url\":\"https://github.com/leemaple/20231788./actions/runs/34016221531\"}]\n"
+    }
+  ],
+  "note": "Push succeeded once. The first subsequent read-only ls-remote encountered SSL_ERROR_SYSCALL; only ls-remote was retried, and exact remote SHA was then verified. No duplicate push/dispatch/rerun."
+}
