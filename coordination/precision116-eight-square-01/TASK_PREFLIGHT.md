@@ -1,0 +1,48 @@
+# EXPERIMENTAL-PRECISION116-EIGHT-SQUARE-01 task preflight
+
+## Findings first
+
+The proposed method is compatible with the current public API and preserves the accepted correctness scope, but the brief should close the following evidence ambiguities before it is packaged. These are task-wording corrections, not requests for production changes or a new framework.
+
+1. **Define what counts as the first numerical observation.** `TASK.md:45` currently calls the first hosted run PASS or FAIL without separating a numerical result from a test/build defect. The first valid numerical observation is a run in which the new target compiles, the test starts, the exact candidate setup and frozen input are established, and the eight-operation chain reaches its numerical predicates. A compile/link failure, setup/bootstrap failure, timeout, invalid-state/oracle inconsistency, or test-harness defect is neither a numerical RED nor a numerical PASS. Retain every attempt, repair only the test slice when appropriate, and execute the corrected frozen test before authorizing any production fix. If that first valid observation passes, record PASS honestly; do not manufacture RED.
+
+2. **Freeze the referenced old predicates explicitly.** “The original witness,” “finite/nonzero-domain checks,” and “falsifier” at `TASK.md:30,33,53` leave room for a weaker interpretation. Require the same checks used by the frozen test:
+   - at both fresh and final, `actual_slot1_real - actual_slot0_real > 2^-76` and its absolute disagreement from the independent expected difference is `<= 2*2^-80` (`tests/paper_full_eight_square_contract_test.cpp:242-249`);
+   - for the final ideal values, every slot has `.098^2 < |z^256|^2 < .106^2`, and every actual final slot has squared magnitude `>.09^2` (`tests/paper_full_eight_square_contract_test.cpp:355-360`);
+   - retain the frozen final expected-difference interval `2^-71 < delta < 2^-70` and the published slot-0 scalar-anchor check within `2^-150` (`tests/paper_full_eight_square_contract_test.cpp:349-354`);
+   - require positive actual centered headroom at **both** fresh and final, as the shared frozen `CheckFull` does (`tests/paper_full_eight_square_oracle.h:181-195`);
+   - make the wrong-`2^116` normalization a numerical falsifier: decode the terminal independent polynomial at nominal `2^116`, compare it with the ideal final value at a fixed original anchor, and require an error `>2^-30`, rather than merely asserting `S8 != S0` (the original analogue is `tests/paper_full_eight_square_contract_test.cpp:345-348`).
+
+3. **Keep candidate constants independent from live production state.** The task correctly forbids unchanged use of the original `Scales`, `ReadSecret`, `SparseDecrypt`, and `RecombinedPolynomial` (`TASK.md:37`). State additionally that the candidate oracle's Q/root/Div/P and witness inputs must be frozen test literals (the accepted one-operation test already carries them at `tests/experimental_precision116_profile_seam.h:31-49`), then compared independently with the live contexts. Do not populate the oracle constants from `plan`, a receipt, or a ciphertext before using them as the expected values. The closed-product scale oracle must consume those frozen `m7..m0` and candidate Div literals; production receipts are values under test. The original `.cpp` helpers `CheckTower`, `CheckFamilies`, `CheckCipher`, `CheckPair`, and `CheckBound` also hardcode original Q/S100 and cannot be reused unchanged (`tests/paper_full_eight_square_contract_test.cpp:50-180,225-240`). Likewise, the one-operation helper's `CheckPair`/`CheckReceipt` assumes a nonterminal pair and must not validate round 8 (`tests/experimental_precision116_profile_seam.h:225-255`).
+
+4. **Disambiguate per-round oracle comparison without adding decryptions.** At `TASK.md:34`, “endpoint agreement with production” is possible only for the fresh and terminal `DecodedSlots`, where the independent Horner anchors must agree with production. For each returned pair at rounds 1–8, the independent recombined-polynomial anchors should be checked against the independently evolved ideal `z^(2^r)` and the `2^-80` gate; no production `Decrypt`, re-encryption, refresh, or extra encrypted chain is required or permitted. This keeps the evaluator free of the secret and preserves the stated one-chain method.
+
+These four clarifications are the only actionable preflight findings. There is no public-API or method blocker requiring a production seam: the named factory is public (`include/openfhe_2023_1788/repeated_mult2.h:58-62`); receipt phase/family/operation/exact-scale/parent/terminal state is public (`:28-39`); the immutable plan exposes family contexts, tags, and Div (`:67-75`); `RepeatedMult2Result` exposes its immutable ciphertext and receipt (`:95-114`); and the client API provides the required plan-bound Encrypt, terminal-only `BindRepeatedRcb`, and Decrypt path (`include/openfhe_2023_1788/high_precision_client_io.h:132-151`). Pair metadata and native ciphertext towers cover the remaining physical basis/root/lifecycle checks already exercised by the frozen and one-operation tests.
+
+## Scope consistency
+
+- The same frozen 16,384-slot input is explicitly required, and eight squarings are correctly compared with `z^256` (`TASK.md:29-34`). This matches the accepted correctness scope's full-slot, same-root h128, eight-no-refresh requirement (`coordination/CORRECTNESS_ACCEPTANCE_SCOPE_20260905.md:8-24`).
+- The sequence DCP once, eight `Mult2(pair,pair)` calls, terminal `RCBWithReceipt`, `BindRepeatedRcb`, then client Decrypt matches the existing terminal-only public boundary. Round 8 being terminal Rescaled in family 7 and wrapped into root context at absolute level 9 is consistent with the current API and avoids the one-operation helper's nonterminal assumption.
+- The brief keeps the original profile and its observed E80 failures unchanged, labels the new profile experimental/security-unresolved, forbids refresh/retry/favorable-key selection, and does not substitute ten-anchor intermediate observations for all-slot nonwrap proof (`TASK.md:11,20-21,31,37`). That is consistent with the existing acceptance boundary; a candidate PASS cannot retroactively turn the original profile into PASS.
+- A separate named, excluded test-only CTest/mode or executable and test/CMake-only return is appropriately narrow (`TASK.md:25,47-53`). No production, CI, endpoint protocol, generic observer, publication schema, or security-estimator work belongs in the returned patch.
+
+## Review identity and execution boundary
+
+- Reviewer: `/root/endpoint_interop_workflow`, independent Codex agent context (GPT-5 family; no provider-diversity claim).
+- Brief SHA-256 observed: `cb1c4292c417cad75cc8e7229555614425a648b7eb6953a0ffee68f7b4c737f1`.
+- Source identities supplied by root/brief: documentation HEAD `6541aadc308d9b618c598f4bacb07b6b2aca8f13`; actually tested production `2759fa90840946ef42957c7ba71ebea47e0e4995`; pristine OpenFHE `df495ba2e91739a6dc8f1de254fc5a41155ce504`.
+- Inspected read-only: the complete task brief, current public headers, current frozen oracle/test, accepted one-operation test helper, frozen candidate, static-scope boundary, and current correctness-acceptance scope.
+- Not performed: production/test/CMake/CI edits, compilation, cryptography, numerical replay, static-certificate rerun, browser activity, packet creation/submission, or Git operations. This document is a draft preflight, not scientific or runtime acceptance.
+
+Disposition: **amend the four precise task clauses above, then proceed to exact-source packet preparation. No architectural redesign or production change is indicated by this preflight.**
+
+## Closure addendum
+
+Final bounded wording check against revised `TASK.md`, SHA-256 `1fb9e2188ba8f4f90f3b4ac3d5fe7c4bdd248529363001366fe2e4cbfdf71a0d`:
+
+1. **Resolved.** `TASK.md:51` now defines a valid full-chain numerical observation as successful compile/link, started test, established exact candidate/frozen input, eight operations reaching numerical predicates, and valid structural/oracle checks. It explicitly excludes compile/link/setup failure, timeout, invalid-state/oracle inconsistency, and harness defects from numerical PASS/RED; requires retaining attempts; permits an honest first valid PASS; and requires corrected frozen execution before a production fix.
+2. **Resolved.** `TASK.md:37` now freezes the exact fresh/final witness inequalities, final ideal/actual nonzero-domain bounds, final expected-difference interval, published scalar-anchor tolerance, positive centered headroom at both endpoints, and an actual anchor-0 wrong-`2^116` normalization error `>2^-30`.
+3. **Resolved.** `TASK.md:39-41` now requires candidate Q/roots/Div/P/witness values as frozen test literals independently compared with live objects, forbids deriving expected oracle constants or scales from plan/receipt/ciphertext state, names all original Q/S100 helpers that cannot be reused unchanged, and excludes the one-operation nonterminal helpers from round-8 validation.
+4. **Resolved.** `TASK.md:43` now limits production-versus-independent anchor agreement to fresh/final `DecodedSlots`; rounds 1-8 compare the independent recombined-polynomial anchors with independently evolved `z^(2^r)` and expressly forbid intermediate production decryption, re-encryption, refresh, or another chain.
+
+Final wording disposition: **all four preflight findings are closed; no remaining wording blocker was found in this bounded recheck.** Packet preparation/submission and all runtime/scientific acceptance remain separate and pending. No task, source, test, CMake, CI, or Git state was changed by this closure.
