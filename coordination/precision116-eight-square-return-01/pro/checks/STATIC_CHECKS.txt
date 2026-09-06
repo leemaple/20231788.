@@ -1,0 +1,31 @@
+INPUT: exact bytes/SHA256, 189 regular members, CRC, 188-payload closure, every size/SHA256, extracted-byte equality PASS
+INPUT: 101 supplied Git blob identities checked PASS
+INPUT manifest SHA256: b1169d85c54a99d13d601b625885ad8e5d86e08c99af1f2931f3101ce3edc234
+TASK.md SHA256: 1fb9e2188ba8f4f90f3b4ac3d5fe7c4bdd248529363001366fe2e4cbfdf71a0d
+TASK_PREFLIGHT.md SHA256: 643e7c872c2a7542fadbb966075c03bb96d3ee2d083c4e2c96c667fa1eead057
+LITERALS: 11 Q/root pairs + P/root equal frozen certificate; three witnesses equal candidate.json PASS
+LITERALS: all q<2^60, q=1 mod65536, primitive M-th root equations; three new-prime Proth form/witnesses PASS
+SCALE r=0: independent closed-product matches frozen certificate and recurrence; n_bits=117 d_bits=1
+SCALE r=1: independent closed-product matches frozen certificate and recurrence; n_bits=233 d_bits=116
+SCALE r=2: independent closed-product matches frozen certificate and recurrence; n_bits=465 d_bits=348
+SCALE r=3: independent closed-product matches frozen certificate and recurrence; n_bits=929 d_bits=812
+SCALE r=4: independent closed-product matches frozen certificate and recurrence; n_bits=1857 d_bits=1740
+SCALE r=5: independent closed-product matches frozen certificate and recurrence; n_bits=3713 d_bits=3596
+SCALE r=6: independent closed-product matches frozen certificate and recurrence; n_bits=7425 d_bits=7308
+SCALE r=7: independent closed-product matches frozen certificate and recurrence; n_bits=14849 d_bits=14732
+SCALE r=8: independent closed-product matches frozen certificate and recurrence; n_bits=29697 d_bits=29580
+FAMILIES: 8 exact Q11..Q4 families; consumed Mult7..Mult0; endpoint two Bases PASS
+PURE INPUTS: all 16384 dyadic inputs audited; exact final domain bounds, final witness interval and published slot0 scalars PASS
+PURE S8/S0 = 1.00001520269329669111980874057255754246626769710424823643784
+PURE expected final slot1-real minus slot0-real = 6.91104120506935404358771640956321876020856667147744100795678E-22
+PURE minimum ideal final squared magnitude = 0.00967815804702329768223524753194153835242348399591353203756116
+PURE maximum ideal final squared magnitude = 0.0110647687698972872478063173039881674655469163117762777637754
+These pure checks are NOT ciphertext E80 observations and do NOT exercise the actual wrong-normalization falsifier.
+STATIC TEXT: forbidden old-profile/nonterminal-only helper calls absent; one Encrypt/DCP/looped Mult2, two endpoint Decrypt calls PASS
+STATIC TEXT: evaluator has only public plan/cipher input, no client/secret/oracle/decryption call PASS (lexical/manual check, NOT compiler proof)
+CMAKE TEXT: unchanged original prefix; option default OFF, explicit EXCLUDE_FROM_ALL target, separate serial/OMP2/1200s CTest PASS
+COMMAND: git apply --check --whitespace=error /mnt/data/precision116_work/return/patches/precision116-eight-square.patch ; exit=0 stdout='' stderr=''
+COMMAND: git apply --whitespace=error /mnt/data/precision116_work/return/patches/precision116-eight-square.patch ; exit=0 stdout='' stderr=''
+PATCH: applies cleanly, full-file equality, exactly CMake changed + one test added; other 84 original project files unchanged PASS
+Production src/include, existing tests/oracle/modes/constants and .github/workflows unchanged byte-for-byte.
+C++ candidate test: NOT COMPILED. OpenFHE/CTest/encrypted arithmetic: NOT RUN. No numerical PASS or RED claimed.

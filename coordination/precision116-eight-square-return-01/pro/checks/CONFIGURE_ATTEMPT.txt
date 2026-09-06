@@ -1,0 +1,25 @@
+COMMAND: cmake -S /mnt/data/precision116_work/apply_check -B /mnt/data/precision116_work/configure_attempt -DCMAKE_BUILD_TYPE=Release -DOPENFHE_2023_1788_ENABLE_EXPERIMENTAL_PRECISION116_EIGHT_SQUARE=ON
+EXIT: 1
+STDOUT:
+-- The CXX compiler identification is GNU 14.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring incomplete, errors occurred!
+
+STDERR:
+CMake Error at CMakeLists.txt:9 (find_package):
+  Could not find a package configuration file provided by "OpenFHE"
+  (requested version 1.5.0) with any of the following names:
+
+    OpenFHEConfig.cmake
+    openfhe-config.cmake
+
+  Add the installation prefix of "OpenFHE" to CMAKE_PREFIX_PATH or set
+  "OpenFHE_DIR" to a directory containing one of the above files.  If
+  "OpenFHE" provides a separate development package or SDK, be sure it has
+  been installed.
+
+

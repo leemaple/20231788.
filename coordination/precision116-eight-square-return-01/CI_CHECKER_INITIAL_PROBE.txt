@@ -1,0 +1,62 @@
+exit_code=1
+test_all_existing_steps_and_old_branch_behavior_preserved (__main__.EightSquareWiring.test_all_existing_steps_and_old_branch_behavior_preserved) ... ERROR
+test_exact_nonempty_single_ctest_and_timeout_headroom (__main__.EightSquareWiring.test_exact_nonempty_single_ctest_and_timeout_headroom) ... ERROR
+test_no_old_paper_build_or_endpoint_or_one_op_on_new_ref (__main__.EightSquareWiring.test_no_old_paper_build_or_endpoint_or_one_op_on_new_ref) ... FAIL
+test_one_new_activation_ref_and_working_ref_stays_untriggered (__main__.EightSquareWiring.test_one_new_activation_ref_and_working_ref_stays_untriggered) ... FAIL
+test_separate_opt_in_build_after_unchanged_legacy_suite (__main__.EightSquareWiring.test_separate_opt_in_build_after_unchanged_legacy_suite) ... ERROR
+
+======================================================================
+ERROR: test_all_existing_steps_and_old_branch_behavior_preserved (__main__.EightSquareWiring.test_all_existing_steps_and_old_branch_behavior_preserved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-precision116-eight-square-20260907/coordination/precision116-eight-square-return-01/check_ci_wiring.py", line 93, in test_all_existing_steps_and_old_branch_behavior_preserved
+    self.assertEqual(enabled(step, "refs/heads/" + branch, success, selected),
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lifeng/Documents/20231788-openfhe-precision116-eight-square-20260907/coordination/precision116-pro-handoff-01/check_ci_wiring.py", line 46, in enabled
+    raise ValueError("condition outside the bounded boolean evaluator")
+ValueError: condition outside the bounded boolean evaluator
+
+======================================================================
+ERROR: test_exact_nonempty_single_ctest_and_timeout_headroom (__main__.EightSquareWiring.test_exact_nonempty_single_ctest_and_timeout_headroom)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-precision116-eight-square-20260907/coordination/precision116-eight-square-return-01/check_ci_wiring.py", line 55, in test_exact_nonempty_single_ctest_and_timeout_headroom
+    run = next(s for s in job["steps"] if s["name"] == EXTRA[2])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+StopIteration
+
+======================================================================
+ERROR: test_separate_opt_in_build_after_unchanged_legacy_suite (__main__.EightSquareWiring.test_separate_opt_in_build_after_unchanged_legacy_suite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-precision116-eight-square-20260907/coordination/precision116-eight-square-return-01/check_ci_wiring.py", line 40, in test_separate_opt_in_build_after_unchanged_legacy_suite
+    config, build, run = [next(s for s in steps if s["name"] == n) for n in EXTRA]
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+StopIteration
+
+======================================================================
+FAIL: test_no_old_paper_build_or_endpoint_or_one_op_on_new_ref (__main__.EightSquareWiring.test_no_old_paper_build_or_endpoint_or_one_op_on_new_ref)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-precision116-eight-square-20260907/coordination/precision116-eight-square-return-01/check_ci_wiring.py", line 78, in test_no_old_paper_build_or_endpoint_or_one_op_on_new_ref
+    self.assertFalse(enabled(step, REF, success, selected), step["name"])
+AssertionError: True is not false : Build paper full eight-square contract
+
+======================================================================
+FAIL: test_one_new_activation_ref_and_working_ref_stays_untriggered (__main__.EightSquareWiring.test_one_new_activation_ref_and_working_ref_stays_untriggered)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-precision116-eight-square-20260907/coordination/precision116-eight-square-return-01/check_ci_wiring.py", line 33, in test_one_new_activation_ref_and_working_ref_stays_untriggered
+    self.assertEqual(new, old + [REF.removeprefix("refs/heads/")])
+AssertionError: Lists differ: ['age[586 chars]60907'] != ['age[586 chars]60907', 'codex/precision116-eight-square-observation-20260907']
+
+Second list contains 1 additional elements.
+First extra element 18:
+'codex/precision116-eight-square-observation-20260907'
+
+Diff is 872 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.005s
+
+FAILED (failures=2, errors=3)

@@ -28,3 +28,7 @@ At `2026-09-06T18:52:29.879Z`, visible progress included archive validation/extr
 The prior single-operation integration passed Linux and Windows but did not decrypt/compare the square against a plaintext numerical oracle. The new full-eight test has not yet been received, integrated, compiled or executed. Original paper-table E80 remains FAIL. Experimental full-eight E80 remains NOT TESTED; security UNRESOLVED.
 
 Root owns next intake, exact-source integration, bounded independent review and hosted execution. Preserve ongoing Pro thought. On terminal return, retain/download the actual artifact, verify archive/path/manifest/secret boundaries and inspect its code before integration. The author's new test requires separate review. Do not repeat completed one-operation CI, static certificate, packet build or submission. No source/CI mutation or cryptographic run was part of this handoff.
+
+## Terminal update — supersedes ACTIVE above
+
+First terminal observation `2026-09-06T19:25:56.783Z`, displayed Worked for37m22s. Final draft actually downloaded once and safely retained; see `../precision116-eight-square-return-01/RETURN_STATUS.md` and `ROOT_INTAKE.json`. Do not continue polling/restarting this completed Pro task. New source/test review and hosted execution are root-owned next steps; Pro explicitly returned NOT COMPILED / NOT RUN, not a numerical result.
