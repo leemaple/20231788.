@@ -39,3 +39,13 @@ Root accepts the actual Linux compile RED as the test-before-implementation gate
 - Before committing, the raw Linux log passed strict Gitleaks (464450 bytes), and the complete staged change passed strict Gitleaks (500100 bytes), both zero findings. Active-source/docs whitespace checks passed; only the exact raw external `.log` was excluded from whitespace checking to preserve downloaded evidence bytes.
 
 Next: inspect the same RED Windows job and the exact GREEN run on both hosts. Require warning-clean compilation, original 60-test/five-API checkpoints and the explicitly named single-operation CTest. Do not dispatch/rerun/cancel or push either activation ref again merely because observation takes time. After actual runtime acceptance, obtain independent final review and proceed to the separate original-input eight-square precision slice; the full goal remains incomplete.
+
+## Windows RED accepted; both RED jobs terminal
+
+Run `34050734415` is now terminal FAILURE, with both jobs failing only at the intended explicit paper-target build. Its final API state is retained in `RED_RUN_STATUS.json`; no rerun is needed.
+
+Windows job `101533759804` confirms source `70c37679f4760c6dc2bebc35bdfd741c238f315b`, attempt 1, pristine OpenFHE pin, native64/backend4, MSYS2 GCC 16.2.0 and CMake 4.4.2. `RED_WINDOWS_JOB.log` retains its exact downloaded bytes (including CRLF), 477517 bytes, SHA-256 `f68d34853bd442d5df363e5a42c6e1c967dacd6b84a58de3ff77f031ff4236d6`.
+
+At `2026-09-06T18:18:47.2682087Z`, its first compiler error is the same missing `CreateExperimentalPrecision116Setup` at header line 285. `savedLow` and receipt initializer-list errors follow, again provisionally cascading pending GREEN compilation. Ninja exits 1 at `18:18:57.7701579Z`. The unexpected-success guard and experimental operation do not run.
+
+Windows had already linked all five API contracts and passed the original 60-test suite in 3.75 seconds, plus earlier 1/2/57/1/2 selections (123 invocations, 60 unique tests total). Both platforms therefore supply genuine missing-factory RED evidence after successful prerequisites. Neither supplies experimental numerical evidence at this stage. The separate GREEN run `34051183115` remains in progress; inspect that run, not this completed baseline.
