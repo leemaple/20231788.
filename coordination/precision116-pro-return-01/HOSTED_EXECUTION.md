@@ -49,3 +49,13 @@ Windows job `101533759804` confirms source `70c37679f4760c6dc2bebc35bdfd741c238f
 At `2026-09-06T18:18:47.2682087Z`, its first compiler error is the same missing `CreateExperimentalPrecision116Setup` at header line 285. `savedLow` and receipt initializer-list errors follow, again provisionally cascading pending GREEN compilation. Ninja exits 1 at `18:18:57.7701579Z`. The unexpected-success guard and experimental operation do not run.
 
 Windows had already linked all five API contracts and passed the original 60-test suite in 3.75 seconds, plus earlier 1/2/57/1/2 selections (123 invocations, 60 unique tests total). Both platforms therefore supply genuine missing-factory RED evidence after successful prerequisites. Neither supplies experimental numerical evidence at this stage. The separate GREEN run `34051183115` remains in progress; inspect that run, not this completed baseline.
+
+## Linux GREEN: actual single-operation PASS
+
+Linux GREEN job `101534979303` is terminal SUCCESS at source `2759fa90840946ef42957c7ba71ebea47e0e4995`, run `34051183115`, attempt 1. Exact downloaded `GREEN_LINUX_JOB.log`: 467486 bytes, SHA-256 `9fcb0c7c8edfb9147c9885895990ddd698458c27281d111cd97781c23b2ff630`.
+
+The actual paper target compiled successfully with the unchanged RED assertions. The missing-factory and its subsequent deduction diagnostics are therefore resolved on GCC, without a test edit. The log confirms five API targets built, all prior selected checkpoints passed (123 invocations / 60 unique tests; final 60-test checkpoint 2.50 seconds), then exactly one `experimental_precision116_profile_seam` CTest selected with `--no-tests=error`, OMP=2, and timeout 1200.
+
+At `2026-09-06T18:23:59.1996825Z`, it emitted `EXPERIMENTAL_PRECISION116_PROFILE_SEAM result=PASS profile=experimental-s116-d56-b58-v1 squares=1 full_eight_square_E80=NOT_TESTED security=UNRESOLVED`. CTest reports 1/1 passed in 10.85 seconds. This exercises actual candidate construction, public encryption, DCP, one Mult2, exact scale/metadata/basis/receipt checks and ownership cleanup as specified by the preserved test; it contains no numerical eight-square measurement.
+
+Windows GREEN job `101534979053` is still in progress; do not infer portability or its test result from Linux. Once both platforms complete, finish independent semantic/runtime review and move to the next separate full-eight precision slice. The original paper-profile E80 failure, experimental full-eight NOT TESTED, and unresolved security remain unchanged.
