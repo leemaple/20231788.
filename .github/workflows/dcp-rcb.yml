@@ -16,7 +16,7 @@ on:
       - codex/lossless-io-implementation-01
       - codex/three-track-integration-20260905
       - codex/paper-scale-implementation-20260905
-      - codex/endpoint-widening-compile-fix-20260906
+      - codex/endpoint-writer-link-red-20260906
       - cleanroom/reimplement-mult2-20260831
   workflow_dispatch:
 
@@ -155,14 +155,14 @@ jobs:
 
       # One-shot draft gate: compile and synthetic observer checks, no paper chain.
       - name: Run draft endpoint observer self-test once
-        if: github.ref == 'refs/heads/codex/endpoint-widening-compile-fix-20260906'
+        if: github.ref == 'refs/heads/codex/endpoint-writer-link-red-20260906'
         timeout-minutes: 20
         env:
           OMP_NUM_THREADS: 2
         run: ./build/paper_full_eight_square_contract_test --endpoint-observer-self-test
 
       - name: Run paper full eight-square contract once
-        if: github.ref != 'refs/heads/codex/endpoint-widening-compile-fix-20260906'
+        if: github.ref != 'refs/heads/codex/endpoint-writer-link-red-20260906'
         run: |
           ctest --test-dir build --show-only=json-v1
           ctest --test-dir build --verbose --output-on-failure -R '^paper_full_eight_square_contract$'
@@ -413,7 +413,7 @@ jobs:
 
       # Retire this exact draft trigger before another draft-branch push.
       - name: Run draft endpoint observer self-test once
-        if: github.ref == 'refs/heads/codex/endpoint-widening-compile-fix-20260906'
+        if: github.ref == 'refs/heads/codex/endpoint-writer-link-red-20260906'
         timeout-minutes: 20
         env:
           OMP_NUM_THREADS: 2
@@ -426,7 +426,7 @@ jobs:
           "$build/paper_full_eight_square_contract_test.exe" --endpoint-observer-self-test
 
       - name: Run paper full eight-square contract once
-        if: github.ref != 'refs/heads/codex/endpoint-widening-compile-fix-20260906'
+        if: github.ref != 'refs/heads/codex/endpoint-writer-link-red-20260906'
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |

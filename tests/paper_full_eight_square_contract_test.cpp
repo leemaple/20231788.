@@ -5,6 +5,7 @@
 #include "paper_endpoint_scaled_norm_test.h"
 #include "paper_endpoint_exact_scalars_test.h"
 #include "paper_endpoint_transform_negative_contract.h"
+#include "paper_endpoint_evidence_writer_test.h"
 #include <cmath>
 #include <set>
 #include <type_traits>
@@ -417,6 +418,7 @@ int main(int argc, char** argv) {
             paper_endpoint_contract::synthetic::RunScaledNormBoundaryTests();
             paper_endpoint_contract::synthetic::exact_scalar_test::RunExactScalarBoundaryTests();
             paper_endpoint_contract::synthetic::RunEndpointDiagnosticsBoundaryTests();
+            paper_endpoint_contract::synthetic::evidence_writer_test::RunEndpointEvidenceWriterBoundaryTests();
             paper_endpoint_contract::synthetic::transform_negative::Run();
             paper_endpoint_contract::synthetic::RunSelfTest();
             std::cout << "FS_RESIDUAL_SELFTEST result=PASS namespace=synthetic chain_count=0\n";
