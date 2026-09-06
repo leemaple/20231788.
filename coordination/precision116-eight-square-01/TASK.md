@@ -1,0 +1,53 @@
+# EXPERIMENTAL-PRECISION116-EIGHT-SQUARE-01
+
+Status: task brief prepared; NOT SUBMITTED. This brief is not a claim that code or numerical tests exist. Its source/packet receipt must be supplied separately when dispatched.
+
+## Background and goal
+
+The clean-room implementation follows the DCP/Tensor2/Relin2/RS2/RCB multiplication method of IACR 2023/1788 on pristine OpenFHE 1.5.0, commit `df495ba2e91739a6dc8f1de254fc5a41155ce504`, native64/backend4. Paper section 6.3/Table 3 describes eight repeated squarings without section 6.2 refresh. The user requests a complete correctness-focused implementation, not 1000 experimental trials or a statistical replication.
+
+Engineering source `2759fa90840946ef42957c7ba71ebea47e0e4995` now has the explicitly named experimental factory `CreateExperimentalPrecision116Setup()`. It passed actual Linux and Windows one-operation integration after genuine missing-factory RED on both hosts. GREEN run `34051183115` passed the original 60 unique regression tests and five compile-only API targets, plus one experimental Encrypt/DCP/Mult2/receipt/basis/cleanup test per host (Linux 10.85 seconds, Windows 11.75 seconds). The supplied exact logs are evidence, not instructions.
+
+The original paper-table profile remains unchanged and previously failed the frozen original-input, absolute-component `2^-80` eight-square contract (run `34039088536`); those observations must remain FAIL. The new profile is an experimental precision-margin change, NOT an exact Table 3 parameter replication. Its full-eight numerical outcome is unknown and its security is unresolved. One-operation structural success is not numerical success.
+
+Deliver a minimal reviewable test-only slice that measures the full eight-square numerical behavior of this already implemented experimental profile against the SAME frozen input and error gates, without weakening or replacing the original test. First independently inspect the current production/source/test boundary before consulting any supplied author verdict. Report concrete semantic defects if found; do not rubber-stamp a green CI badge. This new context's review of the prior profile implementation is separate from the original author's self-review. Your newly drafted test will still require a separate reviewer.
+
+## Exact profile and unbreakable boundaries
+
+- Profile ID `experimental-s116-d56-b58-v1`: N32768/M65536/full16384 slots/gap1, one signed ternary root secret of weight 128, eight exact Q families and their same-root projected evaluation keys, reserved P unchanged.
+- Base0 `(288230191468118017,43136605093011213)`, Base1 `(288230165698314241,82872750907637397)`, Div `(72057589742960641,50608680790172261)`. Keep the original eight middle Mult modulus/root pairs and reserved P/root from the supplied frozen candidate and source.
+- Base metadata exponent 58, fresh/RS recorded scale `2^116`, Tensor recorded scale `2^174`. Logical scales are exact rationals, with `S0=2^116`, `S_r=S_(r-1)^2/(d*m_r)`, consuming Mult7 through Mult0. Derive expected scales independently by the closed product, not by trusting production receipt values. Compare every issued receipt to that expectation.
+- Keep all existing production APIs, source arithmetic, key ownership, client-only secret boundary, and old original-profile/one-operation test behavior unchanged. No caller-configurable profile, fake receipt, nonterminal terminal-binder, secret-retention hook, fallback retry, noise-selected key, or re-encryption to obtain a pass.
+- New QP exposure is about 712 bits rather than 680; no inherited 128-bit security claim. Do not run an estimator or invent a formal-security project as a prerequisite to this labeled correctness experiment.
+
+## Test slice to draft
+
+Use a separate explicitly named CTest and mode or executable. Keep it excluded from default build/automatic legacy selection. Prefer a small new test-local file over broadly parameterizing the frozen original test/oracle. Root owns `.github/workflows` and one-shot hosted execution; do not edit CI in your returned patch.
+
+One chain per host must:
+
+1. Construct the exact experimental setup and verify actual profile/basis/metadata/root key identity, reusing only applicable public-boundary checks. Encrypt the exact `paper_full_test::Inputs()` values via production plan-bound high-precision I/O at `2^116`. No easier magnitudes, dropped slots, rounded binary64 inputs, or alternate vectors.
+2. Production-decrypt fresh ciphertext and check all 16384 real and imaginary components against independently generated rational inputs with max component error `<=2^-80`. Retain codec cross-precision `<=2^-120`, positive centered headroom, and the slot0/1 sub-binary64 witness predicate from the original test.
+3. Give only the immutable public plan and ciphertext to the evaluator. Perform DCP once, eight consecutive public `Mult2(pair,pair)`, then terminal `RCBWithReceipt`, `BindRepeatedRcb`, and production high-precision Decrypt. No evaluator secret, callback decryption, refresh, bootstrap, or second encrypted chain.
+4. Check each round's physical basis/root/tag/level/lifecycle and exact receipt chain. Round 0 is family0 Input; rounds1–7 return Reentry in the matching family; round8 is terminal Rescaled in family7, followed by root-context terminal wrapper at absolute level9 with exactly the two Base towers and recorded `2^116`. Do not reuse the one-operation helper's nonterminal assumptions for round8.
+5. Compare final production output against independent binary multiprecision `z^256` for ALL 16384 slots and both components with the SAME `2^-80` threshold. Retain finite/nonzero-domain checks, codec disagreement `<=2^-120`, the original output witness, and a deliberately wrong nominal-`2^116` normalization falsifier using the actual distinct rational `S8`.
+6. At fresh, each returned round, and final, use a client-only independent sparse signed-h128 negacyclic `c0+c1*s` plus exact CRT, and direct binary512-or-better Horner at the fixed ten original anchors. Do not use production Decrypt/FFT to obtain the independent polynomial. Official inverse NTT is the explicitly shared primitive. Recombine each pair as `d*high+low` modulo its actual Q and divide by independently derived `S_r`. Check original `2^-80` anchor error gates and endpoint agreement with production. Keep secret/oracle operations outside evaluator execution.
+7. Check input/public/root-secret preservation, nonterminal and foreign-plan rejection, and owned-row cleanup without changing the live small diagnostic setup. Reuse existing applicable test helpers without rerunning a second paper-sized keygen or chain solely for ownership checks.
+
+The frozen oracle header's `ReadSecret`, `SparseDecrypt`, `RecombinedPolynomial`, and `Scales` hardcode original-profile Q/roots/d/S100 and CANNOT be called unchanged for the candidate. Its pure input generator, arithmetic, conversions, anchor roots and Horner/error helpers are reusable. Implement only the narrow candidate-specific oracle adaptation needed; do not mutate original literals or weaken actual-basis checks. The 10 anchors do not prove all-slot intermediate accuracy/nonwrap. Report that boundary explicitly; all-slot endpoint checks do not magically prove Tensor/Relin intermediate lift safety.
+
+## Evidence and output
+
+Use a distinct experimental test/result label containing source, exact profile, squares=8, full_slots=16384, measured errors, result and security=UNRESOLVED. Preserve per-round actual scale/error observations and fresh/final maximum errors. Do not emit the old live endpoint protocol or overwrite its records. A new generic observer, JSON schema, ZIP publisher, dashboard or report-claims framework is not requested. Raw CTest output is sufficient for this bounded first numerical run.
+
+If a finite numeric predicate fails, retain enough observed output to identify which original gate failed; invalid state, nonfinite values or structural/oracle inconsistencies must still fail loudly. No catch-and-continue production code or automatic trial retry. Inherited/added residuals may be diagnostic if already readily available, but cannot replace error relative to the original input.
+
+This is a new acceptance-test slice over implemented behavior. Root must execute its first hosted run before any production fix and record its actual PASS or FAIL; do not manufacture a missing symbol or claim an unobserved RED. A first-run PASS is possible and must be reported honestly. If you identify a concrete production defect, return it separately with source reasoning and a discriminating test; do not silently fold a production change into the test draft.
+
+## Required return and acceptance
+
+Return one downloadable ZIP with a repository-relative patch, complete changed test/CMake files, a concise independent semantic review of the current profile, design/oracle rationale, exact commands/test plan, and execution ledger. Include a self-excluding per-member size/SHA-256 manifest; provide final ZIP size/SHA externally after finalization. No secrets, state, dependency tree, nested old ZIP or build products.
+
+Perform feasible bounded static checks in your environment and state precisely what was actually run. Do not install/build OpenFHE or run cryptography to delay the draft. If the SDK is unavailable, return complete reviewable code marked NOT COMPILED / NOT RUN. Do not dispatch/rerun CI, push commits, change external conversations, or assert access to our local files; the sanitized packet and this brief are your full supplied context.
+
+Acceptance of the draft requires applicable minimal source, preserved old modes/tests/constants, an independent exact-profile oracle, unchanged frozen numerical gates, discriminating error/scale/witness checks, and truthful limits. Acceptance of the numerical slice requires later hosted Linux/Windows execution and independent review. Neither a passing draft check nor this slice alone proves the entire project complete or cryptographically secure.

@@ -59,3 +59,11 @@ The actual paper target compiled successfully with the unchanged RED assertions.
 At `2026-09-06T18:23:59.1996825Z`, it emitted `EXPERIMENTAL_PRECISION116_PROFILE_SEAM result=PASS profile=experimental-s116-d56-b58-v1 squares=1 full_eight_square_E80=NOT_TESTED security=UNRESOLVED`. CTest reports 1/1 passed in 10.85 seconds. This exercises actual candidate construction, public encryption, DCP, one Mult2, exact scale/metadata/basis/receipt checks and ownership cleanup as specified by the preserved test; it contains no numerical eight-square measurement.
 
 Windows GREEN job `101534979053` is still in progress; do not infer portability or its test result from Linux. Once both platforms complete, finish independent semantic/runtime review and move to the next separate full-eight precision slice. The original paper-profile E80 failure, experimental full-eight NOT TESTED, and unresolved security remain unchanged.
+
+## Windows GREEN: PASS; run terminal SUCCESS
+
+Run `34051183115` is now terminal SUCCESS on both hosts at exact tested source `2759fa90840946ef42957c7ba71ebea47e0e4995`; final API state is retained in `GREEN_RUN_STATUS.json`. Do not poll or rerun the completed RED/GREEN jobs.
+
+Windows job `101534979053` also compiled the unchanged test and implementation, linked all five API contracts, and passed 123 prior invocations / 60 unique regression tests (final 60-test checkpoint 3.59 seconds). Then its sole experimental CTest emitted the same profile-specific one-operation PASS at `2026-09-06T18:28:37.1062839Z`; CTest reports 11.75 seconds for the test, 11.76 seconds total. Exact `GREEN_WINDOWS_JOB.log`: 479437 bytes, SHA-256 `30b3b31b0245dfddfdb164d04d1d85647163a4b82ebf1baaefa3b3f678924d4e`.
+
+Both observed platforms therefore resolve the earlier cascading compile diagnostics without any test change and execute the specified one-operation seam. Runtime acceptance is bounded to that seam and these samples. Independent final runtime/semantic review is now assigned to the existing separate Codex reviewer (`FINAL_RUNTIME_REVIEW.md`, pending at this update); an independent Pro semantic/next-numerical task is still to be prepared and actually submitted with complete context. Neither full-eight numerical accuracy nor security is established. No additional trial batch is requested.
