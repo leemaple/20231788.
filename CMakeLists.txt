@@ -137,7 +137,8 @@ add_executable(paper_full_eight_square_contract_test EXCLUDE_FROM_ALL
     tests/paper_endpoint_scaled_norm.cpp
     tests/paper_endpoint_exact_scalars.cpp
     tests/paper_endpoint_transform.cpp
-    tests/paper_endpoint_diagnostics.cpp)
+    tests/paper_endpoint_diagnostics.cpp
+    tests/paper_endpoint_evidence_writer.cpp)
 target_link_libraries(paper_full_eight_square_contract_test PRIVATE openfhe_2023_1788)
 target_compile_definitions(paper_full_eight_square_contract_test PRIVATE
     PAPER_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
