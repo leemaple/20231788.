@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-06",
+  "base": "b4d9ac5c6fb170e58fef24df59c1f40d80884869",
+  "scope": "Hosted-only full synthetic finalizer CLI RED; no GREEN implementation authored, no fixture or full replay executed locally.",
+  "author_worktree": "/Users/lifeng/Documents/20231788-openfhe-endpoint-finalizer-hosted-test-20260906",
+  "imported_files": [
+    "tests/hosted_paper_endpoint_finalizer_complete.py",
+    "coordination/fs-endpoint-complete-hosted-01/HOSTED_TEST_BOUNDARY.md",
+    "coordination/fs-endpoint-complete-hosted-01/TEST_AUTHOR_NOTE.md"
+  ],
+  "source_review": [
+    "primary complete_lines emits source exactly in BEGIN, FS_ENDPOINT_BEGIN and one chosen COMPLETE; count-2 selects FAIL COMPLETE and two numeric labels",
+    "sidecar fixture uses C=3 and exact frozen scales; fresh768=terminal768=2^-854 matches its independent allowance construction",
+    "scope is synthetic; zero full rows test transport/state and require later source/provenance/negative checks, not paper numerical success"
+  ],
+  "root_changes": [
+    "child timeout 1200 -> 600 seconds before first execution; job timeout 15 minutes; original paper CTest timeout untouched",
+    "Python 3.12 explicit runtime gate on both jobs; actual Python/Decimal/libmpdec/zlib environment JSON logged",
+    "Windows ErrorActionPreference=Stop and immediately captured testExit",
+    "both boundary notes updated; author note retained verbatim as historical authored hashes"
+  ],
+  "local_validation": {
+    "chunk_id": "31bc4e",
+    "wall_time_seconds": 0.00000425,
+    "exit_code": 0,
+    "original_token_count": 265,
+    "output": "{\n  \"python\": \"3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]\",\n  \"test\": \"AST_PARSE_ONLY_NOT_EXECUTED\",\n  \"head\": \"b4d9ac5c6fb170e58fef24df59c1f40d80884869\",\n  \"hashes\": {\n    \"tests/hosted_paper_endpoint_finalizer_complete.py\": \"af14b551e6cc731e3797094ae71b07882e887c9bdbacd0ef197fbc7b3dd42c46\",\n    \".github/workflows/endpoint-finalizer-complete-gate.yml\": \"c14044983566d064b9ab486beb6b5074585e254859d46d282ac196224dce1718\",\n    \"coordination/fs-endpoint-complete-hosted-01/HOSTED_TEST_BOUNDARY.md\": \"e2573a8688953e9c751df7d01d9a358e686e2342cf389ea9f39b7a15c4909f17\",\n    \"coordination/fs-endpoint-complete-hosted-01/TEST_AUTHOR_NOTE.md\": \"19564b5af6684e95e4bacfacde2763ece24b03194ed858227aaf0ed346ae393b\",\n    \"coordination/fs-endpoint-complete-hosted-01/WORKFLOW_BOUNDARY.md\": \"6efaa56faaaaf11f11d429b665528229a65e3cad17c0e28c9cf7ec77005b3004\",\n    \".github/workflows/dcp-rcb.yml\": \"d120c6765bf3bd4f0b434658515e14972f0c3ae1511dc0846d6e52760971e165\",\n    \"CMakeLists.txt\": \"3c033adc985e9a883ce7a7c6d894e1b82c9db76436e4134aaa564658f8e2cc17\"\n  }\n}\n"
+  },
+  "yaml_validation": {
+    "command": "ruby -e 'require \"yaml\"; require \"json\"; d=YAML.safe_load(File.read(ARGV[0])); abort \"trigger\" unless d.fetch(\"on\").fetch(\"push\").fetch(\"branches\")==[\"codex/endpoint-finalizer-complete-red-20260906\"]; abort \"jobs\" unless d.fetch(\"jobs\").keys==[\"linux-python\",\"windows-python\"]; puts JSON.generate(d)' .github/workflows/endpoint-finalizer-complete-gate.yml",
+    "exit_code": 0,
+    "chunk_id": "c7b91f",
+    "boundary": "Ruby/Psych syntax/structure and literal trigger/job checks; not a PowerShell or GitHub runtime execution."
+  },
+  "pending": [
+    "independent source review closure",
+    "one exact staged-blob scan, commit, explicit isolated push",
+    "actual Linux and Windows RED at complete-path NotImplementedError; unrelated setup/harness failures are not this RED"
+  ]
+}
