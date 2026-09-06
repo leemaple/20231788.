@@ -1,0 +1,107 @@
+{
+  "accepted_checkpoint": "1c7609593a9d51d6f27918b0bebe54d8f5eaeee6",
+  "remote_ref": "codex/endpoint-live-accepted-checkpoint-20260906",
+  "scan_command": "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B - <<'PY'\nimport hashlib,json,os,pathlib,subprocess,zlib\nroot=pathlib.Path.cwd()\ndef git(*args): return subprocess.check_output(['git',*args])\npaths=git('diff','--cached','--name-only','-z').decode().split('\\0')[:-1]\nassert len(paths)==14 and all(p.startswith('coordination/fs-endpoint-live-run-01/') for p in paths)\nparts=[];rows=[]\nfor p in sorted(paths):\n b=git('show',':'+p);assert (root/p).read_bytes()==b;assert len('C:/openfhe-2023-1788/cleanroom/'+p)<=247\n parts.extend([p.encode(),b'\\0',str(len(b)).encode(),b'\\0',b,b'\\0']);rows.append({'path':p,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})\n if p.endswith('.tsv.gz'):\n  d=zlib.decompressobj(31);v=d.decompress(b,16777217);assert len(v)<=16777216 and d.eof and not d.unused_data and not d.unconsumed_tail\n  parts.extend([(p+'.decoded-for-scan').encode(),b'\\0',str(len(v)).encode(),b'\\0',v,b'\\0'])\ndata=b''.join(parts);env={k:v for k,v in os.environ.items() if not k.startswith('GITLEAKS')};env['GOMAXPROCS']='2'\ncmd=['/opt/homebrew/bin/gitleaks','stdin','--no-banner','--ignore-gitleaks-allow','--gitleaks-ignore-path','/dev/null','--max-decode-depth','5','--max-archive-depth','1','--redact']\nr=subprocess.run(cmd,input=data,capture_output=True,cwd='/private/tmp',env=env,timeout=30)\nprint(json.dumps({'command':cmd,'tool_version':subprocess.check_output(['/opt/homebrew/bin/gitleaks','version']).decode().strip(),'files':rows,'framed_bytes':len(data),'framed_sha256':hashlib.sha256(data).hexdigest(),'exit_code':r.returncode,'stdout':r.stdout.decode(),'stderr':r.stderr.decode()},indent=2));raise SystemExit(r.returncode)\nPY",
+  "scan_result": {
+    "command": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--no-banner",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact"
+    ],
+    "tool_version": "8.30.1",
+    "files": [
+      {
+        "path": "coordination/fs-endpoint-live-run-01/ACCEPTANCE.md",
+        "bytes": 6754,
+        "sha256": "e99b26f5421be3fa205cbd688836ae3902ef5cf74dd8f46ceefa8f5c987ba655"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/ARTIFACTS_METADATA.json",
+        "bytes": 1834,
+        "sha256": "a16f1d4ab1eea7192d1ebb08573e7a8c0d5230696e54a7ccab7683f2919aa6d3"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/AUDIT_REVIEW.md",
+        "bytes": 3492,
+        "sha256": "15483a07cbae61fb4e3742edc3ab64381322ef3027d2a2d2c020762d488bd241"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/LINUX_AUDIT.json",
+        "bytes": 16255,
+        "sha256": "e34ae55fd7798e89e0ca051b69c3079b3f6a0acd959e351adc60e47d7e5bdb40"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/LINUX_JOB.log",
+        "bytes": 987346,
+        "sha256": "ba76bd3b955fb6bd5e022dcd1d1d6aeb6a8ac657ea8188cef75ab48c0d9d016c"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/LOG_TRANSPORT.md",
+        "bytes": 1116,
+        "sha256": "5805498fc8f1bb106f952d8dccba295912d38e91cd82ec255bd0a94171ca8c9e"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/RUN_TERMINAL.json",
+        "bytes": 19086,
+        "sha256": "78448d9daa63e4b24a7a21f05b2e87f50e97ba62efc024a212e3eab0298f2af5"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/WINDOWS_AUDIT.json",
+        "bytes": 16176,
+        "sha256": "1368ff96b11f9b3b5e9a36082a96c1d613a5f68fd5ab38b5e4ee8daf28a9ffa3"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/WINDOWS_JOB.log",
+        "bytes": 998333,
+        "sha256": "92201a4bb4a628a330df2d11f2bbb1ce885d651e4ddee946fcdc9284d7754384"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/linux/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.linux.34039088536.1.status.json",
+        "bytes": 1242,
+        "sha256": "76f10cd888ab9085f3f57328b7130203669cdb64648a5eaa58b003a5417e61a4"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/linux/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.linux.34039088536.1.tsv.gz",
+        "bytes": 3643840,
+        "sha256": "920e9dc1fb177cedf93f758b1bb0925b5dae19e228e2398c787f38356ce8b8a5"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/verify_live_evidence.py",
+        "bytes": 11914,
+        "sha256": "89e7d6ca6a83139f60918a6f674710662576f9dfd3fe3c1ed213e03d6155c961"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/windows/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.windows.34039088536.1.status.json",
+        "bytes": 1248,
+        "sha256": "89fdc3af70d2d74796d7980b1f28b6435779effbf7b439aeb8b61069a871e7e7"
+      },
+      {
+        "path": "coordination/fs-endpoint-live-run-01/windows/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.windows.34039088536.1.tsv.gz",
+        "bytes": 3643984,
+        "sha256": "fb0c558b71ab30bdc80af28d3a01214428d30dfc3c4ed5c6f73fab6ff638beaf"
+      }
+    ],
+    "framed_bytes": 25319934,
+    "framed_sha256": "14de5b245f122665e19c90c207890c4dffc45a51586624d78a2bf9face562bb7",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "10:52PM INF scanned ~25319934 bytes (25.32 MB) in 3.01s\n10:52PM INF no leaks found\n"
+  },
+  "push": {
+    "chunk_id": "13149f",
+    "wall_time_seconds": 1.000829834,
+    "session_id": 57031,
+    "original_token_count": 396,
+    "output": "[codex/paper-scale-implementation-20260905 1c76095] docs: accept live full-slot endpoint evidence and preserve E80 failure [skip ci]\n 14 files changed, 17197 insertions(+)\n create mode 100644 coordination/fs-endpoint-live-run-01/ACCEPTANCE.md\n create mode 100644 coordination/fs-endpoint-live-run-01/ARTIFACTS_METADATA.json\n create mode 100644 coordination/fs-endpoint-live-run-01/AUDIT_REVIEW.md\n create mode 100644 coordination/fs-endpoint-live-run-01/LINUX_AUDIT.json\n create mode 100644 coordination/fs-endpoint-live-run-01/LINUX_JOB.log\n create mode 100644 coordination/fs-endpoint-live-run-01/LOG_TRANSPORT.md\n create mode 100644 coordination/fs-endpoint-live-run-01/RUN_TERMINAL.json\n create mode 100644 coordination/fs-endpoint-live-run-01/WINDOWS_AUDIT.json\n create mode 100644 coordination/fs-endpoint-live-run-01/WINDOWS_JOB.log\n create mode 100644 coordination/fs-endpoint-live-run-01/linux/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.linux.34039088536.1.status.json\n create mode 100644 coordination/fs-endpoint-live-run-01/linux/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.linux.34039088536.1.tsv.gz\n create mode 100644 coordination/fs-endpoint-live-run-01/verify_live_evidence.py\n create mode 100644 coordination/fs-endpoint-live-run-01/windows/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.windows.34039088536.1.status.json\n create mode 100644 coordination/fs-endpoint-live-run-01/windows/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.windows.34039088536.1.tsv.gz\n"
+  },
+  "remote_verified_sha": "1c7609593a9d51d6f27918b0bebe54d8f5eaeee6",
+  "note": "Exact remote ls-remote verified after push exit0; engineering src/include unchanged, no CI dispatch or rerun."
+}
