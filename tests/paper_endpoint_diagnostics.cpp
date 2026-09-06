@@ -152,19 +152,22 @@ std::size_t IntegerBitLength(const Int& value) {
     if (value == 0) return 0;
     return static_cast<std::size_t>(boost::multiprecision::msb(AbsInt(value))) + 1;
 }
+bool Binary512ExponentSupported(const paper_full_test::Real& value) {
+    if (value == 0) return true;
+    int exponent = 0;
+    (void)boost::multiprecision::frexp(value, &exponent);
+    return exponent >= -kCheckedBinaryExponentLimit &&
+           exponent <= kCheckedBinaryExponentLimit;
+}
 bool HornerConversionsSupportedImpl(const IntegerPolynomial& polynomial, const Scale& scale) {
     const auto supported = [](const Int& exact) {
         // Observe the unchanged decimal-string R(Int) path, not a replacement cast.
         if (IntegerBitLength(exact) >
             static_cast<std::size_t>(kCheckedBinaryExponentLimit)) return false;
-        const auto actual = Binary768(paper_full_test::R(exact));
-        if (!boost::math::isfinite(actual)) return false;
-        if (actual != 0) {
-            int exponent = 0;
-            (void)boost::multiprecision::frexp(actual, &exponent);
-            if (exponent < -kCheckedBinaryExponentLimit ||
-                exponent > kCheckedBinaryExponentLimit) return false;
-        }
+        const paper_full_test::Real source = paper_full_test::R(exact);
+        if (!boost::math::isfinite(source) || !Binary512ExponentSupported(source))
+            return false;
+        const auto actual = internal::WidenRepresented512(source);
         const auto represented = RepresentedDyadic(actual);
         const Int difference = AbsInt(represented.numerator - exact * represented.denominator);
         return (difference << 512) <= AbsInt(exact) * represented.denominator;
@@ -178,7 +181,8 @@ std::vector<Complex<768>> WidenAnchors(const std::array<paper_full_test::Complex
     std::vector<Complex<768>> result;
     result.reserve(values.size());
     for (const auto& value : values)
-        result.push_back({Binary768(value.real), Binary768(value.imag)});
+        result.push_back({internal::WidenRepresented512(value.real),
+                          internal::WidenRepresented512(value.imag)});
     return result;
 }
 bool DecimalExponentWithinTransportEnvelope(const std::string& text) {
@@ -381,6 +385,40 @@ void ValidateCaptureInputs(
 } // namespace
 
 namespace internal {
+Binary768 WidenRepresented512(const paper_full_test::Real& value) {
+    if (!boost::math::isfinite(value))
+        Stop("NONFINITE", "fixed binary512 value");
+    if (value == 0) return Binary768(0);
+    if (!Binary512ExponentSupported(value))
+        Stop("MODEL_UNSUPPORTED", "fixed binary512 exponent outside checked range");
+
+    constexpr int sourceBits = std::numeric_limits<paper_full_test::Real>::digits;
+    static_assert(sourceBits == 512 &&
+                  sourceBits <= std::numeric_limits<Binary768>::digits,
+                  "exact widening requires destination precision at least binary512");
+    int exponent = 0;
+    const paper_full_test::Real fraction =
+        boost::multiprecision::frexp(value, &exponent);
+    const paper_full_test::Real scaled =
+        boost::multiprecision::ldexp(fraction, sourceBits);
+    const Int significand = scaled.convert_to<Int>();
+    const std::string significandText = significand.convert_to<std::string>();
+
+    // Scaling exposes the complete represented significand as an integer. Check
+    // that extraction in the source type before constructing the wider type.
+    if (paper_full_test::Real(significandText) != scaled)
+        Stop("MODEL_UNSUPPORTED", "fixed binary512 significand extraction");
+    const Binary768 integerValue(significandText);
+    if (integerValue.convert_to<Int>() != significand)
+        Stop("MODEL_UNSUPPORTED", "binary768 integer reconstruction");
+    Binary768 result = integerValue;
+    result = boost::multiprecision::ldexp(result, exponent - sourceBits);
+    if (!boost::math::isfinite(result) || result == 0 ||
+        boost::multiprecision::ldexp(result, sourceBits - exponent) != integerValue)
+        Stop("MODEL_UNSUPPORTED", "fixed binary512 widening range");
+    return result;
+}
+
 bool HornerConversionsSupported(const IntegerPolynomial& polynomial, const Scale& scale) {
     return HornerConversionsSupportedImpl(polynomial, scale);
 }

@@ -45,6 +45,10 @@ struct ProducerTransport final {
     bool supported;
 };
 
+// Exact value bridge for the fixed binary512 Horner type. Finite values inside
+// the checked exponent envelope are widened without a decimal approximation;
+// nonfinite and out-of-envelope values raise typed endpoint failures.
+Binary768 WidenRepresented512(const paper_full_test::Real& value);
 bool HornerConversionsSupported(const IntegerPolynomial& polynomial, const Scale& scale);
 ProducerTransport TransportProducerForDiagnostics(
     const std::vector<paper_full_test::io::ClientComplex>& values);
