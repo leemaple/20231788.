@@ -1,0 +1,466 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0bd6cf1aba78d4d0515e145cbdccd119a9ea6ca5..018748de9c68b2b3db86c567ef5f3f12919b58a3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -269,3 +269,11 @@
+     TIMEOUT 1200
+     RUN_SERIAL TRUE
+     ENVIRONMENT "OMP_NUM_THREADS=2")
++
++# Explicitly built one-operation experimental seam; no original endpoint chain.
++add_test(NAME experimental_precision116_profile_seam
++         COMMAND paper_full_eight_square_contract_test --experimental-precision116-profile-seam)
++set_tests_properties(experimental_precision116_profile_seam PROPERTIES
++    TIMEOUT 1200
++    RUN_SERIAL TRUE
++    ENVIRONMENT "OMP_NUM_THREADS=2")
+diff --git a/tests/experimental_precision116_profile_seam.h b/tests/experimental_precision116_profile_seam.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..b9f1452cfbd20ef0601c07e6ea56aaf07504a912
+--- /dev/null
++++ b/tests/experimental_precision116_profile_seam.h
+@@ -0,0 +1,419 @@
++#ifndef EXPERIMENTAL_PRECISION116_PROFILE_SEAM_H
++#define EXPERIMENTAL_PRECISION116_PROFILE_SEAM_H
++
++// A single-operation integration seam, not an E80 or security qualification.
++// Reuse ONLY the frozen pure input generator/conversion from the old oracle.
++#include "paper_full_eight_square_oracle.h"
++#include "scheme/ckksrns/ckksrns-scheme.h"
++#include <algorithm>
++#include <array>
++#include <cmath>
++#include <map>
++#include <set>
++#include <sstream>
++#include <typeinfo>
++
++namespace experimental_precision116_test {
++namespace io = openfhe_2023_1788::client_io;
++using Poly = lbcrypto::DCRTPoly;
++using Native = lbcrypto::NativeInteger;
++using Int = boost::multiprecision::cpp_int;
++using Plan = openfhe_2023_1788::RepeatedMult2Plan;
++using Phase = openfhe_2023_1788::RepeatedPhase;
++using Receipt = std::shared_ptr<const openfhe_2023_1788::RepeatedMult2Receipt>;
++using Pair = openfhe_2023_1788::CiphertextPair;
++using Cipher = openfhe_2023_1788::ReadOnlyCiphertext;
++using Context = lbcrypto::CryptoContext<Poly>;
++using Parameters = lbcrypto::CryptoParametersCKKSRNS;
++using Lifecycle = openfhe_2023_1788::PairLifecycle;
++static_assert(NATIVEINT == 64 && MATHBACKEND == 4, "experimental profile requires native64/backend4");
++
++struct Prime final {
++    std::uint64_t modulus, root;
++    bool operator==(const Prime& rhs) const { return modulus == rhs.modulus && root == rhs.root; }
++};
++// Independent test literals, bound to candidate.json and STATIC_CERTIFICATE.json.
++constexpr std::array<Prime, 11> kQ{{
++    {288230191468118017ULL, 43136605093011213ULL},
++    {288230165698314241ULL, 82872750907637397ULL},
++    {1152921504598720513ULL, 100545759574150ULL},
++    {1152921504597016577ULL, 31693996050849ULL},
++    {1152921504595968001ULL, 88651361085495ULL},
++    {1152921504595640321ULL, 9679305630873ULL},
++    {1152921504593412097ULL, 24428769072221ULL},
++    {1152921504592822273ULL, 18776242964106ULL},
++    {1152921504592429057ULL, 5821397352863ULL},
++    {1152921504589938689ULL, 33888991361320ULL},
++    {72057589742960641ULL, 50608680790172261ULL}}};
++constexpr Prime kP{1152921504606584833ULL, 4443670208963ULL};
++constexpr std::array<std::uint64_t, 3> kWitness{{5, 7, 11}};
++
++inline void Require(bool condition, const char* label) {
++    if (!condition) throw std::runtime_error(std::string("experimental precision116 seam: ") + label);
++}
++template<class Exception, class Function>
++inline void Reject(Function&& function, const char* label) {
++    try { function(); }
++    catch (const Exception&) { return; }  // Expected negative assertion only; all other errors propagate.
++    Require(false, label);
++}
++template<class Integer>
++inline Int Exact(const Integer& value) {
++    std::ostringstream stream; stream << value; return Int(stream.str());
++}
++inline std::vector<Prime> ReadBasis(const std::shared_ptr<Poly::Params>& basis) {
++    Require(basis && basis->GetCyclotomicOrder() == 65536 && basis->GetRingDimension() == 32768,
++            "basis geometry");
++    std::vector<Prime> result;
++    Int product = 1;
++    std::set<std::uint64_t> seen;
++    for (const auto& tower : basis->GetParams()) {
++        Require(tower && tower->GetCyclotomicOrder() == 65536 && tower->GetRingDimension() == 32768,
++                "native tower geometry");
++        const auto& q = tower->GetModulus(); const auto& root = tower->GetRootOfUnity();
++        Require(q.GetMSB() <= 60 && q > Native(2) && q.Mod(Native(65536)) == Native(1) &&
++                root > Native(0) && root < q && root.ModExp(Native(32768), q) == q - Native(1) &&
++                root.ModExp(Native(65536), q) == Native(1), "native ceiling/congruence/primitive root");
++        const Prime value{q.ConvertToInt(), root.ConvertToInt()};
++        Require(seen.insert(value.modulus).second, "unique moduli");
++        result.push_back(value); product *= value.modulus;
++    }
++    Require(!result.empty() && product == Exact(basis->GetModulus()), "exact basis product");
++    return result;
++}
++inline void CheckPolynomial(const Poly& polynomial, const std::vector<Prime>& expected) {
++    Require(polynomial.GetFormat() == Format::EVALUATION && polynomial.GetNumOfElements() == expected.size() &&
++            ReadBasis(polynomial.GetParams()) == expected, "polynomial basis/format");
++    for (std::size_t j = 0; j < expected.size(); ++j) {
++        const auto& t = polynomial.GetElementAtIndex(j);
++        Require(t.GetParams() && !t.IsEmpty() && t.GetLength() == 32768 && t.GetFormat() == Format::EVALUATION &&
++                t.GetParams()->GetCyclotomicOrder() == 65536 && t.GetModulus() == Native(expected[j].modulus) &&
++                t.GetParams()->GetRootOfUnity() == Native(expected[j].root) &&
++                t.GetValues().GetModulus() == Native(expected[j].modulus), "polynomial native tower");
++    }
++}
++inline void CheckTables(const std::shared_ptr<Parameters>& p, const std::vector<Prime>& q) {
++    const auto count = q.size();
++    Require(p->GetNumPartQ() == count && p->GetNumPerPartQ() == 1 &&
++            p->GetNumberOfQPartitions() == count && p->GetAuxBits() == 60 && p->GetExtraBits() == 0,
++            "alpha-one partition envelope");
++    Require(p->GetPModq().size() == count && p->GetPInvModq().size() == count &&
++            p->GetPInvModqPrecon().size() == count && p->GetPHatInvModp().size() == 1 &&
++            p->GetPHatInvModpPrecon().size() == 1 && p->GetPHatModq().size() == 1 &&
++            p->GetPHatModq()[0].size() == count && p->GetModqBarrettMu().size() == count,
++            "public HYBRID table dimensions");
++    Require(p->GetPHatInvModp()[0] == Native(1), "single-P inverse table");
++    for (std::size_t j = 0; j < count; ++j) {
++        const auto index = static_cast<std::uint32_t>(j);
++        Require(ReadBasis(p->GetParamsPartQ(index)) == std::vector<Prime>{q[j]}, "actual alpha-one partition");
++        const Native qi(q[j].modulus), residue = Native(kP.modulus).Mod(qi);
++        Require(p->GetPModq()[j] == residue && p->GetPInvModq()[j] < qi &&
++                residue.ModMul(p->GetPInvModq()[j], qi) == Native(1) && p->GetPHatModq()[0][j] == Native(1),
++                "public HYBRID table values");
++        Require(p->GetScalingFactorReal(index) == std::ldexp(1.0, 58) &&
++                p->GetModReduceFactor(index) == std::ldexp(1.0, 58), "metadata58 getters");
++    }
++    // Hidden complementary/rescale table dimensions have no safe public length
++    // getter. Do not index them speculatively; one Mult2 exercises their use.
++}
++inline void CheckFamilies(const std::shared_ptr<const Plan>& plan) {
++    Require(plan && plan->GetFamilyCount() == 8 && plan->GetDivisor() == Native(kQ.back().modulus),
++            "eight candidate families");
++    std::vector<Prime> expected(kQ.begin(), kQ.end());
++    const auto rootContext = plan->GetFamilyContext(0);
++    Require(rootContext && rootContext->GetCryptoParameters(), "root context/parameters");
++    const auto rootQ = ReadBasis(rootContext->GetCryptoParameters()->GetElementParams());
++    std::set<const void*> contexts, parameters, schemes, qs, ps, qps, rows;
++    std::set<std::string> tags;
++    for (std::size_t f = 0; f < 8; ++f) {
++        const auto c = plan->GetFamilyContext(f);
++        Require(c && c->getSchemeId() == lbcrypto::CKKSRNS_SCHEME && c->GetRingDimension() == 32768 &&
++                std::dynamic_pointer_cast<lbcrypto::SchemeCKKSRNS>(c->GetScheme()), "actual CKKS context/scheme");
++        const auto p = std::dynamic_pointer_cast<Parameters>(c->GetCryptoParameters());
++        Require(p && p->GetElementParams() && p->GetParamsP() && p->GetParamsQP() && p->GetParamsPK(),
++                "actual context parameters");
++        const auto q = ReadBasis(p->GetElementParams());
++        auto qp = q; qp.push_back(kP);
++        Require(q == expected && q.size() == 11 - f && p->GetMultiplicativeDepth() == 10 - f &&
++                ReadBasis(p->GetParamsP()) == std::vector<Prime>{kP} && ReadBasis(p->GetParamsQP()) == qp &&
++                p->GetParamsPK() == p->GetElementParams() && ReadBasis(p->GetParamsPK()) == q,
++                "exact candidate Q/P/QP/public-key identity");
++        std::size_t nextRootIndex = 0;
++        for (const auto& prime : q) {
++            Require(std::count(rootQ.begin(), rootQ.end(), prime) == 1, "unique root modulus/root/order mapping");
++            const auto match = std::find(rootQ.begin(), rootQ.end(), prime);
++            const auto index = static_cast<std::size_t>(match - rootQ.begin());
++            Require(index >= nextRootIndex, "ordered root subset"); nextRootIndex = index + 1;
++        }
++        Require(contexts.insert(c.get()).second && parameters.insert(p.get()).second &&
++                schemes.insert(c->GetScheme().get()).second && qs.insert(p->GetElementParams().get()).second &&
++                ps.insert(p->GetParamsP().get()).second && qps.insert(p->GetParamsQP().get()).second,
++                "distinct family context/parameter/scheme/basis owners");
++        Require(p->GetKeySwitchTechnique() == lbcrypto::HYBRID && p->GetScalingTechnique() == lbcrypto::FIXEDMANUAL &&
++                p->GetEncryptionTechnique() == lbcrypto::STANDARD && p->GetMultiplicationTechnique() == lbcrypto::HPS &&
++                p->GetPREMode() == lbcrypto::NOT_SET && p->GetCKKSDataType() == lbcrypto::COMPLEX &&
++                p->GetSecretKeyDist() == lbcrypto::SPARSE_TERNARY && p->GetStdLevel() == lbcrypto::HEStd_NotSet,
++                "unchanged algorithm/secret/security modes");
++        Require(p->GetDistributionParameter() == 3.19F && p->GetAssuranceMeasure() == 36.0F &&
++                p->GetDigitSize() == 0 && p->GetMaxRelinSkDeg() == 2 && p->GetNoiseScale() == 1 &&
++                p->GetStatisticalSecurity() == 30 && p->GetNumAdversarialQueries() == 1 &&
++                p->GetThresholdNumOfParties() == 1 && p->GetNoiseEstimate() == 0 &&
++                p->GetFloodingDistributionParameter() == 0 && p->GetCompositeDegree() == 1 &&
++                p->GetRegisterWordSize() == 64 && p->GetMPIntBootCiphertextCompressionLevel() == lbcrypto::SLACK &&
++                p->GetExecutionMode() == lbcrypto::EXEC_EVALUATION &&
++                p->GetDecryptionNoiseMode() == lbcrypto::FIXED_NOISE_DECRYPT &&
++                p->GetMultipartyMode() == lbcrypto::FIXED_NOISE_MULTIPARTY, "unchanged noise/execution profile");
++        Require(p->GetEncodingParams() && *p->GetEncodingParams() == lbcrypto::EncodingParamsImpl(58, 16384),
++                "exact EncodingParams58");
++        const auto mask = static_cast<std::uint32_t>(lbcrypto::PKE | lbcrypto::KEYSWITCH | lbcrypto::LEVELEDSHE);
++        Require((c->GetScheme()->GetEnabled() & mask) == mask, "required enabled features");
++        std::ostringstream actual; actual << *c->GetScheme();
++        const auto description = actual.str();
++        Require(description.find(std::string(", PKE ") + typeid(lbcrypto::PKECKKSRNS).name() + ", KeySwitch ") != std::string::npos &&
++                description.find(std::string(", KeySwitch ") + typeid(lbcrypto::KeySwitchHYBRID).name() + ", PRE ") != std::string::npos &&
++                description.find(std::string(", LeveledSHE ") + typeid(lbcrypto::LeveledSHECKKSRNS).name() + ", AdvancedSHE ") != std::string::npos,
++                "actual public-encryption/HYBRID/leveled implementations");
++        CheckTables(p, q);
++        const auto& tag = plan->GetFamilyKeyTag(f);
++        Require(!tag.empty() && tags.insert(tag).second &&
++                (f == 0 || tag == plan->GetFamilyKeyTag(0) + "-mult2-family-" + std::to_string(f)), "distinct owned tags");
++        const auto& all = lbcrypto::CryptoContextImpl<Poly>::GetAllEvalMultKeys();
++        const auto found = all.find(tag);
++        Require(found != all.end() && found->second.size() == 1 && found->second[0], "one owned key row");
++        const auto key = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<Poly>>(found->second[0]);
++        Require(key && rows.insert(key.get()).second && key->GetCryptoContext() == c &&
++                key->GetCryptoParameters() == p && key->GetKeyTag() == tag &&
++                key->GetAVector().size() == q.size() && key->GetBVector().size() == q.size(), "family-local key row identity/shape");
++        for (const auto* values : {&key->GetAVector(), &key->GetBVector()})
++            for (const auto& polynomial : *values) CheckPolynomial(polynomial, qp);
++        expected.erase(expected.end() - 2);  // Check the actual next family's second-last deletion.
++    }
++    Require(expected == std::vector<Prime>{kQ[0], kQ[1], kQ[10]}, "bases and Div survive all eight deletions");
++    for (std::size_t j = 0; j < 3; ++j) {
++        const Native q(kQ[j == 2 ? 10 : j].modulus);
++        Require(Native(kWitness[j]).ModExp((q - Native(1)) / Native(2), q) == q - Native(1),
++                "frozen new-prime witness");
++    }
++}
++inline void CheckRootKeys(const openfhe_2023_1788::RepeatedMult2ClientSetup& setup) {
++    const auto root = setup.plan->GetFamilyContext(0);
++    const auto& tag = setup.plan->GetFamilyKeyTag(0);
++    Require(setup.publicKey && setup.rootSecret && setup.publicKey->GetCryptoContext() == root &&
++            setup.rootSecret->GetCryptoContext() == root && setup.publicKey->GetKeyTag() == tag &&
++            setup.rootSecret->GetKeyTag() == tag && setup.publicKey->GetPublicElements().size() == 2,
++            "root public/private context and tag");
++    const std::vector<Prime> q(kQ.begin(), kQ.end());
++    for (const auto& p : setup.publicKey->GetPublicElements()) CheckPolynomial(p, q);
++    const auto& secret = setup.rootSecret->GetPrivateElement();
++    CheckPolynomial(secret, q);
++    std::vector<int> signedCoefficients(32768);
++    std::size_t weight = 0;
++    for (std::size_t j = 0; j < q.size(); ++j) {
++        auto tower = secret.GetElementAtIndex(j);  // One native tower at a time; no retained family secrets.
++        tower.SetFormat(Format::COEFFICIENT);
++        for (std::size_t i = 0; i < signedCoefficients.size(); ++i) {
++            const auto value = tower[i];
++            Require(value == Native(0) || value == Native(1) || value == Native(q[j].modulus) - Native(1),
++                    "signed ternary root coefficient");
++            const int sign = value == Native(0) ? 0 : (value == Native(1) ? 1 : -1);
++            if (j == 0) { signedCoefficients[i] = sign; if (sign != 0) ++weight; }
++            else Require(signedCoefficients[i] == sign, "identical signed root coefficients across Q");
++        }
++    }
++    Require(weight == 128, "actual root Hamming weight128");
++}
++inline void CheckCipher(const Cipher& c, const Context& context, const std::string& tag,
++                        const std::vector<Prime>& basis, std::size_t level) {
++    Require(c && c->GetCryptoContext() == context && c->GetCryptoParameters() == context->GetCryptoParameters() &&
++            c->GetKeyTag() == tag && c->GetLevel() == level && c->GetNoiseScaleDeg() == 2 &&
++            c->GetScalingFactor() == std::ldexp(1.0, 116) && c->GetScalingFactorInt() == Native(1) &&
++            c->GetEncodingType() == lbcrypto::CKKS_PACKED_ENCODING && c->GetSlots() == 16384 &&
++            c->GetElements().size() == 2 && c->GetMetadataMap() && c->GetMetadataMap()->empty(), "ciphertext physical metadata");
++    for (const auto& p : c->GetElements()) CheckPolynomial(p, basis);
++}
++inline void CheckPair(const Pair& pair, const std::shared_ptr<const Plan>& plan, std::size_t family) {
++    std::vector<Prime> active(kQ.begin(), kQ.begin() + static_cast<std::ptrdiff_t>(10 - family));
++    std::vector<Native> moduli;
++    for (const auto& p : active) moduli.emplace_back(p.modulus);
++    Require(pair.GetContextIdentity() == plan->GetFamilyContext(family).get() &&
++            pair.GetKeyTag() == plan->GetFamilyKeyTag(family) && pair.GetDivisor() == Native(kQ[10].modulus) &&
++            pair.GetOrderedModuli() == moduli && pair.GetLevel() == 1 && pair.GetNoiseScaleDegree() == 2 &&
++            pair.GetRecordedScalingFactor() == std::ldexp(1.0, 116) && pair.GetFormat() == Format::EVALUATION &&
++            pair.GetSlots() == 16384 && pair.GetComponentCount() == 2 &&
++            pair.GetLifecycle() == (family == 0 ? Lifecycle::ReadyForFirstMult : Lifecycle::ReadyForRepeatedMult),
++            "pair family/basis/reset state");
++    CheckCipher(pair.GetHigh(), plan->GetFamilyContext(family), plan->GetFamilyKeyTag(family), active, 1);
++    CheckCipher(pair.GetLow(), plan->GetFamilyContext(family), plan->GetFamilyKeyTag(family), active, 1);
++    Require(pair.GetHigh() != pair.GetLow() && pair.GetHigh()->GetMetadataMap() != pair.GetLow()->GetMetadataMap(),
++            "independent pair wrappers/maps");
++}
++inline void CheckReceipt(const Receipt& r, Phase phase, std::size_t family, std::size_t operation,
++                         const Int& numerator, const Int& denominator) {
++    Require(r && r->GetPhase() == phase && r->GetFamilyIndex() == family && r->GetOperationIndex() == operation &&
++            !r->IsTerminal() && r->GetExactScale().GetNumerator() * denominator ==
++            numerator * r->GetExactScale().GetDenominator(), "issued receipt phase/family/operation/exact scale");
++}
++using RowIdentities = std::map<std::string, std::vector<const void*>>;
++inline RowIdentities CurrentRows() {
++    RowIdentities identities;
++    for (const auto& item : lbcrypto::CryptoContextImpl<Poly>::GetAllEvalMultKeys()) {
++        auto& row = identities[item.first];
++        for (const auto& key : item.second) row.push_back(key.get());
++    }
++    return identities;  // Raw identities only; do not retain large candidate rows.
++}
++struct ReleasedOwners final {
++    std::weak_ptr<const Plan> plan;
++    std::weak_ptr<lbcrypto::PublicKeyImpl<Poly>> publicKey;
++    std::weak_ptr<lbcrypto::PrivateKeyImpl<Poly>> secret;
++    std::vector<std::string> tags;
++    std::vector<std::weak_ptr<lbcrypto::EvalKeyImpl<Poly>>> rows;
++    std::vector<std::weak_ptr<const lbcrypto::CiphertextImpl<Poly>>> ciphertexts;
++    std::vector<std::weak_ptr<const openfhe_2023_1788::RepeatedMult2Receipt>> receipts;
++};
++inline void CheckReleased(const ReleasedOwners& owners) {
++    Require(owners.plan.expired() && owners.publicKey.expired() && owners.secret.expired(), "released client/plan owners");
++    for (const auto& row : owners.rows) Require(row.expired(), "released evaluation row owner");
++    for (const auto& c : owners.ciphertexts) Require(c.expired(), "released ciphertext owner");
++    for (const auto& r : owners.receipts) Require(r.expired(), "released receipt owner");
++    for (const auto& tag : owners.tags)
++        Require(lbcrypto::CryptoContextImpl<Poly>::GetAllEvalMultKeys().count(tag) == 0 &&
++                lbcrypto::CryptoContextImpl<Poly>::GetAllEvalAutomorphismKeys().count(tag) == 0, "no owned key-cache entries remain");
++}
++inline void RunCandidate(ReleasedOwners& owners) {
++    // Deliberately undeclared in RED. No placeholder factory or API stub.
++    auto setup = openfhe_2023_1788::CreateExperimentalPrecision116Setup();
++    owners.plan = setup.plan; owners.publicKey = setup.publicKey; owners.secret = setup.rootSecret;
++    CheckFamilies(setup.plan); CheckRootKeys(setup);
++    for (std::size_t f = 0; f < 8; ++f) {
++        const auto& tag = setup.plan->GetFamilyKeyTag(f);
++        owners.tags.push_back(tag);
++        owners.rows.push_back(lbcrypto::CryptoContextImpl<Poly>::GetAllEvalMultKeys().at(tag)[0]);
++    }
++    const auto rowIdentities = CurrentRows();
++    const auto publicSnapshot = setup.publicKey->GetPublicElements();
++    const auto secretSnapshot = setup.rootSecret->GetPrivateElement();
++    const auto publicIdentity = setup.publicKey.get(); const auto secretIdentity = setup.rootSecret.get();
++    // There is deliberately no generic-context S116 path.
++    Reject<std::domain_error>([&] { (void)io::HighPrecisionClientIO(setup.plan->GetFamilyContext(0)); },
++                              "context-only candidate was accepted");
++    io::HighPrecisionClientIO client(setup.plan);
++    const auto inputs = paper_full_test::ClientInputs(paper_full_test::Inputs());
++    Reject<std::domain_error>([&] {
++        (void)client.Encrypt(setup.publicKey, inputs, {16384, io::PositiveRationalScale::FromPositive(Int(1) << 100, 1)});
++    }, "candidate accepted obsolete S100 request");
++    const Int scale0 = Int(1) << 116;
++    auto fresh = client.Encrypt(setup.publicKey, inputs, {16384, io::PositiveRationalScale::FromPositive(scale0, 1)});
++    const auto& state = fresh.State();
++    const auto root = setup.plan->GetFamilyContext(0);
++    Require(state.contextProfile.contextIdentity == root.get() &&
++            state.contextProfile.cryptoParamsIdentity == root->GetCryptoParameters().get() &&
++            state.keyTag == setup.plan->GetFamilyKeyTag(0) && state.slots == 16384 && state.strideGap == 1 &&
++            state.level == 0 && state.componentCount == 2 && state.metadataMapEmpty && state.noiseScaleDegree == 2 &&
++            state.recordedScalingFactor == std::ldexp(1.0, 116) && state.scalingFactorInt == Native(1) &&
++            state.logicalScale.Numerator() == scale0 && state.logicalScale.Denominator() == 1 &&
++            state.encodingType == lbcrypto::CKKS_PACKED_ENCODING && state.componentFormat == Format::EVALUATION &&
++            state.origin == io::ClientCiphertextOrigin::FreshClientEncoding &&
++            state.projection == io::CanonicalProjection::OpenFhePackedStride && !state.firstMult2ScaleFactors,
++            "fresh bound S116 state");
++    Require(state.activeBasis.cyclotomicOrder == 65536 && state.activeBasis.ringDimension == 32768 &&
++            state.activeBasis.moduliDecimal.size() == 11 && state.activeBasis.rootsOfUnityDecimal.size() == 11,
++            "fresh bound basis envelope");
++    for (std::size_t j = 0; j < kQ.size(); ++j)
++        Require(state.activeBasis.moduliDecimal[j] == std::to_string(kQ[j].modulus) &&
++                state.activeBasis.rootsOfUnityDecimal[j] == std::to_string(kQ[j].root), "fresh bound exact basis");
++    auto input = fresh.CloneForEvaluation();
++    const auto inputSnapshot = input->Clone();
++    owners.ciphertexts.push_back(input); owners.ciphertexts.push_back(inputSnapshot);
++    CheckCipher(input, root, setup.plan->GetFamilyKeyTag(0), std::vector<Prime>(kQ.begin(), kQ.end()), 0);
++    openfhe_2023_1788::DoubleCKKS evaluator(setup.plan);
++    const auto pair = evaluator.DCP(input);
++    CheckPair(pair, setup.plan, 0);
++    const auto issuedInput = pair.GetRepeatedReceipt();
++    CheckReceipt(issuedInput, Phase::Input, 0, 0, scale0, 1);
++    Require(!issuedInput->GetParent(), "Input receipt has no parent");
++    const auto savedHigh = pair.GetHigh()->Clone(), savedLow = pair.GetLow()->Clone();
++    const auto result = evaluator.Mult2(pair, pair);  // Exactly ONE public Mult2 invocation.
++    CheckPair(result, setup.plan, 1);
++    const Int tensorNumerator = scale0 * scale0, divisor = kQ[10].modulus;
++    const Int denominator1 = divisor * kQ[9].modulus;
++    const auto reentry = result.GetRepeatedReceipt();
++    CheckReceipt(reentry, Phase::Reentry, 1, 1, tensorNumerator, denominator1);
++    const auto rescaled = reentry->GetParent();
++    CheckReceipt(rescaled, Phase::Rescaled, 0, 1, tensorNumerator, denominator1);
++    const auto relinearized = rescaled->GetParent();
++    CheckReceipt(relinearized, Phase::Relinearized, 0, 1, tensorNumerator, divisor);
++    const auto tensor = relinearized->GetParent();
++    CheckReceipt(tensor, Phase::Tensor, 0, 1, tensorNumerator, divisor);
++    Require(tensor->GetParent() == issuedInput && reentry != rescaled && rescaled != relinearized &&
++            relinearized != tensor && tensor != issuedInput, "actual receipt parent chain");
++    Reject<std::invalid_argument>([&] { (void)evaluator.RCBWithReceipt(result); },
++                                 "nonterminal result accepted by terminal-only RCBWithReceipt");
++    CheckPair(pair, setup.plan, 0);
++    Require(pair.GetRepeatedReceipt() == issuedInput && pair.GetHigh()->GetElements() == savedHigh->GetElements() &&
++            pair.GetLow()->GetElements() == savedLow->GetElements() && input->GetElements() == inputSnapshot->GetElements(),
++            "input pair and ciphertext preserved");
++    Require(result.GetHigh() != pair.GetHigh() && result.GetLow() != pair.GetLow() &&
++            result.GetHigh()->GetMetadataMap() != pair.GetHigh()->GetMetadataMap() &&
++            result.GetLow()->GetMetadataMap() != pair.GetLow()->GetMetadataMap(), "new family snapshot ownership");
++    CheckCipher(input, root, setup.plan->GetFamilyKeyTag(0), std::vector<Prime>(kQ.begin(), kQ.end()), 0);
++    // Public clone adoption invokes the plan's existing all-family live row seals.
++    // This rechecks coefficient preservation using already-owned production state,
++    // rather than copying every large evaluation row into this test.
++    const auto preservedFresh = fresh.CloneForEvaluation();
++    Require(preservedFresh.get() != input.get() && preservedFresh->GetMetadataMap() != input->GetMetadataMap() &&
++            preservedFresh->GetElements() == inputSnapshot->GetElements(), "fresh owner preserved independently");
++    Require(setup.publicKey.get() == publicIdentity && setup.rootSecret.get() == secretIdentity &&
++            setup.publicKey->GetPublicElements() == publicSnapshot && setup.rootSecret->GetPrivateElement() == secretSnapshot &&
++            setup.publicKey->GetCryptoContext() == root && setup.rootSecret->GetCryptoContext() == root &&
++            setup.publicKey->GetKeyTag() == setup.plan->GetFamilyKeyTag(0) &&
++            setup.rootSecret->GetKeyTag() == setup.plan->GetFamilyKeyTag(0) && CurrentRows() == rowIdentities,
++            "root key owners and all evaluation-row identities preserved");
++    for (const auto& c : {pair.GetHigh(), pair.GetLow(), result.GetHigh(), result.GetLow()}) owners.ciphertexts.push_back(c);
++    owners.ciphertexts.push_back(preservedFresh);
++    for (const auto& r : {issuedInput, tensor, relinearized, rescaled, reentry}) owners.receipts.push_back(r);
++}
++inline void Run() {
++    const auto initialRows = CurrentRows();
++    const auto initialAutomorphisms = lbcrypto::CryptoContextImpl<Poly>::GetAllEvalAutomorphismKeys();
++    ReleasedOwners diagnosticOwners;
++    {
++        const auto diagnostic = openfhe_2023_1788::CreateRepeatedMult2DiagnosticSetup();
++        diagnosticOwners.plan = diagnostic.plan; diagnosticOwners.publicKey = diagnostic.publicKey;
++        diagnosticOwners.secret = diagnostic.rootSecret;
++        struct SmallRow final { std::string tag; lbcrypto::EvalKey<Poly> identity; std::vector<Poly> a, b; };
++        std::vector<SmallRow> smallRows;
++        for (std::size_t f = 0; f < diagnostic.plan->GetFamilyCount(); ++f) {
++            const auto& tag = diagnostic.plan->GetFamilyKeyTag(f);
++            const auto& key = lbcrypto::CryptoContextImpl<Poly>::GetAllEvalMultKeys().at(tag)[0];
++            smallRows.push_back({tag, key, key->GetAVector(), key->GetBVector()});  // Small N64 guard only.
++            diagnosticOwners.tags.push_back(tag); diagnosticOwners.rows.push_back(key);
++        }
++        const auto smallPublic = diagnostic.publicKey->GetPublicElements();
++        const auto smallSecret = diagnostic.rootSecret->GetPrivateElement();
++        const auto withDiagnostic = CurrentRows();
++        ReleasedOwners candidateOwners;
++        RunCandidate(candidateOwners);
++        CheckReleased(candidateOwners);
++        Require(CurrentRows() == withDiagnostic, "candidate cleanup changed another key row");
++        for (const auto& saved : smallRows) {
++            const auto& row = lbcrypto::CryptoContextImpl<Poly>::GetAllEvalMultKeys().at(saved.tag);
++            Require(row.size() == 1 && row[0] == saved.identity && row[0]->GetAVector() == saved.a &&
++                    row[0]->GetBVector() == saved.b, "independent small diagnostic row preserved");
++        }
++        Require(diagnostic.publicKey->GetPublicElements() == smallPublic &&
++                diagnostic.rootSecret->GetPrivateElement() == smallSecret, "small diagnostic keys preserved");
++        // The existing plan constructor revalidates the small profile and row seal;
++        // it does not run another encrypted multiplication.
++        const openfhe_2023_1788::DoubleCKKS stillUsable(diagnostic.plan);
++        (void)stillUsable;
++    }
++    CheckReleased(diagnosticOwners);
++    Require(CurrentRows() == initialRows &&
++            lbcrypto::CryptoContextImpl<Poly>::GetAllEvalAutomorphismKeys() == initialAutomorphisms,
++            "global evaluation-key cache ownership restored");
++    std::cout << "EXPERIMENTAL_PRECISION116_PROFILE_SEAM result=PASS profile=experimental-s116-d56-b58-v1"
++                 " squares=1 full_eight_square_E80=NOT_TESTED security=UNRESOLVED\n";
++}
++}  // namespace experimental_precision116_test
++#endif
+diff --git a/tests/paper_full_eight_square_contract_test.cpp b/tests/paper_full_eight_square_contract_test.cpp
+index 0cba720cf83d93344fc67eb07b2a6caf11ae0dff..fee9294e11f0424e8514501e1b4118aa210ca1a3 100644
+--- a/tests/paper_full_eight_square_contract_test.cpp
++++ b/tests/paper_full_eight_square_contract_test.cpp
+@@ -1,3 +1,4 @@
++#include "experimental_precision116_profile_seam.h"
+ #include "paper_full_eight_square_oracle.h"
+ #include "paper_endpoint_observer_contract.h"
+ #include "paper_endpoint_diagnostics.h"
+@@ -436,6 +437,15 @@
+ }
+ }  // namespace
+ int main(int argc, char** argv) {
++    if (argc == 2 && std::string(argv[1]) == "--experimental-precision116-profile-seam") {
++        try { experimental_precision116_test::Run(); return 0; }
++        catch (const std::exception& error) {
++            std::cerr << "EXPERIMENTAL_PRECISION116_PROFILE_SEAM result=FAIL profile=experimental-s116-d56-b58-v1"
++                         " squares=1 full_eight_square_E80=NOT_TESTED security=UNRESOLVED reason="
++                      << error.what() << '\n';
++            return 1;
++        }
++    }
+     // Test-only C++/Python boundary: no normal Run(), contexts or legacy receipts.
+     if (argc == 6 && std::string(argv[1]) == "--endpoint-cpp-interop") {
+         try {

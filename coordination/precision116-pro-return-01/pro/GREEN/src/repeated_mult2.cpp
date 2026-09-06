@@ -1,0 +1,571 @@
+#include "openfhe_2023_1788/repeated_mult2.h"
+#include "openfhe_2023_1788/paper_h128_client_keypair.h"
+#include "cryptocontextfactory.h"
+#include "scheme/ckksrns/ckksrns-scheme.h"
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <set>
+#include <sstream>
+#include <stdexcept>
+#include <type_traits>
+
+namespace openfhe_2023_1788 {
+namespace {
+using lbcrypto::DCRTPoly;
+using lbcrypto::NativeInteger;
+using Context=lbcrypto::CryptoContext<DCRTPoly>;
+using Parameters=lbcrypto::CryptoParametersCKKSRNS;
+using Int=ExactScale::Integer;
+using Receipt=std::shared_ptr<const RepeatedMult2Receipt>;
+static_assert(NATIVEINT==64 && MATHBACKEND==4,"repeated profiles require native64/backend4");
+struct PaperPrime final { std::uint64_t modulus,root; };
+// Table 3 probe's exact ordered identities, NOT its nominal EncodingParams100.
+constexpr std::array<PaperPrime,11> kPaperQ{{
+    {1125899904679937ULL,26113207984ULL}, {1125899903827969ULL,150640639383ULL},
+    {1152921504598720513ULL,100545759574150ULL}, {1152921504597016577ULL,31693996050849ULL},
+    {1152921504595968001ULL,88651361085495ULL}, {1152921504595640321ULL,9679305630873ULL},
+    {1152921504593412097ULL,24428769072221ULL}, {1152921504592822273ULL,18776242964106ULL},
+    {1152921504592429057ULL,5821397352863ULL}, {1152921504589938689ULL,33888991361320ULL},
+    {1099510054913ULL,121567553ULL}
+}};
+constexpr PaperPrime kPaperP{1152921504606584833ULL,4443670208963ULL};
+// Only these two immutable, named paper-geometry profiles can be issued. The
+// original Q/P identities above are unchanged. No caller-supplied parameters.
+struct PaperGeometryProfile final {
+    std::array<PaperPrime,11> q;
+    PaperPrime p;
+    int baseMetadataBits;
+};
+constexpr PaperGeometryProfile kPaperProfile{kPaperQ,kPaperP,50};
+// experimental-s116-d56-b58-v1; candidate.json + accepted static certificate.
+// New-prime witnesses (5,7,11) live in that immutable certificate. The generic
+// fixed-Q key adapter still validates actual primality/root/HYBRID identities.
+// About 712 QP bits at N32768/h128: security UNRESOLVED, E80 NOT TESTED.
+constexpr PaperGeometryProfile kExperimentalPrecision116Profile{{{
+    {288230191468118017ULL,43136605093011213ULL},
+    {288230165698314241ULL,82872750907637397ULL},
+    kPaperQ[2],kPaperQ[3],kPaperQ[4],kPaperQ[5],
+    kPaperQ[6],kPaperQ[7],kPaperQ[8],kPaperQ[9],
+    {72057589742960641ULL,50608680790172261ULL}
+}},kPaperP,58};
+[[noreturn]] void Invalid(const std::string& message) { throw std::invalid_argument("RepeatedMult2: "+message); }
+void Require(bool condition,const char* message) { if(!condition) Invalid(message); }
+Int Gcd(Int a,Int b) { while(b!=0) { Int r=a%b; a=b; b=r; } return a; }
+struct Prime final {
+    std::uint32_t cyclotomicOrder;
+    NativeInteger modulus,root;
+    bool operator==(const Prime& rhs) const {
+        return cyclotomicOrder==rhs.cyclotomicOrder && modulus==rhs.modulus && root==rhs.root;
+    }
+};
+struct Basis final {
+    std::uint32_t cyclotomicOrder;
+    std::vector<Prime> primes;
+    bool operator==(const Basis& rhs) const { return cyclotomicOrder==rhs.cyclotomicOrder && primes==rhs.primes; }
+};
+template<class Params> Basis ReadBasis(const std::shared_ptr<Params>& parameters) {
+    Require(static_cast<bool>(parameters),"null RNS parameters");
+    Basis result{parameters->GetCyclotomicOrder(),{}};
+    Require((result.cyclotomicOrder==128 || result.cyclotomicOrder==65536) &&
+            parameters->GetRingDimension()==result.cyclotomicOrder/2,"unsupported profile geometry");
+    std::set<NativeInteger> seen; Int product=1;
+    for(const auto& p:parameters->GetParams()) {
+        Require(p && p->GetCyclotomicOrder()==result.cyclotomicOrder &&
+                p->GetRingDimension()==result.cyclotomicOrder/2 && p->GetModulus()>NativeInteger(2),"invalid native prime identity");
+        Require(p->GetModulus().Mod(NativeInteger(2))==NativeInteger(1) &&
+                seen.insert(p->GetModulus()).second,"even or repeated RNS modulus");
+        result.primes.push_back({p->GetCyclotomicOrder(),p->GetModulus(),p->GetRootOfUnity()});
+        product*=Int(p->GetModulus().ConvertToInt());
+    }
+    std::ostringstream declared; declared << parameters->GetModulus();
+    Require(!result.primes.empty() && product==Int(declared.str()),"declared RNS product mismatch");
+    return result;
+}
+void ValidatePolynomial(const DCRTPoly& p,const Basis& basis) {
+    Require(ReadBasis(p.GetParams())==basis && p.GetNumOfElements()==basis.primes.size() &&
+            p.GetFormat()==Format::EVALUATION,"key polynomial basis or format mismatch");
+    for(std::size_t j=0;j<basis.primes.size();++j) {
+        const auto& t=p.GetElementAtIndex(j); const auto& expected=basis.primes[j];
+        Require(t.GetParams() && !t.IsEmpty() && t.GetFormat()==Format::EVALUATION &&
+                t.GetLength()==basis.cyclotomicOrder/2 && t.GetValues().GetModulus()==expected.modulus &&
+                t.GetParams()->GetCyclotomicOrder()==expected.cyclotomicOrder &&
+                t.GetModulus()==expected.modulus && t.GetParams()->GetRootOfUnity()==expected.root,
+                "key native tower identity/format mismatch");
+    }
+}
+struct Family final {
+    const PaperGeometryProfile* profile=nullptr;
+    Context context;
+    std::shared_ptr<Parameters> parameters;
+    std::shared_ptr<lbcrypto::SchemeBase<DCRTPoly>> scheme;
+    std::string schemeSeal;
+    Basis q{},p{},qp{};
+    const void* qIdentity=nullptr;
+    const void* pIdentity=nullptr;
+    const void* qpIdentity=nullptr;
+    std::string tag;
+    lbcrypto::EvalKey<DCRTPoly> rowIdentity;
+    std::vector<DCRTPoly> sealedA,sealedB;
+};
+void ValidateProfile(const Family& family) {
+    const bool paper=family.profile!=nullptr;
+    const int metadataBits=paper?family.profile->baseMetadataBits:50;
+    const auto c=family.context;
+    Require(static_cast<bool>(c),"null family context");
+    const auto p=std::dynamic_pointer_cast<Parameters>(c->GetCryptoParameters());
+    Require(p && p==family.parameters && c->GetScheme()==family.scheme &&
+            std::dynamic_pointer_cast<lbcrypto::SchemeCKKSRNS>(c->GetScheme()),"actual returned context type/identity mismatch");
+    std::ostringstream currentScheme; currentScheme << *c->GetScheme();
+    Require(currentScheme.str()==family.schemeSeal,"family enabled scheme components were modified");
+    Require(p->GetElementParams() && p->GetParamsP() && p->GetParamsQP(),
+            "live family has a null Q/P/QP basis");
+    Require(c->getSchemeId()==lbcrypto::SCHEME::CKKSRNS_SCHEME &&
+            c->GetRingDimension()==(paper?32768U:64U),
+            "actual returned scheme ID/ring dimension mismatch");
+    Require(p->GetElementParams().get()==family.qIdentity && p->GetParamsP().get()==family.pIdentity &&
+            p->GetParamsQP().get()==family.qpIdentity,"family parameter object replaced");
+    Require(ReadBasis(p->GetElementParams())==family.q && ReadBasis(p->GetParamsP())==family.p &&
+            ReadBasis(p->GetParamsQP())==family.qp,"actual returned ordered Q/P/QP mismatch");
+    Require(p->GetNumPartQ()==family.q.primes.size() && p->GetNumPerPartQ()==1 &&
+            p->GetNumberOfQPartitions()==family.q.primes.size() &&
+            p->GetAuxBits()==60 && p->GetExtraBits()==0,"actual returned alpha-one partition profile mismatch");
+    Require(p->GetKeySwitchTechnique()==lbcrypto::HYBRID && p->GetScalingTechnique()==lbcrypto::FIXEDMANUAL &&
+            p->GetEncryptionTechnique()==lbcrypto::STANDARD && p->GetMultiplicationTechnique()==lbcrypto::HPS &&
+            p->GetPREMode()==lbcrypto::NOT_SET && p->GetCKKSDataType()==lbcrypto::COMPLEX,
+            "actual returned algorithm modes mismatch");
+    Require(p->GetSecretKeyDist()==(paper?lbcrypto::SPARSE_TERNARY:lbcrypto::UNIFORM_TERNARY) && p->GetStdLevel()==lbcrypto::HEStd_NotSet &&
+            p->GetMultipartyMode()==lbcrypto::FIXED_NOISE_MULTIPARTY &&
+            p->GetExecutionMode()==lbcrypto::EXEC_EVALUATION && p->GetDecryptionNoiseMode()==lbcrypto::FIXED_NOISE_DECRYPT,
+            "actual returned secret/security/execution modes mismatch");
+    Require(p->GetDistributionParameter()==3.19F && p->GetAssuranceMeasure()==36.0F &&
+            p->GetDigitSize()==0 && p->GetMaxRelinSkDeg()==2 && p->GetNoiseScale()==1 &&
+            p->GetStatisticalSecurity()==30 && p->GetNumAdversarialQueries()==1 && p->GetThresholdNumOfParties()==1 &&
+            p->GetMultiplicativeDepth()+1==family.q.primes.size() && p->GetNoiseEstimate()==0 &&
+            p->GetFloodingDistributionParameter()==0 && p->GetCompositeDegree()==1 && p->GetRegisterWordSize()==NATIVEINT &&
+            p->GetMPIntBootCiphertextCompressionLevel()==lbcrypto::SLACK,"actual returned diagnostic noise/profile mismatch");
+    const auto encoding=p->GetEncodingParams();
+    const lbcrypto::EncodingParamsImpl requestedEncoding(metadataBits,paper?16384:16);
+    Require(encoding && *encoding==requestedEncoding,"actual returned encoding parameters mismatch");
+    Require(p->GetParamsPK().get()==p->GetElementParams().get() && ReadBasis(p->GetParamsPK())==family.q,
+            "PRE NOT_SET/STANDARD must select Q for the public key");
+    auto expected=family.q.primes; expected.insert(expected.end(),family.p.primes.begin(),family.p.primes.end());
+    Require(family.qp.primes==expected,"QP must be ordered Q concatenated with its own P");
+    for(std::size_t j=0;j<family.q.primes.size();++j) {
+        const auto partition=ReadBasis(p->GetParamsPartQ(static_cast<std::uint32_t>(j)));
+        Require(partition.primes.size()==1 && partition.primes[0]==family.q.primes[j],"alpha-one partition identity mismatch");
+        Require(p->GetScalingFactorReal(static_cast<std::uint32_t>(j))==std::ldexp(1.0,metadataBits) &&
+                p->GetModReduceFactor(static_cast<std::uint32_t>(j))==std::ldexp(1.0,metadataBits),"FIXEDMANUAL metadata factors mismatch");
+    }
+}
+void ValidateRow(const Family& family,bool compareSeal) {
+    const auto& all=lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys();
+    const auto found=all.find(family.tag);
+    Require(!family.tag.empty() && found!=all.end() && found->second.size()==1 && found->second[0],
+            "missing or malformed family-local evaluation-key row");
+    const auto key=std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(found->second[0]);
+    Require(key && key->GetCryptoContext()==family.context && key->GetKeyTag()==family.tag,
+            "evaluation key context/tag/subtype mismatch");
+    Require(key->GetAVector().size()==family.q.primes.size() && key->GetBVector().size()==family.q.primes.size(),
+            "alpha-one evaluation-key A/B length mismatch");
+    for(const auto* polynomials:{&key->GetAVector(),&key->GetBVector()})
+        for(const auto& p:*polynomials) ValidatePolynomial(p,family.qp);
+    if(compareSeal) Require(found->second[0]==family.rowIdentity && key->GetAVector()==family.sealedA &&
+                            key->GetBVector()==family.sealedB,"owned evaluation-key row was replaced or modified");
+}
+Family MakeFamily(const std::vector<NativeInteger>& moduli,const std::vector<NativeInteger>& roots,
+                  const PaperGeometryProfile* profile=nullptr) {
+    const bool paper=profile!=nullptr;
+    Require(moduli.size()==roots.size() && moduli.size()>=4,"invalid ordered family request");
+    auto q=std::make_shared<DCRTPoly::Params>(paper?65536:128,moduli,roots);
+    auto encoding=std::make_shared<lbcrypto::EncodingParamsImpl>(paper?profile->baseMetadataBits:50,paper?16384:16);
+    // Explicit trailing COMPLEX and NOT_SET are essential: defaults are not the
+    // intended complex, Q-public-key profile. Constructor order is pin-specific.
+    auto requested=std::make_shared<Parameters>(q,encoding,3.19F,36.0F,lbcrypto::HEStd_NotSet,
+        0,paper?lbcrypto::SPARSE_TERNARY:lbcrypto::UNIFORM_TERNARY,2,lbcrypto::HYBRID,lbcrypto::FIXEDMANUAL,lbcrypto::STANDARD,lbcrypto::HPS,
+        lbcrypto::NOT_SET,lbcrypto::FIXED_NOISE_MULTIPARTY,lbcrypto::EXEC_EVALUATION,lbcrypto::FIXED_NOISE_DECRYPT,
+        1,30,1,1,lbcrypto::SLACK,1,NATIVEINT,lbcrypto::COMPLEX);
+    requested->SetMultiplicativeDepth(static_cast<std::uint32_t>(moduli.size()-1));
+    requested->SetNoiseEstimate(0); requested->SetFloodingDistributionParameter(0);
+    requested->PrecomputeCRTTables(lbcrypto::HYBRID,lbcrypto::FIXEDMANUAL,lbcrypto::STANDARD,lbcrypto::HPS,
+                                   static_cast<std::uint32_t>(moduli.size()),60,0);
+    Family family; family.profile=profile;
+    family.q=ReadBasis(requested->GetElementParams()); family.p=ReadBasis(requested->GetParamsP());
+    family.qp=ReadBasis(requested->GetParamsQP());
+    if(paper) {
+        Require(family.q.primes.size()>=4 && family.q.primes.size()<=11,"paper family Q count");
+        for(std::size_t j=0;j<family.q.primes.size();++j) {
+            const auto expected=profile->q[j+1==family.q.primes.size()?10:j];
+            Require(family.q.primes[j]==Prime{65536,NativeInteger(expected.modulus),NativeInteger(expected.root)},
+                    "paper Q differs from frozen modulus/root/order");
+        }
+        Require(family.p.primes.size()==1 &&
+                family.p.primes[0]==Prime{65536,NativeInteger(profile->p.modulus),NativeInteger(profile->p.root)},
+                "paper reserved P/root mismatch");
+    }
+    auto scheme=std::make_shared<lbcrypto::SchemeCKKSRNS>();
+    scheme->SetKeySwitchingTechnique(lbcrypto::HYBRID);
+    scheme->Enable(lbcrypto::PKE); scheme->Enable(lbcrypto::KEYSWITCH); scheme->Enable(lbcrypto::LEVELEDSHE);
+    family.context=lbcrypto::CryptoContextFactory<DCRTPoly>::GetContext(requested,scheme,lbcrypto::SCHEME::CKKSRNS_SCHEME);
+    Require(static_cast<bool>(family.context),"factory returned null context");
+    family.parameters=std::dynamic_pointer_cast<Parameters>(family.context->GetCryptoParameters());
+    Require(static_cast<bool>(family.parameters),"factory returned non-CKKS parameters");
+    family.scheme=family.context->GetScheme();
+    Require(static_cast<bool>(family.scheme),"factory returned null scheme");
+    family.qIdentity=family.parameters->GetElementParams().get();
+    family.pIdentity=family.parameters->GetParamsP().get(); family.qpIdentity=family.parameters->GetParamsQP().get();
+    // Equivalent-family interning is allowed, but it must return the requested
+    // algorithm components as well as the full parameter profile. Upstream's
+    // public scheme printer reports component dynamic types, not pointer bytes.
+    std::ostringstream requestedScheme,actualScheme;
+    requestedScheme << *scheme; actualScheme << *family.scheme;
+    Require(requestedScheme.str()==actualScheme.str(),"factory returned a different enabled scheme/keyswitch implementation");
+    family.schemeSeal=actualScheme.str();
+    ValidateProfile(family);
+    return family;
+}
+void SealRow(Family& family) {
+    ValidateRow(family,false);
+    const auto& row=lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys().at(family.tag);
+    const auto key=std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(row[0]);
+    family.rowIdentity=row[0]; family.sealedA=key->GetAVector(); family.sealedB=key->GetBVector();
+}
+} // namespace
+
+ExactScale::ExactScale(Integer numerator,Integer denominator) : numerator_(std::move(numerator)),denominator_(std::move(denominator)) {
+    Require(numerator_>0 && denominator_>0,"exact scale must be a positive rational");
+    const auto divisor=Gcd(numerator_,denominator_); numerator_/=divisor; denominator_/=divisor;
+}
+RepeatedMult2Receipt::RepeatedMult2Receipt(std::size_t family,std::size_t operation,RepeatedPhase phase,ExactScale scale,
+    Receipt parent,bool terminal,std::size_t level,std::size_t arity,std::size_t noise,PairLifecycle lifecycle,
+    double recorded,long double high,long double recombined)
+    : family_(family),operation_(operation),phase_(phase),scale_(std::move(scale)),parent_(std::move(parent)),terminal_(terminal),
+      level_(level),arity_(arity),noise_(noise),lifecycle_(lifecycle),recorded_(recorded),high_(high),recombined_(recombined) {}
+
+struct RepeatedMult2Plan::Data final {
+    const PaperGeometryProfile* profile=nullptr;
+    std::vector<Family> families;
+    std::vector<Receipt> receipts;
+    static RepeatedMult2ClientSetup CreatePaperGeometrySetup(const PaperGeometryProfile& profile);
+    ~Data() {
+        // Tags are installed only after the absence check. This also cleans up
+        // an owned row on a partial setup exception, without a catch-and-continue.
+        for(const auto& family:families) if(!family.tag.empty())
+            lbcrypto::CryptoContextImpl<DCRTPoly>::ClearEvalMultKeys(family.tag);
+    }
+};
+RepeatedMult2Plan::RepeatedMult2Plan(std::unique_ptr<Data> data) : data_(std::move(data)) {
+    Require(data_ && (data_->profile==nullptr || data_->profile==&kPaperProfile ||
+                     data_->profile==&kExperimentalPrecision116Profile),"unknown internal profile");
+    Require(data_->families.size()==(data_->profile?8U:2U),"unexpected explicit-profile family count");
+    for(std::size_t family=0;family<GetFamilyCount();++family) {
+        const auto& current=data_->families[family];
+        Require(current.profile==data_->profile && current.q.primes.size()==(data_->profile?11U:10U)-family,
+                "family profile or Q count mismatch");
+        ValidateFamily(family);
+        for(std::size_t earlier=0;earlier<family;++earlier) {
+            const auto& other=data_->families[earlier];
+            Require(current.context!=other.context && current.parameters!=other.parameters &&
+                    current.scheme!=other.scheme && current.qIdentity!=other.qIdentity &&
+                    current.pIdentity!=other.pIdentity && current.qpIdentity!=other.qpIdentity && current.tag!=other.tag,
+                    "different ordered families alias objects or key tags");
+        }
+        if(family) {
+            auto predecessor=data_->families[family-1].q.primes;
+            predecessor.erase(predecessor.end()-2);
+            Require(current.q.primes==predecessor,"family transition did not remove exactly the next Mult prime");
+        }
+    }
+    const auto& d=GetDivisor(); const Int divisor(d.ConvertToInt());
+    ExactScale input(Int(1)<<(2*BaseMetadataExponent()),1);
+    double recorded=ExpectedRecordedScalingFactor();
+    long double high=static_cast<long double>(recorded)/static_cast<long double>(d.ConvertToInt());
+    long double combined=static_cast<long double>(recorded);
+    Receipt previous;
+    for(std::size_t family=0;family<GetFamilyCount();++family) {
+        auto append=[&](std::size_t operation,RepeatedPhase phase,ExactScale scale,Receipt parent,bool terminal,
+                        std::size_t level,std::size_t arity,std::size_t noise,PairLifecycle lifecycle,
+                        double factor,long double h,long double c) {
+            Receipt r(new const RepeatedMult2Receipt(family,operation,phase,std::move(scale),std::move(parent),terminal,
+                                              level,arity,noise,lifecycle,factor,h,c));
+            data_->receipts.push_back(r); return r;
+        };
+        const auto initial=append(family,family==0?RepeatedPhase::Input:RepeatedPhase::Reentry,input,previous,false,
+                                  1,2,2,family==0?PairLifecycle::ReadyForFirstMult:PairLifecycle::ReadyForRepeatedMult,
+                                  recorded,high,combined);
+        const auto& f=data_->families[family];
+        const Int m(f.q.primes[f.q.primes.size()-2].modulus.ConvertToInt());
+        const long double ml=static_cast<long double>(f.q.primes[f.q.primes.size()-2].modulus.ConvertToInt());
+        ExactScale tensor(input.GetNumerator()*input.GetNumerator(),input.GetDenominator()*input.GetDenominator()*divisor);
+        const double tensorRecorded=recorded*recorded/f.parameters->GetScalingFactorReal(0);
+        const long double tensorHigh=high*high,tensorCombined=combined*combined/static_cast<long double>(d.ConvertToInt());
+        const auto t=append(family+1,RepeatedPhase::Tensor,tensor,initial,false,1,3,3,PairLifecycle::ReadyForRS2,
+                            tensorRecorded,tensorHigh,tensorCombined);
+        const auto r=append(family+1,RepeatedPhase::Relinearized,tensor,t,false,1,2,3,PairLifecycle::ReadyForRS2,
+                            tensorRecorded,tensorHigh,tensorCombined);
+        input=ExactScale(tensor.GetNumerator(),tensor.GetDenominator()*m);
+        recorded=tensorRecorded/f.parameters->GetModReduceFactor(static_cast<std::uint32_t>(f.q.primes.size()-2));
+        high=tensorHigh/ml; combined=tensorCombined/ml;
+        previous=append(family+1,RepeatedPhase::Rescaled,input,r,family+1==GetFamilyCount(),2,2,2,
+                        PairLifecycle::RefreshRequired,recorded,high,combined);
+    }
+}
+RepeatedMult2Plan::~RepeatedMult2Plan()=default;
+std::size_t RepeatedMult2Plan::GetFamilyCount() const noexcept { return data_->families.size(); }
+Context RepeatedMult2Plan::GetFamilyContext(std::size_t family) const {
+    Require(family<GetFamilyCount(),"family index out of range"); return data_->families[family].context;
+}
+const std::string& RepeatedMult2Plan::GetFamilyKeyTag(std::size_t family) const {
+    Require(family<GetFamilyCount(),"family index out of range"); return data_->families[family].tag;
+}
+const NativeInteger& RepeatedMult2Plan::GetDivisor() const noexcept { return data_->families[0].q.primes.back().modulus; }
+int RepeatedMult2Plan::BaseMetadataExponent() const noexcept {
+    return data_->profile?data_->profile->baseMetadataBits:50;
+}
+double RepeatedMult2Plan::ExpectedRecordedScalingFactor() const noexcept {
+    return std::ldexp(1.0,2*BaseMetadataExponent());
+}
+void RepeatedMult2Plan::ValidateFamily(std::size_t family) const {
+    Require(family<GetFamilyCount(),"family index out of range");
+    ValidateProfile(data_->families[family]); ValidateRow(data_->families[family],true);
+}
+void RepeatedMult2Plan::ValidatePaperProfile() const {
+    Require(data_->profile && GetFamilyCount()==8,"I/O requires the issued paper profile, not a diagnostic plan");
+    for(std::size_t family=0;family<GetFamilyCount();++family) ValidateFamily(family);
+}
+std::size_t RepeatedMult2Plan::RequireReceipt(const Receipt& receipt) const {
+    Require(receipt && std::find(data_->receipts.begin(),data_->receipts.end(),receipt)!=data_->receipts.end(),
+            "receipt was not issued by this plan");
+    ValidateFamily(receipt->GetFamilyIndex()); return receipt->GetFamilyIndex();
+}
+Receipt RepeatedMult2Plan::ReceiptFor(std::size_t family,RepeatedPhase phase) const {
+    for(const auto& receipt:data_->receipts)
+        if(receipt->GetFamilyIndex()==family && receipt->GetPhase()==phase) return receipt;
+    Invalid("phase is unavailable in this family");
+}
+
+// ---------------- CLIENT SETUP BOUNDARY ----------------
+// Every private-key operation below is client setup only. The shared installer
+// is called only by client setup factories. Plan Data never stores a secret.
+namespace {
+void InstallFamilyKeys(std::vector<Family>& families,const lbcrypto::KeyPair<DCRTPoly>& keys) {
+    const std::string rootTag=keys.secretKey->GetKeyTag();
+    for(std::size_t family=0;family<families.size();++family) {
+        auto& f=families[family];
+        const std::string tag=family==0?rootTag:rootTag+"-mult2-family-"+std::to_string(family);
+        Require(lbcrypto::CryptoContextImpl<DCRTPoly>::GetAllEvalMultKeys().count(tag)==0,"refusing to overwrite existing key row");
+        f.tag=tag; // ownership acquired only after absence check; Data cleans up on any later failure
+        if(family==0) f.context->EvalMultKeyGen(keys.secretKey);
+        else {
+            // Match complete modulus/root/phi identities, not naked indices.
+            const auto& root=keys.secretKey->GetPrivateElement();
+            DCRTPoly projected(f.parameters->GetElementParams(),root.GetFormat(),true);
+            for(std::size_t j=0;j<f.q.primes.size();++j) {
+                const auto& wanted=f.q.primes[j]; std::size_t matches=0,index=0;
+                for(std::size_t k=0;k<root.GetNumOfElements();++k) {
+                    const auto& tower=root.GetElementAtIndex(k);
+                    if(tower.GetModulus()==wanted.modulus && tower.GetParams()->GetRootOfUnity()==wanted.root &&
+                       tower.GetParams()->GetCyclotomicOrder()==wanted.cyclotomicOrder) { ++matches; index=k; }
+                }
+                Require(matches==1,"root secret projection lacks a unique prime/root match");
+                projected.SetElementAtIndex(j,root.GetElementAtIndex(index));
+            }
+            auto localSecret=std::make_shared<lbcrypto::PrivateKeyImpl<DCRTPoly>>(f.context);
+            localSecret->SetKeyTag(tag); localSecret->SetPrivateElement(std::move(projected));
+            f.context->EvalMultKeyGen(localSecret);
+        } // localSecret destroyed here; not copied into any public family object
+        SealRow(f);
+    }
+}
+void CheckSignedH128(const DCRTPoly& secret,const Basis& basis) {
+    ValidatePolynomial(secret,basis);
+    std::vector<int> signs(basis.cyclotomicOrder/2);
+    std::size_t weight=0;
+    for(std::size_t tower=0;tower<basis.primes.size();++tower) {
+        auto coefficients=secret.GetElementAtIndex(tower);
+        coefficients.SetFormat(Format::COEFFICIENT);
+        const auto minusOne=basis.primes[tower].modulus-NativeInteger(1);
+        for(std::size_t i=0;i<signs.size();++i) {
+            const auto value=coefficients[i];
+            Require(value==NativeInteger(0) || value==NativeInteger(1) || value==minusOne,
+                    "root secret is not signed ternary");
+            const int sign=value==NativeInteger(0)?0:(value==NativeInteger(1)?1:-1);
+            if(tower==0) { signs[i]=sign; if(sign) ++weight; }
+            else Require(sign==signs[i],"root secret has inconsistent signed coefficients across Q");
+        }
+    }
+    Require(weight==128,"root secret does not have actual Hamming weight 128");
+}
+} // namespace
+RepeatedMult2ClientSetup CreateRepeatedMult2DiagnosticSetup() {
+    lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> seedParameters;
+    seedParameters.SetRingDim(64); seedParameters.SetBatchSize(16); seedParameters.SetMultiplicativeDepth(9);
+    seedParameters.SetScalingModSize(50); seedParameters.SetFirstModSize(55);
+    seedParameters.SetScalingTechnique(lbcrypto::FIXEDMANUAL); seedParameters.SetKeySwitchTechnique(lbcrypto::HYBRID);
+    seedParameters.SetNumLargeDigits(10); seedParameters.SetDigitSize(0); seedParameters.SetMaxRelinSkDeg(2);
+    seedParameters.SetSecretKeyDist(lbcrypto::UNIFORM_TERNARY); seedParameters.SetSecurityLevel(lbcrypto::HEStd_NotSet);
+    seedParameters.SetStandardDeviation(3.19F); seedParameters.SetCKKSDataType(lbcrypto::COMPLEX);
+    seedParameters.SetPREMode(lbcrypto::NOT_SET);
+    // CKKS disables four CCParams setters at the pinned OpenFHE version. Their
+    // STANDARD/HPS/FIXED_NOISE_MULTIPARTY/1 defaults are checked by ValidateProfile.
+    seedParameters.SetExecutionMode(lbcrypto::EXEC_EVALUATION); seedParameters.SetDecryptionNoiseMode(lbcrypto::FIXED_NOISE_DECRYPT);
+    seedParameters.SetStatisticalSecurity(30); seedParameters.SetNumAdversarialQueries(1);
+    seedParameters.SetNoiseEstimate(0); seedParameters.SetInteractiveBootCompressionLevel(lbcrypto::SLACK);
+    seedParameters.SetCompositeDegree(1); seedParameters.SetRegisterWordSize(NATIVEINT);
+    const auto seed=lbcrypto::GenCryptoContext(seedParameters);
+    // The seed supplies prime generation only; enabling here makes equivalent
+    // family-0 factory interning harmless, without changing any CRT tables.
+    seed->Enable(lbcrypto::PKE); seed->Enable(lbcrypto::KEYSWITCH); seed->Enable(lbcrypto::LEVELEDSHE);
+    const auto seedParams=std::dynamic_pointer_cast<Parameters>(seed->GetCryptoParameters());
+    Require(seedParams && seedParams->GetElementParams()->GetParams().size()==10,"seed generator returned wrong basis");
+    std::vector<NativeInteger> q,roots;
+    for(const auto& p:seedParams->GetElementParams()->GetParams()) { q.push_back(p->GetModulus()); roots.push_back(p->GetRootOfUnity()); }
+    auto data=std::make_unique<RepeatedMult2Plan::Data>(); data->families.reserve(2);
+    data->families.push_back(MakeFamily(q,roots));
+    q.erase(q.end()-2); roots.erase(roots.end()-2); // actual m1; exact final Div identity is retained
+    data->families.push_back(MakeFamily(q,roots));
+    const auto& a=data->families[0]; const auto& b=data->families[1];
+    Require(a.context!=b.context && a.parameters!=b.parameters && a.scheme!=b.scheme &&
+            a.qIdentity!=b.qIdentity && a.pIdentity!=b.pIdentity && a.qpIdentity!=b.qpIdentity,
+            "different ordered basis families alias factory objects");
+    Require(a.q.primes.back()==b.q.primes.back(),"Div identity changed between families");
+    auto keys=data->families[0].context->KeyGen();
+    Require(keys.good() && keys.publicKey->GetPublicElements().size()==2,"root KeyGen failed");
+    for(const auto& p:keys.publicKey->GetPublicElements()) ValidatePolynomial(p,data->families[0].q);
+    ValidatePolynomial(keys.secretKey->GetPrivateElement(),data->families[0].q);
+    Require(keys.publicKey->GetCryptoContext()==a.context && keys.secretKey->GetCryptoContext()==a.context &&
+            keys.publicKey->GetKeyTag()==keys.secretKey->GetKeyTag() && !keys.secretKey->GetKeyTag().empty(),
+            "root key context/tag mismatch");
+    InstallFamilyKeys(data->families,keys);
+    auto plan=std::shared_ptr<const RepeatedMult2Plan>(new RepeatedMult2Plan(std::move(data)));
+    return {std::move(plan),std::move(keys.publicKey),std::move(keys.secretKey)};
+}
+RepeatedMult2ClientSetup RepeatedMult2Plan::Data::CreatePaperGeometrySetup(const PaperGeometryProfile& profile) {
+    auto data=std::make_unique<Data>(); data->profile=&profile;
+    data->families.reserve(8);
+    std::vector<NativeInteger> moduli,roots;
+    for(const auto& prime:profile.q) { moduli.emplace_back(prime.modulus); roots.emplace_back(prime.root); }
+    for(std::size_t family=0;family<8;++family) {
+        data->families.push_back(MakeFamily(moduli,roots,&profile));
+        moduli.erase(moduli.end()-2); roots.erase(roots.end()-2); // Mult7..Mult0, never Div
+    }
+    // One sampler call in B0. No KeyGen, retries or fresh family secrets.
+    auto keys=CreateFixedQH128ClientKeyPair(data->families[0].context);
+    const auto& root=data->families[0];
+    Require(keys.good() && keys.publicKey->GetPublicElements().size()==2 &&
+            keys.publicKey->GetCryptoContext()==root.context && keys.secretKey->GetCryptoContext()==root.context &&
+            !keys.secretKey->GetKeyTag().empty() && keys.publicKey->GetKeyTag()==keys.secretKey->GetKeyTag(),
+            "paper root key identity mismatch");
+    for(const auto& polynomial:keys.publicKey->GetPublicElements()) ValidatePolynomial(polynomial,root.q);
+    CheckSignedH128(keys.secretKey->GetPrivateElement(),root.q);
+    InstallFamilyKeys(data->families,keys);
+    auto plan=std::shared_ptr<const RepeatedMult2Plan>(new RepeatedMult2Plan(std::move(data)));
+    return {std::move(plan),std::move(keys.publicKey),std::move(keys.secretKey)};
+}
+RepeatedMult2ClientSetup CreatePaperRepeatedMult2Setup() {
+    return RepeatedMult2Plan::Data::CreatePaperGeometrySetup(kPaperProfile);
+}
+RepeatedMult2ClientSetup CreateExperimentalPrecision116Setup() {
+    return RepeatedMult2Plan::Data::CreatePaperGeometrySetup(kExperimentalPrecision116Profile);
+}
+// ---------------- END CLIENT SETUP BOUNDARY ----------------
+
+DoubleCKKS::DoubleCKKS(std::shared_ptr<const RepeatedMult2Plan> plan) : DoubleCKKS(std::move(plan),0) {}
+DoubleCKKS::DoubleCKKS(std::shared_ptr<const RepeatedMult2Plan> plan,std::size_t family)
+    : DoubleCKKS(plan?plan->GetFamilyContext(family):Context{}) {
+    Require(static_cast<bool>(plan),"null repeated plan"); plan_=std::move(plan); familyIndex_=family;
+    plan_->ValidateFamily(familyIndex_);
+}
+void DoubleCKKS::AttachReceipt(CiphertextPair& pair,const Receipt& receipt) const { pair.receipt_=receipt; }
+void DoubleCKKS::AttachReceipt(TensorCiphertextPair& pair,const Receipt& receipt) const { pair.receipt_=receipt; }
+void DoubleCKKS::ValidatePlannedPair(const CiphertextPair& pair) const {
+    const auto family=plan_->RequireReceipt(pair.receipt_); const auto& r=*pair.receipt_;
+    Require(family==familyIndex_ && r.phase_!=RepeatedPhase::Tensor && r.arity_==2,"pair receipt family/phase mismatch");
+    const auto& expected=parameters_->GetElementParams()->GetParams();
+    Require(pair.contextIdentity_==context_.get() && pair.divisor_==divisor_ &&
+            pair.keyTag_==plan_->GetFamilyKeyTag(familyIndex_) && pair.level_==r.level_ && pair.componentCount_==r.arity_ &&
+            pair.noiseScaleDegree_==r.noise_ && pair.lifecycle_==r.lifecycle_ && pair.format_==Format::EVALUATION &&
+            pair.slots_==parameters_->GetBatchSize() && pair.recordedScalingFactor_==r.recorded_,"pair receipt state mismatch");
+    Require(pair.orderedModuli_.size()==expected.size()-r.level_,"pair receipt basis length mismatch");
+    for(std::size_t j=0;j<pair.orderedModuli_.size();++j)
+        Require(pair.orderedModuli_[j]==expected[j]->GetModulus(),"pair receipt basis order mismatch");
+    Require(pair.paperScale_.divisor==divisor_ && pair.paperScale_.inputRecordedScalingFactor==r.recorded_ &&
+            pair.paperScale_.approximateLogicalScalingFactor==r.high_ &&
+            pair.paperScale_.approximateRecombinedLogicalScalingFactor==r.recombined_,"pair compatibility scale disagrees with receipt");
+    ValidateCiphertext(pair.high_,pair.orderedModuli_,r.level_,r.noise_,r.recorded_,pair.keyTag_,parameters_->GetBatchSize(),2,"planned pair","high");
+    ValidateCiphertext(pair.low_,pair.orderedModuli_,r.level_,r.noise_,r.recorded_,pair.keyTag_,parameters_->GetBatchSize(),2,"planned pair","low");
+}
+void DoubleCKKS::ValidatePlannedTensor(const TensorCiphertextPair& pair) const {
+    const auto family=plan_->RequireReceipt(pair.receipt_); const auto& r=*pair.receipt_;
+    Require(family==familyIndex_ && r.phase_==RepeatedPhase::Tensor && r.arity_==3,"tensor receipt family/phase mismatch");
+    Require(pair.contextIdentity_==context_.get() && pair.divisor_==divisor_ && pair.orderedModuli_==firstPairModuli_ &&
+            pair.keyTag_==plan_->GetFamilyKeyTag(familyIndex_) && pair.level_==1 && pair.componentCount_==3 &&
+            pair.noiseScaleDegree_==r.noise_ && pair.format_==Format::EVALUATION && pair.slots_==parameters_->GetBatchSize() &&
+            pair.recordedScalingFactor_==r.recorded_ && pair.tensorScale_.approximateHighLogicalScalingFactor==r.high_ &&
+            pair.tensorScale_.approximateRecombinedLogicalScalingFactor==r.recombined_,"tensor receipt state/scale mismatch");
+    ValidateCiphertext(pair.high_,pair.orderedModuli_,1,r.noise_,r.recorded_,pair.keyTag_,parameters_->GetBatchSize(),3,"planned tensor","high");
+    ValidateCiphertext(pair.low_,pair.orderedModuli_,1,r.noise_,r.recorded_,pair.keyTag_,parameters_->GetBatchSize(),3,"planned tensor","low");
+}
+CiphertextPair DoubleCKKS::Reenter(const CiphertextPair& pair) const {
+    ValidatePair(pair);
+    Require(pair.receipt_->phase_==RepeatedPhase::Rescaled && !pair.receipt_->terminal_,"re-entry requires nonterminal RS2 receipt");
+    const auto next=familyIndex_+1; DoubleCKKS target(plan_,next);
+    const auto receipt=plan_->ReceiptFor(next,RepeatedPhase::Reentry);
+    Require(receipt->parent_==pair.receipt_ && receipt->scale_.GetNumerator()==pair.receipt_->scale_.GetNumerator() &&
+            receipt->scale_.GetDenominator()==pair.receipt_->scale_.GetDenominator() &&
+            pair.orderedModuli_==target.firstPairModuli_,"re-entry parent/exact scale/basis mismatch");
+    auto wrap=[&](const ReadOnlyCiphertext& source) {
+        auto result=std::make_shared<lbcrypto::CiphertextImpl<DCRTPoly>>(target.context_,plan_->GetFamilyKeyTag(next),source->GetEncodingType());
+        result->SetElements(source->GetElements());
+        result->SetLevel(1); result->SetHopLevel(source->GetHopLevel());
+        result->SetNoiseScaleDeg(source->GetNoiseScaleDeg()); result->SetScalingFactor(source->GetScalingFactor());
+        result->SetScalingFactorInt(source->GetScalingFactorInt()); result->SetSlots(source->GetSlots());
+        const auto metadata=source->GetMetadataMap();
+        if(metadata) {
+            using Map=std::remove_reference_t<decltype(*metadata)>;
+            result->SetMetadataMap(std::make_shared<Map>(*metadata));
+        }
+        else result->SetMetadataMap(metadata);
+        return result;
+    };
+    // New wrappers only. No polynomial arithmetic, scale reset, DCP, key switch,
+    // encryption/decryption, client callback or refresh occurs at this seam.
+    CiphertextPair result(wrap(pair.high_),wrap(pair.low_),target.context_.get(),pair.divisor_,pair.orderedModuli_,1,
+                          pair.paperScale_,pair.recordedScalingFactor_,pair.noiseScaleDegree_,PairLifecycle::ReadyForRepeatedMult,
+                          plan_->GetFamilyKeyTag(next),pair.slots_,pair.format_,pair.componentCount_);
+    result.receipt_=receipt; target.ValidatePair(result); return result;
+}
+namespace {
+ReadOnlyCiphertext FreezeResult(const lbcrypto::Ciphertext<DCRTPoly>& ciphertext) {
+    Require(ciphertext && ciphertext->GetMetadataMap() && ciphertext->GetMetadataMap()->empty(),
+            "terminal result requires an empty metadata map");
+    // Clone allocates its own map and coefficient vectors; its mutable wrapper
+    // never escapes. The returned object itself is allocated const.
+    return std::make_shared<const lbcrypto::CiphertextImpl<DCRTPoly>>(*ciphertext->Clone());
+}
+} // namespace
+RepeatedMult2Result::RepeatedMult2Result(std::shared_ptr<const RepeatedMult2Plan> plan,
+    lbcrypto::Ciphertext<DCRTPoly> snapshot,Receipt receipt)
+    : plan_(std::move(plan)),snapshot_(FreezeResult(snapshot)),receipt_(std::move(receipt)) { Validate(); }
+void RepeatedMult2Result::Validate() const {
+    Require(plan_ && snapshot_ && receipt_,"incomplete terminal result");
+    const auto family=plan_->RequireReceipt(receipt_);
+    Require(family+1==plan_->GetFamilyCount() && receipt_->GetOperationIndex()==plan_->GetFamilyCount() &&
+            receipt_->GetPhase()==RepeatedPhase::Rescaled && receipt_->IsTerminal() &&
+            receipt_==plan_->ReceiptFor(family,RepeatedPhase::Rescaled),"result is not an issued terminal Rescaled state");
+    plan_->ValidateFamily(0);
+    const auto& root=plan_->data_->families[0];
+    const auto absoluteLevel=plan_->GetFamilyCount()+1;
+    auto basis=root.q;
+    Require(basis.primes.size()>absoluteLevel,"terminal basis exhausted");
+    basis.primes.resize(basis.primes.size()-absoluteLevel);
+    Require(snapshot_->GetCryptoContext()==root.context && snapshot_->GetCryptoParameters()==root.parameters &&
+            snapshot_->GetKeyTag()==root.tag && snapshot_->GetEncodingType()==lbcrypto::CKKS_PACKED_ENCODING &&
+            snapshot_->GetLevel()==absoluteLevel && snapshot_->GetNoiseScaleDeg()==2 &&
+            snapshot_->GetScalingFactor()==plan_->ExpectedRecordedScalingFactor() && snapshot_->GetScalingFactorInt()==NativeInteger(1) &&
+            snapshot_->GetSlots()==root.parameters->GetBatchSize() && snapshot_->GetElements().size()==2 &&
+            snapshot_->GetMetadataMap() && snapshot_->GetMetadataMap()->empty(),"terminal root wrapper state changed");
+    for(const auto& element:snapshot_->GetElements()) ValidatePolynomial(element,basis);
+}
+
+} // namespace openfhe_2023_1788
