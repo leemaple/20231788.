@@ -1,0 +1,86 @@
+{
+  "purpose": "Compile-only source correction after dual-host actual RED; scan before Git publication",
+  "source_base": "70ba4d74c7231f4a48e78381f2504e3c04dbcff2",
+  "branch": "codex/paper-scale-implementation-20260905",
+  "scanner_version": "8.30.1",
+  "scanner_argv": [
+    "/opt/homebrew/bin/gitleaks",
+    "stdin",
+    "--ignore-gitleaks-allow",
+    "--gitleaks-ignore-path",
+    "/dev/null",
+    "--max-decode-depth",
+    "5",
+    "--max-archive-depth",
+    "1",
+    "--redact",
+    "--no-banner",
+    "--no-color"
+  ],
+  "scanner_cwd": "/private/tmp",
+  "selection": "exact staged blobs; paths/NUL/decimal byte count/NUL/body/NUL; no archive created",
+  "manifest": [
+    {
+      "path": ".github/workflows/dcp-rcb.yml",
+      "bytes": 18406,
+      "sha256": "aac3f938f81f6d4ecd0ee8c13f01313f14c7557616459936724018bb07065d83"
+    },
+    {
+      "path": "coordination/fs-endpoint-diagnostic-draft-01/COMPILE_FIX_DECISION.md",
+      "bytes": 4348,
+      "sha256": "12e478b7cbba8522442ee7b4dece739c7cb47ac4d4e147b577ab54097b29cd6f"
+    },
+    {
+      "path": "coordination/fs-endpoint-diagnostic-draft-01/DUAL_HOST_COMPILE_RED.json",
+      "bytes": 16811,
+      "sha256": "ac87bae6f048ecf4cb2c96133bb1c56ecf56995fadc64c70fece742a58d69b00"
+    },
+    {
+      "path": "coordination/fs-endpoint-diagnostic-draft-01/FINAL_SELECTION_SCAN.json",
+      "bytes": 7523,
+      "sha256": "0b8fc4a87bb5b98e0970637731309d5dac0a7491529ea2ddc5a0e46e09834ca4"
+    },
+    {
+      "path": "coordination/fs-endpoint-diagnostic-draft-01/LINUX_BUILD_RED.json",
+      "bytes": 5530,
+      "sha256": "318a84527f28b6e21a48a5e3d5ef0dc98574ffb709f7aeaaff66a76a9bedbe14"
+    },
+    {
+      "path": "coordination/fs-endpoint-diagnostic-draft-01/LINUX_JOB_LOG.lossless.json",
+      "bytes": 460428,
+      "sha256": "67f5d42a056fed6370d91f349f4113914cf431184f3bc1f34c739f98a40a0aa1"
+    },
+    {
+      "path": "coordination/fs-endpoint-diagnostic-draft-01/NEXT_CHECKPOINT.md",
+      "bytes": 3526,
+      "sha256": "80d0706c95f565474c64e568466a43e97c138de1b5449c622543a469e6c140a3"
+    },
+    {
+      "path": "coordination/fs-endpoint-diagnostic-draft-01/PUSH_AND_CI_CHECKPOINT.json",
+      "bytes": 13425,
+      "sha256": "d062fdaea1a5f9f2e59f6e68b080c0dffaccd617023a2029cd8a4828136239fc"
+    },
+    {
+      "path": "coordination/fs-endpoint-diagnostic-draft-01/WINDOWS_BUILD_RED.json",
+      "bytes": 6232,
+      "sha256": "1241e1cc00acc32f4d7922975abd03e65546ab05e95bd548b513e40a21c6ce05"
+    },
+    {
+      "path": "coordination/fs-endpoint-diagnostic-draft-01/WINDOWS_JOB_LOG.lossless.json",
+      "bytes": 483268,
+      "sha256": "e1f77ab02cf68db8b34d04ff8fcf20115fe92a82939fccc8711170a8d119d3fe"
+    },
+    {
+      "path": "tests/paper_endpoint_transform_negative_contract.h",
+      "bytes": 4125,
+      "sha256": "038b48cca0f59e912f669b909dede52eacd01b95da5ca2235a21f863179fa2fa"
+    }
+  ],
+  "selected_bytes": 1023622,
+  "framed_bytes": 1024407,
+  "framed_sha256": "9d34d850d6b6e48f82fd66892faad5774c3160fa3f77e80593659972cde106fa",
+  "manifest_sha256": "e74a2d7bc75eff6f167da581931fa354ef43bd812f1a861d8d6e9818bf66f54a",
+  "stdout": "",
+  "stderr": "10:50AM INF scanned ~1024407 bytes (1.02 MB) in 709ms\n10:50AM INF no leaks found\n",
+  "exit_code": 0
+}

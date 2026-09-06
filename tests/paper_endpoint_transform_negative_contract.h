@@ -54,17 +54,17 @@ inline void Run() {
                     "observer rejects short polynomial");
     RequireRejected([&] { Observe(polynomial(paper_full_test::kN + 1, Int(17)), unit); },
                     "observer rejects long polynomial");
-    for (const Int modulus : {Int(0), Int(-17), Int(16)}) {
+    for (const Int& modulus : {Int(0), Int(-17), Int(16)}) {
         RequireRejected([&] { Observe(polynomial(paper_full_test::kN, modulus), unit); },
                         "observer rejects nonpositive/even modulus");
     }
-    for (const Int coefficient : {Int(9), Int(-9)}) {
+    for (const Int& coefficient : {Int(9), Int(-9)}) {
         auto outside = polynomial(paper_full_test::kN, Int(17));
         outside.coefficients[7] = coefficient;
         RequireRejected([&] { Observe(outside, unit); },
                         "observer rejects noncentered coefficient");
     }
-    for (const Scale scale : {Scale{Int(0), Int(1)}, Scale{Int(1), Int(0)},
+    for (const Scale& scale : {Scale{Int(0), Int(1)}, Scale{Int(1), Int(0)},
                               Scale{Int(1), Int(-1)}, Scale{Int(2), Int(2)}}) {
         RequireRejected([&] { Observe(polynomial(paper_full_test::kN, Int(17)), scale); },
                         "observer rejects invalid scale");
