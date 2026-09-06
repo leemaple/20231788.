@@ -17,6 +17,7 @@ on:
       - codex/three-track-integration-20260905
       - codex/paper-scale-implementation-20260905
       - codex/endpoint-writer-selftest-20260906
+      - codex/endpoint-live-capture-20260906
       - cleanroom/reimplement-mult2-20260831
   workflow_dispatch:
 
@@ -35,6 +36,12 @@ jobs:
     steps:
       - name: Check out clean-room source
         uses: actions/checkout@v4
+
+      - name: Set up endpoint Python 3.12
+        id: endpoint-python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
 
       - name: Check out pristine OpenFHE 1.5.0
         uses: actions/checkout@v4
@@ -57,7 +64,13 @@ jobs:
           sudo apt-get install --yes --no-install-recommends libboost-dev
 
       - name: Report toolchain versions
+        env:
+          ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
         run: |
+          set -euo pipefail
+          python_shell="$(command -v python)"
+          test "$python_shell" = "$ENDPOINT_PYTHON_NATIVE"
+          "$python_shell" -c 'import json, os, sys; sys.exit("native Python 3.12 required") if sys.version_info[:2] != (3, 12) or os.name != "posix" else None; print(json.dumps({"executable": sys.executable, "python": sys.version, "platform": sys.platform}, sort_keys=True))'
           cmake --version
           c++ --version
 
@@ -88,16 +101,17 @@ jobs:
           cmake --build .ci/openfhe-build --parallel 2
           cmake --install .ci/openfhe-build
 
+      - name: Record clean-room run provenance
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          printf 'PROJECT_SOURCE_COMMIT=%s GITHUB_RUN_ID=%s GITHUB_RUN_ATTEMPT=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+
       - name: Configure clean-room project
         run: >-
           cmake -S . -B build
           -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
-
-      - name: Record clean-room run provenance
-        run: |
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          printf 'PROJECT_SOURCE_COMMIT=%s GITHUB_RUN_ID=%s GITHUB_RUN_ATTEMPT=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
 
       - name: Build warning-clean project
         run: cmake --build build --parallel 2
@@ -161,11 +175,57 @@ jobs:
           OMP_NUM_THREADS: 2
         run: ./build/paper_full_eight_square_contract_test --endpoint-observer-self-test
 
-      - name: Run paper full eight-square contract once
+      - name: Run and finalize paper endpoint once
+        id: endpoint-run
         if: github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906'
+        env:
+          ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
         run: |
-          ctest --test-dir build --show-only=json-v1
-          ctest --test-dir build --verbose --output-on-failure -R '^paper_full_eight_square_contract$'
+          set -euo pipefail
+          python_shell="$(command -v python)"
+          test "$python_shell" = "$ENDPOINT_PYTHON_NATIVE"
+          runner_temp_shell="$(cd "$RUNNER_TEMP" && pwd -P)"
+          scratch_shell="$runner_temp_shell/fl"
+          test ! -e "$scratch_shell" && test ! -L "$scratch_shell"
+          umask 077
+          mkdir -- "$scratch_shell"
+          scratch_shell="$(cd "$scratch_shell" && pwd -P)"
+          bash tests/run_paper_endpoint_once.sh \
+            --scope live-single-chain --host linux \
+            --build-dir-shell "$PWD/build" \
+            --scratch-shell "$scratch_shell" --scratch-native "$scratch_shell" \
+            --python "$python_shell" --ctest "$(command -v ctest)"
+
+      - name: Select exact endpoint upload
+        id: endpoint-select
+        if: ${{ always() && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' }}
+        env:
+          ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
+        run: |
+          set -euo pipefail
+          python_shell="$(command -v python)"
+          test "$python_shell" = "$ENDPOINT_PYTHON_NATIVE"
+          scratch_shell="$(cd "$RUNNER_TEMP/fl" && pwd -P)"
+          manifest_native="$scratch_shell/upload-paths.txt"
+          "$python_shell" -B tests/paper_endpoint_finalizer.py select \
+            --source-commit "$GITHUB_SHA" --host linux \
+            --github-run-id "$GITHUB_RUN_ID" --github-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --published-parent "$scratch_shell/published" --manifest "$manifest_native"
+          {
+            echo 'paths<<FS_ENDPOINT_PATHS'
+            cat -- "$manifest_native"
+            echo 'FS_ENDPOINT_PATHS'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload exact endpoint evidence
+        if: ${{ always() && steps.endpoint-select.outcome == 'success' && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fs-residual-endpoint-linux-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.endpoint-select.outputs.paths }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
 
   windows-mingw64:
     runs-on: windows-2022
@@ -211,12 +271,19 @@ jobs:
             throw "OpenFHE checkout is dirty: $($openfheStatus -join '; ')"
           }
 
+      - name: Set up endpoint Python 3.12
+        id: endpoint-python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
       - name: Install official Windows toolchain
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
           cache: false
+          path-type: inherit
           install: >-
             git
             make
@@ -225,9 +292,18 @@ jobs:
             mingw-w64-x86_64-gcc
 
       - name: Report toolchain versions
+        env:
+          ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
+          set -euo pipefail
+          python_shell="$(command -v python)"
+          python_native="$(cygpath -am "$python_shell")"
+          expected_python_native="$(cygpath -am "$ENDPOINT_PYTHON_NATIVE")"
+          test "$python_native" = "$expected_python_native"
+          "$python_shell" -c 'import json, os, sys; sys.exit("native Windows Python 3.12 required") if sys.version_info[:2] != (3, 12) or os.name != "nt" else None; print(json.dumps({"executable": sys.executable, "python": sys.version, "platform": sys.platform}, sort_keys=True))'
+          printf 'python_shell=%s\npython_native=%s\n' "$python_shell" "$python_native"
           cmake --version
           g++ --version
 
@@ -267,6 +343,14 @@ jobs:
           cmake --build "$build" --parallel 2
           cmake --install "$build"
 
+      - name: Record clean-room run provenance
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          printf 'PROJECT_SOURCE_COMMIT=%s GITHUB_RUN_ID=%s GITHUB_RUN_ATTEMPT=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+
       - name: Configure clean-room project
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
@@ -276,13 +360,6 @@ jobs:
           cmake -S . -B "$build" \
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_PREFIX_PATH="$prefix"
-
-      - name: Record clean-room run provenance
-        shell: msys2 {0}
-        working-directory: C:/openfhe-2023-1788/cleanroom
-        run: |
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          printf 'PROJECT_SOURCE_COMMIT=%s GITHUB_RUN_ID=%s GITHUB_RUN_ATTEMPT=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
 
       - name: Build warning-clean project
         shell: msys2 {0}
@@ -425,13 +502,87 @@ jobs:
           export PATH="$prefix/bin:$prefix/lib:$PATH"
           "$build/paper_full_eight_square_contract_test.exe" --endpoint-observer-self-test
 
-      - name: Run paper full eight-square contract once
+      - name: Run and finalize paper endpoint once
+        id: endpoint-run
         if: github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906'
+        env:
+          ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
+          set -euo pipefail
           prefix="$(cygpath -u "$OPENFHE_PREFIX")"
           build="$(cygpath -u "$PROJECT_BUILD")"
           export PATH="$prefix/bin:$prefix/lib:$PATH"
-          ctest --test-dir "$build" --show-only=json-v1
-          ctest --test-dir "$build" --verbose --output-on-failure -R '^paper_full_eight_square_contract$'
+          python_shell="$(command -v python)"
+          test "$(cygpath -am "$python_shell")" = "$(cygpath -am "$ENDPOINT_PYTHON_NATIVE")"
+          runner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"
+          runner_temp_shell="$(cd "$runner_temp_shell" && pwd -P)"
+          scratch_shell="$runner_temp_shell/fl"
+          test ! -e "$scratch_shell" && test ! -L "$scratch_shell"
+          scratch_native="$(cygpath -am "$scratch_shell")"
+          "$python_shell" - "$scratch_native" "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" <<'PY'
+          import os
+          from pathlib import Path
+          import sys
+
+          root = Path(sys.argv[1])
+          stem = ("fs-residual-endpoint-01.v1-r1." + sys.argv[2] +
+                  ".windows." + sys.argv[3] + "." + sys.argv[4])
+          candidates = {
+              "writer": root / "canonical" / stem / ".staging" / ".candidate.tsv",
+              "status": root / "published" / stem / ".staging" /
+                        (stem + ".candidate.status.json"),
+          }
+          for name, path in candidates.items():
+              text = os.fspath(path)
+              if text.startswith("\\\\?\\") or len(text) > 247:
+                  raise SystemExit(f"{name} candidate exceeds conservative MAX_PATH: {len(text)}")
+              print(f"endpoint_{name}_candidate_chars={len(text)} endpoint_{name}_candidate={text}")
+          PY
+          umask 077
+          mkdir -- "$scratch_shell"
+          scratch_shell="$(cd "$scratch_shell" && pwd -P)"
+          scratch_native="$(cygpath -am "$scratch_shell")"
+          bash tests/run_paper_endpoint_once.sh \
+            --scope live-single-chain --host windows \
+            --build-dir-shell "$build" \
+            --scratch-shell "$scratch_shell" --scratch-native "$scratch_native" \
+            --python "$python_shell" --ctest "$(command -v ctest)"
+
+      - name: Select exact endpoint upload
+        id: endpoint-select
+        if: ${{ always() && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' }}
+        env:
+          ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
+        shell: msys2 {0}
+        working-directory: C:/openfhe-2023-1788/cleanroom
+        run: |
+          set -euo pipefail
+          python_shell="$(command -v python)"
+          test "$(cygpath -am "$python_shell")" = "$(cygpath -am "$ENDPOINT_PYTHON_NATIVE")"
+          runner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"
+          scratch_shell="$(cd "$runner_temp_shell/fl" && pwd -P)"
+          scratch_native="$(cygpath -am "$scratch_shell")"
+          manifest_native="$scratch_native/upload-paths.txt"
+          manifest_shell="$scratch_shell/upload-paths.txt"
+          github_output_shell="$(cygpath -u "$GITHUB_OUTPUT")"
+          "$python_shell" -B tests/paper_endpoint_finalizer.py select \
+            --source-commit "$GITHUB_SHA" --host windows \
+            --github-run-id "$GITHUB_RUN_ID" --github-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --published-parent "$scratch_native/published" --manifest "$manifest_native"
+          {
+            echo 'paths<<FS_ENDPOINT_PATHS'
+            cat -- "$manifest_shell"
+            echo 'FS_ENDPOINT_PATHS'
+          } >> "$github_output_shell"
+
+      - name: Upload exact endpoint evidence
+        if: ${{ always() && steps.endpoint-select.outcome == 'success' && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fs-residual-endpoint-windows-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.endpoint-select.outputs.paths }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3

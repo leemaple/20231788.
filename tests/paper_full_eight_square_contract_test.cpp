@@ -7,7 +7,10 @@
 #include "paper_endpoint_transform_negative_contract.h"
 #include "paper_endpoint_evidence_writer_test.h"
 #include "paper_endpoint_interop_test.h"
+#include <boost/version.hpp>
 #include <cmath>
+#include <cstdlib>
+#include <filesystem>
 #include <set>
 #include <type_traits>
 
@@ -367,6 +370,12 @@ PaperEvidence RunPaper(const RepeatedMult2ClientSetup& foreign,std::size_t& fail
             "capture preserves actual endpoint scales for post-cleanup evidence");
     return {std::move(paperTags),std::move(endpoint)};
 }
+std::string RequiredEndpointEnvironment(const char* name) {
+    const char* value=std::getenv(name);
+    if (value==nullptr || *value=='\0')
+        paper_endpoint_contract::FailEndpoint("IDENTITY",std::string("missing required environment: ")+name);
+    return value;
+}
 void Run() {
     std::cout << "BEGIN test=paper_full_eight_square_contract source=" << PAPER_SOURCE_COMMIT
               << " openfhe_pin=" << kPin << " native=64 backend=4 N=32768 M=65536 slots=16384 gap=1"
@@ -405,6 +414,21 @@ void Run() {
     }
     std::cout << "OBS lifecycle=paper_owner_cleanup owned_absent=8 unrelated_unchanged=2 result=PASS\n";
     std::cout << "OBS numeric_gate_failures=" << numericFailures << '\n' << std::flush;
+    // Publish only after actual owner cleanup, before the unchanged E80 failure.
+    const paper_endpoint_contract::EndpointEvidenceIdentity endpointIdentity{
+        "live-single-chain", PAPER_SOURCE_COMMIT,
+        RequiredEndpointEnvironment("PAPER_ENDPOINT_HOST"),
+        RequiredEndpointEnvironment("PAPER_ENDPOINT_RUN_ID"),
+        RequiredEndpointEnvironment("PAPER_ENDPOINT_RUN_ATTEMPT"), BOOST_VERSION};
+    const paper_endpoint_contract::EndpointPublicationBoundary endpointBoundary{numericFailures,true};
+    paper_endpoint_contract::WriteEndpointEvidence(
+        paper.endpoint,endpointIdentity,endpointBoundary,
+        std::filesystem::path(RequiredEndpointEnvironment("PAPER_ENDPOINT_CANONICAL_PARENT")));
+    paper_endpoint_contract::EmitEndpointEvidencePrimary(
+        std::cout,paper.endpoint,endpointIdentity,endpointBoundary);
+    std::cout << std::flush;
+    if (!std::cout)
+        paper_endpoint_contract::FailEndpoint("IO_ERROR","failed flushing live endpoint evidence");
     Require(numericFailures==0,"accumulated numeric acceptance failures: "+std::to_string(numericFailures));
     std::cout << "COMPLETE test=paper_full_eight_square_contract result=PASS source=" << PAPER_SOURCE_COMMIT
               << " openfhe_pin=" << kPin << " chain_count=1 squares=8 full_slots=16384 anchors=10"

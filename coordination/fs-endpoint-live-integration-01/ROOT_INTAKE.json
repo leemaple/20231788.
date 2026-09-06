@@ -1,0 +1,40 @@
+{
+  "base_commit": "aeaedc91c887b93912563d5102b209495acbb807",
+  "accepted_prerequisite": {
+    "source": "c2c924bb68e9f34ada759140410bc85970c0f76f",
+    "run": 34037828392,
+    "evidence": "coordination/fs-endpoint-cpp-interop-hosted-01/GREEN_ACCEPTANCE.md"
+  },
+  "workflow_intake": {
+    "author": "/root/endpoint_interop_workflow",
+    "requested_selector": "gpt-5.6-sol/high",
+    "backend": "requested-unverified",
+    "author_commit": "fc91747f8a27a952f052197491ea994a8730e2af",
+    "author_base": "e1f5c70c888f2d651d9dce01aec53924e24ce08f",
+    "workflow_sha256": "8d6f0a2d13b891b46e1feaaaa68831549f8639dd2ed1ee84de6c5b55c9c97760",
+    "root_review": "Root read entire author diff and draft note. No actionable finding. Source provenance precedes configure; setup Python uses native exact identity; fresh short native Windows path preflight; one actual wrapper; selector only exact upload after nonzero; preserved existing earlier steps and selftest guards. Source-only, not runtime."
+  },
+  "cpp_intake": {
+    "author": "Codex root",
+    "delta": "24 added lines",
+    "sha256": "9574063050f6c007ddc3860c6e7ab72126509d8cfb5613e590fbc905be4bab47",
+    "independent_reviewer": "/root/endpoint_cpp_interop",
+    "requested_selector": "gpt-5.6-sol/high",
+    "backend": "requested-unverified",
+    "findings": [],
+    "review_summary": "Reviewed current root delta against both contracts. Required nonempty environment with typed IDENTITY/no defaults; pure endpoint data survives actual owner lifetime; verify 8 absent/2 unchanged before true boundary; compiled source/Boost; Write closes/reopens before Emit; typed IO_ERROR on flush; no new catch; unchanged original numeric/input/crypto/CTest/argv paths. Reviewer did not execute/build/edit."
+  },
+  "provider_diversity": "Independent Codex contexts, not separate providers. Final complete-context Pro semantic/paper review remains pending. Fable5.1 previous quota failure has no observed recovery; not reprobed.",
+  "static_verification": {
+    "cmd": "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B - <<'PY'\nimport ast,hashlib,json,pathlib,re,subprocess\nroot=pathlib.Path('/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905')\ndef old(p):return subprocess.run(['git','show','aeaedc91c887b93912563d5102b209495acbb807:'+p],cwd=root,check=True,stdout=subprocess.PIPE).stdout\np='tests/paper_full_eight_square_contract_test.cpp';before=old(p);after=(root/p).read_bytes();restored=after\nfor inc in [b'#include <boost/version.hpp>\\n',b'#include <cstdlib>\\n',b'#include <filesystem>\\n']:\n    assert restored.count(inc)==1;restored=restored.replace(inc,b'')\na=restored.index(b'std::string RequiredEndpointEnvironment(');b=restored.index(b'void Run() {',a)\nhelper=restored[a:b];restored=restored[:a]+restored[b:]\na=restored.index(b'    // Publish only after actual owner cleanup,');b=restored.index(b'    Require(numericFailures==0,',a)\ncall=restored[a:b];restored=restored[:a]+restored[b:]\nassert restored==before\nassert call.count(b'WriteEndpointEvidence(')==call.count(b'EmitEndpointEvidencePrimary(')==1\nassert b'\"live-single-chain\", PAPER_SOURCE_COMMIT' in call and b'BOOST_VERSION' in call and b'{numericFailures,true}' in call\nassert b'std::getenv(name)' in helper and b'FailEndpoint(\"IDENTITY\"' in helper and b'FailEndpoint(\"IO_ERROR\"' in call\nassert all(old(p)==(root/p).read_bytes() for p in ['CMakeLists.txt','tests/run_paper_endpoint_once.sh','tests/paper_endpoint_evidence_writer.cpp','tests/paper_endpoint_diagnostics.cpp','tests/paper_endpoint_finalizer.py','tests/hosted_paper_endpoint_cpp_interop.py'])\nruby=\"require 'yaml';require 'json';print JSON.generate(YAML.load(STDIN.read))\"\ndef parse_yaml(data):return json.loads(subprocess.run(['/usr/bin/ruby','-e',ruby],input=data,check=True,stdout=subprocess.PIPE).stdout)\nbefore=parse_yaml(old('.github/workflows/dcp-rcb.yml'));after=parse_yaml((root/'.github/workflows/dcp-rcb.yml').read_bytes())\nkey='on' if 'on' in before else 'true'\nnewref='codex/endpoint-live-capture-20260906'\nassert after[key]['push']['branches'].count(newref)==1\nassert [v for v in after[key]['push']['branches'] if v!=newref]==before[key]['push']['branches']\nassert after[key].keys()==before[key].keys()\nfor k in ['name','permissions','env']:assert before[k]==after[k]\nassert before['jobs'].keys()==after['jobs'].keys()\nshells=0;embedded=0;preserved=0\nfor host,job in after['jobs'].items():\n    previous=before['jobs'][host]\n    assert {k:v for k,v in job.items() if k!='steps'}=={k:v for k,v in previous.items() if k!='steps'}\n    steps={s['name']:s for s in job['steps']};names=list(steps)\n    for s in previous['steps']:\n        n=s['name']\n        if n in ['Report toolchain versions','Record clean-room run provenance','Run paper full eight-square contract once','Install official Windows toolchain']:continue\n        assert steps[n]==s,n;preserved+=1\n    assert names.index('Record clean-room run provenance')<names.index('Configure clean-room project')\n    run=steps['Run and finalize paper endpoint once'];sel=steps['Select exact endpoint upload'];up=steps['Upload exact endpoint evidence']\n    assert run['run'].count('bash tests/run_paper_endpoint_once.sh')==1 and '--scope live-single-chain' in run['run'] and 'ctest --' not in run['run']\n    assert 'always()' in sel['if'] and \"steps.endpoint-select.outcome == 'success'\" in up['if']\n    assert all('endpoint-writer-selftest-20260906' in s['if'] for s in [run,sel,up])\n    assert up['with']['path']=='${{ steps.endpoint-select.outputs.paths }}' and up['with']['compression-level']==0 and up['with']['if-no-files-found']=='error'\n    assert not any(s.get('continue-on-error') for s in job['steps'])\n    for s in job['steps']:\n        if 'run' not in s:continue\n        shell=s.get('shell','bash' if host=='linux-gcc' else 'pwsh')\n        if shell.startswith(('bash','msys2')):\n            subprocess.run(['/bin/bash','-n'],input=s['run'].encode(),check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE);shells+=1\n        for py in re.findall(r\"<<'PY'\\n(.*?)\\nPY(?:\\n|$)\",s['run'],re.S):ast.parse(py);embedded+=1\nprint(json.dumps({'result':'PASS','cpp_existing_body_bytewise_preserved':True,'frozen_dependency_files':6,'frozen_workflow_steps':preserved,'bash_syntax_checks':shells,'embedded_python_syntax_checks':embedded,'exact_new_trigger':newref,'live_cpp_sha256':hashlib.sha256((root/p).read_bytes()).hexdigest(),'workflow_sha256':hashlib.sha256((root/'.github/workflows/dcp-rcb.yml').read_bytes()).hexdigest(),'runtime':'PENDING; no compile/CTest/FHE/full replay executed locally'},indent=2))\nPY",
+    "result": {
+      "chunk_id": "c0a583",
+      "wall_time_seconds": 0.3066815,
+      "exit_code": 0,
+      "original_token_count": 129,
+      "output": "{\n  \"result\": \"PASS\",\n  \"cpp_existing_body_bytewise_preserved\": true,\n  \"frozen_dependency_files\": 6,\n  \"frozen_workflow_steps\": 47,\n  \"bash_syntax_checks\": 51,\n  \"embedded_python_syntax_checks\": 1,\n  \"exact_new_trigger\": \"codex/endpoint-live-capture-20260906\",\n  \"live_cpp_sha256\": \"9574063050f6c007ddc3860c6e7ab72126509d8cfb5613e590fbc905be4bab47\",\n  \"workflow_sha256\": \"8d6f0a2d13b891b46e1feaaaa68831549f8639dd2ed1ee84de6c5b55c9c97760\",\n  \"runtime\": \"PENDING; no compile/CTest/FHE/full replay executed locally\"\n}\n"
+    }
+  },
+  "historical_baseline": "HISTORICAL_PRIMARY_RED.json is a historical actual-log acceptance RED only, not a new or current-HEAD chain. New live compiled/runtime/publication acceptance remains pending.",
+  "activation_plan": "Single push exact new committed source to codex/endpoint-live-capture-20260906. No rerun. Expect unchanged original numerical failure to remain nonzero; require truthful diagnostic evidence separately."
+}
