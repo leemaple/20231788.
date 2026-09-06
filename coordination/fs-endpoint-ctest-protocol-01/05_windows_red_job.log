@@ -1,0 +1,722 @@
+windows-ctest-timeout-protocol	Set up job	﻿2026-09-06T07:08:00.4792954Z Current runner version: '2.337.0'
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4846919Z ##[group]Runner Image Provisioner
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4847714Z Hosted Compute Agent
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4848560Z Version: 20260828.587
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4849135Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4849829Z Build Date: 2026-08-28T16:44:25Z
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4850445Z Worker ID: {de7903b0-c54b-44ea-9a9a-053af899ef10}
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4851086Z Azure Region: westus
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4851597Z ##[endgroup]
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4852887Z ##[group]Operating System
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4853489Z Microsoft Windows Server 2022
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4854065Z 10.0.20348
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4854546Z Datacenter
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4855005Z ##[endgroup]
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4855483Z ##[group]Runner Image
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4856028Z Image: windows-2022
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4856542Z Version: 20260830.290.1
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4857522Z Included Software: https://github.com/actions/runner-images/blob/win22/20260830.290/images/windows/Windows2022-Readme.md
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4859589Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20260830.290
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4860447Z ##[endgroup]
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4861426Z ##[group]GITHUB_TOKEN Permissions
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4863264Z Contents: read
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4863871Z Metadata: read
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4864360Z ##[endgroup]
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4866273Z Secret source: Actions
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.4867274Z Prepare workflow directory
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.5285371Z Prepare all required actions
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.5352644Z Getting action download info
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:00.9277061Z Download action repository 'actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:01.0869985Z Download action repository 'msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884' (SHA:66cd2cce69caa17b53920067426061ca1de3a884)
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:01.3709471Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:01.5422634Z Download action repository 'actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+windows-ctest-timeout-protocol	Set up job	2026-09-06T07:08:02.1109705Z Complete job name: windows-ctest-timeout-protocol
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	﻿2026-09-06T07:08:02.2720165Z ##[group]Run $ErrorActionPreference = 'Stop'
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2721933Z ^[[36;1m$ErrorActionPreference = 'Stop'^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2723530Z ^[[36;1mif (Test-Path -LiteralPath $env:PROJECT_SOURCE) {^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2725271Z ^[[36;1m  throw "Refusing preexisting project checkout"^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2726708Z ^[[36;1m}^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2728157Z ^[[36;1mNew-Item -ItemType Directory -Path $env:PROJECT_SOURCE | Out-Null^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2729877Z ^[[36;1mgit init $env:PROJECT_SOURCE^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2731089Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw "git init failed" }^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2732575Z ^[[36;1mgit -C $env:PROJECT_SOURCE config core.autocrlf false^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2734039Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw "git config failed" }^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2735841Z ^[[36;1mgit -C $env:PROJECT_SOURCE remote add origin https://github.com/leemaple/20231788..git^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2737705Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw "git remote add failed" }^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2739366Z ^[[36;1mgit -C $env:PROJECT_SOURCE fetch --depth 1 origin $env:GITHUB_SHA^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2740944Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw "git fetch failed" }^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2742431Z ^[[36;1mgit -C $env:PROJECT_SOURCE checkout --detach FETCH_HEAD^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2743934Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw "git checkout failed" }^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2745403Z ^[[36;1m$actual = git -C $env:PROJECT_SOURCE rev-parse HEAD^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2746877Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw "git rev-parse failed" }^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2748227Z ^[[36;1mif ($actual -ne $env:GITHUB_SHA) {^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2751014Z ^[[36;1m  throw "Project checkout mismatch: $actual"^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2752140Z ^[[36;1m}^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2753143Z ^[[36;1m$dirty = @(git -C $env:PROJECT_SOURCE status --porcelain)^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.2754945Z ^[[36;1mif ($LASTEXITCODE -ne 0 -or $dirty.Count -ne 0) { throw "Source checkout is not clean" }^[[0m
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.4575540Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.4577181Z env:
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.4578009Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.4579078Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.4580308Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:02.4581631Z ##[endgroup]
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:03.2755015Z Initialized empty Git repository in C:/openfhe-endpoint-ctest-protocol/cleanroom/.git/
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:05.6378569Z From https://github.com/leemaple/20231788.
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:05.6379828Z  * branch            0e3b82bdf71a49f21b497f4ad27a69792e18159a -> FETCH_HEAD
+windows-ctest-timeout-protocol	Check out exact source outside the trailing-dot workspace	2026-09-06T07:08:07.6846791Z HEAD is now at 0e3b82b test: gate endpoint rejection and real CTest timeout transport
+windows-ctest-timeout-protocol	Set up exact endpoint Python	﻿2026-09-06T07:08:07.8976370Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8983174Z ##[group]Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8983638Z with:
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8983866Z   python-version: 3.12
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8984117Z   check-latest: false
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8986523Z   token: ***
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8986773Z   update-environment: true
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8987044Z   allow-prereleases: false
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8987298Z   freethreaded: false
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8987553Z env:
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8987820Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8988118Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8988488Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:07.8988897Z ##[endgroup]
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:08.0695162Z ##[group]Installed versions
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:08.0832607Z (node:3804) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:08.0834036Z (Use `node --trace-deprecation ...` to show where the warning was created)
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:08.0834855Z Successfully set up CPython (3.12.10)
+windows-ctest-timeout-protocol	Set up exact endpoint Python	2026-09-06T07:08:08.0835838Z ##[endgroup]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	﻿2026-09-06T07:08:08.1182405Z ##[group]Run msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1183156Z with:
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1183482Z   msystem: MINGW64
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1183805Z   update: true
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1184101Z   cache: false
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1184393Z   path-type: inherit
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1184879Z   install: mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1185601Z   release: true
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1186148Z   platform-check-severity: fatal
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1186585Z env:
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1186896Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1187292Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1187764Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1188420Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1189190Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1190343Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1191543Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1192485Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.1193170Z ##[endgroup]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.2558951Z ##[group]Downloading MSYS2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.9200562Z ##[endgroup]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.9201207Z ##[group]Extracting MSYS2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:08.9223639Z [command]C:\hostedtoolcache\windows\msys2-installer\0.0.20260611\x64\base.exe -y
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.2971157Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.2972081Z 7-Zip SFX 25.01 ZS v1.5.7 R4 (x64) : Copyright (c) 1999-2025 Igor Pavlov, 2016-2026 Tino Reichardt, 2022-2026 Sergey G. Brester : 2026-01-10
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.2974214Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.2974805Z Extracting archive: C:\hostedtoolcache\windows\msys2-installer\0.0.20260611\x64\base.exe
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.2975425Z --
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.2975785Z Path = C:\hostedtoolcache\windows\msys2-installer\0.0.20260611\x64\base.exe
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.2976230Z Type = 7z
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.2976344Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.4979366Z   0%
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.4979925Z     
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.7014875Z   1% 1272 - msys64\usr\lib\perl5\core_perl\CORE\INTERN.h
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.7015519Z                                                         
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.9047013Z   3% 2130 - msys64\usr\lib\terminfo\64\d460-w
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:09.9047543Z                                              
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:10.1077992Z   4% 3169 - msys64\usr\lib\terminfo\70\pcvt40
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:10.1078645Z                                              
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:10.3109571Z   4% 4220 - msys64\usr\lib\terminfo\78\xterm+app
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:10.3110221Z                                                 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:10.5018538Z   5% 5271 - msys64\usr\share\bash-completion\completions\_datree
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:10.5022165Z                                                                 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:10.7172286Z  12% 6076 - msys64\usr\share\locale\da\LC_MESSAGES\libalpm.mo
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:10.7173089Z                                                              
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:10.9210145Z  27% 6714 - msys64\usr\share\locale\sr\LC_MESSAGES\gawk.mo
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:10.9210589Z                                                           
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:11.1238864Z  33% 7577 - msys64\usr\share\man\man1\xsubpp.1perl.gz
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:11.1239577Z                                                      
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:11.3271358Z  33% 8559 - msys64\usr\share\man\man3\is_wintouched.3x.gz
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:11.3272006Z                                                          
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:11.5306047Z  35% 9580 - msys64\usr\share\misc\magic.mgc
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:11.5306730Z                                            
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:11.7338547Z  43% 10333 - msys64\usr\share\perl5\core_perl\Unicode\Collate\Locale\ln.pl
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:11.7339412Z                                                                           
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:11.9369048Z  46% 11232 - msys64\usr\share\terminfo\61\ansi+idl
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:11.9369720Z                                                   
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:12.1400776Z  47% 12300 - msys64\usr\share\terminfo\6c\linux-basic
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:12.1401418Z                                                      
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:12.3432179Z  47% 13364 - msys64\usr\share\terminfo\76\vt-61
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:12.3432906Z                                                
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:12.5486733Z  48% 14405 - msys64\usr\share\zoneinfo\Europe\Tiraspol
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:12.5487579Z                                                       
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:12.7495924Z  48% 15401 - msys64\usr\share\zoneinfo\right\Asia\Novosibirsk
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:12.7496662Z                                                              
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:12.9593248Z  50% 16165 - msys64\usr\bin\fsck.cramfs.exe
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:12.9593850Z                                            
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.1495529Z  74% 16358 - msys64\usr\bin\pacman.exe
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.1496150Z                                       
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.1496423Z Everything is Ok
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.1514311Z ##[endgroup]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.1514980Z ##[group]Disable Key Refresh...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.1532042Z ##[endgroup]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.1547305Z ##[group]Starting MSYS2 for the first time...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.2399091Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'uname' '-a'"
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.2732551Z ^[[1;32mMSYS2 is starting for the first time. Executing the initial setup.^[[1;0m
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.3636915Z Copying skeleton files.
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.3637563Z These files are for the users to personalise their msys2 experience.
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.3638043Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.3638303Z They will never be overwritten nor automatically updated.
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.3638735Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.4087758Z './.bashrc' -> '/home/runneradmin/.bashrc'
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.4246336Z './.bash_profile' -> '/home/runneradmin/.bash_profile'
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.4436830Z './.profile' -> '/home/runneradmin/.profile'
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.5047900Z 'C:\Windows\system32\drivers\etc\hosts' -> '/etc/hosts'
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.5503652Z 'C:\Windows\system32\drivers\etc\protocol' -> '/etc/protocols'
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.5957250Z 'C:\Windows\system32\drivers\etc\services' -> '/etc/services'
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.6724127Z 'C:\Windows\system32\drivers\etc\networks' -> '/etc/networks'
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.8481940Z gpg: /etc/pacman.d/gnupg/trustdb.gpg: trustdb created
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:13.8548887Z gpg: no ultimately trusted keys found
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:14.1198133Z gpg: starting migration from earlier GnuPG versions
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:14.1745922Z gpg: porting secret keys from '/etc/pacman.d/gnupg/secring.gpg' to gpg-agent
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:14.1748826Z gpg: migration succeeded
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:14.1940394Z ==> Generating pacman master key. This may take some time.
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:14.2114666Z gpg: Generating pacman keyring master key...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:16.6469613Z gpg: directory '/etc/pacman.d/gnupg/openpgp-revocs.d' created
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:16.6714933Z gpg: revocation certificate stored as '/etc/pacman.d/gnupg/openpgp-revocs.d/BC0AF7CF7533D1C074BC2ECEABE6E348DC3C5163.rev'
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:16.6715842Z gpg: Done
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:16.6874765Z ==> Updating trust database...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:16.7213809Z gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:16.7214654Z gpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:16.8366002Z ==> Appending keys from msys2.gpg...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:17.4670445Z ==> Locally signing trusted keys in keyring...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:17.9904179Z   -> Locally signed 5 keys.
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.0039403Z ==> Importing owner trust values...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.0210703Z gpg: setting ownertrust to 4
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.0211208Z gpg: setting ownertrust to 4
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.0211576Z gpg: setting ownertrust to 4
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.0211848Z gpg: setting ownertrust to 4
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.0213036Z gpg: setting ownertrust to 4
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.0448358Z ==> Disabling revoked keys in keyring...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.2687718Z   -> Disabled 4 keys.
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.2824407Z ==> Updating trust database...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.3171589Z gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.3198326Z gpg: depth: 0  valid:   1  signed:   5  trust: 0-, 0q, 0n, 0m, 0f, 1u
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.3227849Z gpg: depth: 1  valid:   5  signed:   6  trust: 0-, 0q, 0n, 5m, 0f, 0u
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.3241102Z gpg: depth: 2  valid:   3  signed:   2  trust: 3-, 0q, 0n, 0m, 0f, 0u
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.3594867Z pacman-key (pacman) 6.1.0
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.3595476Z Copyright (c) 2010-2024 Pacman Development Team <pacman-dev@lists.archlinux.org>.
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.3595975Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.3738531Z This is free software; see the source for copying conditions.
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.3739879Z There is NO WARRANTY, to the extent permitted by law.
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.5625809Z ^[[1;32mInitial setup complete. MSYS2 is now ready to use.^[[1;0m
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.5781358Z MINGW64_NT-10.0-20348 runnervmy4vqd 3.6.9-01d6c708.x86_64 2026-05-24 10:45 UTC x86_64 Msys
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.5819042Z ##[endgroup]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.5819954Z ##[group]Disable CheckSpace...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.6662329Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'sed' '-i' 's/^CheckSpace/#CheckSpace/g' '/etc/pacman.conf'"
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.8261032Z ##[endgroup]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.8261762Z ##[group]Updating packages...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:18.9075733Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'pacman' '--noconfirm' '-Syuu' '--overwrite' '*'"
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:19.6189596Z :: Synchronizing package databases...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:20.6989644Z  clangarm64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:20.6990215Z  mingw32 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:20.6990589Z  mingw64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:20.6990982Z  ucrt64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:20.6991315Z  clang64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:20.6991660Z  msys downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.1577665Z :: Starting core system upgrade...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3373946Z warning: terminate other MSYS2 programs before proceeding
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3374693Z resolving dependencies...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3375127Z looking for conflicting packages...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3474799Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3475127Z Packages (1) msys2-runtime-3.6.10-3
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3475525Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3475721Z Total Download Size:    1.97 MiB
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3476196Z Total Installed Size:   6.33 MiB
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3476573Z Net Upgrade Size:      -0.20 MiB
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3476811Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3477017Z :: Proceed with installation? [Y/n] 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.3477374Z :: Retrieving packages...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.7243328Z  msys2-runtime-3.6.10-3-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.7243866Z checking keyring...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.7775280Z checking package integrity...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.9783260Z loading package files...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.9806598Z checking for file conflicts...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.9828106Z :: Processing package changes...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:21.9828589Z upgrading msys2-runtime...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:22.1307794Z :: To complete this update all MSYS2 processes including this terminal will be closed. Confirm to proceed [Y/n] 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:22.3888513Z ##[endgroup]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:22.3889091Z ##[group]Killing remaining tasks...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:22.4683242Z [command]C:\Windows\system32\taskkill.exe /F /FI "MODULES eq msys-2.0.dll"
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:22.6190020Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:22.6190763Z INFO: No tasks running with the specified criteria.
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:22.6217516Z ##[endgroup]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:22.6217931Z ##[group]Final system upgrade...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:22.7025227Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'pacman' '--noconfirm' '-Syuu' '--overwrite' '*'"
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:23.3494019Z :: Synchronizing package databases...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:24.4450019Z  clangarm64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:24.4450519Z  mingw32 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:24.4450799Z  mingw64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:24.4451147Z  ucrt64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:24.4451920Z  clang64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:24.4452180Z  msys downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:24.8844505Z :: Starting core system upgrade...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.0653700Z  there is nothing to do
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.0654242Z :: Starting full system upgrade...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.0965090Z resolving dependencies...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.1028788Z looking for conflicting packages...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.1160695Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.1164668Z Packages (32) bash-completion-2.18.0-1  bsdtar-3.8.9-1  ca-certificates-20260816-1  curl-8.21.0-1  findutils-4.11.0-2  gawk-5.4.1-1  gcc-libs-15.3.0-1  gnupg-2.4.9-3  libcurl-8.21.0-1  libexpat-2.8.4-1  libffi-3.8.0-1  libgnutls-3.8.13-2  libhogweed-4.0-1  libnettle-4.0-1  libnghttp2-1.70.0-1  libnghttp3-1.18.0-1  libngtcp2-1.25.0-1  libopenssl-3.6.4-1  libp11-kit-0.26.5-1  libpcre2_8-10.48-1  libpsl-0.23.2-1  libsqlite-3.53.4-1  msys2-keyring-1~20260814-1  nano-9.2-1  nettle-4.0-1  openssl-3.6.4-1  p11-kit-0.26.5-1  pacman-contrib-1.10.6-2  perl-5.42.3-1  pinentry-1.3.3-1  tzcode-2026c-1  wget-1.25.0-2
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.1168433Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.1168554Z Total Download Size:    27.20 MiB
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.1168848Z Total Installed Size:  108.84 MiB
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.1169121Z Net Upgrade Size:       -1.02 MiB
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.1169300Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.1169742Z :: Proceed with installation? [Y/n] 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:25.1170229Z :: Retrieving packages...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5744638Z  perl-5.42.3-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5745325Z  pacman-contrib-1.10.6-2-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5745726Z  gnupg-2.4.9-3-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5746028Z  libopenssl-3.6.4-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5746354Z  gawk-5.4.1-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5746638Z  libgnutls-3.8.13-2-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5746947Z  gcc-libs-15.3.0-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5747236Z  curl-8.21.0-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5747516Z  wget-1.25.0-2-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5747824Z  libsqlite-3.53.4-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5748131Z  nano-9.2-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5748425Z  openssl-3.6.4-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5748726Z  findutils-4.11.0-2-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5749023Z  p11-kit-0.26.5-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5749353Z  ca-certificates-20260816-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5749687Z  libcurl-8.21.0-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5749989Z  bsdtar-3.8.9-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5750280Z  tzcode-2026c-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5750572Z  libp11-kit-0.26.5-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5750901Z  bash-completion-2.18.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5751228Z  libhogweed-4.0-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5751530Z  libngtcp2-1.25.0-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5751829Z  libpcre2_8-10.48-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5752128Z  libnettle-4.0-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5752418Z  nettle-4.0-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5752869Z  libpsl-0.23.2-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5753172Z  libnghttp3-1.18.0-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5753491Z  libnghttp2-1.70.0-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5753795Z  libexpat-2.8.4-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5754098Z  pinentry-1.3.3-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5754404Z  msys2-keyring-1~20260814-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5754692Z  libffi-3.8.0-1-x86_64 downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.5754933Z checking keyring...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:27.6309246Z checking package integrity...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:32.2060933Z loading package files...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:32.2790285Z checking for file conflicts...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:32.3351369Z :: Running pre-transaction hooks...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:32.3351965Z (1/1) Removing old entries from the info directory file...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:32.4561226Z :: Processing package changes...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:32.4561933Z upgrading bash-completion...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.3692317Z upgrading gcc-libs...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.3875318Z upgrading libexpat...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.3920008Z upgrading libopenssl...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.4178757Z upgrading bsdtar...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.4273273Z upgrading openssl...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.5357964Z upgrading findutils...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.6101828Z upgrading libffi...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.6206963Z upgrading libpcre2_8...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.6257767Z upgrading libp11-kit...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.6328959Z upgrading p11-kit...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:33.7852295Z upgrading ca-certificates...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.3497808Z upgrading libnghttp3...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.3558658Z upgrading libngtcp2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.3640104Z upgrading libnghttp2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.3700038Z upgrading libpsl...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.3791743Z upgrading libcurl...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.3855594Z upgrading curl...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.8151299Z upgrading gawk...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.9155585Z upgrading libhogweed...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.9201189Z upgrading libnettle...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.9250470Z upgrading libgnutls...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.9764809Z upgrading libsqlite...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.9873580Z upgrading nettle...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:34.9954988Z upgrading pinentry...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:35.0015679Z upgrading gnupg...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:39.5825515Z ==> Appending keys from msys2.gpg...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:40.3010924Z ==> Updating trust database...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:40.3193703Z gpg: no need for a trustdb check
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:40.4129084Z upgrading msys2-keyring...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:40.7701350Z ==> Appending keys from msys2.gpg...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:41.7108037Z ==> Updating trust database...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:41.7294642Z gpg: next trustdb check due at 2027-02-10
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:41.8206275Z upgrading nano...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:41.9271957Z upgrading pacman-contrib...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:41.9927038Z New optional dependencies for pacman-contrib
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:41.9927705Z     perl: for pacsearch [installed]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:41.9928194Z     vim: default diff program for pacdiff
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:41.9928665Z upgrading perl...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:43.7422539Z upgrading tzcode...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:45.6697958Z upgrading wget...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:45.7854024Z :: Running post-transaction hooks...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:45.7854429Z (1/1) Updating the info directory file...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:47.6396921Z ##[endgroup]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:47.6397493Z ##[group]Installing additional packages through pacman...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:47.7195531Z [command]C:\Windows\system32\cmd.exe /D /S /C D:\a\_temp\setup-msys2\msys2.cmd -c "'pacman' '--noconfirm' '-S' '--needed' '--overwrite' '*' 'mingw-w64-x86_64-cmake' 'mingw-w64-x86_64-ninja'"
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:48.4318591Z resolving dependencies...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:48.5407717Z looking for conflicting packages...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:48.5490089Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:48.5499696Z Packages (40) mingw-w64-x86_64-brotli-1.2.0-1  mingw-w64-x86_64-bzip2-1.0.8-4  mingw-w64-x86_64-c-ares-1.34.8-1  mingw-w64-x86_64-ca-certificates-20260816-1  mingw-w64-x86_64-cppdap-1.65.r11.g6464cd7-1  mingw-w64-x86_64-curl-8.22.0-1  mingw-w64-x86_64-expat-2.8.4-2  mingw-w64-x86_64-gcc-libs-16.2.0-3  mingw-w64-x86_64-gettext-runtime-1.0-1  mingw-w64-x86_64-gmp-6.3.0-2  mingw-w64-x86_64-gnutls-3.8.13-3  mingw-w64-x86_64-jsoncpp-1.9.8-1  mingw-w64-x86_64-libarchive-3.8.9-5  mingw-w64-x86_64-libb2-0.98.1-3  mingw-w64-x86_64-libffi-3.8.0-1  mingw-w64-x86_64-libiconv-1.19-1  mingw-w64-x86_64-libidn2-2.3.8-4  mingw-w64-x86_64-libpsl-0.21.5-3  mingw-w64-x86_64-libssh2-1.11.1-2  mingw-w64-x86_64-libtasn1-4.21.0-1  mingw-w64-x86_64-libunistring-1.4.2-1  mingw-w64-x86_64-libuv-1.52.1-1  mingw-w64-x86_64-libwinpthread-14.0.0.r353.g6df76fa52-2  mingw-w64-x86_64-lz4-1.10.0-1  mingw-w64-x86_64-nettle-4.0-1  mingw-w64-x86_64-nghttp2-1.70.0-1  mingw-w64-x86_64-nghttp3-1.18.0-1  mingw-w64-x86_64-ngtcp2-1.25.0-1  mingw-w64-x86_64-openssl-3.6.4-1  mingw-w64-x86_64-p11-kit-0.26.5-1  mingw-w64-x86_64-pcre2-10.48-3  mingw-w64-x86_64-pkgconf-1~3.0.5-1  mingw-w64-x86_64-rhash-1.4.6-1  mingw-w64-x86_64-tzdata-2026c-1  mingw-w64-x86_64-wineditline-2.208-1  mingw-w64-x86_64-xz-5.8.3-1  mingw-w64-x86_64-zlib-1.3.2-2  mingw-w64-x86_64-zstd-1.5.7-2  mingw-w64-x86_64-cmake-4.4.2-2  mingw-w64-x86_64-ninja-1.13.2-1
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:48.5509834Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:48.5510018Z Total Download Size:    36.66 MiB
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:48.5510469Z Total Installed Size:  207.33 MiB
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:48.5510763Z 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:48.5511295Z :: Proceed with installation? [Y/n] 
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:48.5511841Z :: Retrieving packages...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4278875Z  mingw-w64-x86_64-cmake-4.4.2-2-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4279792Z  mingw-w64-x86_64-openssl-3.6.4-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4280566Z  mingw-w64-x86_64-gnutls-3.8.13-3-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4281357Z  mingw-w64-x86_64-libarchive-3.8.9-5-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4281994Z  mingw-w64-x86_64-curl-8.22.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4283083Z  mingw-w64-x86_64-pcre2-10.48-3-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4283607Z  mingw-w64-x86_64-gcc-libs-16.2.0-3-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4284172Z  mingw-w64-x86_64-libunistring-1.4.2-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4284577Z  mingw-w64-x86_64-libiconv-1.19-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4284924Z  mingw-w64-x86_64-zstd-1.5.7-2-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4285271Z  mingw-w64-x86_64-p11-kit-0.26.5-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4285615Z  mingw-w64-x86_64-gmp-6.3.0-2-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4285953Z  mingw-w64-x86_64-nettle-4.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4286335Z  mingw-w64-x86_64-cppdap-1.65.r11.g6464cd7-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4286730Z  mingw-w64-x86_64-xz-5.8.3-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4287065Z  mingw-w64-x86_64-brotli-1.2.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4287447Z  mingw-w64-x86_64-gettext-runtime-1.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4287874Z  mingw-w64-x86_64-ca-certificates-20260816-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4288319Z  mingw-w64-x86_64-c-ares-1.34.8-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4288677Z  mingw-w64-x86_64-libssh2-1.11.1-2-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4289026Z  mingw-w64-x86_64-ngtcp2-1.25.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4289368Z  mingw-w64-x86_64-rhash-1.4.6-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4289716Z  mingw-w64-x86_64-tzdata-2026c-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4290052Z  mingw-w64-x86_64-libuv-1.52.1-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4290395Z  mingw-w64-x86_64-jsoncpp-1.9.8-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4290764Z  mingw-w64-x86_64-nghttp2-1.70.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4291168Z  mingw-w64-x86_64-libtasn1-4.21.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4291627Z  mingw-w64-x86_64-expat-2.8.4-2-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4291958Z  mingw-w64-x86_64-ninja-1.13.2-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4292287Z  mingw-w64-x86_64-libidn2-2.3.8-4-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4292614Z  mingw-w64-x86_64-lz4-1.10.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4292946Z  mingw-w64-x86_64-pkgconf-1~3.0.5-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4293288Z  mingw-w64-x86_64-nghttp3-1.18.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4293610Z  mingw-w64-x86_64-zlib-1.3.2-2-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4293940Z  mingw-w64-x86_64-libpsl-0.21.5-3-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4294262Z  mingw-w64-x86_64-bzip2-1.0.8-4-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4294604Z  mingw-w64-x86_64-wineditline-2.208-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4294947Z  mingw-w64-x86_64-libffi-3.8.0-1-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4295867Z  mingw-w64-x86_64-libwinpthread-14.0.0.r353.g6df76fa52-2-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4296757Z  mingw-w64-x86_64-libb2-0.98.1-3-any downloading...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4297243Z checking keyring...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:51.4929553Z checking package integrity...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:57.3043959Z loading package files...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:57.4485331Z checking for file conflicts...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:58.3695436Z :: Processing package changes...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:58.3695930Z installing mingw-w64-x86_64-libwinpthread...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:08:58.3742860Z installing mingw-w64-x86_64-tzdata...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.0520322Z installing mingw-w64-x86_64-gcc-libs...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.0697023Z installing mingw-w64-x86_64-cppdap...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.0947100Z installing mingw-w64-x86_64-c-ares...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.2116334Z installing mingw-w64-x86_64-brotli...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.2337166Z installing mingw-w64-x86_64-libiconv...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.2584328Z installing mingw-w64-x86_64-gettext-runtime...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.3953620Z installing mingw-w64-x86_64-libunistring...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.4428390Z installing mingw-w64-x86_64-libidn2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.4715405Z installing mingw-w64-x86_64-libpsl...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.4813821Z installing mingw-w64-x86_64-zlib...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.4897682Z installing mingw-w64-x86_64-zstd...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.5091979Z installing mingw-w64-x86_64-libtasn1...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.5504524Z installing mingw-w64-x86_64-libffi...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.5607391Z installing mingw-w64-x86_64-p11-kit...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:00.7095971Z installing mingw-w64-x86_64-ca-certificates...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:01.3238417Z installing mingw-w64-x86_64-openssl...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:06.7607465Z Optional dependencies for mingw-w64-x86_64-openssl
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:06.7608204Z     mingw-w64-x86_64-ca-certificates [installed]
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:06.7608744Z installing mingw-w64-x86_64-libssh2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:06.9080623Z installing mingw-w64-x86_64-nghttp2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:06.9246691Z installing mingw-w64-x86_64-gmp...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:06.9395516Z installing mingw-w64-x86_64-nettle...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:06.9948702Z installing mingw-w64-x86_64-gnutls...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:07.9242645Z installing mingw-w64-x86_64-ngtcp2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:07.9452971Z installing mingw-w64-x86_64-nghttp3...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:07.9587240Z installing mingw-w64-x86_64-curl...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.3622422Z installing mingw-w64-x86_64-expat...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.3777697Z installing mingw-w64-x86_64-jsoncpp...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.3959100Z installing mingw-w64-x86_64-bzip2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.4139279Z installing mingw-w64-x86_64-libb2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.4204883Z installing mingw-w64-x86_64-lz4...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.4348685Z installing mingw-w64-x86_64-wineditline...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.4435926Z installing mingw-w64-x86_64-pcre2...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.6282621Z installing mingw-w64-x86_64-xz...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.7430861Z installing mingw-w64-x86_64-libarchive...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.8226043Z installing mingw-w64-x86_64-libuv...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.8443249Z installing mingw-w64-x86_64-ninja...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.8499253Z installing mingw-w64-x86_64-pkgconf...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.8720910Z installing mingw-w64-x86_64-rhash...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:08.9072656Z installing mingw-w64-x86_64-cmake...
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:12.3602241Z Optional dependencies for mingw-w64-x86_64-cmake
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:12.3602994Z     mingw-w64-x86_64-emacs: for cmake emacs mode
+windows-ctest-timeout-protocol	Install the existing MSYS2 CMake shell	2026-09-06T07:09:12.4206058Z ##[endgroup]
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	﻿2026-09-06T07:09:12.4449783Z ##[group]Run set -euo pipefail
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4450166Z ^[[36;1mset -euo pipefail^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4450422Z ^[[36;1mpython_shell="$(command -v python)"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4450750Z ^[[36;1mpython_native="$(cygpath -am "$python_shell")"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4451160Z ^[[36;1mexpected_python_native="$(cygpath -am "$ENDPOINT_PYTHON_NATIVE")"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4451575Z ^[[36;1mtest "$python_native" = "$expected_python_native"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4452088Z ^[[36;1m"$python_shell" -c 'import os, sys; sys.exit(0 if sys.version_info[:2] == (3, 12) and os.name == "nt" else 1)'^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4452615Z ^[[36;1msource_shell="$(cygpath -u "$PROJECT_SOURCE")"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4452941Z ^[[36;1msource_native="$(cygpath -am "$source_shell")"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4453289Z ^[[36;1mactual="$(git -C "$source_shell" rev-parse HEAD)"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4453588Z ^[[36;1mtest "$actual" = "$GITHUB_SHA"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4453885Z ^[[36;1mrunner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4454556Z ^[[36;1mfixture_source_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-source-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4455443Z ^[[36;1mfixture_build_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-build-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4456289Z ^[[36;1mmarker_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-marker-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4456855Z ^[[36;1mscratch_shell="$runner_temp_shell/fsew"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4457340Z ^[[36;1mgate_script_native="$(cygpath -am "$source_shell/tests/paper_endpoint_ctest_protocol_gate.py")"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4457916Z ^[[36;1m"$python_shell" -B tests/paper_endpoint_ctest_protocol_gate.py prepare \^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4459074Z ^[[36;1m  --source-root "$source_native" \^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4459441Z ^[[36;1m  --fixture-source "$(cygpath -am "$fixture_source_shell")" \^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4459868Z ^[[36;1m  --fixture-build "$(cygpath -am "$fixture_build_shell")" \^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4460232Z ^[[36;1m  --marker "$(cygpath -am "$marker_shell")" \^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4460554Z ^[[36;1m  --scratch "$(cygpath -am "$scratch_shell")" \^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4460976Z ^[[36;1m  --python-native "$python_native" --gate-script-native "$gate_script_native"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4461484Z ^[[36;1mcmake -G Ninja -S "$fixture_source_shell" -B "$fixture_build_shell"^[[0m
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4463549Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4463833Z env:
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4464016Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4464264Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4464579Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4464994Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4465430Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4465864Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4466245Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4466628Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4466928Z   MSYSTEM: MINGW64
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4467240Z   ENDPOINT_PYTHON_NATIVE: C:\hostedtoolcache\windows\Python\3.12.10\x64\python.exe
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:12.4467613Z ##[endgroup]
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:14.2372056Z {"deepest_status_candidate_characters": 242, "host": "windows", "phase": "prepare", "tests_registered": 61, "timeout_seconds": 2}
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:14.3128144Z -- Configuring done (0.0s)
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:14.3224103Z -- Generating done (0.0s)
+windows-ctest-timeout-protocol	Validate source and create no-crypto CTest fixture	2026-09-06T07:09:14.3231439Z -- Build files have been written to: D:/a/_temp/fs-endpoint-ctest-protocol-build-windows-34018316144-1
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	﻿2026-09-06T07:09:14.3426485Z ##[group]Run set -euo pipefail
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3426878Z ^[[36;1mset -euo pipefail^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3427171Z ^[[36;1mrunner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3427806Z ^[[36;1mfixture_build_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-build-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3428401Z ^[[36;1mscratch_shell="$runner_temp_shell/fsew"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3429008Z ^[[36;1mwrapper_exit_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-wrapper-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3429669Z ^[[36;1mtest ! -e "$scratch_shell" && test ! -L "$scratch_shell"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3429968Z ^[[36;1mumask 077^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3430161Z ^[[36;1mmkdir -- "$scratch_shell"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3430453Z ^[[36;1mscratch_shell="$(cd "$scratch_shell" && pwd -P)"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3430818Z ^[[36;1mscratch_native="$(cygpath -am "$scratch_shell")"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3431095Z ^[[36;1mset +e^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3431343Z ^[[36;1mbash tests/run_paper_endpoint_once.sh \^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3431645Z ^[[36;1m  --scope synthetic --host windows \^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3431948Z ^[[36;1m  --build-dir-shell "$fixture_build_shell" \^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3432348Z ^[[36;1m  --scratch-shell "$scratch_shell" --scratch-native "$scratch_native" \^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3432802Z ^[[36;1m  --python "$(command -v python)" --ctest "$(command -v ctest)"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3433136Z ^[[36;1mwrapper_status=$?^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3433347Z ^[[36;1mset -e^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3433599Z ^[[36;1mprintf '%s\n' "$wrapper_status" > "$wrapper_exit_shell"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3433912Z ^[[36;1mexit "$wrapper_status"^[[0m
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3435674Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3435925Z env:
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3436162Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3436560Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3436856Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3437262Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3437692Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3438128Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3438508Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3438886Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3439183Z   MSYSTEM: MINGW64
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.3439357Z ##[endgroup]
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7413384Z UpdateCTestConfiguration  from :D:/a/_temp/fs-endpoint-ctest-protocol-build-windows-34018316144-1/DartConfiguration.tcl
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7414190Z Test project D:/a/_temp/fs-endpoint-ctest-protocol-build-windows-34018316144-1
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7414621Z Constructing a list of tests
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7568925Z Done constructing a list of tests
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7569368Z Updating test list for fixtures
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7569702Z Added 0 tests to meet fixture requirements
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7570225Z Checking test dependency graph...
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7570652Z Checking test dependency graph end
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7570935Z test 61
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7571194Z     Start 61: paper_full_eight_square_contract
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7571459Z 
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7572538Z 61: Test command: C:\hostedtoolcache\windows\Python\3.12.10\x64\python.exe "-B" "C:\openfhe-endpoint-ctest-protocol\cleanroom\tests\paper_endpoint_ctest_protocol_gate.py" "emit-timeout" "--marker" "D:\a\_temp\fs-endpoint-ctest-protocol-marker-windows-34018316144-1"
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7574032Z 61: Working Directory: D:/a/_temp/fs-endpoint-ctest-protocol-build-windows-34018316144-1
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.7574555Z 61: Test timeout computed to be: 2
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:14.8194482Z 61: CTEST_PROTOCOL_SENTINEL host=windows run=34018316144 attempt=1
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7586846Z 1/1 Test #61: paper_full_eight_square_contract ...***Timeout   2.00 sec
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7591549Z CTEST_PROTOCOL_SENTINEL host=windows run=34018316144 attempt=1
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7591874Z 
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7591883Z 
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7592032Z 0% tests passed, 1 tests failed out of 1
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7592266Z 
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7592378Z Total Test time (real) =   2.01 sec
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7592570Z 
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7592677Z The following tests FAILED:
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7593013Z 	 61 - paper_full_eight_square_contract (Timeout)
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:16.7593378Z Errors while running CTest
+windows-ctest-timeout-protocol	Run the real one-shot wrapper against Test 61	2026-09-06T07:09:17.0199041Z ##[error]Process completed with exit code 8.
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	﻿2026-09-06T07:09:17.0324129Z ##[group]Run set -euo pipefail
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0324509Z ^[[36;1mset -euo pipefail^[[0m
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0324814Z ^[[36;1mrunner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"^[[0m
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0325195Z ^[[36;1mscratch_shell="$runner_temp_shell/fsew"^[[0m
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0325590Z ^[[36;1mpython -B tests/paper_endpoint_ctest_protocol_gate.py inspect \^[[0m
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0326079Z ^[[36;1m  --primary-log "$(cygpath -am "$scratch_shell/primary.ctest.log")" \^[[0m
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0326816Z ^[[36;1m  --marker "$(cygpath -am "$runner_temp_shell/fs-endpoint-ctest-protocol-marker-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}")" \^[[0m
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0327787Z ^[[36;1m  --wrapper-exit "$(cygpath -am "$runner_temp_shell/fs-endpoint-ctest-protocol-wrapper-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit")"^[[0m
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0330100Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0330361Z env:
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0330539Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0330813Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0331119Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0331714Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0332304Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0332731Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0333112Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0333486Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0333790Z   MSYSTEM: MINGW64
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.0333963Z ##[endgroup]
+windows-ctest-timeout-protocol	Render bounded escaped CTest transport	2026-09-06T07:09:17.3402956Z {"crlf_count": 0, "escaped_lines": [{"bytes_repr": "b'UpdateCTestConfiguration  from :D:/a/_temp/fs-endpoint-ctest-protocol-build-windows-34018316144-1/DartConfiguration.tcl\\n'", "line": 1, "truncated": false}, {"bytes_repr": "b'Test project D:/a/_temp/fs-endpoint-ctest-protocol-build-windows-34018316144-1\\n'", "line": 2, "truncated": false}, {"bytes_repr": "b'Constructing a list of tests\\n'", "line": 3, "truncated": false}, {"bytes_repr": "b'Done constructing a list of tests\\n'", "line": 4, "truncated": false}, {"bytes_repr": "b'Updating test list for fixtures\\n'", "line": 5, "truncated": false}, {"bytes_repr": "b'Added 0 tests to meet fixture requirements\\n'", "line": 6, "truncated": false}, {"bytes_repr": "b'Checking test dependency graph...\\n'", "line": 7, "truncated": false}, {"bytes_repr": "b'Checking test dependency graph end\\n'", "line": 8, "truncated": false}, {"bytes_repr": "b'test 61\\n'", "line": 9, "truncated": false}, {"bytes_repr": "b'    Start 61: paper_full_eight_square_contract\\n'", "line": 10, "truncated": false}, {"bytes_repr": "b'\\n'", "line": 11, "truncated": false}, {"bytes_repr": "b'61: Test command: C:\\\\hostedtoolcache\\\\windows\\\\Python\\\\3.12.10\\\\x64\\\\python.exe \"-B\" \"C:\\\\openfhe-endpoint-ctest-protocol\\\\cleanroom\\\\tests\\\\paper_endpoint_ctest_protocol_gate.py\" \"emit-timeout\" \"--marker\" \"D:\\\\a\\\\_temp\\\\fs-endpoint-ctest-protocol-marker-windows-34018316144-1\"\\n'", "line": 12, "truncated": false}, {"bytes_repr": "b'61: Working Directory: D:/a/_temp/fs-endpoint-ctest-protocol-build-windows-34018316144-1\\n'", "line": 13, "truncated": false}, {"bytes_repr": "b'61: Test timeout computed to be: 2\\n'", "line": 14, "truncated": false}, {"bytes_repr": "b'61: CTEST_PROTOCOL_SENTINEL host=windows run=34018316144 attempt=1\\n'", "line": 15, "truncated": false}, {"bytes_repr": "b'1/1 Test #61: paper_full_eight_square_contract ...***Timeout   2.00 sec\\n'", "line": 16, "truncated": false}, {"bytes_repr": "b'CTEST_PROTOCOL_SENTINEL host=windows run=34018316144 attempt=1\\n'", "line": 17, "truncated": false}, {"bytes_repr": "b'\\n'", "line": 18, "truncated": false}, {"bytes_repr": "b'\\n'", "line": 19, "truncated": false}, {"bytes_repr": "b'0% tests passed, 1 tests failed out of 1\\n'", "line": 20, "truncated": false}, {"bytes_repr": "b'\\n'", "line": 21, "truncated": false}, {"bytes_repr": "b'Total Test time (real) =   2.01 sec\\n'", "line": 22, "truncated": false}, {"bytes_repr": "b'\\n'", "line": 23, "truncated": false}, {"bytes_repr": "b'The following tests FAILED:\\n'", "line": 24, "truncated": false}, {"bytes_repr": "b'\\t 61 - paper_full_eight_square_contract (Timeout)\\n'", "line": 25, "truncated": false}, {"bytes_repr": "b'Errors while running CTest\\n'", "line": 26, "truncated": false}], "host": "windows", "lf_count": 26, "line_count": 26, "phase": "inspect", "primary_bytes": 1240, "primary_sha256": "40d229aa770ca4fe7d0372f9b5e80ee6b57946bfb4c0f3fb26b24931ac22df81", "wrapper_exit": 8}
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	﻿2026-09-06T07:09:17.3612047Z ##[group]Run set -euo pipefail
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3612425Z ^[[36;1mset -euo pipefail^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3612725Z ^[[36;1mrunner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3613060Z ^[[36;1mscratch_shell="$runner_temp_shell/fsew"^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3613386Z ^[[36;1mscratch_native="$(cygpath -am "$scratch_shell")"^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3613767Z ^[[36;1mmanifest_native="$scratch_native/upload-paths.txt"^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3614140Z ^[[36;1mmanifest_shell="$scratch_shell/upload-paths.txt"^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3614697Z ^[[36;1mgithub_output_shell="$(cygpath -u "$GITHUB_OUTPUT")"^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3615127Z ^[[36;1mpython -B tests/paper_endpoint_finalizer.py select \^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3615486Z ^[[36;1m  --source-commit "$GITHUB_SHA" --host windows \^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3615906Z ^[[36;1m  --github-run-id "$GITHUB_RUN_ID" --github-run-attempt "$GITHUB_RUN_ATTEMPT" \^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3616436Z ^[[36;1m  --published-parent "$scratch_native/published" --manifest "$manifest_native"^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3616863Z ^[[36;1m{^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3617047Z ^[[36;1m  echo 'paths<<FS_ENDPOINT_PATHS'^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3617305Z ^[[36;1m  cat -- "$manifest_shell"^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3617536Z ^[[36;1m  echo 'FS_ENDPOINT_PATHS'^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3617763Z ^[[36;1m} >> "$github_output_shell"^[[0m
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3619667Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3619926Z env:
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3620103Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3620353Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3620654Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3621054Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3621494Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3621929Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3622309Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3622688Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3622983Z   MSYSTEM: MINGW64
+windows-ctest-timeout-protocol	Select exact synthetic status after wrapper failure	2026-09-06T07:09:17.3623157Z ##[endgroup]
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	﻿2026-09-06T07:09:17.7312192Z ##[group]Run set -euo pipefail
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7312570Z ^[[36;1mset -euo pipefail^[[0m
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7312875Z ^[[36;1mrunner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"^[[0m
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7313226Z ^[[36;1mscratch_shell="$runner_temp_shell/fsew"^[[0m
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7313672Z ^[[36;1mpython -B tests/paper_endpoint_ctest_protocol_gate.py validate-selection \^[[0m
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7314121Z ^[[36;1m  --scratch "$(cygpath -am "$scratch_shell")" \^[[0m
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7314520Z ^[[36;1m  --manifest "$(cygpath -am "$scratch_shell/upload-paths.txt")" \^[[0m
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7315258Z ^[[36;1m  --wrapper-exit "$(cygpath -am "$runner_temp_shell/fs-endpoint-ctest-protocol-wrapper-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit")"^[[0m
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7317981Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7318250Z env:
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7318436Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7318691Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7318997Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7319448Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7319889Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7320328Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7320719Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7321097Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7321406Z   MSYSTEM: MINGW64
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:17.7321585Z ##[endgroup]
+windows-ctest-timeout-protocol	Validate status-only allowlist before upload	2026-09-06T07:09:18.0180008Z {"phase": "validate-selection", "reason_before_strict_gate": "CTEST_FATAL", "status_sha256": "f6248b1e2707a56caf186dfce2acdbd2a8fb97b4f6856c33e5c2c98394153a93", "stem": "fs-residual-endpoint-01.v1-r1.0e3b82bdf71a49f21b497f4ad27a69792e18159a.windows.34018316144.1"}
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	﻿2026-09-06T07:09:18.0476059Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0477749Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0478134Z with:
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0478424Z   name: fs-endpoint-synthetic-ctest-protocol-windows-34018316144-1
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0479513Z   path: D:/a/_temp/fsew/published/fs-residual-endpoint-01.v1-r1.0e3b82bdf71a49f21b497f4ad27a69792e18159a.windows.34018316144.1/fs-residual-endpoint-01.v1-r1.0e3b82bdf71a49f21b497f4ad27a69792e18159a.windows.34018316144.1.status.json
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0480552Z   if-no-files-found: error
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0480775Z   compression-level: 0
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0480975Z   retention-days: 1
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0481162Z   overwrite: false
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0481379Z   include-hidden-files: false
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0481589Z env:
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0481762Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0482013Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0482314Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0482720Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0483151Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0483585Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0483972Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0484353Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0484650Z   MSYSTEM: MINGW64
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.0484823Z ##[endgroup]
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.2320152Z (node:2632) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.2322170Z (Use `node --trace-deprecation ...` to show where the warning was created)
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.2397623Z With the provided path, there will be 1 file uploaded
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.2402835Z Artifact name is valid!
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.2405379Z Root directory input is valid!
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.6531983Z Beginning upload of artifact content to blob storage
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.6724240Z (node:2632) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:18.9294993Z Uploaded bytes 1363
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:19.0016825Z Finished uploading artifact content to blob storage!
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:19.0017656Z SHA256 digest of uploaded artifact zip is 6fe19a5bb62aa4c42b8ad0a320cd61cb04b2dabb87fce15e684f67bbf22d02ca
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:19.0019891Z Finalizing artifact upload
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:19.2546521Z Artifact fs-endpoint-synthetic-ctest-protocol-windows-34018316144-1.zip successfully finalized. Artifact ID 9984644193
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:19.2547913Z Artifact fs-endpoint-synthetic-ctest-protocol-windows-34018316144-1 has been successfully uploaded! Final size is 1363 bytes. Artifact ID is 9984644193
+windows-ctest-timeout-protocol	Upload the one validated synthetic status	2026-09-06T07:09:19.2558675Z Artifact download URL: https://github.com/leemaple/20231788./actions/runs/34018316144/artifacts/9984644193
+windows-ctest-timeout-protocol	Download the exact synthetic status	﻿2026-09-06T07:09:19.2801287Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2802776Z ##[group]Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2803150Z with:
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2803446Z   name: fs-endpoint-synthetic-ctest-protocol-windows-34018316144-1
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2803941Z   path: D:\a\_temp\fs-endpoint-ctest-protocol-download-windows-34018316144-1
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2804319Z   merge-multiple: false
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2804531Z   repository: leemaple/20231788.
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2804755Z   run-id: 34018316144
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2805107Z env:
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2805281Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2805527Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2805859Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2806260Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2806701Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2807127Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2807509Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2807890Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2808200Z   MSYSTEM: MINGW64
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.2808377Z ##[endgroup]
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.4497663Z Downloading single artifact
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.4696169Z (node:4860) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.4697454Z (Use `node --trace-deprecation ...` to show where the warning was created)
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.7215320Z Preparing to download the following artifacts:
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.7216225Z - fs-endpoint-synthetic-ctest-protocol-windows-34018316144-1 (ID: 9984644193, Size: 1363, Expected Digest: sha256:6fe19a5bb62aa4c42b8ad0a320cd61cb04b2dabb87fce15e684f67bbf22d02ca)
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.9581902Z Redirecting to blob download url: https://productionresultssa5.blob.core.windows.net/actions-results/dde99434-efd9-489b-abee-df03e4b46c18/workflow-job-run-8b2cab0a-6fa1-5d31-a3f2-d94d97ec446a/artifacts/7c2f19d8ddccf0f23eeeddda995235550e621d14b32eae3d964d9cbc1cdf29c9.zip
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:19.9583422Z Starting download of artifact to: D:\a\_temp\fs-endpoint-ctest-protocol-download-windows-34018316144-1
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:20.2085835Z (node:4860) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:20.2140364Z SHA256 digest of downloaded artifact is 6fe19a5bb62aa4c42b8ad0a320cd61cb04b2dabb87fce15e684f67bbf22d02ca
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:20.2141616Z Artifact download completed successfully.
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:20.2141912Z Total of 1 artifact(s) downloaded
+windows-ctest-timeout-protocol	Download the exact synthetic status	2026-09-06T07:09:20.2148053Z Download artifact has finished successfully
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	﻿2026-09-06T07:09:20.2358658Z ##[group]Run set -euo pipefail
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2359036Z ^[[36;1mset -euo pipefail^[[0m
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2359343Z ^[[36;1mrunner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"^[[0m
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2359696Z ^[[36;1mscratch_shell="$runner_temp_shell/fsew"^[[0m
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2360296Z ^[[36;1mdownload_shell="$runner_temp_shell/fs-endpoint-ctest-protocol-download-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"^[[0m
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2361009Z ^[[36;1mpython -B tests/paper_endpoint_ctest_protocol_gate.py verify-timeout \^[[0m
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2361455Z ^[[36;1m  --scratch "$(cygpath -am "$scratch_shell")" \^[[0m
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2361866Z ^[[36;1m  --manifest "$(cygpath -am "$scratch_shell/upload-paths.txt")" \^[[0m
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2362620Z ^[[36;1m  --wrapper-exit "$(cygpath -am "$runner_temp_shell/fs-endpoint-ctest-protocol-wrapper-windows-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.exit")" \^[[0m
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2363309Z ^[[36;1m  --downloaded "$(cygpath -am "$download_shell")"^[[0m
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2365275Z shell: D:\a\_temp\setup-msys2\msys2.CMD {0}
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2365554Z env:
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2365734Z   RUN_ENDPOINT_CTEST_PROTOCOL_GATE: 1
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2365986Z   ENDPOINT_TEST_HOST: windows
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2366300Z   PROJECT_SOURCE: C:\openfhe-endpoint-ctest-protocol\cleanroom
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2366706Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2367149Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2367580Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2368112Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2368503Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2368803Z   MSYSTEM: MINGW64
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.2368988Z ##[endgroup]
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.5494412Z CTEST_PROTOCOL_GATE_FAILURE phase=verify-timeout detail=RED: finalizer did not classify the observed CTest timeout as TIMEOUT
+windows-ctest-timeout-protocol	Require TIMEOUT after status transport	2026-09-06T07:09:20.5768409Z ##[error]Process completed with exit code 1.
+windows-ctest-timeout-protocol	Complete job	﻿2026-09-06T07:09:20.5862528Z Cleaning up orphan processes
+windows-ctest-timeout-protocol	Complete job	2026-09-06T07:09:20.6045972Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

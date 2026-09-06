@@ -1,0 +1,115 @@
+windows-python	Set up job	﻿2026-09-06T07:07:59.8854070Z Current runner version: '2.337.0'
+windows-python	Set up job	2026-09-06T07:07:59.8908368Z ##[group]Runner Image Provisioner
+windows-python	Set up job	2026-09-06T07:07:59.8909273Z Hosted Compute Agent
+windows-python	Set up job	2026-09-06T07:07:59.8909887Z Version: 20260828.587
+windows-python	Set up job	2026-09-06T07:07:59.8910583Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+windows-python	Set up job	2026-09-06T07:07:59.8911389Z Build Date: 2026-08-28T16:44:25Z
+windows-python	Set up job	2026-09-06T07:07:59.8912134Z Worker ID: {39bf7f8f-2e70-403f-9e54-3af16c0cd42f}
+windows-python	Set up job	2026-09-06T07:07:59.8912990Z Azure Region: eastus
+windows-python	Set up job	2026-09-06T07:07:59.8913607Z ##[endgroup]
+windows-python	Set up job	2026-09-06T07:07:59.8915799Z ##[group]Operating System
+windows-python	Set up job	2026-09-06T07:07:59.8916522Z Microsoft Windows Server 2022
+windows-python	Set up job	2026-09-06T07:07:59.8917209Z 10.0.20348
+windows-python	Set up job	2026-09-06T07:07:59.8917780Z Datacenter
+windows-python	Set up job	2026-09-06T07:07:59.8918343Z ##[endgroup]
+windows-python	Set up job	2026-09-06T07:07:59.8918927Z ##[group]Runner Image
+windows-python	Set up job	2026-09-06T07:07:59.8919554Z Image: windows-2022
+windows-python	Set up job	2026-09-06T07:07:59.8920180Z Version: 20260830.290.1
+windows-python	Set up job	2026-09-06T07:07:59.8921486Z Included Software: https://github.com/actions/runner-images/blob/win22/20260830.290/images/windows/Windows2022-Readme.md
+windows-python	Set up job	2026-09-06T07:07:59.8923768Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20260830.290
+windows-python	Set up job	2026-09-06T07:07:59.8924959Z ##[endgroup]
+windows-python	Set up job	2026-09-06T07:07:59.8926302Z ##[group]GITHUB_TOKEN Permissions
+windows-python	Set up job	2026-09-06T07:07:59.8928172Z Contents: read
+windows-python	Set up job	2026-09-06T07:07:59.8928849Z Metadata: read
+windows-python	Set up job	2026-09-06T07:07:59.8929265Z ##[endgroup]
+windows-python	Set up job	2026-09-06T07:07:59.8931300Z Secret source: Actions
+windows-python	Set up job	2026-09-06T07:07:59.8932109Z Prepare workflow directory
+windows-python	Set up job	2026-09-06T07:07:59.9211834Z Prepare all required actions
+windows-python	Set up job	2026-09-06T07:07:59.9250086Z Getting action download info
+windows-python	Set up job	2026-09-06T07:08:00.0398883Z Download action repository 'actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+windows-python	Set up job	2026-09-06T07:08:00.2241038Z Complete job name: windows-python
+windows-python	Check out exact public source outside the dotted workspace	﻿2026-09-06T07:08:00.3665105Z ##[group]Run $ErrorActionPreference = 'Stop'
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3665900Z ^[[36;1m$ErrorActionPreference = 'Stop'^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3666493Z ^[[36;1mif (Test-Path -LiteralPath $env:ENDPOINT_PROJECT_SOURCE) {^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3667132Z ^[[36;1m  throw 'Refusing an existing endpoint source directory'^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3667629Z ^[[36;1m}^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3668137Z ^[[36;1mNew-Item -ItemType Directory -Path $env:ENDPOINT_PROJECT_SOURCE | Out-Null^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3668778Z ^[[36;1mgit init $env:ENDPOINT_PROJECT_SOURCE^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3669295Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw 'git init failed' }^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3670125Z ^[[36;1mgit -C $env:ENDPOINT_PROJECT_SOURCE config core.autocrlf false^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3670862Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw 'git config autocrlf failed' }^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3671492Z ^[[36;1mgit -C $env:ENDPOINT_PROJECT_SOURCE config core.eol lf^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3672087Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw 'git config eol failed' }^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3672918Z ^[[36;1mgit -C $env:ENDPOINT_PROJECT_SOURCE remote add origin https://github.com/leemaple/20231788..git^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3674475Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw 'git remote failed' }^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3675159Z ^[[36;1mgit -C $env:ENDPOINT_PROJECT_SOURCE fetch --depth 1 origin $env:GITHUB_SHA^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3675833Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw 'git fetch failed' }^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3676446Z ^[[36;1mgit -C $env:ENDPOINT_PROJECT_SOURCE checkout --detach FETCH_HEAD^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3677078Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw 'git checkout failed' }^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3677697Z ^[[36;1m$actual = git -C $env:ENDPOINT_PROJECT_SOURCE rev-parse HEAD^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3678444Z ^[[36;1mif ($LASTEXITCODE -ne 0 -or $actual -ne $env:GITHUB_SHA) { throw 'Source identity mismatch' }^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3679209Z ^[[36;1m$dirty = @(git -C $env:ENDPOINT_PROJECT_SOURCE status --porcelain)^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.3679967Z ^[[36;1mif ($LASTEXITCODE -ne 0 -or $dirty.Count -ne 0) { throw 'Source checkout is not clean' }^[[0m
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.5742651Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.5743470Z env:
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.5743792Z   RUN_ENDPOINT_NEGATIVE_GATE: 1
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.5744183Z   PYTHONDONTWRITEBYTECODE: 1
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.5744556Z   ENDPOINT_TEST_HOST: windows
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.5745119Z   ENDPOINT_PROJECT_SOURCE: D:\a\_temp/fs-endpoint-negative-source-34018316389-1-windows
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:00.5745721Z ##[endgroup]
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:01.3528247Z Initialized empty Git repository in D:/a/_temp/fs-endpoint-negative-source-34018316389-1-windows/.git/
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:03.6401756Z From https://github.com/leemaple/20231788.
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:03.6402413Z  * branch            0e3b82bdf71a49f21b497f4ad27a69792e18159a -> FETCH_HEAD
+windows-python	Check out exact public source outside the dotted workspace	2026-09-06T07:08:04.0711133Z HEAD is now at 0e3b82b test: gate endpoint rejection and real CTest timeout transport
+windows-python	Set up native Python 3.12	﻿2026-09-06T07:08:04.2359816Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2365377Z ##[group]Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2365755Z with:
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2365948Z   python-version: 3.12
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2366160Z   check-latest: false
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2368179Z   token: ***
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2368372Z   update-environment: true
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2368605Z   allow-prereleases: false
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2368804Z   freethreaded: false
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2369003Z env:
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2369182Z   RUN_ENDPOINT_NEGATIVE_GATE: 1
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2369433Z   PYTHONDONTWRITEBYTECODE: 1
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2369652Z   ENDPOINT_TEST_HOST: windows
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.2369862Z ##[endgroup]
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.3737822Z ##[group]Installed versions
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.3860164Z (node:6520) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.3860902Z (Use `node --trace-deprecation ...` to show where the warning was created)
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.3861366Z Successfully set up CPython (3.12.10)
+windows-python	Set up native Python 3.12	2026-09-06T07:08:04.3861951Z ##[endgroup]
+windows-python	Execute three negative finalizer cases with native paths	﻿2026-09-06T07:08:04.4063180Z ##[group]Run $ErrorActionPreference = 'Stop'
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4063653Z ^[[36;1m$ErrorActionPreference = 'Stop'^[[0m
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4064969Z ^[[36;1mpython -c 'import sys, platform, decimal, json, zlib; sys.exit("Python 3.12 required") if sys.version_info[:2] != (3, 12) else None; print(json.dumps({"python": sys.version, "implementation": platform.python_implementation(), "platform": sys.platform, "decimal": decimal.__version__, "libmpdec": decimal.__libmpdec_version__, "default_decimal_context": str(decimal.getcontext()), "zlib_build": zlib.ZLIB_VERSION, "zlib_runtime": zlib.ZLIB_RUNTIME_VERSION}, sort_keys=True))'^[[0m
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4066405Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw 'Python 3.12 environment check failed' }^[[0m
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4066812Z ^[[36;1mpython -B tests/hosted_paper_endpoint_finalizer_negative.py^[[0m
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4067126Z ^[[36;1m$testExit = $LASTEXITCODE^[[0m
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4067380Z ^[[36;1mexit $testExit^[[0m
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4109330Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4109694Z env:
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4109879Z   RUN_ENDPOINT_NEGATIVE_GATE: 1
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4110105Z   PYTHONDONTWRITEBYTECODE: 1
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4110323Z   ENDPOINT_TEST_HOST: windows
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4110597Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4110999Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4111481Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4111829Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4112757Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:04.4113030Z ##[endgroup]
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:05.6432580Z {"decimal": "1.70", "default_decimal_context": "Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999, Emax=999999, capitals=1, clamp=0, flags=[], traps=[InvalidOperation, DivisionByZero, Overflow])", "implementation": "CPython", "libmpdec": "2.5.1", "platform": "win32", "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]", "zlib_build": "1.3.1", "zlib_runtime": "1.3.1"}
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:07.3409139Z test_primary_sidecar_count_mismatch_is_integrity_status_only (__main__.HostedNegativeFinalizerTests.test_primary_sidecar_count_mismatch_is_integrity_status_only) ... ok
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:10.1140628Z test_primary_signed_a8_imag_mismatch_is_integrity_status_only (__main__.HostedNegativeFinalizerTests.test_primary_signed_a8_imag_mismatch_is_integrity_status_only) ... ok
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:10.4526172Z test_reconstructed_fresh_disk_excess_is_conditioning_status_only (__main__.HostedNegativeFinalizerTests.test_reconstructed_fresh_disk_excess_is_conditioning_status_only) ... ok
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:10.4527084Z 
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:10.4527281Z ----------------------------------------------------------------------
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:10.4527612Z Ran 3 tests in 3.462s
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:10.4527782Z 
+windows-python	Execute three negative finalizer cases with native paths	2026-09-06T07:08:10.4527860Z OK
+windows-python	Post Set up native Python 3.12	﻿2026-09-06T07:08:10.5093311Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+windows-python	Post Set up native Python 3.12	2026-09-06T07:08:10.5094523Z Post job cleanup.
+windows-python	Post Set up native Python 3.12	2026-09-06T07:08:10.6174766Z (node:3676) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+windows-python	Post Set up native Python 3.12	2026-09-06T07:08:10.6175374Z (Use `node --trace-deprecation ...` to show where the warning was created)
+windows-python	Complete job	﻿2026-09-06T07:08:10.6305577Z Cleaning up orphan processes
+windows-python	Complete job	2026-09-06T07:08:10.6414097Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

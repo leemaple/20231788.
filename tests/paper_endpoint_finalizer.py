@@ -77,6 +77,23 @@ def _bounded_read(path, maximum, *, allow_empty=False):
         raise FinalizationError("IO_ERROR", "cannot read input") from error
 
 
+def _ctest_timeout_transport(data, host):
+    # Frozen one-test CTest transport, observed on both hosted shells. The final
+    # summary is outside --output-on-failure's unprefixed child-output replay.
+    if host == "windows":
+        data = data.replace(b"\r\n", b"\n")
+    footer = (b"\nThe following tests FAILED:\n"
+              b"\t 61 - paper_full_eight_square_contract (Timeout)\n"
+              b"Errors while running CTest\n")
+    if not data.endswith(footer):
+        return False
+    result_line = re.compile(
+        rb"(?:\A|\n)1/1 Test #61: paper_full_eight_square_contract "
+        rb"\.\.\.\*\*\*Timeout +(?:0|[1-9][0-9]*)\.[0-9]{2} sec(?=\n)")
+    matches = result_line.finditer(data, 0, len(data) - len(footer))
+    return next(matches, None) is not None and next(matches, None) is None
+
+
 def finalize_endpoint(primary_log, identity, *, ctest_exit_code, capture_exit_code,
                       expected_scope, canonical_parent, published_parent, timed_out=False):
     """Finalize observed files; preserve failures, never accept a supplied summary."""
@@ -117,9 +134,13 @@ def finalize_endpoint(primary_log, identity, *, ctest_exit_code, capture_exit_co
     except FinalizationError as error:
         return publish_endpoint_evidence(
             published_parent, identity, _status(identity, ctest_exit_code, error.reason))
+    transport_timeout = _ctest_timeout_transport(data, identity.host)
+    timeout_conflict = transport_timeout and ctest_exit_code == 0
     try:
-        primary = parse_primary_log(data, primary_identity, ctest_exit_code=ctest_exit_code,
-                                    timed_out=timed_out, expected_scope=expected_scope)
+        primary = parse_primary_log(
+            data, primary_identity, ctest_exit_code=ctest_exit_code,
+            timed_out=timed_out or (transport_timeout and ctest_exit_code != 0),
+            expected_scope=expected_scope)
     except PrimaryLogError as error:
         if error.first_failure is not None:
             reason = error.first_failure.reason
@@ -133,12 +154,14 @@ def finalize_endpoint(primary_log, identity, *, ctest_exit_code, capture_exit_co
         primary.endpoint.boost_version if primary.endpoint is not None else None)
     if capture_exit_code:
         reason = primary.first_failure.reason if primary.first_failure is not None else "IO_ERROR"
+    elif timeout_conflict and primary.first_failure is None:
+        reason = "INTEGRITY"
     else:
         reason = primary.reason
         if (reason == "NO_CANONICAL" and ctest_exit_code != 0 and
                 primary.numeric_gate_failures is None):
             reason = "CTEST_FATAL"
-    if primary.evidence_state != "COMPLETE" or capture_exit_code:
+    if primary.evidence_state != "COMPLETE" or capture_exit_code or timeout_conflict:
         return publish_endpoint_evidence(
             published_parent, identity, _status(identity, ctest_exit_code, reason, observation))
     stem = initial_status["status_filename"].removesuffix(".status.json")
