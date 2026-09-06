@@ -1,0 +1,19 @@
+# Independent source-first mathematical review
+
+Received 2026-09-07 Asia/Shanghai from `/root/endpoint_cpp_interop` at root HEAD `4bd885473a0494a7805374e45d2fd382c4baf6e4`. Separate Codex context, observed GPT-5-family identity only; exact backend/effort unattested, not independent provider evidence. The reviewer performed source-only review, no execution or edits. Root subsequently inspected the cited checker and frozen producer/oracle expressions.
+
+Reviewed return ZIP SHA-256: `ebd28c13a04746935b089b6af3dd6952c54361e45996b6074254594218940284`. Checker SHA: `82544a5f4b06cc31bc51cb6fa3e82c3122cad33f0d9e7966e0042610974040d4`; tests: `a8c740280dcf18166b963a79802a509f944e670fb9366e1d66671a651f4f2874`; DECISION: `1c172cdcbd18826d0ef1bac22d4d28fd2124afc93b616e8b08a2f5bbfc2e6e20`; FINDINGS: `0c5672630b74e504c11ee6153234dcc16d3769c0bb018a16e20323c58afbc7e2`.
+
+## Findings and root disposition
+
+1. **Medium: incomplete witness arithmetic transfer.** Returned `pro/independent_endpoint_check.py:273–280` derives the endpoint witness relative to exact rational powers and allows `2*2^-120` for producer endpoint transfer. The frozen predicate in `tests/paper_full_eight_square_contract_test.cpp:241–248` instead uses binary512 recursively squared expected values and binary512 subtractions, with the multiplication expression in `tests/paper_full_eight_square_oracle.h:93–100`. The return does not explicitly bound the expected-power and subtraction transfer, nor directly bind the retained emitted producer scalars. The omitted terms appear far smaller than the retained decision margins, but that inference is not the missing proof. **Disposition: confirmed; root does not accept a fully independent reproduction of the witness predicate.** Linux witness FAIL and Windows witness PASS remain observed original CTest results. A separate witness certification, if needed as a future acceptance dependency, must include those terms or directly bind the retained scalars and a boundary regression. Owner: Codex. It is not necessary for the accepted global E/I/A threshold characterization, so no full replay is commissioned solely to change the wording.
+
+2. **Low: exact unique argmax not certified.** Checker lines 241–254 form a valid maximum interval `[max(lower_i), max(upper_i)]` but select the argument by largest lower endpoint, without proving its lower endpoint exceeds all competitor upper endpoints. **Disposition: confirmed; use measured/reconciled C++ maximizers, not independently certified unique exact maximizers.** Global maximum enclosures and the selected same-component reverse-triangle result do not require uniqueness. No returned file is rewritten. If unique maximization becomes a real dependency, add competitor separation rather than assume it.
+
+## Supported bounded result
+
+The signed outward floor/ceiling arithmetic, all-corner interval multiplication, and recurrence `delta' = delta*(2*w+delta), w'=w*w` are mathematically sound. Conditional on the supplied endpoint observer intervals, the two retained chains establish a same-component negative I8 and positive A8, partial cancellation, reverse lower bound greater than `2^-80`, a global I8 lower bound above that limit, and a global A8 upper bound below it. The original 9 Linux / 7 Windows precision misses remain intact.
+
+This neither decomposes E0 into encoding/key/encryption terms nor proves all-key correctness, no cancelling intermediate defects, rigorous observer certification, or original E80 acceptance. The scalar Tensor sign counterexample is valid under the printed `(1,s)` convention, but is ancillary paper-display evidence, not endpoint evidence or an author-issued erratum.
+
+The root's qualified acceptance is in `ACCEPTANCE.md`; the original author's broader wording remains archived as evidence, not adopted authority.

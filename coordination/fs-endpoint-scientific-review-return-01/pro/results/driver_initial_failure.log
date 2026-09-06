@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/mnt/data/fs_review_work/run_supplied_full_replay.py", line 36, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/mnt/data/fs_review_work/run_supplied_full_replay.py", line 23, in main
+    statusfile=next(parent.glob('*.status.json'));status=decode_status(statusfile.read_bytes())
+                                                         ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/fs_review_work/input/project/tests/paper_endpoint_status.py", line 145, in decode_status
+    _require(encode_status(record, **expected_identity) == data, "noncanonical status JSON")
+             ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/fs_review_work/input/project/tests/paper_endpoint_status.py", line 124, in encode_status
+    _validate(record, **expected_identity)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: _validate() missing 4 required keyword-only arguments: 'expected_source_commit', 'expected_host', 'expected_run_id', and 'expected_run_attempt'
+real 0.75
+user 1.13
+sys 0.07

@@ -1,0 +1,104 @@
+{
+  "task": "FS-ENDPOINT-SCIENTIFIC-REVIEW-01",
+  "status": "RECEIVED_INTEGRITY_VERIFIED_SCIENTIFIC_ACCEPTANCE_PENDING",
+  "tested_source": "ed5fd192a89d6d4728ad295e87cf06a3f4abc832",
+  "root_head_at_receipt": "4bd885473a0494a7805374e45d2fd382c4baf6e4",
+  "conversation": {
+    "url": "https://chatgpt.com/c/6a9d8301-ec5c-83ec-9dfe-c07ce8fd5e35",
+    "title": "Scientific review decision",
+    "ego_task_space": 122,
+    "tab": "892F05267EFC927257D7F1EEB2DE0B5C",
+    "observed_ui_model": "6 Pro",
+    "backend_identity": "unattested",
+    "submission_receipt": "../fs-endpoint-scientific-review-01/SUBMISSION_RECEIPT.json",
+    "terminal_observed_utc": "2026-09-06T16:11:33.390Z",
+    "terminal_user_count": 1,
+    "stop_answering_visible": false,
+    "displayed_duration": "Worked for 40m 30s",
+    "observed_completion_time_limit": "Terminal at observation; exact completion timestamp not captured."
+  },
+  "download": {
+    "archive_click_utc": "2026-09-06T16:12:45.877Z",
+    "source_path": "/Users/lifeng/Downloads/fs-endpoint-scientific-review-return-ed5fd192.zip",
+    "durable_path": "/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905/artifacts/handoffs/fs-endpoint-scientific-review-return-01/fs-endpoint-scientific-review-return-ed5fd192.zip",
+    "bytes": 8839463,
+    "sha256": "ebd28c13a04746935b089b6af3dd6952c54361e45996b6074254594218940284",
+    "archive_click_count": 1,
+    "transport_notes": [
+      "Browser.setDownloadBehavior returned method-not-found before any UI click; Page.setDownloadBehavior succeeded but the application saved the ZIP in Downloads, not the requested temp directory. Found actual file and verified it without re-clicking the archive.",
+      "A Too many requests modal was visible with the terminal response. Acknowledged once; its appearance time and whether it represented a new request error are unknown. No prompt resend/refresh/stop.",
+      "Checksum sidecar clicked once at 2026-09-06T16:13:19.051Z; no matching local file observed in Downloads or the specified temp directory. Do not claim sidecar delivery. Actual archive hash exactly matches the terminal displayed SHA and its manifest was independently checked."
+    ]
+  },
+  "preflight": {
+    "regular_members": 100,
+    "expanded_bytes": 11323748,
+    "manifest_payloads": 99,
+    "manifest_sha256": "f08aeed1469a181fc207c3efe0b2551d0a52a3b8aa87bbc799fd26ad1691c437",
+    "crc": "PASS",
+    "member_sizes_hashes_and_closure": "PASS",
+    "exact_retained_input_copies": 65,
+    "input_archive_sha256": "ee98c075f62e23cf99f0a06ce694b49290f1f5dbe275932988954d41aa919d23",
+    "input_comparison": "All 65 evidence/ members matched the corresponding actual sent ZIP member byte-for-byte, including its MANIFEST.json. Root did not independently recreate the Pro container's 217-file immutability execution.",
+    "decoded_gzip_members": 2,
+    "decoded_canonical_hashes": [
+      "919f7deee4d6acbb2c068d62c2f657cd91b4068a458e1a69a8f9767a4f87a6cd",
+      "b21d50a97a81c7e83f4fea3bd2262a77587e21a14772c1070a20c71d4f19512e"
+    ]
+  },
+  "secret_scan": {
+    "tool": "Gitleaks",
+    "version": "8.30.1",
+    "command": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--no-banner",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact"
+    ],
+    "cwd": "/private/tmp",
+    "environment": "Removed GITLEAKS* environment variables; GOMAXPROCS=2",
+    "scope": "All 100 expanded members plus both bounded decoded canonical TSVs",
+    "framed_bytes": 27295880,
+    "framed_sha256": "27db91a16d2a98ee7f2467f50cc2a0077f04b6145342b84323bbe82356a3f16a",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "12:14AM INF scanned ~27295880 bytes (27.30 MB) in 3.57s\n12:14AM INF no leaks found\n"
+  },
+  "archive_extraction": {
+    "tracked_authored_or_result_files": 35,
+    "bytes": 219213,
+    "exact_byte_comparison": "PASS against return ZIP",
+    "original_evidence_copies": "Retained in durable ZIP/unpacked artifacts; not duplicated into Git.",
+    "notes": "Two original JSON outputs have no final LF. A preliminary LF-only apply-patch import guard rejected them without writing. First unzip destination was absent and failed, followed by explicit directory creation and exact non-overwriting extraction. All35 files then compared exactly; no normalization."
+  },
+  "root_checks": {
+    "environment": "Bundled CPython 3.12.14, -B -I; no site packages required",
+    "small_test_command": "python3 -B -I; add exact unpacked return path to sys.path, unittest.loadTestsFromName('test_independent_endpoint_check'), TextTestRunner(verbosity=2)",
+    "small_test_result": {
+      "chunk_id": "5eed59",
+      "wall_time_seconds": 0.000003542,
+      "exit_code": 0,
+      "original_token_count": 223,
+      "output": "test_canonical_zero_and_nonzero (test_independent_endpoint_check.ArithmeticAndPreservationTests.test_canonical_zero_and_nonzero) ... ok\ntest_fail_closed_source_and_dispositions (test_independent_endpoint_check.ArithmeticAndPreservationTests.test_fail_closed_source_and_dispositions) ... ok\ntest_outward_arithmetic_and_difference_recurrence (test_independent_endpoint_check.ArithmeticAndPreservationTests.test_outward_arithmetic_and_difference_recurrence) ... ok\ntest_paper_printed_tensor_sign_counterexample (test_independent_endpoint_check.ArithmeticAndPreservationTests.test_paper_printed_tensor_sign_counterexample) ... ok\ntest_scale_perturbation_growth_not_metadata_fix (test_independent_endpoint_check.ArithmeticAndPreservationTests.test_scale_perturbation_growth_not_metadata_fix) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.009s\n\nOK\n"
+    },
+    "return_integrity_command": "python3 -B -I artifacts/handoffs/fs-endpoint-scientific-review-return-01/unpacked/verify_return.py artifacts/handoffs/fs-endpoint-scientific-review-return-01/fs-endpoint-scientific-review-return-ed5fd192.zip",
+    "return_integrity_result": {
+      "chunk_id": "54e9b1",
+      "wall_time_seconds": 0.0000205,
+      "exit_code": 0,
+      "original_token_count": 53,
+      "output": "{\n  \"result\": \"RETURN_INTEGRITY_PASS\",\n  \"regular_members\": 100,\n  \"manifest_payloads\": 99,\n  \"archive_bytes\": 8839463,\n  \"archive_sha256\": \"ebd28c13a04746935b089b6af3dd6952c54361e45996b6074254594218940284\"\n}\n"
+    },
+    "not_run": "No root full-slot numeric replay, FFT/NTT, crypto, C++ build or CI rerun; Pro full-replay results are retained external execution evidence."
+  },
+  "original_e80": "FAIL",
+  "A_acceptance": "NOT_ADOPTED",
+  "project_goal": "ACTIVE_INCOMPLETE"
+}

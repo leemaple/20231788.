@@ -1,0 +1,67 @@
+{
+  "result": "SELF_CONTAINED_REPRODUCTION_PASS",
+  "checks": [
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "evidence/project/coordination/fs-endpoint-live-run-01/verify_live_evidence.py",
+        "linux"
+      ],
+      "exit_code": 0,
+      "seconds": 1.178,
+      "scientific_output_identical_to": "supplied_verify_linux.json",
+      "ignored_timing_fields": [],
+      "stderr": "",
+      "stdout_sha256": "e34ae55fd7798e89e0ca051b69c3079b3f6a0acd959e351adc60e47d7e5bdb40"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "run_supplied_full_replay.py",
+        "evidence",
+        "linux"
+      ],
+      "exit_code": 0,
+      "seconds": 6.09,
+      "scientific_output_identical_to": "supplied_full_replay_linux.json",
+      "ignored_timing_fields": [
+        "scalar_replay_seconds"
+      ],
+      "stderr": "",
+      "stdout_sha256": "6e65ee961bd819d3e92bca3b2bbd848dfedbe965ddfcb09f16662c182bb48b1a"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "independent_endpoint_check.py",
+        "evidence",
+        "linux"
+      ],
+      "exit_code": 0,
+      "seconds": 9.581,
+      "scientific_output_identical_to": "independent_linux.json",
+      "ignored_timing_fields": [
+        "elapsed_seconds"
+      ],
+      "stderr": "",
+      "stdout_sha256": "f60a2c6632b7b6a66bbd24b191a5f4f21e2930a49e19a488575d983f4f9d1689"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_independent_endpoint_check"
+      ],
+      "exit_code": 0,
+      "stderr": "test_canonical_zero_and_nonzero (test_independent_endpoint_check.ArithmeticAndPreservationTests.test_canonical_zero_and_nonzero) ... ok\ntest_fail_closed_source_and_dispositions (test_independent_endpoint_check.ArithmeticAndPreservationTests.test_fail_closed_source_and_dispositions) ... ok\ntest_outward_arithmetic_and_difference_recurrence (test_independent_endpoint_check.ArithmeticAndPreservationTests.test_outward_arithmetic_and_difference_recurrence) ... ok\ntest_paper_printed_tensor_sign_counterexample (test_independent_endpoint_check.ArithmeticAndPreservationTests.test_paper_printed_tensor_sign_counterexample) ... ok\ntest_scale_perturbation_growth_not_metadata_fix (test_independent_endpoint_check.ArithmeticAndPreservationTests.test_scale_perturbation_growth_not_metadata_fix) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.010s\n\nOK\n",
+      "stdout": ""
+    }
+  ],
+  "crypto_or_fft_executed": false
+}
