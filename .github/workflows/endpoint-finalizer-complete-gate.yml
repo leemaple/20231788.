@@ -3,7 +3,7 @@ name: Endpoint complete finalizer Python gate
 'on':
   push:
     branches:
-      - codex/endpoint-finalizer-complete-red-20260906
+      - codex/endpoint-finalizer-complete-red-fix-20260906
 
 permissions:
   contents: read
@@ -43,11 +43,12 @@ jobs:
     timeout-minutes: 15
     env:
       ENDPOINT_TEST_HOST: windows
-      ENDPOINT_PROJECT_SOURCE: ${{ runner.temp }}/fs-endpoint-complete-source-${{ github.run_id }}-${{ github.run_attempt }}-windows
     steps:
       - name: Check out exact public source outside the dotted workspace
         shell: pwsh
         working-directory: C:/
+        env:
+          ENDPOINT_PROJECT_SOURCE: ${{ runner.temp }}/fs-endpoint-complete-source-${{ github.run_id }}-${{ github.run_attempt }}-windows
         run: |
           $ErrorActionPreference = 'Stop'
           if (Test-Path -LiteralPath $env:ENDPOINT_PROJECT_SOURCE) {
@@ -76,7 +77,7 @@ jobs:
           python-version: '3.12'
       - name: Execute complete synthetic finalizer once with native paths
         shell: pwsh
-        working-directory: ${{ env.ENDPOINT_PROJECT_SOURCE }}
+        working-directory: ${{ runner.temp }}/fs-endpoint-complete-source-${{ github.run_id }}-${{ github.run_attempt }}-windows
         run: |
           $ErrorActionPreference = 'Stop'
           python -c 'import sys, platform, decimal, json, zlib; sys.exit("Python 3.12 required") if sys.version_info[:2] != (3, 12) else None; print(json.dumps({"python": sys.version, "implementation": platform.python_implementation(), "platform": sys.platform, "decimal": decimal.__version__, "libmpdec": decimal.__libmpdec_version__, "default_decimal_context": str(decimal.getcontext()), "zlib_build": zlib.ZLIB_VERSION, "zlib_runtime": zlib.ZLIB_RUNTIME_VERSION}, sort_keys=True))'

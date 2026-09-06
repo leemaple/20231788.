@@ -53,3 +53,23 @@ C++ writer interoperability and next single live-chain gates remain pending.
 Activation is one authorized source push. Once its result is retained, retire
 or deliberately change the exact trigger before any later push to the same
 ref. A checkpoint ref outside all workflow filters does not rerun the gate.
+
+## Initial activation failure and corrected trigger
+
+Source 2035099088cd6f8b083297f019b34f9871dfa7d2 was pushed once to the initial
+RED ref. Run 34015881115 failed before creating any jobs; it is not behavioral
+RED. The initial job-level env incorrectly used runner.temp, which is absent
+from GitHub's allowed job-env contexts. Ruby YAML parsing and the initial review
+did not detect that GitHub-specific rule. See 05_initial_activation_failure.json.
+
+The corrected workflow moves that expression to the checkout step's env and
+uses the identical expression directly in the final step's working-directory;
+both locations explicitly support runner. Only
+codex/endpoint-finalizer-complete-red-fix-20260906 now triggers the corrected
+workflow. The previous trigger is retired in this source; no rerun/dispatch is
+performed. Test, finalizer, original dcp-rcb workflow and paper limits remain
+unchanged. Corrected hosted jobs must still establish the genuine missing-path
+RED before finalizer GREEN implementation.
+
+Official reference: [Context availability](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability),
+read 2026-09-06; job env excludes runner while step env/working-directory allow it.
