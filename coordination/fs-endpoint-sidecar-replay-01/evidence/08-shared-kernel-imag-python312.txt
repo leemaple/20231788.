@@ -1,0 +1,30 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+python: Python 3.12.14
+
+Pre-refactor command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_nonzero_imaginary_worked_values; code=$?; echo EXIT_CODE=$code; exit "$code"
+Pre-refactor exit_code: 0
+Pre-refactor stdout_stderr:
+5eb0b359d0e0b1f863cc44b7160b3c311ab7e459138747ef5e408077f1a1b0bf  tests/paper_endpoint_sidecar_replay.py
+c228234360ca2836b13b65a9d63e631c813c658aea46552bae3a8a7c86ea725b  tests/test_paper_endpoint_sidecar_replay.py
+test_replays_nonzero_imaginary_worked_values (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_nonzero_imaginary_worked_values) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
+EXIT_CODE=0
+
+Shared-kernel command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_nonzero_imaginary_worked_values test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_eight_explicit_squares_from_nonzero_worked_values test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_bounded_summary_preserves_full_complex_tuple_and_ties; code=$?; echo EXIT_CODE=$code; exit "$code"
+Shared-kernel exit_code: 0
+Shared-kernel stdout_stderr:
+12fe55272c11c696f7cd729939b42204aca3859118e85f670c177ec9437b20ef  tests/paper_endpoint_sidecar_replay.py
+c228234360ca2836b13b65a9d63e631c813c658aea46552bae3a8a7c86ea725b  tests/test_paper_endpoint_sidecar_replay.py
+test_replays_nonzero_imaginary_worked_values (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_nonzero_imaginary_worked_values) ... ok
+test_replays_eight_explicit_squares_from_nonzero_worked_values (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_eight_explicit_squares_from_nonzero_worked_values) ... ok
+test_bounded_summary_preserves_full_complex_tuple_and_ties (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_bounded_summary_preserves_full_complex_tuple_and_ties) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK
+EXIT_CODE=0

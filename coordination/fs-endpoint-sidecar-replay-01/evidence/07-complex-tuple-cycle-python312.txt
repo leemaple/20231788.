@@ -1,0 +1,38 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+python: Python 3.12.14
+
+RED command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 --version && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_bounded_summary_preserves_full_complex_tuple_and_ties; code=$?; echo EXIT_CODE=$code; exit "$code"
+RED exit_code: 1
+RED stdout_stderr:
+ee78e356526935d7b1962d3fb219f84583772350022c19fad3f1eb8a3d643789  tests/paper_endpoint_sidecar_replay.py
+0dfb5ae0a97adb1592f9e94079e3c81a8856649f2017d30959ac7ca416711925  tests/test_paper_endpoint_sidecar_replay.py
+Python 3.12.14
+test_bounded_summary_preserves_full_complex_tuple_and_ties (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_bounded_summary_preserves_full_complex_tuple_and_ties) ... ERROR
+
+======================================================================
+ERROR: test_bounded_summary_preserves_full_complex_tuple_and_ties (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_bounded_summary_preserves_full_complex_tuple_and_ties)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_replay.py", line 27, in test_bounded_summary_preserves_full_complex_tuple_and_ties
+    summary = replay.summarize_scalars(((2, first), (5, later_tie)))
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'paper_endpoint_sidecar_replay' has no attribute 'summarize_scalars'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)
+EXIT_CODE=1
+
+GREEN command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_bounded_summary_preserves_full_complex_tuple_and_ties; code=$?; echo EXIT_CODE=$code; exit "$code"
+GREEN exit_code: 0
+GREEN stdout_stderr:
+5eb0b359d0e0b1f863cc44b7160b3c311ab7e459138747ef5e408077f1a1b0bf  tests/paper_endpoint_sidecar_replay.py
+0dfb5ae0a97adb1592f9e94079e3c81a8856649f2017d30959ac7ca416711925  tests/test_paper_endpoint_sidecar_replay.py
+test_bounded_summary_preserves_full_complex_tuple_and_ties (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_bounded_summary_preserves_full_complex_tuple_and_ties) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+EXIT_CODE=0

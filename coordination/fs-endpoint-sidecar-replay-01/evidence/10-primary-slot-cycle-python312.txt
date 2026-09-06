@@ -1,0 +1,37 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+python: Python 3.12.14
+
+RED command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_row_lookup_retains_values_for_primary_slot_reconciliation; code=$?; echo EXIT_CODE=$code; exit "$code"
+RED exit_code: 1
+RED stdout_stderr:
+8c5bbd8044dd71eb57a906a41a62678398e01fb526ca8660e52ba9cdb5bdb2fa  tests/paper_endpoint_sidecar_replay.py
+ed2f3e2bd4bbb06932663792ed974a2f0c5ff300fc102ea4af0a0ce7ce012832  tests/test_paper_endpoint_sidecar_replay.py
+test_public_row_lookup_retains_values_for_primary_slot_reconciliation (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_row_lookup_retains_values_for_primary_slot_reconciliation) ... ERROR
+
+======================================================================
+ERROR: test_public_row_lookup_retains_values_for_primary_slot_reconciliation (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_row_lookup_retains_values_for_primary_slot_reconciliation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_replay.py", line 92, in test_public_row_lookup_retains_values_for_primary_slot_reconciliation
+    result = replay.replay_row(0, row)
+             ^^^^^^^^^^^^^^^^^
+AttributeError: module 'paper_endpoint_sidecar_replay' has no attribute 'replay_row'. Did you mean: 'ReplayError'?
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)
+EXIT_CODE=1
+
+GREEN command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_row_lookup_retains_values_for_primary_slot_reconciliation; code=$?; echo EXIT_CODE=$code; exit "$code"
+GREEN exit_code: 0
+GREEN stdout_stderr:
+a9911bfe940c0a937c9d47395bb3d289581460248c3c68ee667bf0c4a37193c6  tests/paper_endpoint_sidecar_replay.py
+ed2f3e2bd4bbb06932663792ed974a2f0c5ff300fc102ea4af0a0ce7ce012832  tests/test_paper_endpoint_sidecar_replay.py
+test_public_row_lookup_retains_values_for_primary_slot_reconciliation (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_row_lookup_retains_values_for_primary_slot_reconciliation) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
+EXIT_CODE=0

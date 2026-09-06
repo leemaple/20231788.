@@ -1,0 +1,22 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_rejects_incomplete_sidecar_without_treating_sample_as_full_slot; code=$?; echo EXIT_CODE=$code; exit "$code"
+exit_code: 1
+stdout_stderr:
+09912f3046b1b60a3451d37ce1284f43823bb1572d0bf0e701e69e13e3e6e6c9  tests/paper_endpoint_sidecar_replay.py
+ad11bcb841fcf6b546d26c9a3e4b349dc9ea8708e3f0977f4bf7d7365fa8de79  tests/test_paper_endpoint_sidecar_replay.py
+test_rejects_incomplete_sidecar_without_treating_sample_as_full_slot (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_rejects_incomplete_sidecar_without_treating_sample_as_full_slot) ... ERROR
+
+======================================================================
+ERROR: test_rejects_incomplete_sidecar_without_treating_sample_as_full_slot (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_rejects_incomplete_sidecar_without_treating_sample_as_full_slot)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_replay.py", line 34, in test_rejects_incomplete_sidecar_without_treating_sample_as_full_slot
+    replay.replay_sidecar(sidecar)
+    ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'paper_endpoint_sidecar_replay' has no attribute 'replay_sidecar'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+EXIT_CODE=1

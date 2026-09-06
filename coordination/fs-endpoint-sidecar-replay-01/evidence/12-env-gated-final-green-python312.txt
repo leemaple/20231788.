@@ -1,0 +1,25 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+command: shasum -a 256 tests/paper_endpoint_sidecar_reader.py tests/test_paper_endpoint_sidecar_reader.py tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 --version && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v tests/test_paper_endpoint_sidecar_replay.py; code=$?; echo EXIT_CODE=$code; exit "$code"
+exit_code: 0
+stdout_stderr:
+b24a7d9828a7cc6d086537afd7bec2a04018c3ce2509157d7416e2ff151ebf30  tests/paper_endpoint_sidecar_reader.py
+84fe5759a2d4ae6cc9dd393ffab105ac44083c0d0ba2e01922d1954245187791  tests/test_paper_endpoint_sidecar_reader.py
+a56d0a65974040be3e03d9a5ee05509428f718098c8e4e230e12e8bd23c5dc8f  tests/paper_endpoint_sidecar_replay.py
+b79e864b20c3d153822f003f5c3418ec3060aaeecda907a4172942926b06f0a7  tests/test_paper_endpoint_sidecar_replay.py
+Python 3.12.14
+test_bounded_summary_preserves_full_complex_tuple_and_ties (tests.test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_bounded_summary_preserves_full_complex_tuple_and_ties) ... ok
+test_hosted_replays_complete_nonzero_synthetic_sidecar (tests.test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_hosted_replays_complete_nonzero_synthetic_sidecar) ... skipped 'HOSTED NOT RUN: complete 16384-row Decimal256 replay'
+test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess (tests.test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess) ... ok
+test_public_row_lookup_retains_values_for_primary_slot_reconciliation (tests.test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_row_lookup_retains_values_for_primary_slot_reconciliation) ... ok
+test_reconstructs_frozen_dyadic_input_with_phase_and_sign (tests.test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_reconstructs_frozen_dyadic_input_with_phase_and_sign) ... ok
+test_rejects_incomplete_sidecar_without_treating_sample_as_full_slot (tests.test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_rejects_incomplete_sidecar_without_treating_sample_as_full_slot) ... ok
+test_rejects_malformed_scalar_and_exact_disk_excess (tests.test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_rejects_malformed_scalar_and_exact_disk_excess) ... ok
+test_rejects_serialization_budget_before_decimal_squaring (tests.test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_rejects_serialization_budget_before_decimal_squaring) ... ok
+test_replays_eight_explicit_squares_from_nonzero_worked_values (tests.test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_eight_explicit_squares_from_nonzero_worked_values) ... ok
+test_replays_nonzero_imaginary_worked_values (tests.test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_nonzero_imaginary_worked_values) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.029s
+
+OK (skipped=1)
+EXIT_CODE=0

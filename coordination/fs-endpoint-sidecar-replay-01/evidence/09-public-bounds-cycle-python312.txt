@@ -1,0 +1,37 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+python: Python 3.12.14
+
+RED command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess; code=$?; echo EXIT_CODE=$code; exit "$code"
+RED exit_code: 1
+RED stdout_stderr:
+12fe55272c11c696f7cd729939b42204aca3859118e85f670c177ec9437b20ef  tests/paper_endpoint_sidecar_replay.py
+8b8cbb20847ff7eacbb944efc0c3767d9db8e7d22a16e5a31a7febd154f3e887  tests/test_paper_endpoint_sidecar_replay.py
+test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess) ... ERROR
+
+======================================================================
+ERROR: test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_replay.py", line 44, in test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess
+    bounds = replay.derive_replay_bounds(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'paper_endpoint_sidecar_replay' has no attribute 'derive_replay_bounds'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)
+EXIT_CODE=1
+
+GREEN command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess; code=$?; echo EXIT_CODE=$code; exit "$code"
+GREEN exit_code: 0
+GREEN stdout_stderr:
+8c5bbd8044dd71eb57a906a41a62678398e01fb526ca8660e52ba9cdb5bdb2fa  tests/paper_endpoint_sidecar_replay.py
+8b8cbb20847ff7eacbb944efc0c3767d9db8e7d22a16e5a31a7febd154f3e887  tests/test_paper_endpoint_sidecar_replay.py
+test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_bounds_seam_uses_exact_nonzero_k_and_rejects_excess) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+EXIT_CODE=0

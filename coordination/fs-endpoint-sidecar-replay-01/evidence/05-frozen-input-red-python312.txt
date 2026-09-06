@@ -1,0 +1,22 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_reconstructs_frozen_dyadic_input_with_phase_and_sign; code=$?; echo EXIT_CODE=$code; exit "$code"
+exit_code: 1
+stdout_stderr:
+cbe558980a80b23e622deb9dfcc1fbd7e04f411b8be0cbaa03260f35c04d54a6  tests/paper_endpoint_sidecar_replay.py
+bc34cba3aa47170b62849c137e49df49bab92dceb9cadecb55be02ad0aa9a6dc  tests/test_paper_endpoint_sidecar_replay.py
+test_reconstructs_frozen_dyadic_input_with_phase_and_sign (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_reconstructs_frozen_dyadic_input_with_phase_and_sign) ... ERROR
+
+======================================================================
+ERROR: test_reconstructs_frozen_dyadic_input_with_phase_and_sign (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_reconstructs_frozen_dyadic_input_with_phase_and_sign)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_replay.py", line 52, in test_reconstructs_frozen_dyadic_input_with_phase_and_sign
+    self.assertEqual(replay.frozen_input(0),
+                     ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'paper_endpoint_sidecar_replay' has no attribute 'frozen_input'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+EXIT_CODE=1

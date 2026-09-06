@@ -1,0 +1,23 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_rejects_serialization_budget_before_decimal_squaring; code=$?; echo EXIT_CODE=$code; exit "$code"
+exit_code: 1
+stdout_stderr:
+fbe437051b975f0a778ab4aae110bfccad6eef275d4094be745b389ad645078b  tests/paper_endpoint_sidecar_replay.py
+ee19ef85f93c25b53d4fbbd38b8e79350ac571f568dce929127777f55f48bfc6  tests/test_paper_endpoint_sidecar_replay.py
+test_rejects_serialization_budget_before_decimal_squaring (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_rejects_serialization_budget_before_decimal_squaring) ... ERROR
+
+======================================================================
+ERROR: test_rejects_serialization_budget_before_decimal_squaring (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_rejects_serialization_budget_before_decimal_squaring)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_replay.py", line 49, in test_rejects_serialization_budget_before_decimal_squaring
+    replay.replay_sidecar(sidecar)
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/paper_endpoint_sidecar_replay.py", line 142, in replay_sidecar
+    raise ReplayError("full scalar replay not yet implemented")
+paper_endpoint_sidecar_replay.ReplayError: full scalar replay not yet implemented
+
+----------------------------------------------------------------------
+Ran 1 test in 0.004s
+
+FAILED (errors=1)
+EXIT_CODE=1

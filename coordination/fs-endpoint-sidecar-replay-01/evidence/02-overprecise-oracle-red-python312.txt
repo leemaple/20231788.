@@ -1,0 +1,27 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_eight_explicit_squares_from_nonzero_worked_values; code=$?; echo EXIT_CODE=$code; exit "$code"
+exit_code: 1
+stdout_stderr:
+09912f3046b1b60a3451d37ce1284f43823bb1572d0bf0e701e69e13e3e6e6c9  tests/paper_endpoint_sidecar_replay.py
+404243e9fd450fd9ad0c4f0f8fde7798ab81f704be0736542b351e4ae9e978cc  tests/test_paper_endpoint_sidecar_replay.py
+test_replays_eight_explicit_squares_from_nonzero_worked_values (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_eight_explicit_squares_from_nonzero_worked_values) ... FAIL
+
+======================================================================
+FAIL: test_replays_eight_explicit_squares_from_nonzero_worked_values (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_replays_eight_explicit_squares_from_nonzero_worked_values)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_replay.py", line 25, in test_replays_eight_explicit_squares_from_nonzero_worked_values
+    self.assertEqual(result.a8, (Fraction(5, 4) - two_minus_256, Fraction(0)))
+AssertionError: Tuples differ: (Fraction(62499999999999999999999999999999999999999[484 chars], 1)) != (Fraction(14474011154664524427946373126085988481658[130 chars], 1))
+
+First differing element 0:
+Fraction(62499999999999999999999999999999999999999[467 chars]0000)
+Fraction(14474011154664524427946373126085988481658[113 chars]9936)
+
+Diff is 719 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)
+EXIT_CODE=1

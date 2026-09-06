@@ -1,0 +1,36 @@
+cwd: /Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906
+python: Python 3.12.14
+
+RED command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_summary_distinguishes_decimal_after_digit_28; code=$?; echo EXIT_CODE=$code; exit "$code"
+RED exit_code: 1
+RED stdout_stderr:
+a56d0a65974040be3e03d9a5ee05509428f718098c8e4e230e12e8bd23c5dc8f  tests/paper_endpoint_sidecar_replay.py
+c7e2ff12299e8955808a34a133b1ea9015699f3a1cb9efe5caa27b2ce9af0196  tests/test_paper_endpoint_sidecar_replay.py
+test_public_summary_distinguishes_decimal_after_digit_28 (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_summary_distinguishes_decimal_after_digit_28) ... FAIL
+
+======================================================================
+FAIL: test_public_summary_distinguishes_decimal_after_digit_28 (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_summary_distinguishes_decimal_after_digit_28)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/lifeng/Documents/20231788-openfhe-endpoint-sidecar-20260906/tests/test_paper_endpoint_sidecar_replay.py", line 36, in test_public_summary_distinguishes_decimal_after_digit_28
+    self.assertEqual(summary.e0.maximum,
+AssertionError: Fraction(1, 1) != Fraction(10000000000000000000000000001, 10000000000000000000000000000)
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)
+EXIT_CODE=1
+
+GREEN command: shasum -a 256 tests/paper_endpoint_sidecar_replay.py tests/test_paper_endpoint_sidecar_replay.py && PYTHONPATH=tests /Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest -v test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_summary_distinguishes_decimal_after_digit_28; code=$?; echo EXIT_CODE=$code; exit "$code"
+GREEN exit_code: 0
+GREEN stdout_stderr:
+b0a879a90ed0e730c53eb569f7412841be5ba88bb8aef162b6a652e6d08367ef  tests/paper_endpoint_sidecar_replay.py
+c7e2ff12299e8955808a34a133b1ea9015699f3a1cb9efe5caa27b2ce9af0196  tests/test_paper_endpoint_sidecar_replay.py
+test_public_summary_distinguishes_decimal_after_digit_28 (test_paper_endpoint_sidecar_replay.SidecarReplayTests.test_public_summary_distinguishes_decimal_after_digit_28) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
+EXIT_CODE=0
