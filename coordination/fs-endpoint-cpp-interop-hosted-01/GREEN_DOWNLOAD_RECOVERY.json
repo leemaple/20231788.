@@ -1,0 +1,50 @@
+{
+  "initial_memory_download": {
+    "cmd": "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B - <<'PY'\nimport subprocess,hashlib,io,zipfile,json,sys\nsys.path.insert(0,'/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905/tests')\nfrom paper_endpoint_status import decode_status\nfrom paper_endpoint_gzip import verify_gzip\nhost='linux';source='c2c924bb68e9f34ada759140410bc85970c0f76f';run='34037828392';attempt='1'\nstem='fs-residual-endpoint-01.v1-r1.'+'.'.join([source,host,run,attempt])\narchives=[]; sets=[]\nfor role,ident,digest,names in [('diagnostics',9990807617,'7b490ec64e17851b586c96aa77bb3f462760a36542e4ef4c84875ceb17e0e052',['producer.stdout.txt','producer.stderr.txt','gate-receipt.json']),('publication',9990807825,'635affb914237766844b90fd5ad7721df064f13faa5b218bd104cc6c9db830af',[stem+'.status.json',stem+'.tsv.gz'])]:\n    cmd=['/opt/homebrew/bin/gh','api',f'repos/leemaple/20231788./actions/artifacts/{ident}/zip']\n    raw=subprocess.run(cmd,check=True,stdout=subprocess.PIPE,timeout=60).stdout\n    assert 0<len(raw)<33555456 and hashlib.sha256(raw).hexdigest()==digest\n    z=zipfile.ZipFile(io.BytesIO(raw))\n    assert sorted(z.namelist())==sorted(names) and all(not i.is_dir() and i.file_size<33555456 for i in z.infolist())\n    data={n:z.read(n) for n in names}\n    archives.append({'role':role,'artifact_id':ident,'command':cmd,'archive_bytes':len(raw),'archive_sha256':digest,'files':[{'path':n,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),**({'content':b.decode()} if not n.endswith('.gz') else {})} for n,b in data.items()]})\n    sets.append(data)\nd,p=sets;r=json.loads(d['gate-receipt.json'])\nidentity=dict(expected_source_commit=source,expected_host=host,expected_run_id=run,expected_run_attempt=attempt)\ns=decode_status(p[stem+'.status.json'],**identity)\nassert r['stage']=='complete' and r['result']=='PASS' and r['producer_exit']==0 and d['producer.stderr.txt']==b''\nassert r['source_commit']==source and r['host']==host and r['github_run_id']==run and r['github_run_attempt']==attempt\nassert r['actual_crypto_chain_count']==r['actual_ctest_invocations']==0 and r['legacy_framing']=='constructed-test-only'\nassert r['supplied_synthetic_ctest_exit']==r['independent_finalizer_exit']==s['ctest_exit_code']==8\nassert r['exact_e0_rows']==s['row_count']==16384 and r['exact_gaussian_e8_slots']==[0,1,256,257,512,513,768,769,1023,16289,16353,16383]\nassert r['evidence_state']==s['evidence_state']=='COMPLETE' and s['reason']=='NONE' and s['numeric_gate_failures']==2 and r['E80_disposition']==s['E80_disposition']=='FAIL'\nassert len(d['producer.stdout.txt'].splitlines())==39 and all(l.startswith(b'FS_ENDPOINT_') for l in d['producer.stdout.txt'].splitlines())\nfor suffix in ['stdout','stderr']:\n    b=d[f'producer.{suffix}.txt'];assert len(b)==r[f'producer_{suffix}_bytes'] and hashlib.sha256(b).hexdigest()==r[f'producer_{suffix}_sha256']\nassert r['status_sha256']==hashlib.sha256(p[stem+'.status.json']).hexdigest()\nfor key in ['canonical_bytes','canonical_sha256','gzip_bytes','gzip_sha256','boost_version']: assert r[key]==s[key],key\ng=verify_gzip(p[stem+'.tsv.gz'],canonical_size=s['canonical_bytes'],canonical_sha256=s['canonical_sha256'],gzip_size=s['gzip_bytes'],gzip_sha256=s['gzip_sha256'])\nprint(json.dumps({'result':'PASS','scope':'bounded artifact identity/hash/status/gzip inspection; no local numerical replay','host':host,'archives':archives,'gzip_canonical_lf_count':g.canonical.count(b'\\n'),'canonical_prefix':g.canonical[:650].decode(),'canonical_last_line':g.canonical.splitlines()[-1].decode(),'receipt':r,'status':s},indent=2))\nPY",
+    "result": {
+      "chunk_id": "d7eb66",
+      "wall_time_seconds": 1.002410167,
+      "session_id": 14359,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  "memory_download_terminal": {
+    "chunk_id": "0d238b",
+    "wall_time_seconds": 0.000002958,
+    "exit_code": 1,
+    "original_token_count": 287,
+    "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 10, in <module>\n  File \"/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py\", line 550, in run\n    stdout, stderr = process.communicate(input, timeout=timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py\", line 1209, in communicate\n    stdout, stderr = self._communicate(input, endtime, timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py\", line 2116, in _communicate\n    self._check_timeout(endtime, orig_timeout, stdout, stderr)\n  File \"/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py\", line 1253, in _check_timeout\n    raise TimeoutExpired(\nsubprocess.TimeoutExpired: Command '['/opt/homebrew/bin/gh', 'api', 'repos/leemaple/20231788./actions/artifacts/9990807825/zip']' timed out after 60 seconds\n"
+  },
+  "linux_download_command": "gh run download 34037828392 --repo leemaple/20231788. --name fs-endpoint-synthetic-cpp-interop-linux-34037828392-1 --name fs-endpoint-synthetic-cpp-interop-publication-linux-34037828392-1 --dir coordination/fs-endpoint-cpp-interop-hosted-01/GREEN_ARTIFACTS_LINUX",
+  "linux_download": {
+    "chunk_id": "cc9368",
+    "wall_time_seconds": 1.000181708,
+    "session_id": 16033,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "linux_download_terminal": {
+    "chunk_id": "d854ca",
+    "wall_time_seconds": 6.66e-7,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "windows_download_command": "gh run download 34037828392 --repo leemaple/20231788. --name fs-endpoint-synthetic-cpp-interop-windows-34037828392-1 --name fs-endpoint-synthetic-cpp-interop-publication-windows-34037828392-1 --dir coordination/fs-endpoint-cpp-interop-hosted-01/GREEN_ARTIFACTS_WINDOWS",
+  "windows_download": {
+    "chunk_id": "31da16",
+    "wall_time_seconds": 1.002303875,
+    "session_id": 25795,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "windows_download_terminal": {
+    "chunk_id": "5d4e63",
+    "wall_time_seconds": 0.000002,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "note": "Downloaded archival directories later shortened; all payload bytes/basenames preserved and reverified. No CI rerun/restart."
+}
