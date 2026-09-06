@@ -100,6 +100,9 @@ class HostedCompleteFinalizerTests(unittest.TestCase):
         stem = ("fs-residual-endpoint-01.v1-r1." + identity.source_commit + "." +
                 identity.host + "." + identity.github_run_id + "." +
                 identity.github_run_attempt)
+        canonical_stem = ("fs-endpoint-synthetic-" + identity.source_commit + "." +
+                          identity.host + "." + identity.github_run_id + "." +
+                          identity.github_run_attempt)
         with tempfile.TemporaryDirectory(
                 prefix="fs-endpoint-synthetic-",
                 dir=Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)) as temporary:
@@ -108,9 +111,9 @@ class HostedCompleteFinalizerTests(unittest.TestCase):
             published_parent = root / "published"
             canonical_parent.mkdir(mode=0o700)
             published_parent.mkdir(mode=0o700)
-            canonical_directory = canonical_parent / stem
+            canonical_directory = canonical_parent / canonical_stem
             canonical_directory.mkdir(mode=0o700)
-            canonical_path = canonical_directory / (stem + ".tsv")
+            canonical_path = canonical_directory / (canonical_stem + ".tsv")
             canonical_path.write_bytes(sidecar_bytes)
             primary_path = root / "primary.ctest.log"
             primary_path.write_bytes(primary_bytes)

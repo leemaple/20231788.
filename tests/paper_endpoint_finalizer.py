@@ -165,10 +165,12 @@ def finalize_endpoint(primary_log, identity, *, ctest_exit_code, capture_exit_co
         return publish_endpoint_evidence(
             published_parent, identity, _status(identity, ctest_exit_code, reason, observation))
     stem = initial_status["status_filename"].removesuffix(".status.json")
-    canonical_directory = canonical_parent / stem
-    canonical_path = canonical_directory / (stem + ".tsv")
+    canonical_stem = ("fs-endpoint-synthetic-" + ".".join(scalars)
+                      if expected_scope == "synthetic" else stem)
+    canonical_directory = canonical_parent / canonical_stem
+    canonical_path = canonical_directory / (canonical_stem + ".tsv")
     try:
-        _exact_canonical_entry(canonical_parent, stem)
+        _exact_canonical_entry(canonical_parent, canonical_stem)
         try:
             directory_mode = canonical_directory.lstat().st_mode
         except FileNotFoundError as error:
@@ -176,7 +178,7 @@ def finalize_endpoint(primary_log, identity, *, ctest_exit_code, capture_exit_co
         if (not stat.S_ISDIR(directory_mode) or
                 canonical_directory.resolve(strict=True) != canonical_directory):
             raise FinalizationError("INTEGRITY", "canonical identity is not a real directory")
-        _exact_canonical_entry(canonical_directory, stem + ".tsv")
+        _exact_canonical_entry(canonical_directory, canonical_stem + ".tsv")
         try:
             canonical_path.lstat()
         except FileNotFoundError as error:

@@ -69,7 +69,7 @@ class EndpointFinalizerTests(unittest.TestCase):
             canonical, published = root / "canonical", root / "published"
             canonical.mkdir()
             published.mkdir()
-            stem = "fs-residual-endpoint-01.v1-r1." + "a" * 40 + ".linux.42.1"
+            stem = "fs-endpoint-synthetic-" + "a" * 40 + ".linux.42.1"
             if foreign_sibling:
                 (canonical / "foreign.txt").write_bytes(b"unrelated input preserved\n")
             candidate_directory = canonical / stem
@@ -237,7 +237,7 @@ class EndpointFinalizerTests(unittest.TestCase):
             def filesystem_lstat(path, *args, **kwargs):
                 candidate = Path(path)
                 if candidate.parent.name == "canonical" and candidate.name.startswith(
-                        "fs-residual-endpoint-01.v1-r1."):
+                        "fs-endpoint-synthetic-"):
                     raise OSError(error_number, "synthetic filesystem boundary failure")
                 return original_lstat(path, *args, **kwargs)
 
