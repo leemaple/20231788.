@@ -1,0 +1,56 @@
+{
+  "schema": "fs-endpoint-cpp-interop-argmax-candidate-receipt-v1",
+  "purpose": "Independent bounded scalar candidate selection for the literal E8/I8 argmax used by the C++ interop draft.",
+  "performed": {
+    "date": "2026-09-06",
+    "exact_timestamp_available": false,
+    "timezone": "Asia/Shanghai",
+    "location": "local Codex host",
+    "working_directory": "/Users/lifeng/Documents/20231788-openfhe-endpoint-cpp-interop-20260906",
+    "phase": "after creating the exact-3897832 worktree and before authoring the first committed draft"
+  },
+  "environment": {
+    "launcher": "python3",
+    "python_version_observed": null,
+    "standard_library_imports": [
+      "decimal.Decimal",
+      "decimal.getcontext"
+    ],
+    "repository_or_project_imports": [],
+    "source_files_read_by_script": [],
+    "network_access_used": false
+  },
+  "enumeration": {
+    "slot_candidates": 16384,
+    "slot_range": "0..16383",
+    "components_checked_per_slot": 2,
+    "scalar_component_candidates_compared": 32768,
+    "complex_squarings_per_slot": 8,
+    "decimal_precision_digits": 200,
+    "tie_policy": "strict greater-than update in ascending slot and real-before-imag component order"
+  },
+  "command": "python3 - <<'PY'\nfrom decimal import Decimal, getcontext\ngetcontext().prec=200\nmx=(Decimal(0),None,None,None)\nfor s in range(16384):\n t=s//2\n a=Decimal(1015)/1024-Decimal(t%16)/65536+Decimal(s)/(Decimal(2)**75)\n b=Decimal(1+(t//16)%8)/1024\n if (t//512)%2: b=-b\n phase=(t//128)%4\n if phase==0:z=(a,b)\n elif phase==1:z=(-b,a)\n elif phase==2:z=(-a,-b)\n else:z=(b,-a)\n for _ in range(8):\n  x,y=z;z=(x*x-y*y,x*y+y*x)\n for ci,v in enumerate(z):\n  if abs(v)>mx[0]:mx=(abs(v),s,ci,v)\nprint(mx)\nPY",
+  "result": {
+    "exit_code": 0,
+    "wall_time_seconds_reported": 0.7,
+    "stdout_complete": "(Decimal('0.10465060006182522730584052744902439461689881415376073080296285059780837662370755793212895509547127150560888513025794995702649917707688604319660581189373270539805332740046753379523549767702278494087032'), 16289, 1, Decimal('-0.10465060006182522730584052744902439461689881415376073080296285059780837662370755793212895509547127150560888513025794995702649917707688604319660581189373270539805332740046753379523549767702278494087032'))\n",
+    "stderr_complete": "",
+    "selected_slot": 16289,
+    "selected_component_index": 1,
+    "selected_component_name": "imag",
+    "selected_z_power_component_sign": "negative",
+    "derived_e8_i8_component_sign": "positive"
+  },
+  "provenance": {
+    "receipt_created_from_retained_tool_result": true,
+    "computation_rerun_for_receipt": false,
+    "tool_result_reported_status": "Script completed",
+    "tool_result_original_output_was_truncated": false
+  },
+  "claim_limits": [
+    "This was a local standalone scalar calculation, not a hosted calculation.",
+    "It was not a C++ compile, project test, full sidecar replay, diagnostic FFT, NTT, encryption, or FHE execution.",
+    "It independently selected a Decimal200 candidate; it is not a certified interval proof of the binary768 argmax.",
+    "The same-precision C++ assertion is only a consistency check, and the hosted Python Decimal256 full replay remains the cross-language acceptance oracle."
+  ]
+}

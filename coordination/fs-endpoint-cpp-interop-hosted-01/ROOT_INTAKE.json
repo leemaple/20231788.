@@ -1,0 +1,147 @@
+{
+  "base": "c746866069f502661abb3393ee34a0e7adf803f7",
+  "scope_checkpoint_scan": {
+    "cmd": "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B - <<'PY'\nimport hashlib, json, os, subprocess\nroot=\"/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905\"\ndef git(*args):\n    return subprocess.run([\"git\",\"-C\",root,*args],check=True,stdout=subprocess.PIPE).stdout\npaths=git(\"diff\",\"--cached\",\"--name-only\",\"-z\").decode().split(\"\\0\")[:-1]\nassert len(paths)==7 and all(p.startswith((\"coordination/fs-endpoint-canonical-scope-01/\", \"tests/\")) for p in paths)\nparts=[]; files=[]\nfor p in sorted(paths):\n    b=git(\"show\",\":\"+p)\n    parts.extend([p.encode(),b\"\\0\",str(len(b)).encode(),b\"\\0\",b,b\"\\0\"])\n    files.append({\"path\":p,\"bytes\":len(b),\"sha256\":hashlib.sha256(b).hexdigest()})\ndata=b\"\".join(parts)\nenv={k:v for k,v in os.environ.items() if not k.startswith(\"GITLEAKS\")}\nenv[\"GOMAXPROCS\"]=\"2\"\ncommand=[\"/opt/homebrew/bin/gitleaks\",\"stdin\",\"--no-banner\",\"--ignore-gitleaks-allow\",\"--gitleaks-ignore-path\",\"/dev/null\",\"--max-decode-depth\",\"5\",\"--max-archive-depth\",\"1\",\"--redact\"]\nresult=subprocess.run(command,input=data,stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=\"/private/tmp\",env=env,timeout=30)\nprint(json.dumps({\"command\":command,\"files\":files,\"framed_bytes\":len(data),\"framed_sha256\":hashlib.sha256(data).hexdigest(),\"exit_code\":result.returncode,\"stdout\":result.stdout.decode(),\"stderr\":result.stderr.decode()},indent=2))\nraise SystemExit(result.returncode)\nPY",
+    "result": {
+      "chunk_id": "49bd1c",
+      "wall_time_seconds": 0.126101584,
+      "exit_code": 0,
+      "original_token_count": 450,
+      "output": "{\n  \"command\": [\n    \"/opt/homebrew/bin/gitleaks\",\n    \"stdin\",\n    \"--no-banner\",\n    \"--ignore-gitleaks-allow\",\n    \"--gitleaks-ignore-path\",\n    \"/dev/null\",\n    \"--max-decode-depth\",\n    \"5\",\n    \"--max-archive-depth\",\n    \"1\",\n    \"--redact\"\n  ],\n  \"files\": [\n    {\n      \"path\": \"coordination/fs-endpoint-canonical-scope-01/01_TDD_AND_REVIEW.json\",\n      \"bytes\": 33223,\n      \"sha256\": \"65ff7cc326b97928f545711bc5cdd388c327a0b02e8e8cc70e6cee02f65faabb\"\n    },\n    {\n      \"path\": \"coordination/fs-endpoint-canonical-scope-01/BOUNDARY.md\",\n      \"bytes\": 1644,\n      \"sha256\": \"a39b8e085170a161abae221d1cb79f30a20f7a5babf4cbd6a6504352189be4ff\"\n    },\n    {\n      \"path\": \"tests/hosted_paper_endpoint_finalizer_complete.py\",\n      \"bytes\": 9244,\n      \"sha256\": \"25fbb40cc22cf912757b00a497602ce887ce83a71fdf728b8bf428f0d7920f67\"\n    },\n    {\n      \"path\": \"tests/hosted_paper_endpoint_finalizer_negative.py\",\n      \"bytes\": 9664,\n      \"sha256\": \"39d8bea4ef9a28327ba1c4ae3f30ebab5555644d8b45381d7652b10126fae6a6\"\n    },\n    {\n      \"path\": \"tests/paper_endpoint_finalizer.py\",\n      \"bytes\": 15507,\n      \"sha256\": \"4e1dd74504065b41cbfb28b09d06903834d6fc556cf5ffe116db1673b2235325\"\n    },\n    {\n      \"path\": \"tests/test_paper_endpoint_canonical_scope_cli.py\",\n      \"bytes\": 4310,\n      \"sha256\": \"3992e078074400a3155dd4e7f7bf52e6c2cdfef6d22e869f007a856050946611\"\n    },\n    {\n      \"path\": \"tests/test_paper_endpoint_finalizer.py\",\n      \"bytes\": 17478,\n      \"sha256\": \"1ed0fa8c7b0046129d2f8a36f7806b7c1dfafea59d219f5c1827ecf2248459e2\"\n    }\n  ],\n  \"framed_bytes\": 91460,\n  \"framed_sha256\": \"4bc5c4efde27f10ea190b4cbc7ab62fab262266b32f1a35695dbe1174504b8e8\",\n  \"exit_code\": 0,\n  \"stdout\": \"\",\n  \"stderr\": \"9:32PM INF scanned ~91460 bytes (91.46 KB) in 73.5ms\\n9:32PM INF no leaks found\\n\"\n}\n"
+    }
+  },
+  "scope_checkpoint_push": {
+    "chunk_id": "f67dd6",
+    "wall_time_seconds": 1.001639166,
+    "session_id": 89722,
+    "original_token_count": 103,
+    "output": "[codex/paper-scale-implementation-20260905 c746866] fix: bind canonical endpoint input names to their explicit scope [skip ci]\n 7 files changed, 206 insertions(+), 10 deletions(-)\n create mode 100644 coordination/fs-endpoint-canonical-scope-01/01_TDD_AND_REVIEW.json\n create mode 100644 coordination/fs-endpoint-canonical-scope-01/BOUNDARY.md\n create mode 100644 tests/test_paper_endpoint_canonical_scope_cli.py\n"
+  },
+  "scope_checkpoint_verify": {
+    "chunk_id": "4dd986",
+    "wall_time_seconds": 0.939961375,
+    "exit_code": 0,
+    "original_token_count": 75,
+    "output": "c746866069f502661abb3393ee34a0e7adf803f7\nc746866069f502661abb3393ee34a0e7adf803f7\trefs/heads/codex/endpoint-canonical-scope-checkpoint-20260906\n## codex/paper-scale-implementation-20260905...origin/codex/paper-scale-implementation-20260905 [ahead 22]\n?? tests/hosted_paper_endpoint_cpp_interop.py\n"
+  },
+  "intake": [
+    {
+      "path": "tests/paper_endpoint_interop_test.h",
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-cpp-interop-20260906",
+      "cmd": "git show 65f0d66330d8d87ee1a3528ef2c52ae226601447:tests/paper_endpoint_interop_test.h",
+      "exit_code": 0
+    },
+    {
+      "path": "coordination/fs-endpoint-cpp-interop-01/BOUNDARY.md",
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-cpp-interop-20260906",
+      "cmd": "git show 65f0d66330d8d87ee1a3528ef2c52ae226601447:coordination/fs-endpoint-cpp-interop-01/BOUNDARY.md",
+      "exit_code": 0
+    },
+    {
+      "path": "coordination/fs-endpoint-cpp-interop-01/AUTHOR_NOTE.md",
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-cpp-interop-20260906",
+      "cmd": "git show 65f0d66330d8d87ee1a3528ef2c52ae226601447:coordination/fs-endpoint-cpp-interop-01/AUTHOR_NOTE.md",
+      "exit_code": 0
+    },
+    {
+      "path": "coordination/fs-endpoint-cpp-interop-01/ARGMAX_CANDIDATE_RECEIPT.json",
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-cpp-interop-20260906",
+      "cmd": "git show 65f0d66330d8d87ee1a3528ef2c52ae226601447:coordination/fs-endpoint-cpp-interop-01/ARGMAX_CANDIDATE_RECEIPT.json",
+      "exit_code": 0
+    },
+    {
+      "path": ".github/workflows/endpoint-cpp-interop-gate.yml",
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-interop-workflow-20260906",
+      "cmd": "sed -n '1,600p' .github/workflows/endpoint-cpp-interop-gate.yml",
+      "exit_code": 0
+    },
+    {
+      "path": "coordination/fs-endpoint-cpp-interop-hosted-01/WORKFLOW_BOUNDARY.md",
+      "from": "/Users/lifeng/Documents/20231788-openfhe-endpoint-interop-workflow-20260906",
+      "cmd": "sed -n '1,600p' coordination/fs-endpoint-cpp-interop-hosted-01/WORKFLOW_BOUNDARY.md",
+      "exit_code": 0
+    }
+  ],
+  "cpp_author_commit": "65f0d66330d8d87ee1a3528ef2c52ae226601447",
+  "requested_workers": [
+    {
+      "task": "endpoint_cpp_interop",
+      "selector": "GPT-5.6 Sol",
+      "effort": "high",
+      "backend": "requested-unverified"
+    },
+    {
+      "task": "endpoint_interop_workflow",
+      "selector": "GPT-5.6 Sol",
+      "effort": "high",
+      "backend": "requested-unverified"
+    }
+  ],
+  "root_source_review": {
+    "cpp": "Read complete header/dependencies/boundaries. Zero centered polynomials17/S0/S8; actual Capture->Write/Emit; exact configured SHA/BOOST; synthetic namespace; no Run/key/context. Same-backend all-row assertions labeled consistency, exact algebra plus later Python are independent. Corrected false no-diagnostic-FFT wording; removed runner-up/gap unsupported by retained enumeration receipt.",
+    "workflow": "Read full two-host workflow. Dedicated exact RED trigger, pristine OpenFHE pin, no local or live chain/CTest; only existing target built. Both optins explicit, actual Python native path comparison, Windows short fresh fi=240 modeled deepestpath, raw three-file diagnostics and success-only exact two-file publication. Corrected documentation typo eight-test to one test/nine scale receipts. No workflow or CMake change outside dedicated new file.",
+    "cpp_runtime": "NOT COMPILED / NOT RUN; header intentionally unreachable before observed missing-mode RED"
+  },
+  "independent_harness_review": {
+    "reviewer": "/root/endpoint_cpp_interop",
+    "not_author_of": "root Python hosted interoperability harness",
+    "findings": [
+      {
+        "issue": "Shared hosted identity requires complete opt-in",
+        "disposition": "Closed: both opt-ins explicitly provided in workflow, code comment documents reuse."
+      },
+      {
+        "issue": "Producer receipt before timeout/oversize loses stage detail",
+        "disposition": "Closed: narrow TimeoutExpired/OSError journal then bare raise; actual return and sizes recorded before envelope checks; unknown exit never invented."
+      },
+      {
+        "issue": "Mixed constructed legacy/actual Windows line endings",
+        "disposition": "Closed: choose fixture ending matching actual Windows block, preserve original producer payload bytes; no claim of real CTest execution."
+      },
+      {
+        "issue": "Dynamic oracle samples might drop below twelve",
+        "disposition": "Closed: exact12known slot list pinned."
+      }
+    ],
+    "final_verdict": "Targeted source-only recheck: all four prior findings closed; no remaining blocker to once-hosted RED.",
+    "limits": "No external Fable/Pro review or additional provider claimed. Reviewer executed no new runtime tests. Final Pro semantic review remains pending."
+  },
+  "static_checks": {
+    "initial_tiny_framing": {
+      "cmd": "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B - <<'PY'\nimport ast, json, sys\nfrom pathlib import Path\nroot=Path('/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905')\nsys.path.insert(0,str(root/'tests'))\nimport hosted_paper_endpoint_cpp_interop as gate\nimport test_paper_endpoint_primary_reader as fixture\nfrom paper_endpoint_primary_reader import parse_primary_log, PrimaryIdentity\nast.parse((root/'tests/hosted_paper_endpoint_cpp_interop.py').read_text())\nreceipts=[]\nfor host in ['linux','windows']:\n    ending=b'\\r\\n' if host=='windows' else b'\\n'\n    endpoint=ending.join(line.encode('ascii') for line in fixture.complete_lines(2,scope='synthetic',host=host) if line.startswith('FS_ENDPOINT_'))+ending\n    data=gate.constructed_framing(endpoint,fixture.SOURCE,host)\n    observed=parse_primary_log(data,PrimaryIdentity(fixture.SOURCE,host,'101','2'),ctest_exit_code=8,expected_scope='synthetic')\n    assert observed.evidence_state=='COMPLETE' and observed.e80_disposition=='FAIL'\n    assert observed.numeric_gate_labels==('fresh full-slot 2^-80 gate','final full-slot 2^-80 gate')\n    extracted=b''.join(line[4:] for line in data.splitlines(keepends=True) if line.startswith(b'61: FS_ENDPOINT_'))\n    assert extracted==endpoint\n    receipts.append({'modeled_host':host,'endpoint_payload_bytes_preserved':len(endpoint),'framing_public_parse':'PASS'})\nprint(json.dumps({'scope':'tiny constructed transport only; no producer/full sidecar/FFT/NTT/FHE/replay run','checks':receipts},indent=2))\nPY",
+      "result": {
+        "chunk_id": "1f225d",
+        "wall_time_seconds": 0.036084458,
+        "exit_code": 0,
+        "original_token_count": 95,
+        "output": "{\n  \"scope\": \"tiny constructed transport only; no producer/full sidecar/FFT/NTT/FHE/replay run\",\n  \"checks\": [\n    {\n      \"modeled_host\": \"linux\",\n      \"endpoint_payload_bytes_preserved\": 46474,\n      \"framing_public_parse\": \"PASS\"\n    },\n    {\n      \"modeled_host\": \"windows\",\n      \"endpoint_payload_bytes_preserved\": 46515,\n      \"framing_public_parse\": \"PASS\"\n    }\n  ]\n}\n"
+      }
+    },
+    "frozen_source": {
+      "cmd": "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B - <<'PY'\nimport ast, json, subprocess\nfrom pathlib import Path\nroot=Path('/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905')\nbase='c746866069f502661abb3393ee34a0e7adf803f7'\npaths=['CMakeLists.txt','.github/workflows/dcp-rcb.yml','tests/paper_full_eight_square_contract_test.cpp','tests/paper_endpoint_diagnostics.cpp','tests/paper_endpoint_evidence_writer.cpp','tests/paper_endpoint_primary_reader.py','tests/paper_endpoint_sidecar_reader.py','tests/paper_endpoint_sidecar_replay.py','tests/paper_endpoint_reconcile.py','tests/paper_endpoint_gzip.py','tests/paper_endpoint_status.py','tests/paper_endpoint_publication.py']\nfor p in paths:\n    original=subprocess.run(['git','-C',str(root),'show',base+':'+p],check=True,capture_output=True).stdout\n    assert (root/p).read_bytes()==original,p\nast.parse((root/'tests/hosted_paper_endpoint_cpp_interop.py').read_text())\nfor candidate in ['C:/a/_temp/fi','D:/a/_temp/fi']:\n    stem='fs-residual-endpoint-01.v1-r1.'+'a'*40+'.windows.34019353118.1'\n    deep=candidate+'/published/'+stem+'/.staging/'+stem+'.candidate.status.json'\n    assert len(deep)<=247,(deep,len(deep))\n    print(json.dumps({'modeled_windows_root':candidate,'deepest_characters':len(deep)}))\nprint(json.dumps({'frozen_source_files_equal':paths,'static_syntax':'PASS','execution_claim':'No C++ producer, build, FHE or full sidecar replay invoked'}))\nPY",
+      "result": {
+        "chunk_id": "3ba5c7",
+        "wall_time_seconds": 0.152614542,
+        "exit_code": 0,
+        "original_token_count": 183,
+        "output": "{\"modeled_windows_root\": \"C:/a/_temp/fi\", \"deepest_characters\": 240}\n{\"modeled_windows_root\": \"D:/a/_temp/fi\", \"deepest_characters\": 240}\n{\"frozen_source_files_equal\": [\"CMakeLists.txt\", \".github/workflows/dcp-rcb.yml\", \"tests/paper_full_eight_square_contract_test.cpp\", \"tests/paper_endpoint_diagnostics.cpp\", \"tests/paper_endpoint_evidence_writer.cpp\", \"tests/paper_endpoint_primary_reader.py\", \"tests/paper_endpoint_sidecar_reader.py\", \"tests/paper_endpoint_sidecar_replay.py\", \"tests/paper_endpoint_reconcile.py\", \"tests/paper_endpoint_gzip.py\", \"tests/paper_endpoint_status.py\", \"tests/paper_endpoint_publication.py\"], \"static_syntax\": \"PASS\", \"execution_claim\": \"No C++ producer, build, FHE or full sidecar replay invoked\"}\n"
+      }
+    },
+    "final_ast_three_framings_yaml_and_bash": {
+      "cmd": "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B - <<'PY'\nimport ast, json, subprocess, sys\nfrom pathlib import Path\nroot=Path('/Users/lifeng/Documents/20231788-openfhe-paper-scale-implementation-20260905')\nsys.path.insert(0,str(root/'tests'))\nimport hosted_paper_endpoint_cpp_interop as gate\nimport test_paper_endpoint_primary_reader as fixture\nfrom paper_endpoint_primary_reader import parse_primary_log, PrimaryIdentity\nast.parse((root/'tests/hosted_paper_endpoint_cpp_interop.py').read_text())\nfor host, ending in [('linux',b'\\n'),('windows',b'\\r\\n'),('windows',b'\\n')]:\n    endpoint=ending.join(line.encode('ascii') for line in fixture.complete_lines(2,scope='synthetic',host=host) if line.startswith('FS_ENDPOINT_'))+ending\n    data=gate.constructed_framing(endpoint,fixture.SOURCE,host)\n    observed=parse_primary_log(data,PrimaryIdentity(fixture.SOURCE,host,'101','2'),ctest_exit_code=8,expected_scope='synthetic')\n    assert observed.evidence_state=='COMPLETE' and observed.e80_disposition=='FAIL'\n    assert observed.numeric_gate_labels==('fresh full-slot 2^-80 gate','final full-slot 2^-80 gate')\n    extracted=b''.join(line[4:] for line in data.splitlines(keepends=True) if line.startswith(b'61: FS_ENDPOINT_'))\n    assert extracted==endpoint\n    assert (data.count(b'\\r\\n')==data.count(b'\\n')) if ending==b'\\r\\n' else (b'\\r' not in data)\nprint('AST and three tiny modeled framing variants PASS; no actual producer or full replay')\nruby=\"require 'yaml';require 'json';puts JSON.generate(YAML.load_file(ARGV[0]))\"\ny=json.loads(subprocess.run(['/usr/bin/ruby','-e',ruby,str(root/'.github/workflows/endpoint-cpp-interop-gate.yml')],capture_output=True,check=True,text=True).stdout)\nassert y['on']=={'push':{'branches':['codex/endpoint-cpp-interop-red-20260906']}}\nassert y['permissions']=={'contents':'read'}\nassert set(y['jobs'])=={'linux-gcc','windows-mingw64'}\nshells=0\nfor name,job in y['jobs'].items():\n    assert job['timeout-minutes']==60\n    assert job['env']['ENDPOINT_TEST_HOST']==('linux' if name=='linux-gcc' else 'windows')\n    scripts=[]; uploads=[]\n    for step in job['steps']:\n        assert 'continue-on-error' not in step\n        if 'uses' in step:\n            assert len(step['uses'].rsplit('@',1)[1])==40\n        if 'run' in step:\n            script=step['run']; scripts.append(script)\n            assert 'ctest ' not in script and '--endpoint-observer-self-test' not in script\n            if step.get('shell') in ('bash','msys2 {0}'):\n                subprocess.run(['/bin/bash','-n'],input=script,text=True,check=True);shells+=1\n        if step.get('uses','').startswith('actions/upload-artifact@'):\n            paths=step['with']['path'].splitlines();uploads.append(paths)\n            assert all('*' not in p and '/canonical/' not in p and '\\\\canonical\\\\' not in p for p in paths)\n            assert step['with']['compression-level']==0 and step['with']['retention-days']==3\n    assert list(map(len,uploads))==[3,2]\n    assert sum(s.count('python -B tests/hosted_paper_endpoint_cpp_interop.py')+s.count('\"$python_shell\" -B tests/hosted_paper_endpoint_cpp_interop.py') for s in scripts)==1\nprint(json.dumps({'workflow_structure':'PASS','bash_script_syntax_checks':shells,'actual_hosted_jobs_executed':0}))\nPY",
+      "result": {
+        "chunk_id": "d4e90b",
+        "wall_time_seconds": 0.168363416,
+        "exit_code": 0,
+        "original_token_count": 46,
+        "output": "AST and three tiny modeled framing variants PASS; no actual producer or full replay\n{\"workflow_structure\": \"PASS\", \"bash_script_syntax_checks\": 16, \"actual_hosted_jobs_executed\": 0}\n"
+      }
+    }
+  },
+  "activation": {
+    "ref": "codex/endpoint-cpp-interop-red-20260906",
+    "previous_ref_readonly_check": "git ls-remote exact ref returned empty exit0",
+    "expected_red": "Existing executable actually returns1 for missing --endpoint-cpp-interop mode; root harness asserts producer0. Bootstrap/compile/path/artifact failure is not intended RED.",
+    "limits": "One run, one producer invocation per host. No CTest/FHE chain. Do not rerun a terminal run or push live. Neither actual producer nor full replay is claimed by this draft."
+  }
+}

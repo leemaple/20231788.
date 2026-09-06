@@ -1,0 +1,367 @@
+name: Endpoint synthetic C++ interop RED
+
+'on':
+  push:
+    branches:
+      - codex/endpoint-cpp-interop-red-20260906
+
+permissions:
+  contents: read
+
+env:
+  OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+  RUN_ENDPOINT_COMPLETE_GATE: '1'
+  RUN_ENDPOINT_NEGATIVE_GATE: '1'
+  RUN_ENDPOINT_CPP_INTEROP_GATE: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+  OMP_NUM_THREADS: '2'
+
+jobs:
+  linux-gcc:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      ENDPOINT_TEST_HOST: linux
+      OPENFHE_PREFIX: ${{ github.workspace }}/.ci/openfhe-install
+
+    steps:
+      - name: Check out exact tested source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up native Python 3.12
+        id: endpoint-python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify source and run affected Python regressions once
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          python_native="$(command -v python)"
+          test "$python_native" = "${{ steps.endpoint-python.outputs.python-path }}"
+          python -c 'import json, os, platform, sys; sys.exit("native Python 3.12 required") if sys.version_info[:2] != (3, 12) or os.name != "posix" else None; print(json.dumps({"executable": sys.executable, "python": sys.version, "implementation": platform.python_implementation(), "platform": sys.platform, "source": os.environ["GITHUB_WORKSPACE"], "source_commit": os.environ["GITHUB_SHA"]}, sort_keys=True))'
+          python -B tests/hosted_paper_endpoint_finalizer_complete.py
+          python -B tests/hosted_paper_endpoint_finalizer_negative.py
+
+      - name: Check out pristine OpenFHE 1.5.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: openfheorg/openfhe-development
+          ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+          path: .ci/openfhe-src
+          submodules: recursive
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Verify pristine OpenFHE provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git -C .ci/openfhe-src rev-parse HEAD)"
+          test "$actual" = "$OPENFHE_COMMIT"
+          test -z "$(git -C .ci/openfhe-src status --porcelain)"
+          git -C .ci/openfhe-src submodule status --recursive
+
+      - name: Install independent-oracle build dependency
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libboost-dev
+
+      - name: Report native toolchain
+        shell: bash
+        run: |
+          cmake --version
+          c++ --version
+
+      - name: Cache pristine OpenFHE install
+        id: cache-openfhe
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .ci/openfhe-install
+          key: openfhe-1.5.0-${{ runner.os }}-gcc-${{ env.OPENFHE_COMMIT }}-native64-backend4
+
+      - name: Configure pristine OpenFHE
+        if: steps.cache-openfhe.outputs.cache-hit != 'true'
+        shell: bash
+        run: >-
+          cmake -S .ci/openfhe-src -B .ci/openfhe-build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_INSTALL_PREFIX=${OPENFHE_PREFIX}
+          -DBUILD_UNITTESTS=OFF
+          -DBUILD_EXAMPLES=OFF
+          -DBUILD_BENCHMARKS=OFF
+          -DBUILD_EXTRAS=OFF
+          -DWITH_OPENMP=ON
+          -DNATIVE_SIZE=64
+          -DMATHBACKEND=4
+
+      - name: Build and install pristine OpenFHE
+        if: steps.cache-openfhe.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          cmake --build .ci/openfhe-build --parallel 2
+          cmake --install .ci/openfhe-build
+
+      - name: Configure clean-room project
+        shell: bash
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+
+      - name: Build only the paper endpoint producer target
+        shell: bash
+        run: cmake --build build --target paper_full_eight_square_contract_test --parallel 2
+
+      - name: Run synthetic C++ endpoint interop gate once
+        id: interop
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          set -euo pipefail
+          scratch="$RUNNER_TEMP/fs-cpp-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test ! -e "$scratch" && test ! -L "$scratch"
+          producer="$(realpath build/paper_full_eight_square_contract_test)"
+          test -x "$producer"
+          python -B tests/hosted_paper_endpoint_cpp_interop.py \
+            --producer "$producer" --output-root "$scratch"
+
+      - name: Upload bounded RED diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fs-endpoint-synthetic-cpp-interop-linux-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/fs-cpp-${{ github.run_id }}-${{ github.run_attempt }}/producer.stdout.txt
+            ${{ runner.temp }}/fs-cpp-${{ github.run_id }}-${{ github.run_attempt }}/producer.stderr.txt
+            ${{ runner.temp }}/fs-cpp-${{ github.run_id }}-${{ github.run_attempt }}/gate-receipt.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
+
+      - name: Upload validated synthetic publication
+        if: ${{ always() && steps.interop.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fs-endpoint-synthetic-cpp-interop-publication-linux-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/fs-cpp-${{ github.run_id }}-${{ github.run_attempt }}/published/fs-residual-endpoint-01.v1-r1.${{ github.sha }}.linux.${{ github.run_id }}.${{ github.run_attempt }}/fs-residual-endpoint-01.v1-r1.${{ github.sha }}.linux.${{ github.run_id }}.${{ github.run_attempt }}.tsv.gz
+            ${{ runner.temp }}/fs-cpp-${{ github.run_id }}-${{ github.run_attempt }}/published/fs-residual-endpoint-01.v1-r1.${{ github.sha }}.linux.${{ github.run_id }}.${{ github.run_attempt }}/fs-residual-endpoint-01.v1-r1.${{ github.sha }}.linux.${{ github.run_id }}.${{ github.run_attempt }}.status.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
+
+  windows-mingw64:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    env:
+      ENDPOINT_TEST_HOST: windows
+      WINDOWS_ROOT: C:\root
+      PROJECT_SOURCE: C:\root\project
+      OPENFHE_SOURCE: C:\root\openfhe-src
+      OPENFHE_PREFIX: C:\root\openfhe-install
+      OPENFHE_BUILD: C:\root\openfhe-build
+      PROJECT_BUILD: C:\root\project-build
+
+    steps:
+      - name: Check out exact sources outside the trailing-dot workspace
+        shell: pwsh
+        working-directory: C:/
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (Test-Path -LiteralPath $env:WINDOWS_ROOT) {
+            throw 'Refusing pre-existing C:/root'
+          }
+          New-Item -ItemType Directory -Path $env:WINDOWS_ROOT | Out-Null
+          git config --global core.autocrlf false
+          if ($LASTEXITCODE -ne 0) { throw 'global git config autocrlf failed' }
+          git config --global core.eol lf
+          if ($LASTEXITCODE -ne 0) { throw 'global git config eol failed' }
+
+          git init $env:PROJECT_SOURCE
+          if ($LASTEXITCODE -ne 0) { throw 'project git init failed' }
+          git -C $env:PROJECT_SOURCE remote add origin https://github.com/leemaple/20231788..git
+          if ($LASTEXITCODE -ne 0) { throw 'project git remote failed' }
+          git -C $env:PROJECT_SOURCE fetch --depth 1 origin $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'project git fetch failed' }
+          git -C $env:PROJECT_SOURCE checkout --detach FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'project git checkout failed' }
+
+          git init $env:OPENFHE_SOURCE
+          if ($LASTEXITCODE -ne 0) { throw 'OpenFHE git init failed' }
+          git -C $env:OPENFHE_SOURCE remote add origin https://github.com/openfheorg/openfhe-development.git
+          if ($LASTEXITCODE -ne 0) { throw 'OpenFHE git remote failed' }
+          git -C $env:OPENFHE_SOURCE fetch --depth 1 origin $env:OPENFHE_COMMIT
+          if ($LASTEXITCODE -ne 0) { throw 'OpenFHE git fetch failed' }
+          git -C $env:OPENFHE_SOURCE checkout --detach FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'OpenFHE git checkout failed' }
+          git -C $env:OPENFHE_SOURCE submodule update --init --recursive --depth 1
+          if ($LASTEXITCODE -ne 0) { throw 'OpenFHE submodule checkout failed' }
+
+          $projectActual = git -C $env:PROJECT_SOURCE rev-parse HEAD
+          if ($LASTEXITCODE -ne 0 -or $projectActual -ne $env:GITHUB_SHA) {
+            throw "Project checkout mismatch: $projectActual"
+          }
+          $openfheActual = git -C $env:OPENFHE_SOURCE rev-parse HEAD
+          if ($LASTEXITCODE -ne 0 -or $openfheActual -ne $env:OPENFHE_COMMIT) {
+            throw "OpenFHE checkout mismatch: $openfheActual"
+          }
+          $projectDirty = @(git -C $env:PROJECT_SOURCE status --porcelain)
+          if ($LASTEXITCODE -ne 0 -or $projectDirty.Count -ne 0) {
+            throw 'Project checkout is not clean'
+          }
+          $openfheDirty = @(git -C $env:OPENFHE_SOURCE status --porcelain)
+          if ($LASTEXITCODE -ne 0 -or $openfheDirty.Count -ne 0) {
+            throw 'OpenFHE checkout is not clean'
+          }
+
+      - name: Set up native Python 3.12
+        id: endpoint-python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
+      - name: Install official Windows MINGW64 toolchain
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2
+        with:
+          msystem: MINGW64
+          update: true
+          cache: false
+          path-type: inherit
+          install: >-
+            make
+            mingw-w64-x86_64-boost
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-gcc
+
+      - name: Verify native Python and run affected regressions once
+        env:
+          ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
+        shell: msys2 {0}
+        working-directory: C:/root/project
+        run: |
+          set -euo pipefail
+          python_shell="$(command -v python)"
+          python_native="$(cygpath -am "$python_shell")"
+          expected_python_native="$(cygpath -am "$ENDPOINT_PYTHON_NATIVE")"
+          test "$python_native" = "$expected_python_native"
+          source_shell="$(cygpath -u "$PROJECT_SOURCE")"
+          source_native="$(cygpath -am "$source_shell")"
+          test "$(git -C "$source_shell" rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git -C "$source_shell" status --porcelain)"
+          "$python_shell" -c 'import json, os, platform, sys; sys.exit("native Windows Python 3.12 required") if sys.version_info[:2] != (3, 12) or os.name != "nt" else None; print(json.dumps({"executable": sys.executable, "python": sys.version, "implementation": platform.python_implementation(), "platform": sys.platform, "source": os.environ["PROJECT_SOURCE"], "source_commit": os.environ["GITHUB_SHA"]}, sort_keys=True))'
+          printf 'source_shell=%s\nsource_native=%s\npython_shell=%s\npython_native=%s\n' \
+            "$source_shell" "$source_native" "$python_shell" "$python_native"
+          "$python_shell" -B tests/hosted_paper_endpoint_finalizer_complete.py
+          "$python_shell" -B tests/hosted_paper_endpoint_finalizer_negative.py
+
+      - name: Report MINGW64 toolchain
+        shell: msys2 {0}
+        working-directory: C:/root/project
+        run: |
+          cmake --version
+          g++ --version
+
+      - name: Configure pristine OpenFHE
+        shell: msys2 {0}
+        working-directory: C:/root/project
+        run: |
+          set -euo pipefail
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          source="$(cygpath -u "$OPENFHE_SOURCE")"
+          build="$(cygpath -u "$OPENFHE_BUILD")"
+          cmake -S "$source" -B "$build" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$prefix" \
+            -DBUILD_UNITTESTS=OFF \
+            -DBUILD_EXAMPLES=OFF \
+            -DBUILD_BENCHMARKS=OFF \
+            -DBUILD_EXTRAS=OFF \
+            -DWITH_OPENMP=ON \
+            -DNATIVE_SIZE=64 \
+            -DMATHBACKEND=4
+
+      - name: Build and install pristine OpenFHE
+        shell: msys2 {0}
+        working-directory: C:/root/project
+        run: |
+          set -euo pipefail
+          build="$(cygpath -u "$OPENFHE_BUILD")"
+          cmake --build "$build" --parallel 2
+          cmake --install "$build"
+
+      - name: Configure clean-room project
+        shell: msys2 {0}
+        working-directory: C:/root/project
+        run: |
+          set -euo pipefail
+          prefix="$(cygpath -u "$OPENFHE_PREFIX")"
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake -S . -B "$build" \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_PREFIX_PATH="$prefix"
+
+      - name: Build only the paper endpoint producer target
+        shell: msys2 {0}
+        working-directory: C:/root/project
+        run: |
+          set -euo pipefail
+          build="$(cygpath -u "$PROJECT_BUILD")"
+          cmake --build "$build" --target paper_full_eight_square_contract_test --parallel 2
+
+      - name: Run synthetic C++ endpoint interop gate once
+        id: interop
+        timeout-minutes: 10
+        env:
+          ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
+        shell: msys2 {0}
+        working-directory: C:/root/project
+        run: |
+          set -euo pipefail
+          python_shell="$(command -v python)"
+          test "$(cygpath -am "$python_shell")" = "$(cygpath -am "$ENDPOINT_PYTHON_NATIVE")"
+          runner_temp_shell="$(cygpath -u "$RUNNER_TEMP")"
+          scratch_shell="$runner_temp_shell/fi"
+          test ! -e "$scratch_shell" && test ! -L "$scratch_shell"
+          build_shell="$(cygpath -u "$PROJECT_BUILD")"
+          producer_shell="$build_shell/paper_full_eight_square_contract_test.exe"
+          test -x "$producer_shell"
+          producer_native="$(cygpath -am "$producer_shell")"
+          scratch_native="$(cygpath -am "$scratch_shell")"
+          prefix_shell="$(cygpath -u "$OPENFHE_PREFIX")"
+          export PATH="$prefix_shell/bin:$prefix_shell/lib:$PATH"
+          "$python_shell" -B tests/hosted_paper_endpoint_cpp_interop.py \
+            --producer "$producer_native" --output-root "$scratch_native"
+
+      - name: Upload bounded RED diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fs-endpoint-synthetic-cpp-interop-windows-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}\fi\producer.stdout.txt
+            ${{ runner.temp }}\fi\producer.stderr.txt
+            ${{ runner.temp }}\fi\gate-receipt.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
+
+      - name: Upload validated synthetic publication
+        if: ${{ always() && steps.interop.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fs-endpoint-synthetic-cpp-interop-publication-windows-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}\fi\published\fs-residual-endpoint-01.v1-r1.${{ github.sha }}.windows.${{ github.run_id }}.${{ github.run_attempt }}\fs-residual-endpoint-01.v1-r1.${{ github.sha }}.windows.${{ github.run_id }}.${{ github.run_attempt }}.tsv.gz
+            ${{ runner.temp }}\fi\published\fs-residual-endpoint-01.v1-r1.${{ github.sha }}.windows.${{ github.run_id }}.${{ github.run_attempt }}\fs-residual-endpoint-01.v1-r1.${{ github.sha }}.windows.${{ github.run_id }}.${{ github.run_attempt }}.status.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
