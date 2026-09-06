@@ -1,0 +1,123 @@
+{
+  "schema": "endpoint-writer-integration-red-result-v1",
+  "source_commit": "9f12e1759055a0c4c0f9a794278768a6101f277e",
+  "run_id": 34009619514,
+  "attempt": 1,
+  "conclusion": "failure",
+  "classification": "Actual intended public writer missing-definition linkage RED, not numeric observer failure.",
+  "hosts": [
+    {
+      "host": "linux",
+      "job_id": 101423028217,
+      "passing_invocations": 123,
+      "unique_old_tests": 60,
+      "group_counts": [
+        1,
+        2,
+        57,
+        1,
+        2,
+        60
+      ],
+      "api": [
+        {
+          "conclusion": "success",
+          "name": "Build Relin2 public API contract",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build RS2 public API contract",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build Mult2 public API contract",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build Add public API contract",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build Sub public API contract",
+          "status": "completed"
+        }
+      ],
+      "undefined_symbols": [
+        "WriteEndpointEvidence",
+        "ValidateEndpointEvidenceFile",
+        "EmitEndpointEvidencePrimary"
+      ],
+      "undefined_diagnostic_lines": 13,
+      "compiler_errors_before_linkage": 0,
+      "selftest": "skipped",
+      "normal_paper_ctest": "skipped",
+      "new_paper_chain_count": 0
+    },
+    {
+      "host": "windows",
+      "job_id": 101423028029,
+      "passing_invocations": 123,
+      "unique_old_tests": 60,
+      "group_counts": [
+        1,
+        2,
+        57,
+        1,
+        2,
+        60
+      ],
+      "api": [
+        {
+          "conclusion": "success",
+          "name": "Build Relin2 public API contract",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build RS2 public API contract",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build Mult2 public API contract",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build Add public API contract",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build Sub public API contract",
+          "status": "completed"
+        }
+      ],
+      "undefined_symbols": [
+        "WriteEndpointEvidence",
+        "ValidateEndpointEvidenceFile",
+        "EmitEndpointEvidencePrimary"
+      ],
+      "undefined_diagnostic_lines": 13,
+      "compiler_errors_before_linkage": 0,
+      "selftest": "skipped",
+      "normal_paper_ctest": "skipped",
+      "new_paper_chain_count": 0
+    }
+  ],
+  "next": "Import sealed cpp3fc99, link it, retain unchanged writer tests, exact new draft-ref hosted synthetic self-test. No normal paper chain until evidence pipeline reviewed.",
+  "original_E80": "Historical source9f6c8e FAIL unchanged.",
+  "observed_from": "Terminal gh run view and adjacent full lossless job-log JSON. Analysis preserves raw CR.",
+  "extraction_correction": "Initial analysis assumed a Makefile 'Built target' marker on both hosts and stopped with 'old checkpoint incomplete'. Windows actually used Ninja 'Linking CXX executable' records; exact five API step terminal SUCCESS was then read and retained. No code or CI changed from this analysis correction.",
+  "api_tool_result": {
+    "chunk_id": "a88e4d",
+    "wall_time_seconds": 2.8360395,
+    "exit_code": 0,
+    "original_token_count": 296,
+    "output": "{\"conclusion\":\"failure\",\"databaseId\":34009619514,\"headSha\":\"9f12e1759055a0c4c0f9a794278768a6101f277e\",\"jobs\":[{\"api\":[{\"conclusion\":\"success\",\"name\":\"Build Relin2 public API contract\",\"status\":\"completed\"},{\"conclusion\":\"success\",\"name\":\"Build RS2 public API contract\",\"status\":\"completed\"},{\"conclusion\":\"success\",\"name\":\"Build Mult2 public API contract\",\"status\":\"completed\"},{\"conclusion\":\"success\",\"name\":\"Build Add public API contract\",\"status\":\"completed\"},{\"conclusion\":\"success\",\"name\":\"Build Sub public API contract\",\"status\":\"completed\"}],\"conclusion\":\"failure\",\"id\":101423028029,\"name\":\"windows-mingw64\",\"status\":\"completed\"},{\"api\":[{\"conclusion\":\"success\",\"name\":\"Build Relin2 public API contract\",\"status\":\"completed\"},{\"conclusion\":\"success\",\"name\":\"Build RS2 public API contract\",\"status\":\"completed\"},{\"conclusion\":\"success\",\"name\":\"Build Mult2 public API contract\",\"status\":\"completed\"},{\"conclusion\":\"success\",\"name\":\"Build Add public API contract\",\"status\":\"completed\"},{\"conclusion\":\"success\",\"name\":\"Build Sub public API contract\",\"status\":\"completed\"}],\"conclusion\":\"failure\",\"id\":101423028217,\"name\":\"linux-gcc\",\"status\":\"completed\"}],\"status\":\"completed\"}\n"
+  }
+}
