@@ -8,7 +8,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-SOURCE = '1e664bbbfb8613f450e8eeae6c53ef4fbf28026c'
+SOURCE = 'a448b787399b43b6024d82c170add403969b493c'
 BASELINE = 'e6c4cc1ddfa261ee17681cbfc1ca6023660df5cb'
 BRANCH = 'codex/s100-fresh-error-repair-20260907'
 HELPER = ROOT / 'coordination/precision116-pro-handoff-01/build_packet.py'
@@ -31,6 +31,7 @@ def main():
         blob, mode, oid = h.git_entry(commit, path)
         h.add(payloads, dest, blob, {'kind':'cleanroom_git_blob','commit':commit,'path':path,'mode':mode,'git_blob':oid})
     add_git(head, 'coordination/s100-independent-semantic-review-01/TASK.md', 'TASK.md')
+    add_git(SOURCE, 'coordination/s100-fresh-error-repair-01/remote-green1-failed-step.log', 'evidence/GREEN1_COMPILER.txt')
     paths = h.git('ls-tree', '-r', '--name-only', SOURCE, '--', 'src', 'include', 'tests').decode().splitlines()
     paths += ['CMakeLists.txt', '.github/workflows/dcp-rcb.yml']
     for path in sorted(paths):
@@ -55,7 +56,7 @@ def main():
         'files':[{'path':n,'bytes':len(v['bytes']),'sha256':h.sha256(v['bytes']),'origin':v['origin']} for n,v in sorted(payloads.items())]}
     final = {n:v['bytes'] for n,v in payloads.items()}
     final['MANIFEST.json'] = (json.dumps(manifest,indent=2,sort_keys=True)+'\n').encode()
-    output = ROOT / 'artifacts/handoffs/s100-independent-semantic-review-01/s100-independent-review-1e664bb.zip'
+    output = ROOT / 'artifacts/handoffs/s100-independent-semantic-review-01/s100-independent-review-a448b78.zip'
     output.parent.mkdir(parents=True,exist_ok=True)
     h.require(not output.parent.is_symlink(),'symlink output directory')
     with zipfile.ZipFile(output,'x',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
@@ -76,7 +77,7 @@ def main():
         'members':len(final),'included_paths':sorted(final),'manifest_sha256':h.sha256(final['MANIFEST.json']),
         'selected_targeted':selected_targeted,'selected_gitleaks':selected_scan,
         'final_targeted':final_targeted,'final_gitleaks':final_scan,'crc_manifest_exact_bytes':'PASS'}
-    with (HERE/'PACKET_RECEIPT.json').open('x') as stream:
+    with (HERE/'PACKET_RECEIPT_V2.json').open('x') as stream:
         json.dump(receipt,stream,indent=2,sort_keys=True)
         stream.write('\n')
     print(json.dumps({k:receipt[k] for k in ['archive_path','bytes','sha256','members','source_commit','task_commit','crc_manifest_exact_bytes']},indent=2))
