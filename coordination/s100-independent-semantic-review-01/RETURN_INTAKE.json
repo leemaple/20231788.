@@ -1,0 +1,63 @@
+{
+  "archive": "/Users/lifeng/Documents/20231788-openfhe-s100-fresh-error-repair-20260907/artifacts/handoffs/s100-independent-semantic-review-return-01/S100-INDEPENDENT-SEMANTIC-REVIEW-01-a448b78-zh.zip",
+  "bytes": 34056,
+  "sha256": "753f64b15e68371444bfcc5bd035c41bdf0f06ce9abccefd307355cdd82ae6d1",
+  "members": [
+    "REVIEW.md",
+    "CLAIM_BOUNDARY.md",
+    "NEXT_STEP.md",
+    "MANIFEST.json"
+  ],
+  "expanded_bytes": 65684,
+  "manifest_sha256": "a2e37baa744ed9233f0522e848c3b77f2100d12e4a92521fedfbd185f34e9254",
+  "targeted_scan": {
+    "phase": "independent semantic review return",
+    "files": 4,
+    "bytes": 65684,
+    "patterns": [
+      "aws_access_key",
+      "github_token",
+      "private_key_block",
+      "slack_token"
+    ],
+    "findings": []
+  },
+  "gitleaks_scan": {
+    "phase": "independent semantic review return",
+    "version_command": [
+      "/opt/homebrew/bin/gitleaks",
+      "version"
+    ],
+    "command": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact",
+      "--no-banner",
+      "--no-color",
+      "--report-format",
+      "json",
+      "--report-path",
+      "-"
+    ],
+    "environment_keys": [
+      "GOMAXPROCS",
+      "LANG",
+      "LC_ALL",
+      "PATH"
+    ],
+    "tool_version": "8.30.1",
+    "exit_code": 0,
+    "findings": [],
+    "framed_bytes": 65832,
+    "framed_sha256": "91ad8073c34b91ab671b4bb2373fce05eee65b0d8affbffd8cc10a64c9d1c26f"
+  },
+  "closure_crc_paths_hashes": "PASS",
+  "external_code_executed": false
+}
