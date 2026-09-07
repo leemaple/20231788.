@@ -14,6 +14,7 @@
 #include <ios>
 #include <iostream>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -52,6 +53,9 @@ public:
 };
 void Check(bool condition, const char* reason) {
     if (!condition) throw Invalid(reason);
+}
+void FinalizeOutput(std::ostream& output) {
+    output.flush();
 }
 Int Magnitude(const Int& value) { return value < 0 ? Int(-value) : value; }
 Real Tolerance() { return pf::Pow2(-kAgreementBits); }
@@ -243,7 +247,28 @@ std::vector<io::ClientComplex> SmallPolynomialInputs(const std::vector<Int>& coe
 void DecompositionControls();
 void ObserverOrderControls();
 
+void OutputControls() {
+    const std::string marker = "S100 status=COMPLETE\n";
+    std::ostringstream successful;
+    successful << marker;
+    FinalizeOutput(successful);
+    Check(successful.good() && successful.str() == marker, "OUTPUT_POSITIVE_CONTROL");
+
+    // The sink accepts every byte, then fails only when final synchronization
+    // is requested. This is an output-system boundary, not a crypto mock.
+    class FailedSync final : public std::stringbuf {
+        int sync() override { return -1; }
+    } sink;
+    std::ostream failing(&sink);
+    failing << marker;
+    Check(failing.good() && sink.str() == marker, "OUTPUT_FAILURE_FIXTURE");
+    Reject<Invalid>("OUTPUT_STREAM_FAILURE", [&] { FinalizeOutput(failing); });
+    Check(failing.bad(), "OUTPUT_FAILURE_STATE");
+}
+
 void Controls() {
+    Stage("output_stream_controls");
+    OutputControls();
     Stage("keyless_controls");
     LiftControls();
     DecompositionControls();
@@ -669,7 +694,7 @@ void Fresh() {
     Check(std::cout.good(), "OUTPUT_STREAM_FAILURE");
     std::cout << "S100 status=COMPLETE mode=fresh public_encryptions=1 slots=" << pf::kSlots
               << " components=" << 2 * pf::kSlots << " horner_anchors_per_polynomial=" << pf::kAnchors.size()
-              << " original_S100_E80=NOT_RERUN prior_FAIL=RETAINED precision_claim=NONE\n" << std::flush;
+              << " original_S100_E80=NOT_RERUN prior_FAIL=RETAINED precision_claim=NONE\n";
 }
 } // namespace
 
@@ -693,6 +718,8 @@ int main(int argc, char** argv) {
         std::cout << "S100 compiler=gcc version=" << __GNUC__ << '.' << __GNUC_MINOR__ << '\n';
 #endif
         if (mode == "--controls") Controls(); else Fresh();
+        phase = "output_finalization";
+        FinalizeOutput(std::cout);
         return 0; // valid diagnostic ONLY, not original S100 precision acceptance
     }
     catch (const Invalid& error) {
