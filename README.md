@@ -2,7 +2,9 @@
 
 This branch is a greenfield implementation of the `t=2` Double-CKKS multiplication method from IACR ePrint 2023/1788 for official pristine OpenFHE 1.5.0.
 
-中文说明：[实现做了什么、复现命令、结果与限制](REPRODUCE.zh-CN.md)。
+**最新交付与用户检查入口（2026-09-07）：[中文检查指南](CHECK_AND_HANDOFF.zh-CN.md)。** 最新增量在 `codex/s100-fresh-error-repair-20260907` 分支；仓库默认分支仍是上一版。原 S100 精度 FAIL 保留，现有测试／审核未发现明确未处理的生产实现缺陷，但不构成绝对正确性证明。用户已决定不联系作者、暂不继续追加实验。
+
+此前 S116 固定快照说明：[实现做了什么、复现命令、结果与限制](REPRODUCE.zh-CN.md)。下方 delivery/default-branch 记录描述上一轮 S116 交付，最新源码身份、诊断增量和当前停止边界以中文检查指南为准。
 
 The destination repository's previous implementation and every related local code tree are quarantined and are not inputs. Development begins with paper-derived specifications and red-first independent-oracle tests.
 
