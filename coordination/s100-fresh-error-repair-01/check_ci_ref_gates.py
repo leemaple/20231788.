@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ".github/workflows/dcp-rcb.yml"
 BASE_HEAD = "155b40fbb312d3f000e0bc6d72685c11185720b2"
 WIRING_BASE_HEAD = "a9299749ea1e8388adc23aa0ec1dba3c287e54ff"
+CONTROLS_BASE_HEAD = "724a43cec317d08c6699fd89671b10cc4cd3e9cb"
 NEW_REFS = (
     "refs/heads/codex/s100-fresh-error-repair-20260907",
     "refs/heads/codex/s100-fresh-error-red-20260907",
@@ -63,7 +64,8 @@ def condition_terms(step):
     return [term.strip() for term in expression.split("&&")]
 
 
-def condition_enabled(step, ref, prior_success=True, selected_outcome="success"):
+def condition_enabled(
+        step, ref, prior_success=True, selected_outcome="success", s100_scope=""):
     """Evaluate only the small conjunction grammar used by the four steps."""
     terms = condition_terms(step)
     if "always()" not in terms and not prior_success:
@@ -75,13 +77,18 @@ def condition_enabled(step, ref, prior_success=True, selected_outcome="success")
             values.append(True)
             continue
         match = re.fullmatch(
-            r"(github\.ref|steps\.endpoint-select\.outcome)\s*(==|!=)\s*'([^']*)'",
+            r"(github\.ref|steps\.endpoint-select\.outcome|inputs\.s100_scope)"
+            r"\s*(==|!=)\s*'([^']*)'",
             term,
         )
         if match is None:
             raise ValueError(f"condition outside bounded grammar: {term!r}")
         subject, operator, literal = match.groups()
-        actual = ref if subject == "github.ref" else selected_outcome
+        actual = {
+            "github.ref": ref,
+            "steps.endpoint-select.outcome": selected_outcome,
+            "inputs.s100_scope": s100_scope,
+        }[subject]
         values.append(actual == literal if operator == "==" else actual != literal)
     return all(values)
 
@@ -132,6 +139,7 @@ def assert_gate_contract(testcase, baseline, current):
 
 BASELINE = load_at(BASE_HEAD)
 WIRING_BASELINE = load_at(WIRING_BASE_HEAD)
+CONTROLS_BASELINE = load_at(CONTROLS_BASE_HEAD)
 CURRENT = parse_yaml((ROOT / WORKFLOW).read_text())
 
 
@@ -255,7 +263,8 @@ class S100DiagnosticWiringContract(unittest.TestCase):
             (controls, "s100_encoding_inspection_contract"),
             (fresh, "s100_fresh_error_diagnostic"),
         ):
-            self.assertEqual(step["if"], f"github.ref == '{NEW_REFS[0]}'")
+            self.assertTrue(condition_enabled(step, NEW_REFS[0],
+                                              s100_scope="fresh"))
             self.assertEqual(step["timeout-minutes"], 20)
             self.assertEqual(step["env"]["OMP_NUM_THREADS"], 2)
             self.assertEqual(step["run"].count("ctest --test-dir build-s100-fresh"), 1)
@@ -266,6 +275,77 @@ class S100DiagnosticWiringContract(unittest.TestCase):
         retained_text = json.dumps(WIRING_BASELINE["jobs"]["linux-gcc"]["steps"])
         self.assertNotIn("s100_encoding_inspection_contract", retained_text)
         self.assertNotIn("s100_fresh_error_diagnostic", retained_text)
+
+
+class S100ControlsOnlyDispatchContract(unittest.TestCase):
+    @staticmethod
+    def named_step(workflow, name):
+        return next(step for step in workflow["jobs"]["linux-gcc"]["steps"]
+                    if step.get("name") == name)
+
+    def test_one_optional_choice_input_defaults_to_fresh(self):
+        dispatch = CURRENT["true"]["workflow_dispatch"]
+        self.assertEqual(set(dispatch), {"inputs"})
+        self.assertEqual(set(dispatch["inputs"]), {"s100_scope"})
+        scope = dispatch["inputs"]["s100_scope"]
+        self.assertEqual(scope["type"], "choice")
+        self.assertEqual(scope["default"], "fresh")
+        self.assertEqual(scope["options"], ["fresh", "controls-only"])
+        self.assertFalse(scope["required"])
+
+    def test_only_dispatch_input_and_fresh_step_condition_change(self):
+        normalized = deepcopy(CURRENT)
+        normalized["true"]["workflow_dispatch"] = \
+            CONTROLS_BASELINE["true"]["workflow_dispatch"]
+        fresh = self.named_step(normalized, "Run S100 fresh-error diagnostic once")
+        before = self.named_step(CONTROLS_BASELINE,
+                                 "Run S100 fresh-error diagnostic once")
+        fresh["if"] = before["if"]
+        self.assertEqual(normalized, CONTROLS_BASELINE)
+
+    def test_controls_stays_enabled_and_only_fresh_honors_controls_only(self):
+        controls = self.named_step(CURRENT,
+                                   "Run S100 encoding inspection contract once")
+        old_controls = self.named_step(
+            CONTROLS_BASELINE, "Run S100 encoding inspection contract once")
+        fresh = self.named_step(CURRENT, "Run S100 fresh-error diagnostic once")
+        old_fresh = self.named_step(
+            CONTROLS_BASELINE, "Run S100 fresh-error diagnostic once")
+        self.assertEqual(controls, old_controls)
+        self.assertEqual(
+            condition_terms(fresh),
+            condition_terms(old_fresh) + ["inputs.s100_scope != 'controls-only'"],
+        )
+
+        green = NEW_REFS[0]
+        for scope in ("", "fresh"):
+            self.assertTrue(condition_enabled(controls, green, s100_scope=scope))
+            self.assertTrue(condition_enabled(fresh, green, s100_scope=scope))
+        self.assertTrue(condition_enabled(controls, green,
+                                          s100_scope="controls-only"))
+        self.assertFalse(condition_enabled(fresh, green,
+                                           s100_scope="controls-only"))
+
+    def test_other_refs_and_default_failure_semantics_are_unchanged(self):
+        fresh = self.named_step(CURRENT, "Run S100 fresh-error diagnostic once")
+        old_fresh = self.named_step(
+            CONTROLS_BASELINE, "Run S100 fresh-error diagnostic once")
+        refs = ["refs/heads/" + branch
+                for branch in CONTROLS_BASELINE["true"]["push"]["branches"]]
+        refs.extend((NEW_REFS[1], "refs/heads/workflow-dispatch-unlisted-ref"))
+        for ref in refs:
+            if ref == NEW_REFS[0]:
+                continue
+            for prior_success in (False, True):
+                for scope in ("", "fresh", "controls-only"):
+                    self.assertEqual(
+                        condition_enabled(fresh, ref, prior_success,
+                                          s100_scope=scope),
+                        condition_enabled(old_fresh, ref, prior_success),
+                        (ref, prior_success, scope),
+                    )
+        self.assertFalse(condition_enabled(fresh, NEW_REFS[0], False,
+                                           s100_scope="fresh"))
 
 
 if __name__ == "__main__":

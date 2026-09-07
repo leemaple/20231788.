@@ -23,6 +23,15 @@ on:
       - codex/precision116-profile-seam-green-20260907
       - codex/precision116-eight-square-observation-20260907
   workflow_dispatch:
+    inputs:
+      s100_scope:
+        description: S100 diagnostic scope
+        required: false
+        default: fresh
+        type: choice
+        options:
+          - fresh
+          - controls-only
 
 permissions:
   contents: read
@@ -196,7 +205,7 @@ jobs:
           --no-tests=error -R '^s100_encoding_inspection_contract$'
 
       - name: Run S100 fresh-error diagnostic once
-        if: github.ref == 'refs/heads/codex/s100-fresh-error-repair-20260907'
+        if: github.ref == 'refs/heads/codex/s100-fresh-error-repair-20260907' && inputs.s100_scope != 'controls-only'
         timeout-minutes: 20
         env:
           OMP_NUM_THREADS: 2

@@ -241,6 +241,7 @@ std::vector<io::ClientComplex> SmallPolynomialInputs(const std::vector<Int>& coe
 }
 
 void DecompositionControls();
+void ObserverOrderControls();
 
 void Controls() {
     Stage("keyless_controls");
@@ -381,6 +382,7 @@ void Controls() {
     const auto later = client.InspectEncoding(before, spec);
     Check(later.signedCoefficients == mixed, "RESULT_MUTATION_CHANGED_CLIENT");
     Metadata(later, context, 16, 2, scale);
+    ObserverOrderControls();
     std::cout << "S100 status=COMPLETE mode=controls setup=keyless precision_claim=NONE\n";
 }
 
@@ -434,6 +436,27 @@ void CheckObservation(const IntegerPolynomial& polynomial, const Scale& scale,
     std::cout << "S100 oracle=" << name << " slots=" << pf::kSlots
               << " horner_anchors=" << pf::kAnchors.size()
               << " cross512_768=" << cross << " horner_max=" << hornerMax << '\n';
+}
+
+void ObserverOrderControls() {
+    Stage("observer_order_controls");
+    const Int delta = Int(1) << 100;
+    const Scale scale{delta, Int(1)};
+    IntegerPolynomial polynomial{std::vector<Int>(pf::kN, Int(0)), (Int(1) << 102) + 1};
+    polynomial.coefficients[1] = delta; // X after dividing by the exact scale.
+    const auto roots = pf::AnchorRoots();
+    const auto observed = observer::Observe(polynomial, scale);
+    const auto validate = [&](const observer::Observation& value) {
+        CheckObservation(polynomial, scale, value, roots, "monomial_x_order_control");
+    };
+    validate(observed);
+    auto permuted = observed;
+    std::swap(permuted.at512[2], permuted.at512[3]);
+    std::swap(permuted.at768[2], permuted.at768[3]);
+    // Neither 2 nor 3 is a Horner anchor. RED: the legacy gate accepts this.
+    Reject<Invalid>("OBSERVER_SLOT_ORDER", [&] { validate(permuted); });
+    std::cout << "S100 observer_order_control=COMPLETE slots=" << pf::kSlots
+              << " rejected_shared_nonanchor_permutation=1 public_encryptions=0\n";
 }
 
 struct Tuple final { Real encoding, encryption, decoding, total, residual; };
