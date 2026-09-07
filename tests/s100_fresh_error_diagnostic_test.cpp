@@ -446,14 +446,33 @@ void ObserverOrderControls() {
     polynomial.coefficients[1] = delta; // X after dividing by the exact scale.
     const auto roots = pf::AnchorRoots();
     const auto observed = observer::Observe(polynomial, scale);
+    const auto reference = observer::DirectSparseReference768({{1, delta}}, scale);
+    Check(reference.size() == pf::kSlots, "OBSERVER_REFERENCE_SLOT_COUNT");
+    const observer::Binary768 tolerance =
+        boost::multiprecision::ldexp(observer::Binary768(1), -kAgreementBits);
     const auto validate = [&](const observer::Observation& value) {
         CheckObservation(polynomial, scale, value, roots, "monomial_x_order_control");
+        for (std::size_t s = 0; s < pf::kSlots; ++s) {
+            const std::array<observer::Binary768, 2> at512{{
+                observer::Binary768(value.at512[s].real),
+                observer::Binary768(value.at512[s].imag)}};
+            const std::array<observer::Binary768, 2> at768{{
+                value.at768[s].real, value.at768[s].imag}};
+            const std::array<observer::Binary768, 2> expected{{
+                reference[s].real, reference[s].imag}};
+            for (std::size_t component = 0; component < 2; ++component) {
+                Check(boost::math::isfinite(expected[component]), "NONFINITE_REFERENCE");
+                Check(boost::multiprecision::abs(at512[component] - expected[component]) <= tolerance &&
+                      boost::multiprecision::abs(at768[component] - expected[component]) <= tolerance,
+                      "OBSERVER_SLOT_ORDER");
+            }
+        }
     };
     validate(observed);
     auto permuted = observed;
     std::swap(permuted.at512[2], permuted.at512[3]);
     std::swap(permuted.at768[2], permuted.at768[3]);
-    // Neither 2 nor 3 is a Horner anchor. RED: the legacy gate accepts this.
+    // Neither 2 nor 3 is a Horner anchor; the all-slot direct control must reject this.
     Reject<Invalid>("OBSERVER_SLOT_ORDER", [&] { validate(permuted); });
     std::cout << "S100 observer_order_control=COMPLETE slots=" << pf::kSlots
               << " rejected_shared_nonanchor_permutation=1 public_encryptions=0\n";
