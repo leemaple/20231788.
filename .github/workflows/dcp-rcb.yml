@@ -168,7 +168,7 @@ jobs:
           ctest --test-dir build --verbose --output-on-failure -E '^(paper_full_eight_square_contract|experimental_precision116_profile_seam)$'
 
       - name: Build paper full eight-square contract
-        if: github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831'
+        if: github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' && github.ref != 'refs/heads/codex/s100-fresh-error-repair-20260907' && github.ref != 'refs/heads/codex/s100-fresh-error-red-20260907'
         run: cmake --build build --target paper_full_eight_square_contract_test --parallel 2
 
       - name: Reject unexpected precision116 RED build success
@@ -222,7 +222,7 @@ jobs:
 
       - name: Run and finalize paper endpoint once
         id: endpoint-run
-        if: github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831'
+        if: github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' && github.ref != 'refs/heads/codex/s100-fresh-error-repair-20260907' && github.ref != 'refs/heads/codex/s100-fresh-error-red-20260907'
         env:
           ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
         run: |
@@ -243,7 +243,7 @@ jobs:
 
       - name: Select exact endpoint upload
         id: endpoint-select
-        if: ${{ always() && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' }}
+        if: ${{ always() && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' && github.ref != 'refs/heads/codex/s100-fresh-error-repair-20260907' && github.ref != 'refs/heads/codex/s100-fresh-error-red-20260907' }}
         env:
           ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
         run: |
@@ -263,7 +263,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Upload exact endpoint evidence
-        if: ${{ always() && steps.endpoint-select.outcome == 'success' && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' }}
+        if: ${{ always() && steps.endpoint-select.outcome == 'success' && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' && github.ref != 'refs/heads/codex/s100-fresh-error-repair-20260907' && github.ref != 'refs/heads/codex/s100-fresh-error-red-20260907' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: fs-residual-endpoint-linux-${{ github.run_id }}-${{ github.run_attempt }}
@@ -527,7 +527,7 @@ jobs:
           ctest --test-dir "$build" --verbose --output-on-failure -E '^(paper_full_eight_square_contract|experimental_precision116_profile_seam)$'
 
       - name: Build paper full eight-square contract
-        if: github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831'
+        if: github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' && github.ref != 'refs/heads/codex/s100-fresh-error-repair-20260907' && github.ref != 'refs/heads/codex/s100-fresh-error-red-20260907'
         shell: msys2 {0}
         working-directory: C:/openfhe-2023-1788/cleanroom
         run: |
@@ -607,7 +607,7 @@ jobs:
 
       - name: Run and finalize paper endpoint once
         id: endpoint-run
-        if: github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831'
+        if: github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' && github.ref != 'refs/heads/codex/s100-fresh-error-repair-20260907' && github.ref != 'refs/heads/codex/s100-fresh-error-red-20260907'
         env:
           ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
         shell: msys2 {0}
@@ -655,7 +655,7 @@ jobs:
 
       - name: Select exact endpoint upload
         id: endpoint-select
-        if: ${{ always() && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' }}
+        if: ${{ always() && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' && github.ref != 'refs/heads/codex/s100-fresh-error-repair-20260907' && github.ref != 'refs/heads/codex/s100-fresh-error-red-20260907' }}
         env:
           ENDPOINT_PYTHON_NATIVE: ${{ steps.endpoint-python.outputs.python-path }}
         shell: msys2 {0}
@@ -681,7 +681,7 @@ jobs:
           } >> "$github_output_shell"
 
       - name: Upload exact endpoint evidence
-        if: ${{ always() && steps.endpoint-select.outcome == 'success' && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' }}
+        if: ${{ always() && steps.endpoint-select.outcome == 'success' && github.ref != 'refs/heads/codex/endpoint-writer-selftest-20260906' && github.ref != 'refs/heads/codex/precision116-profile-seam-red-20260907' && github.ref != 'refs/heads/codex/precision116-profile-seam-green-20260907' && github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' && github.ref != 'refs/heads/codex/s100-fresh-error-repair-20260907' && github.ref != 'refs/heads/codex/s100-fresh-error-red-20260907' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: fs-residual-endpoint-windows-${{ github.run_id }}-${{ github.run_attempt }}
