@@ -420,7 +420,11 @@ void CheckObservation(const IntegerPolynomial& polynomial, const Scale& scale,
         InEnvelope(Real(a.real)); InEnvelope(Real(a.imag));
         Check(boost::math::isfinite(b.real) && boost::math::isfinite(b.imag), "NONFINITE_OBSERVER");
     }
-    Check(cross <= observer::Binary768(Tolerance()), "OBSERVER_512_768_DISAGREEMENT");
+    // Build the exact dyadic bound in its destination type: Boost 1.83's
+    // fixed-512 to dynamic-768 copy path triggers GCC's array-bounds diagnostic.
+    const observer::Binary768 crossTolerance =
+        boost::multiprecision::ldexp(observer::Binary768(1), -kAgreementBits);
+    Check(cross <= crossTolerance, "OBSERVER_512_768_DISAGREEMENT");
     Real hornerMax = 0;
     for (std::size_t a = 0; a < pf::kAnchors.size(); ++a) {
         const Real error = pf::Error(anchors[a], Value512(observed, pf::kAnchors[a]));
