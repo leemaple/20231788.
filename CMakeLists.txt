@@ -301,3 +301,31 @@ if(OPENFHE_2023_1788_ENABLE_EXPERIMENTAL_PRECISION116_EIGHT_SQUARE)
         ENVIRONMENT "OMP_NUM_THREADS=2"
         LABELS "experimental;precision116;eight-square")
 endif()
+
+# S100 fresh-only attribution: no legacy registry or workflow changes.
+option(OPENFHE_2023_1788_ENABLE_S100_FRESH_ERROR_DIAGNOSTIC
+    "Register the explicit S100 shared-encoding controls and fresh-only diagnostic" OFF)
+if(OPENFHE_2023_1788_ENABLE_S100_FRESH_ERROR_DIAGNOSTIC)
+    add_executable(s100_fresh_error_diagnostic_test EXCLUDE_FROM_ALL
+        tests/s100_fresh_error_diagnostic_test.cpp
+        tests/paper_endpoint_transform.cpp
+        tests/paper_endpoint_scaled_norm.cpp)
+    target_link_libraries(s100_fresh_error_diagnostic_test PRIVATE openfhe_2023_1788)
+    target_compile_definitions(s100_fresh_error_diagnostic_test PRIVATE
+        S100_FRESH_ERROR_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+    if(MSVC)
+        target_compile_options(s100_fresh_error_diagnostic_test PRIVATE /W4 /WX)
+    else()
+        target_compile_options(s100_fresh_error_diagnostic_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME s100_encoding_inspection_contract
+        COMMAND s100_fresh_error_diagnostic_test --controls)
+    add_test(NAME s100_fresh_error_diagnostic
+        COMMAND s100_fresh_error_diagnostic_test --fresh)
+    set_tests_properties(s100_encoding_inspection_contract PROPERTIES
+        TIMEOUT 120 RUN_SERIAL TRUE ENVIRONMENT "OMP_NUM_THREADS=2"
+        LABELS "s100;encoding-inspection;opt-in")
+    set_tests_properties(s100_fresh_error_diagnostic PROPERTIES
+        TIMEOUT 1200 RUN_SERIAL TRUE ENVIRONMENT "OMP_NUM_THREADS=2"
+        LABELS "s100;fresh-only;diagnostic;opt-in")
+endif()
