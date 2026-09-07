@@ -167,6 +167,43 @@ jobs:
           ctest --test-dir build --show-only=json-v1 -E '^(paper_full_eight_square_contract|experimental_precision116_profile_seam)$'
           ctest --test-dir build --verbose --output-on-failure -E '^(paper_full_eight_square_contract|experimental_precision116_profile_seam)$'
 
+      - name: Configure S100 fresh-error diagnostic build
+        if: github.ref == 'refs/heads/codex/s100-fresh-error-red-20260907' || github.ref == 'refs/heads/codex/s100-fresh-error-repair-20260907'
+        run: >-
+          cmake -S . -B build-s100-fresh
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_PREFIX_PATH=${OPENFHE_PREFIX}
+          -DOPENFHE_2023_1788_ENABLE_S100_FRESH_ERROR_DIAGNOSTIC=ON
+
+      - name: Build S100 fresh-error diagnostic
+        id: s100-fresh-build
+        if: github.ref == 'refs/heads/codex/s100-fresh-error-red-20260907' || github.ref == 'refs/heads/codex/s100-fresh-error-repair-20260907'
+        run: cmake --build build-s100-fresh --target s100_fresh_error_diagnostic_test --parallel 2
+
+      - name: Reject unexpected S100 RED build success
+        if: ${{ always() && github.ref == 'refs/heads/codex/s100-fresh-error-red-20260907' && steps.s100-fresh-build.outcome == 'success' }}
+        run: |
+          echo 'Expected missing InspectEncoding compile failure was not observed; RED is not established.'
+          exit 1
+
+      - name: Run S100 encoding inspection contract once
+        if: github.ref == 'refs/heads/codex/s100-fresh-error-repair-20260907'
+        timeout-minutes: 20
+        env:
+          OMP_NUM_THREADS: 2
+        run: >-
+          ctest --test-dir build-s100-fresh --verbose --output-on-failure
+          --no-tests=error -R '^s100_encoding_inspection_contract$'
+
+      - name: Run S100 fresh-error diagnostic once
+        if: github.ref == 'refs/heads/codex/s100-fresh-error-repair-20260907'
+        timeout-minutes: 20
+        env:
+          OMP_NUM_THREADS: 2
+        run: >-
+          ctest --test-dir build-s100-fresh --verbose --output-on-failure
+          --no-tests=error -R '^s100_fresh_error_diagnostic$'
+
       - name: Build paper full eight-square contract
         if: github.ref != 'refs/heads/codex/precision116-eight-square-observation-20260907' && github.ref != 'refs/heads/cleanroom/reimplement-mult2-20260831' && github.ref != 'refs/heads/codex/s100-fresh-error-repair-20260907' && github.ref != 'refs/heads/codex/s100-fresh-error-red-20260907'
         run: cmake --build build --target paper_full_eight_square_contract_test --parallel 2
@@ -273,6 +310,7 @@ jobs:
           retention-days: 3
 
   windows-mingw64:
+    if: github.ref != 'refs/heads/codex/s100-fresh-error-repair-20260907' && github.ref != 'refs/heads/codex/s100-fresh-error-red-20260907'
     runs-on: windows-2022
     timeout-minutes: 60
     env:

@@ -15,6 +15,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ".github/workflows/dcp-rcb.yml"
 BASE_HEAD = "155b40fbb312d3f000e0bc6d72685c11185720b2"
+WIRING_BASE_HEAD = "a9299749ea1e8388adc23aa0ec1dba3c287e54ff"
 NEW_REFS = (
     "refs/heads/codex/s100-fresh-error-repair-20260907",
     "refs/heads/codex/s100-fresh-error-red-20260907",
@@ -26,6 +27,13 @@ STEP_NAMES = (
     "Upload exact endpoint evidence",
 )
 JOB_NAMES = ("linux-gcc", "windows-mingw64")
+DIAGNOSTIC_STEP_NAMES = (
+    "Configure S100 fresh-error diagnostic build",
+    "Build S100 fresh-error diagnostic",
+    "Reject unexpected S100 RED build success",
+    "Run S100 encoding inspection contract once",
+    "Run S100 fresh-error diagnostic once",
+)
 
 
 def parse_yaml(text):
@@ -78,9 +86,9 @@ def condition_enabled(step, ref, prior_success=True, selected_outcome="success")
     return all(values)
 
 
-def load_baseline():
+def load_at(commit):
     text = subprocess.check_output(
-        ["git", "-C", str(ROOT), "show", f"{BASE_HEAD}:{WORKFLOW}"], text=True
+        ["git", "-C", str(ROOT), "show", f"{commit}:{WORKFLOW}"], text=True
     )
     return parse_yaml(text)
 
@@ -122,7 +130,8 @@ def assert_gate_contract(testcase, baseline, current):
                          baseline["true"]["push"]["branches"])
 
 
-BASELINE = load_baseline()
+BASELINE = load_at(BASE_HEAD)
+WIRING_BASELINE = load_at(WIRING_BASE_HEAD)
 CURRENT = parse_yaml((ROOT / WORKFLOW).read_text())
 
 
@@ -168,6 +177,95 @@ class S100RefGateContract(unittest.TestCase):
                 step["if"] = step["if"].replace(omitted, "", 1)
                 with self.assertRaises(AssertionError, msg=(key, ref)):
                     assert_gate_contract(self, BASELINE, mutant)
+
+
+class S100DiagnosticWiringContract(unittest.TestCase):
+    def diagnostic_steps(self):
+        steps = CURRENT["jobs"]["linux-gcc"]["steps"]
+        found = {step.get("name"): step for step in steps
+                 if step.get("name") in DIAGNOSTIC_STEP_NAMES}
+        self.assertEqual(set(found), set(DIAGNOSTIC_STEP_NAMES))
+        self.assertEqual(sum(step.get("name") in DIAGNOSTIC_STEP_NAMES for step in steps), 5)
+        return steps, found
+
+    def test_existing_workflow_is_preserved_around_linux_additions_and_windows_guard(self):
+        self.assertEqual(CURRENT["true"]["push"]["branches"],
+                         WIRING_BASELINE["true"]["push"]["branches"])
+
+        current_linux = CURRENT["jobs"]["linux-gcc"]
+        before_linux = WIRING_BASELINE["jobs"]["linux-gcc"]
+        self.assertEqual({k: v for k, v in current_linux.items() if k != "steps"},
+                         {k: v for k, v in before_linux.items() if k != "steps"})
+        retained = [step for step in current_linux["steps"]
+                    if step.get("name") not in DIAGNOSTIC_STEP_NAMES]
+        self.assertEqual(retained, before_linux["steps"])
+
+        current_windows = CURRENT["jobs"]["windows-mingw64"]
+        before_windows = WIRING_BASELINE["jobs"]["windows-mingw64"]
+        self.assertEqual({k: v for k, v in current_windows.items() if k != "if"},
+                         before_windows)
+        self.assertEqual(
+            condition_terms(current_windows),
+            [f"github.ref != '{ref}'" for ref in NEW_REFS],
+        )
+        self.assertFalse(any(step.get("name") in DIAGNOSTIC_STEP_NAMES
+                             for step in current_windows["steps"]))
+
+    def test_separate_opt_in_build_follows_default_library_and_suite(self):
+        steps, found = self.diagnostic_steps()
+        names = [step["name"] for step in steps]
+        configure = found[DIAGNOSTIC_STEP_NAMES[0]]
+        build = found[DIAGNOSTIC_STEP_NAMES[1]]
+        both_refs = (
+            f"github.ref == '{NEW_REFS[1]}' || "
+            f"github.ref == '{NEW_REFS[0]}'"
+        )
+        self.assertEqual(configure["if"], both_refs)
+        self.assertEqual(build["if"], both_refs)
+        self.assertLess(names.index("Build warning-clean project"), names.index(configure["name"]))
+        self.assertLess(names.index("Run complete 60-test three-track suite"),
+                        names.index(configure["name"]))
+        self.assertLess(names.index(configure["name"]), names.index(build["name"]))
+        self.assertIn("cmake -S . -B build-s100-fresh", configure["run"])
+        self.assertIn("-DOPENFHE_2023_1788_ENABLE_S100_FRESH_ERROR_DIAGNOSTIC=ON",
+                      configure["run"])
+        self.assertIn("cmake --build build-s100-fresh", build["run"])
+        self.assertIn("--target s100_fresh_error_diagnostic_test --parallel 2", build["run"])
+        self.assertNotIn("continue-on-error", build)
+
+    def test_red_build_failure_is_not_masked_and_success_is_rejected(self):
+        _, found = self.diagnostic_steps()
+        build = found[DIAGNOSTIC_STEP_NAMES[1]]
+        reject = found[DIAGNOSTIC_STEP_NAMES[2]]
+        self.assertEqual(build["id"], "s100-fresh-build")
+        self.assertEqual(
+            condition_terms(reject),
+            ["always()", f"github.ref == '{NEW_REFS[1]}'",
+             "steps.s100-fresh-build.outcome == 'success'"],
+        )
+        self.assertIn("exit 1", reject["run"])
+        self.assertNotIn("continue-on-error", reject)
+
+    def test_green_runs_exact_controls_then_fresh_once_with_bounds(self):
+        steps, found = self.diagnostic_steps()
+        controls = found[DIAGNOSTIC_STEP_NAMES[3]]
+        fresh = found[DIAGNOSTIC_STEP_NAMES[4]]
+        self.assertLess(steps.index(controls), steps.index(fresh))
+        for step, test_name in (
+            (controls, "s100_encoding_inspection_contract"),
+            (fresh, "s100_fresh_error_diagnostic"),
+        ):
+            self.assertEqual(step["if"], f"github.ref == '{NEW_REFS[0]}'")
+            self.assertEqual(step["timeout-minutes"], 20)
+            self.assertEqual(step["env"]["OMP_NUM_THREADS"], 2)
+            self.assertEqual(step["run"].count("ctest --test-dir build-s100-fresh"), 1)
+            self.assertIn("--no-tests=error", step["run"])
+            self.assertIn(f"-R '^{test_name}$'", step["run"])
+            self.assertNotRegex(step["run"], r"--repeat|until-pass|set \+e|\|\|")
+
+        retained_text = json.dumps(WIRING_BASELINE["jobs"]["linux-gcc"]["steps"])
+        self.assertNotIn("s100_encoding_inspection_contract", retained_text)
+        self.assertNotIn("s100_fresh_error_diagnostic", retained_text)
 
 
 if __name__ == "__main__":
