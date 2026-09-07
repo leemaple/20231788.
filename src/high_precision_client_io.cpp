@@ -452,6 +452,49 @@ std::vector<Complex<Real>> Forward(const std::vector<ExactInteger>& coefficients
     return result;
 }
 
+// A single computation for inspection and real public encryption. Keep the
+// original validation, rounding, wrap and official exact-conversion order.
+struct EncodingWork final {
+    std::vector<ExactInteger> coefficients;
+    lbcrypto::BigVector residues;
+};
+
+EncodingWork ComputeEncoding(const ContextBinding& binding,
+                             const std::vector<ClientComplex>& values,
+                             const FreshEncodingSpec& spec,
+                             const TransformTable<Primary>& primaryTable,
+                             const TransformTable<CheckReal>& checkTable) {
+    const auto& geometry = binding.geometry;
+    if (values.size() != geometry.slots || spec.slots != geometry.slots)
+        throw std::invalid_argument(binding.plan ? "HighPrecisionClientIO: expected exactly 16384 slots" :
+                                                  "HighPrecisionClientIO: expected exactly 16 slots");
+    const auto freshScale = binding.FreshExactScale();
+    Require(spec.logicalScale.Numerator() == freshScale.Numerator() &&
+            spec.logicalScale.Denominator() == freshScale.Denominator(), "unsupported fresh exact scale");
+    for (const auto& value : values) { RequireFinite(value.real); RequireFinite(value.imag); }
+    const auto primary = Inverse(values, primaryTable);
+    const auto check = Inverse(values, checkTable);
+    const Primary primaryScale(spec.logicalScale.Numerator().convert_to<std::string>());
+    const CheckReal checkScale(spec.logicalScale.Numerator().convert_to<std::string>());
+    std::vector<ExactInteger> coefficients(geometry.n, 0);
+    for (std::size_t slot = 0; slot < geometry.slots; ++slot) {
+        coefficients[geometry.gap * slot] = StableRound(Primary(primary[slot].real * primaryScale), CheckReal(check[slot].real * checkScale));
+        coefficients[geometry.gap * slot + geometry.n / 2] = StableRound(Primary(primary[slot].imag * primaryScale), CheckReal(check[slot].imag * checkScale));
+    }
+    const ExactInteger modulus = CompositeModulus(binding.fullBasis);
+    const lbcrypto::BigInteger officialModulus(modulus.convert_to<std::string>());
+    lbcrypto::BigVector residues(geometry.n, officialModulus);
+    for (std::size_t coefficient = 0; coefficient < geometry.n; ++coefficient) {
+        if (2 * Absolute(coefficients[coefficient]) >= modulus)
+            throw std::range_error("HighPrecisionClientIO: encoding coefficient would wrap");
+        const ExactInteger residue = coefficients[coefficient] < 0 ? ExactInteger(coefficients[coefficient] + modulus) : coefficients[coefficient];
+        residues[coefficient] = lbcrypto::BigInteger(residue.convert_to<std::string>());
+        if (ExactInteger(residues[coefficient].ToString()) != residue)
+            throw std::range_error("HighPrecisionClientIO: exact integer conversion failed");
+    }
+    return {std::move(coefficients), std::move(residues)};
+}
+
 }  // namespace
 
 int detail::ClientContextBinding::BaseMetadataExponent(const std::shared_ptr<const RepeatedMult2Plan>& plan) {
@@ -551,11 +594,19 @@ HighPrecisionClientIO::HighPrecisionClientIO(std::shared_ptr<const RepeatedMult2
     impl_ = std::make_shared<const Impl>(BindContext(context, std::move(plan)));
 }
 
+EncodingInspection HighPrecisionClientIO::InspectEncoding(const std::vector<ClientComplex>& values,
+                                                           const FreshEncodingSpec& spec) const {
+    const auto& binding = *impl_->binding;
+    CheckProfile(binding);
+    auto encoded = ComputeEncoding(binding, values, spec, impl_->primary, impl_->check);
+    return {std::move(encoded.coefficients), binding.fullBasis, spec.logicalScale,
+            binding.geometry.slots, binding.geometry.gap, CanonicalProjection::OpenFhePackedStride};
+}
+
 BoundCiphertext HighPrecisionClientIO::Encrypt(const lbcrypto::PublicKey<DCRTPoly>& publicKey,
                                                const std::vector<ClientComplex>& values,
                                                const FreshEncodingSpec& spec) const {
     const auto& binding = *impl_->binding;
-    const auto& geometry = binding.geometry;
     CheckProfile(binding);
     if (!publicKey || publicKey->GetCryptoContext().get() != binding.context.get() || publicKey->GetKeyTag().empty() ||
         publicKey->GetPublicElements().size() != 2 ||
@@ -563,37 +614,11 @@ BoundCiphertext HighPrecisionClientIO::Encrypt(const lbcrypto::PublicKey<DCRTPol
         !MatchesElement(publicKey->GetPublicElements()[1], binding.fullBasis) ||
         (binding.plan && publicKey->GetKeyTag() != binding.plan->GetFamilyKeyTag(0)))
         throw std::invalid_argument("HighPrecisionClientIO: malformed public key");
-    if (values.size() != geometry.slots || spec.slots != geometry.slots)
-        throw std::invalid_argument(binding.plan ? "HighPrecisionClientIO: expected exactly 16384 slots" :
-                                                  "HighPrecisionClientIO: expected exactly 16 slots");
-    const auto freshScale = binding.FreshExactScale();
-    Require(spec.logicalScale.Numerator() == freshScale.Numerator() &&
-            spec.logicalScale.Denominator() == freshScale.Denominator(), "unsupported fresh exact scale");
-    for (const auto& value : values) { RequireFinite(value.real); RequireFinite(value.imag); }
-    const auto primary = Inverse(values, impl_->primary);
-    const auto check = Inverse(values, impl_->check);
-    const Primary primaryScale(spec.logicalScale.Numerator().convert_to<std::string>());
-    const CheckReal checkScale(spec.logicalScale.Numerator().convert_to<std::string>());
-    std::vector<ExactInteger> coefficients(geometry.n, 0);
-    for (std::size_t slot = 0; slot < geometry.slots; ++slot) {
-        coefficients[geometry.gap * slot] = StableRound(Primary(primary[slot].real * primaryScale), CheckReal(check[slot].real * checkScale));
-        coefficients[geometry.gap * slot + geometry.n / 2] = StableRound(Primary(primary[slot].imag * primaryScale), CheckReal(check[slot].imag * checkScale));
-    }
-    const ExactInteger modulus = CompositeModulus(binding.fullBasis);
-    const lbcrypto::BigInteger officialModulus(modulus.convert_to<std::string>());
-    lbcrypto::BigVector residues(geometry.n, officialModulus);
-    for (std::size_t coefficient = 0; coefficient < geometry.n; ++coefficient) {
-        if (2 * Absolute(coefficients[coefficient]) >= modulus)
-            throw std::range_error("HighPrecisionClientIO: encoding coefficient would wrap");
-        const ExactInteger residue = coefficients[coefficient] < 0 ? ExactInteger(coefficients[coefficient] + modulus) : coefficients[coefficient];
-        residues[coefficient] = lbcrypto::BigInteger(residue.convert_to<std::string>());
-        if (ExactInteger(residues[coefficient].ToString()) != residue)
-            throw std::range_error("HighPrecisionClientIO: exact integer conversion failed");
-    }
+    auto encoded = ComputeEncoding(binding, values, spec, impl_->primary, impl_->check);
     // Official large-Poly/DCRT constructor, not test-fixture tower injection.
     // poly.h:81-91, dcrtpoly-impl.h:59-68; the PKE implementation switches format.
     lbcrypto::Poly polynomial(binding.parameters->GetElementParams(), Format::COEFFICIENT);
-    polynomial.SetValues(std::move(residues), Format::COEFFICIENT);
+    polynomial.SetValues(std::move(encoded.residues), Format::COEFFICIENT);
     const DCRTPoly element(polynomial, binding.parameters->GetElementParams());
     auto ciphertext = binding.context->GetScheme()->Encrypt(element, publicKey);
     Require(ciphertext != nullptr, "official encryption returned null");

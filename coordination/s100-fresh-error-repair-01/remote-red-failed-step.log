@@ -1,0 +1,97 @@
+linux-gcc	Build S100 fresh-error diagnostic	﻿2026-09-07T10:10:47.1237440Z ##[group]Run cmake --build build-s100-fresh --target s100_fresh_error_diagnostic_test --parallel 2
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1238198Z ^[[36;1mcmake --build build-s100-fresh --target s100_fresh_error_diagnostic_test --parallel 2^[[0m
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1274929Z shell: /usr/bin/bash -e {0}
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1275196Z env:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1275466Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1275948Z   OPENFHE_PREFIX: /home/runner/work/20231788./20231788./.ci/openfhe-install
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1276436Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.14/x64
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1276888Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib/pkgconfig
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1277322Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1277708Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1278105Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1278524Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1278900Z ##[endgroup]
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1543832Z [ 11%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:47.1546459Z [ 22%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/high_precision_client_io.cpp.o
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:10:56.8855114Z [ 33%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/repeated_mult2.cpp.o
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:06.3656115Z [ 44%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/paper_h128_client_keypair.cpp.o
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:12.5985196Z [ 55%] Linking CXX static library libopenfhe_2023_1788.a
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:12.7918480Z [ 55%] Built target openfhe_2023_1788
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:12.7991680Z [ 66%] Building CXX object CMakeFiles/s100_fresh_error_diagnostic_test.dir/tests/s100_fresh_error_diagnostic_test.cpp.o
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:12.7994200Z [ 77%] Building CXX object CMakeFiles/s100_fresh_error_diagnostic_test.dir/tests/paper_endpoint_transform.cpp.o
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4895455Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In function ‘void {anonymous}::Controls()’:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4900677Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:261:37: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4903255Z   261 |         const auto encoded = client.InspectEncoding(values, spec); // intentional RED seam
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4904149Z       |                                     ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4906139Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:262:60: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4907922Z   262 |         static_assert(!std::is_reference_v<decltype(client.InspectEncoding(values, spec))>,
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4908810Z       |                                                            ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4910793Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:262:60: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4913095Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:262:29: error: template argument 1 is invalid
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4914434Z   262 |         static_assert(!std::is_reference_v<decltype(client.InspectEncoding(values, spec))>,
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4915379Z       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4917365Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:271:37: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4918981Z   271 |         const auto encoded = client.InspectEncoding(values, spec);
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4919655Z       |                                     ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4980454Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:280:37: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4982475Z   280 |         const auto encoded = client.InspectEncoding(
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4983125Z       |                                     ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4996589Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In lambda function:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.4999019Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:288:26: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5000631Z   288 |             (void)client.InspectEncoding(
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5001505Z       |                          ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5051433Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In function ‘void {anonymous}::Controls()’:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5054411Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:301:37: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5056159Z   301 |         const auto encoded = client.InspectEncoding(values, spec);
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5056852Z       |                                     ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5088862Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:312:22: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5090707Z   312 |         Check(client.InspectEncoding(wrong, spec).signedCoefficients != monomial,
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5091755Z       |                      ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5096968Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In lambda function:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5099413Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:319:26: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5101531Z   319 |             (void)client.InspectEncoding(std::vector<io::ClientComplex>(count), spec);
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5102417Z       |                          ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5103329Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In lambda function:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5105646Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:323:22: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5107385Z   323 |         (void)client.InspectEncoding(zeros, io::FreshEncodingSpec{15, spec.logicalScale});
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5108237Z       |                      ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5114129Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In lambda function:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5116427Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:329:26: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5118152Z   329 |             (void)client.InspectEncoding(zeros, io::FreshEncodingSpec{16, badScale});
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5118911Z       |                          ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5133073Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In lambda function:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5135480Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:341:30: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5137055Z   341 |                 (void)client.InspectEncoding(values, spec);
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5138078Z       |                              ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5143175Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In lambda function:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5145558Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:347:22: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5147198Z   347 |         (void)client.InspectEncoding(
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5147753Z       |                      ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5148630Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In lambda function:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5151238Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:352:22: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5152980Z   352 |         (void)client.InspectEncoding({}, io::FreshEncodingSpec{15,
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5153715Z       |                      ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5154924Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In lambda function:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5157347Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:357:22: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5159103Z   357 |         (void)client.InspectEncoding(values, io::FreshEncodingSpec{16,
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5159829Z       |                      ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5161383Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In function ‘void {anonymous}::Controls()’:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5193226Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:364:25: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5195315Z   364 |     auto first = client.InspectEncoding(values, mutableSpec);
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5196347Z       |                         ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5198786Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:381:31: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5200349Z   381 |     const auto later = client.InspectEncoding(before, spec);
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5201238Z       |                               ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5470407Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp: In function ‘void {anonymous}::Fresh()’:
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5473309Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:517:35: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5475124Z   517 |     const auto inspected = client.InspectEncoding(values, spec);
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5475879Z       |                                   ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5499879Z /home/runner/work/20231788./20231788./tests/s100_fresh_error_diagnostic_test.cpp:550:44: error: ‘const class openfhe_2023_1788::client_io::HighPrecisionClientIO’ has no member named ‘InspectEncoding’
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5502243Z   550 |     const auto repeatedInspection = client.InspectEncoding(values, spec);
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:16.5503372Z       |                                            ^~~~~~~~~~~~~~~
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:18.1188110Z gmake[3]: *** [CMakeFiles/s100_fresh_error_diagnostic_test.dir/build.make:79: CMakeFiles/s100_fresh_error_diagnostic_test.dir/tests/s100_fresh_error_diagnostic_test.cpp.o] Error 1
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:18.1189632Z gmake[3]: *** Waiting for unfinished jobs....
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:31.1896793Z gmake[2]: *** [CMakeFiles/Makefile2:837: CMakeFiles/s100_fresh_error_diagnostic_test.dir/all] Error 2
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:31.1898253Z gmake[1]: *** [CMakeFiles/Makefile2:844: CMakeFiles/s100_fresh_error_diagnostic_test.dir/rule] Error 2
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:31.1901038Z gmake: *** [Makefile:420: s100_fresh_error_diagnostic_test] Error 2
+linux-gcc	Build S100 fresh-error diagnostic	2026-09-07T10:11:31.1926334Z ##[error]Process completed with exit code 2.

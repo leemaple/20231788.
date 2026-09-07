@@ -67,6 +67,18 @@ struct FreshEncodingSpec final {
     PositiveRationalScale logicalScale;
 };
 
+// Owned deterministic encoding data, not a ciphertext, key, or context handle.
+// Mutating a result cannot alter the client, its input, or later inspections.
+// signedCoefficients are the exact pre-residue coefficients used by Encrypt.
+struct EncodingInspection final {
+    std::vector<ExactInteger> signedCoefficients;
+    OrderedDcrtBasis basis;
+    PositiveRationalScale logicalScale;
+    std::uint32_t slots;
+    std::uint32_t strideGap;
+    CanonicalProjection projection;
+};
+
 struct FirstMult2ScaleFactors final {
     ExactInteger qDiv;
     ExactInteger qL;
@@ -138,6 +150,11 @@ public:
     explicit HighPrecisionClientIO(std::shared_ptr<const RepeatedMult2Plan> plan);
     explicit HighPrecisionClientIO(std::nullptr_t)
         : HighPrecisionClientIO(lbcrypto::CryptoContext<lbcrypto::DCRTPoly>{}) {}
+    // Same validated integer encoder as Encrypt, but no key, randomness,
+    // encryption, decryption, or evaluator operation. Both supported profiles
+    // retain their existing slot/scale/range/ambiguous-half restrictions.
+    EncodingInspection InspectEncoding(const std::vector<ClientComplex>& values,
+                                       const FreshEncodingSpec& spec) const;
     BoundCiphertext Encrypt(const lbcrypto::PublicKey<lbcrypto::DCRTPoly>& publicKey,
                             const std::vector<ClientComplex>& values,
                             const FreshEncodingSpec& spec) const;
