@@ -27,8 +27,20 @@ def main():
     h.git('merge-base', '--is-ancestor', SOURCE, head)
     h.require(h.git('diff', SOURCE, head, '--', 'src', 'include', 'tests', 'CMakeLists.txt', '.github/workflows') == b'', 'source drift')
     payloads = {}
+    # These two complete diagnostic/provenance logs were inspected for this
+    # handoff. Keep exact paths for the adjacent scalar replay's hash check;
+    # do not allow any other runtime log or bypass content/secret scanning.
+    approved_logs = {
+        'coordination/s100-fresh-error-repair-01/remote-green2-diagnostic-steps.log':
+            'cbd1d44bb8bdfbf7f9ff74bc94e950ce8a7602cd5e8bb43d98da6f403b2a874d',
+        'coordination/s100-fresh-error-repair-01/remote-green2-provenance-summary.log':
+            '07b1332d3bbac84d26943e56dd603da38b19bd14ad337d8ad90cff15b02b0cf2',
+    }
+    h.ALLOWED_LOGS = h.ALLOWED_LOGS | {'evidence/' + p for p in approved_logs}
     def add_git(commit, path, dest):
         blob, mode, oid = h.git_entry(commit, path)
+        if path in approved_logs:
+            h.require(h.sha256(blob) == approved_logs[path], 'approved log changed')
         h.add(payloads, dest, blob, {'kind':'cleanroom_git_blob','commit':commit,'path':path,'mode':mode,'git_blob':oid})
     add_git(head, 'coordination/s100-condition-decision-01/TASK.md', 'TASK.md')
     add_git(SOURCE, 'coordination/s100-fresh-error-repair-01/remote-green1-failed-step.log', 'evidence/GREEN1_COMPILER.txt')
