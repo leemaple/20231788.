@@ -1,0 +1,70 @@
+{
+  "source": "/Users/lifeng/Downloads/s100-fresh-error-repair-01-delivery.zip",
+  "archive": "/Users/lifeng/Documents/20231788-openfhe-s100-fresh-error-repair-20260907/artifacts/handoffs/s100-fresh-error-repair-return-01/s100-fresh-error-repair-01-delivery.zip",
+  "bytes": 58724,
+  "sha256": "5ea38bfa16c18b187bbf808604b2b5d2c74ae79b26eb3e8e23c4968ad1004637",
+  "members": [
+    "01-red.patch",
+    "02-green.patch",
+    "DESIGN.md",
+    "MANIFEST.json",
+    "STATIC_CHECKS.json",
+    "modified/CMakeLists.txt",
+    "modified/include/openfhe_2023_1788/high_precision_client_io.h",
+    "modified/src/high_precision_client_io.cpp",
+    "modified/tests/s100_fresh_error_diagnostic_test.cpp"
+  ],
+  "expanded_bytes": 195060,
+  "manifest_sha256": "2096026faf6cc952469b6aa7bd65baba13b8583d9f8e5409d7b65d89e9656552",
+  "targeted_scan": {
+    "phase": "decoded S100 Pro return",
+    "files": 9,
+    "bytes": 195060,
+    "patterns": [
+      "aws_access_key",
+      "github_token",
+      "private_key_block",
+      "slack_token"
+    ],
+    "findings": []
+  },
+  "gitleaks_scan": {
+    "phase": "decoded S100 Pro return",
+    "version_command": [
+      "/opt/homebrew/bin/gitleaks",
+      "version"
+    ],
+    "command": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact",
+      "--no-banner",
+      "--no-color",
+      "--report-format",
+      "json",
+      "--report-path",
+      "-"
+    ],
+    "environment_keys": [
+      "GOMAXPROCS",
+      "LANG",
+      "LC_ALL",
+      "PATH"
+    ],
+    "tool_version": "8.30.1",
+    "exit_code": 0,
+    "findings": [],
+    "framed_bytes": 195522,
+    "framed_sha256": "279d2efe68f0680a1c8b1db3115af4967d884a1f13b457002984f2b35904ea71"
+  },
+  "closure_crc_paths_hashes": "PASS",
+  "external_code_executed": false,
+  "patches_applied": false
+}

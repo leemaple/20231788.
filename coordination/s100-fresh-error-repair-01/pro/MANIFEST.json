@@ -1,0 +1,199 @@
+{
+  "schema": "s100-fresh-error-repair-return-v1",
+  "task_id": "S100-FRESH-ERROR-REPAIR-01",
+  "status": "SOURCE_AND_TEST_CANDIDATE_REMOTE_BUILD_AND_CRYPTO_NOT_RUN",
+  "manifest_self_excluded": true,
+  "payload_count": 8,
+  "input": {
+    "archive": "s100-fresh-error-repair-e6c4cc1.zip",
+    "archive_bytes": 1514765,
+    "archive_sha256": "58bdc872577c3e267dd2f1fe823bf1751242abf5520e211cceed2834be6e14aa",
+    "members": 181,
+    "payloads": 180,
+    "expanded_bytes": 4394649,
+    "manifest_sha256": "28c37db169b61efe1afe5504c7a2694fcd7e2e640e6904a2322f3ffc966c3d8c",
+    "task_sha256": "efd62bf0c2948dc1488f5e31506f532efc96a5802a96cc8c41e05a5e1c3c8462",
+    "declared_source_commit": "e6c4cc1ddfa261ee17681cbfc1ca6023660df5cb",
+    "declared_task_commit": "2e7ce350c0253249340e9fee144038aed0cd93e9",
+    "official_openfhe_pin": "df495ba2e91739a6dc8f1de254fc5a41155ce504"
+  },
+  "patch_sequence": [
+    {
+      "path": "01-red.patch",
+      "apply_to": "exact supplied baseline snapshot",
+      "changes": [
+        "CMakeLists.txt",
+        "tests/s100_fresh_error_diagnostic_test.cpp"
+      ],
+      "expected_remote_red": "missing HighPrecisionClientIO::InspectEncoding member; NOT OBSERVED HERE"
+    },
+    {
+      "path": "02-green.patch",
+      "apply_after": "01-red.patch",
+      "changes": [
+        "include/openfhe_2023_1788/high_precision_client_io.h",
+        "src/high_precision_client_io.cpp"
+      ],
+      "expected_remote_green": "build and run frozen controls, then one fresh-only diagnostic; NOT OBSERVED HERE"
+    }
+  ],
+  "full_file_mapping": [
+    {
+      "delivery_path": "modified/CMakeLists.txt",
+      "repository_path": "CMakeLists.txt"
+    },
+    {
+      "delivery_path": "modified/include/openfhe_2023_1788/high_precision_client_io.h",
+      "repository_path": "include/openfhe_2023_1788/high_precision_client_io.h"
+    },
+    {
+      "delivery_path": "modified/src/high_precision_client_io.cpp",
+      "repository_path": "src/high_precision_client_io.cpp"
+    },
+    {
+      "delivery_path": "modified/tests/s100_fresh_error_diagnostic_test.cpp",
+      "repository_path": "tests/s100_fresh_error_diagnostic_test.cpp"
+    }
+  ],
+  "opt_in": {
+    "option": "OPENFHE_2023_1788_ENABLE_S100_FRESH_ERROR_DIAGNOSTIC",
+    "default": "OFF",
+    "target": "s100_fresh_error_diagnostic_test",
+    "excluded_from_all": true,
+    "tests": [
+      {
+        "ctest": "s100_encoding_inspection_contract",
+        "argument": "--controls",
+        "timeout_seconds": 120
+      },
+      {
+        "ctest": "s100_fresh_error_diagnostic",
+        "argument": "--fresh",
+        "timeout_seconds": 1200
+      }
+    ],
+    "OMP_NUM_THREADS": "2",
+    "RUN_SERIAL": true,
+    "fresh_public_encryptions_per_completed_fresh_invocation": 1,
+    "full_chain_invocations": 0,
+    "retries": 0
+  },
+  "scope": {
+    "modified_existing_repository_files": 3,
+    "new_repository_cpp_files": 1,
+    "untouched_original_repository_files": 93,
+    "workflow_changes": false,
+    "sampler_parameter_input_or_old_acceptance_changes": false
+  },
+  "evidence": {
+    "actual_check_report": "STATIC_CHECKS.json",
+    "static_check_groups": 7,
+    "ordered_patch_application_and_full_file_match": "VERIFIED",
+    "synthetic_replay_head_is_upstream_commit": false,
+    "execution_status": {
+      "cmake_configuration": "NOT_RUN",
+      "red_cpp_build": "NOT_RUN",
+      "green_cpp_build": "NOT_RUN",
+      "cpp_controls": "NOT_RUN",
+      "fresh_crypto_diagnostic": "NOT_RUN",
+      "fft_or_horner_numerical_run": "NOT_RUN",
+      "legacy_regressions": "NOT_RUN",
+      "existing_api_builds": "NOT_RUN",
+      "s100_chain": "NOT_RUN",
+      "s116_chain": "NOT_RUN",
+      "remote_job": "NOT_TRIGGERED",
+      "new_two_stage_secret_scan": "NOT_RUN"
+    },
+    "original_s100_status": "PRIOR_FAIL_RETAINED_NO_NEW_NUMERICAL_RESULT",
+    "s116_used_as_s100_repair": false
+  },
+  "unchanged_direct_reference_inputs": [
+    {
+      "path": "project/tests/paper_full_eight_square_oracle.h",
+      "bytes": 16392,
+      "sha256": "08d6c4dfe6761b84d893d90c120418a29d8a2b96aa05304e95728d72e4c3e203"
+    },
+    {
+      "path": "project/tests/paper_endpoint_observer_contract.h",
+      "bytes": 10324,
+      "sha256": "c8fce07e3a9969d5109f85856b46ce5bc16657447e9d62726cb11b6e294c1d23"
+    },
+    {
+      "path": "project/tests/paper_endpoint_transform.cpp",
+      "bytes": 16734,
+      "sha256": "f0a2fd4ffd6d877684a39e753b2419ac23c59a5e59fd9af982c69f27dc081dea"
+    },
+    {
+      "path": "project/tests/paper_endpoint_scaled_norm.cpp",
+      "bytes": 1569,
+      "sha256": "5d29807bef410022f75bea12bdd75efd509bdd559f901431ecf043ac851b12b8"
+    },
+    {
+      "path": "project/tests/paper_endpoint_checked_arithmetic.h",
+      "bytes": 4328,
+      "sha256": "2551fafd1ffb25761f882bc926a8db7bb4edc71235131364cfad3b056a97eada"
+    },
+    {
+      "path": "project/tests/paper_endpoint_failure.h",
+      "bytes": 830,
+      "sha256": "e3ae015ac5f8e516d96373243e8c43a78cea5af3b800170bc4b67174ed845388"
+    },
+    {
+      "path": "project/src/repeated_mult2.cpp",
+      "bytes": 39523,
+      "sha256": "6781d01ff9b4012e7c6d14d16f482def0821c54f4e81e2de80bd8db9d1aea41b"
+    },
+    {
+      "path": "project/src/paper_h128_client_keypair.cpp",
+      "bytes": 11625,
+      "sha256": "679d4fa226b95770282fd5c877bf47044a290949bbaed501bd8f662744a6f22e"
+    },
+    {
+      "path": "references/paper/PAPER-2023-1788.pdf",
+      "bytes": 759375,
+      "sha256": "61d9b948b17b6a624d3bf3372462555288308011226d2893e9e6bc3d6d197eac"
+    }
+  ],
+  "files": [
+    {
+      "path": "01-red.patch",
+      "bytes": 38301,
+      "sha256": "b38e72080c928acea594ee06395d65168d2036ad0586fb079a5a4d5e8b8358d4"
+    },
+    {
+      "path": "02-green.patch",
+      "bytes": 9957,
+      "sha256": "6adb85f7f3b0924d37b6cec927f494b89066a2449ac8001e5208cfce2793cd59"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 25157,
+      "sha256": "67e88e25265aec1bd40a60057f5ed4037938a8c6083e1e83640bdf6fe7c48815"
+    },
+    {
+      "path": "STATIC_CHECKS.json",
+      "bytes": 9565,
+      "sha256": "61f3951ae338d79d771ddb6c84bbe9a2fa00a053ff155bcd720accab3e4c9989"
+    },
+    {
+      "path": "modified/CMakeLists.txt",
+      "bytes": 19446,
+      "sha256": "c0ad50c9ed8005c827cb2f2838c1dc6e4aca2060585512ed55e6a6332bfdf954"
+    },
+    {
+      "path": "modified/include/openfhe_2023_1788/high_precision_client_io.h",
+      "bytes": 6465,
+      "sha256": "1fda66deb55db1743b32f28f8c9325090aa86b2ee1eb5b7f782ce3fccaf48289"
+    },
+    {
+      "path": "modified/src/high_precision_client_io.cpp",
+      "bytes": 43927,
+      "sha256": "41b4966f3fdcc251e7d25c82fb20f5daf35551a3df1f44c6b0cc24875e8ff368"
+    },
+    {
+      "path": "modified/tests/s100_fresh_error_diagnostic_test.cpp",
+      "bytes": 35398,
+      "sha256": "818c3823b330fdfa2393e515668a5cfb1ee7fed7f8ced69bb3d3ccfa19154ecd"
+    }
+  ]
+}

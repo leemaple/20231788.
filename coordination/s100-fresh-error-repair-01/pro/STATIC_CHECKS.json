@@ -1,0 +1,351 @@
+{
+  "schema": "s100-fresh-error-static-checks-v1",
+  "executed_utc": "2026-09-07T09:51:19.306839+00:00",
+  "kind": "ACTUAL_STATIC_AND_ARCHIVE_CHECKS_ONLY",
+  "environment": {
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "machine": "x86_64",
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "git": "git version 2.47.3"
+  },
+  "declared_input_baseline_commit": "e6c4cc1ddfa261ee17681cbfc1ca6023660df5cb",
+  "checks": [
+    {
+      "check": "input_identity_crc_catalogue_and_payloads",
+      "result": "VERIFIED_STATIC",
+      "archive_bytes": 1514765,
+      "members": 181,
+      "payloads": 180,
+      "expanded_bytes": 4394649,
+      "crc_error": null,
+      "recomputed_git_blob_ids_matching_manifest": 97,
+      "provenance_limit": "Byte/blob checks do not independently prove membership in remote commits."
+    },
+    {
+      "check": "exact_four_file_scope",
+      "result": "VERIFIED_STATIC",
+      "changed": [
+        "CMakeLists.txt",
+        "include/openfhe_2023_1788/high_precision_client_io.h",
+        "src/high_precision_client_io.cpp",
+        "tests/s100_fresh_error_diagnostic_test.cpp"
+      ],
+      "untouched_original_files": 93,
+      "original_file_count": 96,
+      "newly_added_cpp_files": [
+        "tests/s100_fresh_error_diagnostic_test.cpp"
+      ]
+    },
+    {
+      "check": "cmake_original_bytes_preserved_and_opt_in_only",
+      "result": "VERIFIED_STATIC",
+      "original_prefix_bytes": 17909,
+      "added_test_declarations": 2,
+      "observed_ctest_registry": "NOT_CONFIGURED_OR_OBSERVED"
+    },
+    {
+      "check": "shared_encoding_extraction_exact_text_equivalence",
+      "result": "VERIFIED_STATIC",
+      "allowed_body_renaming": [
+        "impl_->primary -> primaryTable",
+        "impl_->check -> checkTable"
+      ],
+      "original_encrypt_reconstructed_byte_for_byte": true,
+      "all_other_original_cpp_bytes_reconstructed": true,
+      "all_original_header_bytes_reconstructed": true,
+      "rounding_transform_decode_and_key_validation_logic": "UNCHANGED_BYTES"
+    },
+    {
+      "check": "diagnostic_control_flow_and_raw_integer_guard_source_checks",
+      "result": "VERIFIED_STATIC",
+      "actual_client_encrypt_call_sites": 1,
+      "independent_observe_call_sites": 3,
+      "fresh_input_factory_call_sites": 1,
+      "new_result_type_named_by_test": false,
+      "raw_delta_modulo_or_recentering_call_sites": 0,
+      "limit": "Source/lexical checks only; not runtime invocation, RNG instrumentation, or compiler validation."
+    },
+    {
+      "check": "elementary_fixture_arithmetic_only",
+      "result": "VERIFIED_STATIC",
+      "implementation": "Python Fraction / integers, NOT the C++ tests",
+      "nearest_nonhalf_cases": 8,
+      "distinct_extrema": [
+        [
+          "8",
+          0,
+          "real"
+        ],
+        [
+          "9",
+          0,
+          "imag"
+        ],
+        [
+          "10",
+          1,
+          "real"
+        ],
+        [
+          "7.5",
+          1,
+          "imag"
+        ]
+      ],
+      "conditional_rounding_bound": "1 / 2**86"
+    },
+    {
+      "check": "ordered_red_green_patch_replay",
+      "result": "VERIFIED_STATIC",
+      "full_index_apply_checks": "both return 0",
+      "patch_whitespace_checks": "both return 0",
+      "red_source_still_has_no_new_api": true,
+      "green_leaves_red_tests_and_wiring_byte_identical": true,
+      "final_full_files_match_replay": true,
+      "synthetic_replay_head": "c96699230e5968549a2cd68a13c2ff354e8a561d",
+      "synthetic_head_is_upstream_baseline": false
+    }
+  ],
+  "actual_git_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "user.name",
+        "Synthetic Snapshot Check"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "user.email",
+        "snapshot-check@example.invalid"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "."
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "commit",
+        "-qm",
+        "Synthetic input tree; not the upstream e6c4cc1 commit"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "c96699230e5968549a2cd68a13c2ff354e8a561d\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "--index",
+        "/mnt/data/s100_delivery/01-red.patch"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--index",
+        "/mnt/data/s100_delivery/01-red.patch"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "CMakeLists.txt\ntests/s100_fresh_error_diagnostic_test.cpp\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "--index",
+        "/mnt/data/s100_delivery/02-green.patch"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--index",
+        "/mnt/data/s100_delivery/02-green.patch"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--stat"
+      ],
+      "cwd": "/mnt/data/s100_patch_replay",
+      "return_code": 0,
+      "stdout": " CMakeLists.txt                                     |  28 +\n .../openfhe_2023_1788/high_precision_client_io.h   |  17 +\n src/high_precision_client_io.cpp                   |  83 ++-\n tests/s100_fresh_error_diagnostic_test.cpp         | 666 +++++++++++++++++++++\n 4 files changed, 765 insertions(+), 29 deletions(-)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--version"
+      ],
+      "cwd": null,
+      "return_code": 0,
+      "stdout": "git version 2.47.3\n",
+      "stderr": ""
+    }
+  ],
+  "execution_status": {
+    "cmake_configuration": "NOT_RUN",
+    "red_cpp_build": "NOT_RUN",
+    "green_cpp_build": "NOT_RUN",
+    "cpp_controls": "NOT_RUN",
+    "fresh_crypto_diagnostic": "NOT_RUN",
+    "fft_or_horner_numerical_run": "NOT_RUN",
+    "legacy_regressions": "NOT_RUN",
+    "existing_api_builds": "NOT_RUN",
+    "s100_chain": "NOT_RUN",
+    "s116_chain": "NOT_RUN",
+    "remote_job": "NOT_TRIGGERED",
+    "new_two_stage_secret_scan": "NOT_RUN"
+  },
+  "original_s100_disposition": "PRIOR_FAIL_RETAINED_NO_NEW_NUMERICAL_RESULT",
+  "immutable_reference_files": [
+    {
+      "path": "project/tests/paper_full_eight_square_oracle.h",
+      "bytes": 16392,
+      "sha256": "08d6c4dfe6761b84d893d90c120418a29d8a2b96aa05304e95728d72e4c3e203"
+    },
+    {
+      "path": "project/tests/paper_endpoint_observer_contract.h",
+      "bytes": 10324,
+      "sha256": "c8fce07e3a9969d5109f85856b46ce5bc16657447e9d62726cb11b6e294c1d23"
+    },
+    {
+      "path": "project/tests/paper_endpoint_transform.cpp",
+      "bytes": 16734,
+      "sha256": "f0a2fd4ffd6d877684a39e753b2419ac23c59a5e59fd9af982c69f27dc081dea"
+    },
+    {
+      "path": "project/tests/paper_endpoint_scaled_norm.cpp",
+      "bytes": 1569,
+      "sha256": "5d29807bef410022f75bea12bdd75efd509bdd559f901431ecf043ac851b12b8"
+    },
+    {
+      "path": "project/tests/paper_endpoint_checked_arithmetic.h",
+      "bytes": 4328,
+      "sha256": "2551fafd1ffb25761f882bc926a8db7bb4edc71235131364cfad3b056a97eada"
+    },
+    {
+      "path": "project/tests/paper_endpoint_failure.h",
+      "bytes": 830,
+      "sha256": "e3ae015ac5f8e516d96373243e8c43a78cea5af3b800170bc4b67174ed845388"
+    },
+    {
+      "path": "project/src/repeated_mult2.cpp",
+      "bytes": 39523,
+      "sha256": "6781d01ff9b4012e7c6d14d16f482def0821c54f4e81e2de80bd8db9d1aea41b"
+    },
+    {
+      "path": "project/src/paper_h128_client_keypair.cpp",
+      "bytes": 11625,
+      "sha256": "679d4fa226b95770282fd5c877bf47044a290949bbaed501bd8f662744a6f22e"
+    },
+    {
+      "path": "references/paper/PAPER-2023-1788.pdf",
+      "bytes": 759375,
+      "sha256": "61d9b948b17b6a624d3bf3372462555288308011226d2893e9e6bc3d6d197eac"
+    }
+  ]
+}
