@@ -1,0 +1,7 @@
+# Qualified R-03 final-flush RED
+
+Run https://github.com/leemaple/20231788./actions/runs/34115201764 attempt1, source23c47b6f94ad346ac6c419baa667fa6f763cbd05. Linux101720277540 failed4m49s, Windows101720278910 intentionallyskipped. Diagnostic compiled GCC13.3/Boost1.83 against pristineOpenFHE df495ba2e91739a6dc8f1de254fc5a41155ce504, OMP2. Default60regression/APIsteps allsuccessful before diagnostic.
+
+Actual failure: status=INVALID stage=output_stream_controls reason=EXPECTED_REJECTION_MISSING. CTest reports test0.00seconds/invocation0.01seconds, exit8. It occurred before keyless_controls/SmallContext/observer_order_controls. This is the finalsync behavioralcounterexample, notcompiler/infrastructure failure; fresh and alloldendpoint/Windowssteps skipped. Complete runJSON and completefailedstep log retained in RED_EVIDENCE.txt, SHA37c173c3d84c0f33477fff6dd5e6b4762ed2940a43f4022603d67b7b06f3419e. Raw timestamped whitespace preserved. Watch endedexit1; do not rerunthisRED.
+
+Only afterqualifiedRED, root added the single postflush Check(output.good(),OUTPUT_STREAM_FAILURE) to FinalizeOutput. Both modes invoke it beforemainreturns0. Existing finalpreflush check inFresh remains unchanged. No productioncode,parameters,samples,workflow or numericaloraclediff. GREENruntimepending until the next exactsourcecontrols-onlyrun. Sourcechecks and independentreview do not substitute for runtime.

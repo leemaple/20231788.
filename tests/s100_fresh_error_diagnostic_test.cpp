@@ -56,6 +56,7 @@ void Check(bool condition, const char* reason) {
 }
 void FinalizeOutput(std::ostream& output) {
     output.flush();
+    Check(output.good(), "OUTPUT_STREAM_FAILURE");
 }
 Int Magnitude(const Int& value) { return value < 0 ? Int(-value) : value; }
 Real Tolerance() { return pf::Pow2(-kAgreementBits); }
