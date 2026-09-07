@@ -1,0 +1,170 @@
+{
+  "schema": "s100-condition-decision-review-delivery-v1",
+  "task": "S100-CONDITION-DECISION-01",
+  "language": "zh-CN",
+  "date": "2026-09-07",
+  "source_commit": "2c14d7f394ec385029716d00f9c03fad974ba88b",
+  "task_evidence_commit": "da5b59fe0e5f8f2a957434df0fd76eb271d8720a",
+  "source_branch": "codex/s100-fresh-error-repair-20260907",
+  "input_archive": {
+    "filename": "s100-condition-decision-2c14d7f.zip",
+    "verification": {
+      "archive_bytes": 1620988,
+      "archive_sha256": "3bbb738d56a17f76807546f5f7fc4a1f4c83e889164e1dab71f0409d190e417b",
+      "unique_regular_members": 200,
+      "uncompressed_bytes": 4784453,
+      "CRC": "PASS",
+      "manifest_bytes": 309166,
+      "manifest_sha256": "0eb3c9674262cbaf9bc79202139576343b039b32826b2ff2af8194860e00d80b",
+      "verified_payloads": 199,
+      "verified_git_blob_hashes": 116,
+      "source_commit": "2c14d7f394ec385029716d00f9c03fad974ba88b",
+      "task_commit": "da5b59fe0e5f8f2a957434df0fd76eb271d8720a",
+      "TASK_sha256": "a84c41331f7d3035ef028b7b8133e9f467becff1d340f35377b43d9ccd04f837"
+    }
+  },
+  "member_count": 3,
+  "manifest_self_excluded": true,
+  "manifest_scope": "files 列出除 MANIFEST.json 自身之外的全部 2 个载荷；每个文件均为 UTF-8。ZIP 自身身份在交付消息中给出，不作循环自哈希。",
+  "files": [
+    {
+      "path": "DECISION.md",
+      "bytes": 53258,
+      "sha256": "838674832f482d7c1f9f02bd2a55da81087b452529dbe2880b68081062977747"
+    },
+    {
+      "path": "NEXT_ACTION.md",
+      "bytes": 6487,
+      "sha256": "0b0581052c6c00942dcaba8d4d3262ca1e18716bca023d483d6d94639ffbdb6f"
+    }
+  ],
+  "decision": {
+    "production_numerical_patch": "NOT_JUSTIFIED_BY_SUPPLIED_EVIDENCE",
+    "next_action": "一次版本绑定的 Table 3 实验条件澄清；作者问询仅为未发送稿",
+    "external_contact_authority": "NOT_GRANTED",
+    "external_contact_sent": false,
+    "full_reproduction": "INCOMPLETE",
+    "original_frozen_S100_E80": "FAIL_RETAINED",
+    "published_empirical_value_comparison": "CONDITIONS_UNRESOLVED"
+  },
+  "sample_boundaries": {
+    "historical_full_chain": {
+      "source_commit": "ed5fd192a89d6d4728ad295e87cf06a3f4abc832",
+      "run_id": 34039088536,
+      "attempt": 1,
+      "evidence_kind": "随包保全的历史复核结果；未重放原链"
+    },
+    "new_fresh_sample": {
+      "source_commit": "a448b787399b43b6024d82c170add403969b493c",
+      "run_id": 34110943783,
+      "attempt": 1,
+      "fresh_payload_count": 1,
+      "evidence_kind": "随包完整诊断日志和回执；未重新加密"
+    },
+    "observer_red": {
+      "source_commit": "f5382eb4f2015a991322f1e7430b28055cc0a4fb",
+      "run_id": 34113380315,
+      "fresh": "SKIPPED"
+    },
+    "observer_green": {
+      "source_commit": "2c14d7f394ec385029716d00f9c03fad974ba88b",
+      "run_id": 34113920247,
+      "fresh": "SKIPPED"
+    }
+  },
+  "actual_local_checks": {
+    "python_version": "3.13.5",
+    "input_archive_crc_hashes_blob_hashes": "PASS",
+    "offline_receipts_and_text": "PASS",
+    "supplied_corrected_scalar_interval_script_exit": 0,
+    "independent_exact_integer_scalar_recurrence_exit": 0,
+    "anchors": 10,
+    "components": 20,
+    "perturbation": "A+B; C excluded, E0 consistency-only",
+    "conditionally_exceeding_ideal_phase_components": [
+      [
+        512,
+        "imag"
+      ],
+      [
+        769,
+        "real"
+      ],
+      [
+        1023,
+        "real"
+      ]
+    ],
+    "exact_scalar_centers_inside_internal_directed_intervals": "20/20",
+    "actual_current_ciphertext_chain_measured": false,
+    "exact_observer_accuracy_certified": false,
+    "all_200_input_files_unchanged": "PASS",
+    "evidence_records": [
+      {
+        "record": "verify_input.py",
+        "bytes": 2030,
+        "sha256": "f792a50ea13907ab6d050ad50f9f343dae161ec743bcbe6d407f390b75c557b7",
+        "location": "DECISION.md 附录；非独立 ZIP 成员"
+      },
+      {
+        "record": "check_receipts.py",
+        "bytes": 5533,
+        "sha256": "341ba651f9a773ccbd7d44f78bde09e2f655fe6e11da142f26092a43bef96aa7",
+        "location": "DECISION.md 附录；非独立 ZIP 成员"
+      },
+      {
+        "record": "independent_scalar_check.py",
+        "bytes": 5165,
+        "sha256": "5f694847986dfb0507be1afd392b9f2b24c2b455807d51b811365e268a00d9a6",
+        "location": "DECISION.md 附录；非独立 ZIP 成员"
+      },
+      {
+        "record": "verify_input.json",
+        "bytes": 591,
+        "sha256": "e0b68a2b2071680f9794c569079eb93f23399541990e2f9b88681c6660dddca4",
+        "location": "DECISION.md 附录；非独立 ZIP 成员"
+      },
+      {
+        "record": "check_receipts.stdout",
+        "bytes": 1454,
+        "sha256": "a3ef772963ffb69ed429857eae8d4a493124c9d62862307afe1d2927be8159cd",
+        "location": "DECISION.md 附录；非独立 ZIP 成员"
+      },
+      {
+        "record": "scalar_supplied.stdout",
+        "bytes": 5460,
+        "sha256": "9e3866b37765cd50509f563c54ed996e2b1c5e5f5b043086bf191f47d3e8208f",
+        "location": "DECISION.md 附录；非独立 ZIP 成员"
+      },
+      {
+        "record": "independent_scalar.stdout",
+        "bytes": 3376,
+        "sha256": "62355fbcb3785f2078b8762d86a0bb1a68501b7c8fcbda54e6ef1006299c1771",
+        "location": "DECISION.md 附录；非独立 ZIP 成员"
+      },
+      {
+        "record": "final_source_check.py",
+        "bytes": 1538,
+        "sha256": "d93e2897b8063fa1e6390e1124c3d7bb64a6f1fdc0f3f7b5064cc8bec9a4a238",
+        "location": "DECISION.md 附录；非独立 ZIP 成员"
+      },
+      {
+        "record": "final_source_check.stdout",
+        "bytes": 234,
+        "sha256": "f3a2e32fecb68fa998c6814ddda4f6b28de3eb8b4b0a4a776aa9e6a68776e570",
+        "location": "DECISION.md 附录；非独立 ZIP 成员"
+      }
+    ]
+  },
+  "not_performed": [
+    "OpenFHE 构建",
+    "C++/CTest 本地执行",
+    "FFT 或全槽数值 replay",
+    "加密或新采样",
+    "CI 查询或派发",
+    "外部消息或账户操作",
+    "新的公共网络溯源",
+    "生产源码或验收条件修改",
+    "统计噪声或安全认证"
+  ]
+}

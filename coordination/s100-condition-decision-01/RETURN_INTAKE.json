@@ -1,0 +1,62 @@
+{
+  "archive": "/Users/lifeng/Documents/20231788-openfhe-s100-fresh-error-repair-20260907/artifacts/handoffs/s100-condition-decision-return-01/S100-CONDITION-DECISION-01-2c14d7f-zh.zip",
+  "bytes": 28223,
+  "sha256": "6edfbe9c65f6e88dd10561661d07f55d50d00aab829c075f73e3b4c497bbeded",
+  "members": [
+    "DECISION.md",
+    "NEXT_ACTION.md",
+    "MANIFEST.json"
+  ],
+  "expanded_bytes": 65866,
+  "manifest_sha256": "53211f66e7698c06d2f66666e40229b191f40a6d4fa8717998f8ef08b08a17f9",
+  "targeted_scan": {
+    "phase": "scientific condition decision return",
+    "files": 3,
+    "bytes": 65866,
+    "patterns": [
+      "aws_access_key",
+      "github_token",
+      "private_key_block",
+      "slack_token"
+    ],
+    "findings": []
+  },
+  "gitleaks_scan": {
+    "phase": "scientific condition decision return",
+    "version_command": [
+      "/opt/homebrew/bin/gitleaks",
+      "version"
+    ],
+    "command": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact",
+      "--no-banner",
+      "--no-color",
+      "--report-format",
+      "json",
+      "--report-path",
+      "-"
+    ],
+    "environment_keys": [
+      "GOMAXPROCS",
+      "LANG",
+      "LC_ALL",
+      "PATH"
+    ],
+    "tool_version": "8.30.1",
+    "exit_code": 0,
+    "findings": [],
+    "framed_bytes": 65977,
+    "framed_sha256": "e6f382d1f771921efb5080d58540238f565465e5c1d4c06a7d0344e515cad30e"
+  },
+  "closure_crc_paths_hashes": "PASS",
+  "external_code_executed": false
+}
