@@ -1,0 +1,103 @@
+{
+  "scope": "CryptoContextImpl own data members and Set-named mutators in supplied pin; not every delegated algorithm configuration",
+  "fields": [
+    {
+      "field": "m_params",
+      "default": "nullptr",
+      "effective": "MakeFamily CryptoParametersCKKSRNS shared_ptr; validated",
+      "source_ref": "U27"
+    },
+    {
+      "field": "m_scheme",
+      "default": "nullptr",
+      "effective": "SchemeCKKSRNS with HYBRID and PKE/KEYSWITCH/LEVELEDSHE installed",
+      "source_ref": "U27"
+    },
+    {
+      "field": "m_schemeId",
+      "default": "INVALID_SCHEME",
+      "effective": "CKKSRNS_SCHEME",
+      "source_ref": "U27"
+    },
+    {
+      "field": "m_keyGenLevel",
+      "default": "0",
+      "effective": "0; SetKeyGenLevel is not the project family selector",
+      "source_ref": "U16"
+    },
+    {
+      "field": "s_evalMultKeyMap",
+      "default": "static empty map before insertion; actual pre-existing cache not assumed empty",
+      "effective": "per-keytag owned evalkey rows; others preserved",
+      "source_ref": "U27"
+    },
+    {
+      "field": "s_evalAutomorphismKeyMap",
+      "default": "static empty map before insertion; actual pre-existing cache not assumed empty",
+      "effective": "current plan does not generate rotations; tests preserve unrelated map",
+      "source_ref": "U27"
+    },
+    {
+      "field": "privateKey",
+      "default": "conditional DEBUG_KEY member",
+      "effective": "project #error forbids DEBUG_KEY; no secret storage in evaluator context",
+      "source_ref": "U28"
+    }
+  ],
+  "set_named_methods": [
+    {
+      "symbol": "SetKSTechniqueInScheme",
+      "declaration_line": 116,
+      "source_ref": "U26",
+      "role": "internal params→scheme synchronization; not CCParams request"
+    },
+    {
+      "symbol": "SetPrivateKey",
+      "declaration_line": 486,
+      "source_ref": "U28",
+      "role": "DEBUG_KEY-only, project prohibited"
+    },
+    {
+      "symbol": "SetKeyGenLevel",
+      "declaration_line": 998,
+      "source_ref": "U16",
+      "role": "stores future-use marker; current project unset"
+    },
+    {
+      "symbol": "SetCKKSBootCorrectionFactor",
+      "declaration_line": 3621,
+      "source_ref": "U17",
+      "role": "delegates to bootstrap scheme, NA"
+    },
+    {
+      "symbol": "SetParamsFromCKKSCryptocontext",
+      "declaration_line": 3766,
+      "source_ref": "U29",
+      "role": "exports initial modulus/N/batch/scaling to SchSwchParams, NA"
+    },
+    {
+      "symbol": "SetBinCCForSchemeSwitch",
+      "declaration_line": 3946,
+      "source_ref": "U18",
+      "role": "delegates BinFHE context, NA"
+    },
+    {
+      "symbol": "SetSwkFC",
+      "declaration_line": 3962,
+      "source_ref": "U18",
+      "role": "delegates FHEW→CKKS switching ciphertext, NA"
+    }
+  ],
+  "other_relevant_mutation": "Enable overloads delegate to scheme; Insert/Clear evalkey maps and serialization are lifecycle operations, not new scalar CKKS parameters",
+  "source_refs": [
+    "U27",
+    "U28",
+    "U29",
+    "U16",
+    "U17",
+    "U18",
+    "U26",
+    "P03",
+    "P30"
+  ]
+}
