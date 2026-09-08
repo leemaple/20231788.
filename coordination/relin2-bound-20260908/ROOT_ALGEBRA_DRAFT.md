@@ -41,3 +41,14 @@ Source: official `keyswitch-hybrid.cpp:98–125,314–438`, `dcrtpoly-impl.h:888
 For scalar illustration only, q=101, intended centered value=50, perturbation=3 yields centered result=-48. The output is congruent to 50+3, but the observed integer difference is -98=3-101. A sufficient bound such as |target|+B<q/2 rules this out; failure of that sufficient condition does not itself prove a wrap. Ring/canonical bounds additionally need coherent coefficient lifts and scale normalization.
 
 The companion small scalar script checks only these algebraic distinctions. It is not OpenFHE, a HYBRID simulation, a sampler, or evidence about any captured secret chain. Pro has been tasked with completing the source-level proof and deciding whether these ideas actually close a useful part of the paper's assumptions.
+
+## D. Follow-up source precondition check (23:32 CST; Pro still live)
+
+The following were checked directly in the fixed source after drafting A–C; no sampler, context construction, generated table or FHE execution occurred:
+
+- `repeated_mult2.cpp:130–132,154–158` validates both alpha=1 and each partition containing exactly its corresponding q_j. `:190–191` requests as many partitions as full Q towers. This specializes the proof; a general multi-prime-partition HYBRID bound is not required for this profile, though public standalone Relin2 also accepts other contexts.
+- `repeated_mult2.cpp:202–204` requires a single P tower with the frozen prime/root. `:24–50` lists all S100/S116 primes; their values are below 2^60, consistent with the conservative `2^60-1` upper bound used in the scalar formula check. This is not a claim that every OpenFHE “60-bit” prime selection always falls below 2^60.
+- Official `rns-cryptoparameters.cpp:283–331` constructs QHat as partition-product / its prime. For a one-prime partition QHat=1, its modular inverse and complementary residues are1. Thus the selected digit extension reduces its one nonnegative residue into target primes; no nontrivial multi-prime sum is hidden in that specialized formula.
+- Official `rns-cryptoparameters.cpp:202–215` constructs PHat=P/p_j. For one auxiliary prime PHat=1 and its inverses/residues are1. This supports the two **separate** [0,P) lifts r0 and r1 in B; it does not make the residue-lift map additive. `keyswitch-hybrid.cpp:386` passes t=0 when noiseScale=1, matching the project validation at `repeated_mult2.cpp:139–140`.
+
+These are source-level entailments under normal unmodified execution and valid modular primitives, not new historical runtime attestations. The key equation, secret-lift consistency, both carry terms and integer-representative conditions still need reconciliation with the independent Pro proof. No conclusion about the original E80 result changes.
