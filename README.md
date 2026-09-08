@@ -4,6 +4,8 @@ This branch is a greenfield implementation of the `t=2` Double-CKKS multiplicati
 
 **新增参考文档任务（2026-09-08，进行中）：** 本分支 `codex/parameter-atlas-20260908` 专门研究 CKKS 参数、全部相关随机数路径、论文步骤与改动联动。完整主文档由网页版 Pro 最高可见思考档编写，尚未返回；[任务与当前状态](coordination/parameter-atlas-20260908/STATUS.md)记录了可恢复的同一对话。已有[项目参数映射](coordination/parameter-atlas-20260908/PROJECT_PARAMETER_MAP.md)、[随机性源码核对](coordination/parameter-atlas-20260908/ROOT_RANDOMNESS_MAP.md)、[论文原页核对](coordination/parameter-atlas-20260908/ROOT_PAPER_CROSSCHECK.md)和[实际检查记录](coordination/parameter-atlas-20260908/ROOT_EXECUTION_LEDGER.md)，均是审查材料，不能冒充已完成的主文档。运行源码仍与 `a4b815a733efe81897325e2a8e4c826a4ebfa439` 相同，没有启动新的加密实验；先完成文档，再选择诊断。下方已完成的外部审查指历史 annulus 任务，不是本次文档任务。
 
+给密码学专家的阅读入口：[中文参数与流程导读（工作版）](docs/parameter-atlas/README.zh-CN.md)。导读已整理已核实的机制、参数层次、八轮状态表和改动联动；它不代替尚待返回与审核的 Pro 主文档/完整机器可读字典。
+
 **最新交付与用户检查入口（2026-09-08）：[中文检查指南](CHECK_AND_HANDOFF.zh-CN.md)。** 最新增量在 `codex/s100-annulus125-20260908` 分支，不等于仓库默认分支。用户已重新授权全面复核及必要远端实验；不联系作者的决定仍有效。一次独立命名、调整输入范围的 S100 完整八平方实验通过，生产乘法代码未因此修改；原近单位圆 S100 精度 FAIL 保留，不能声称论文表 3 已完整复现。
 
 最新实测与边界：[S100 单次条件输入实验说明](coordination/s100-annulus125-20260908/RESULT.zh-CN.md)。此前 S116 固定快照说明：[实现做了什么、复现命令、结果与限制](REPRODUCE.zh-CN.md)。下方历史 delivery/default-branch 记录描述上一轮 S116 交付，不能覆盖最新指南的分支、源码和验收边界。
