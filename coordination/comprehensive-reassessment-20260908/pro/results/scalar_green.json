@@ -1,0 +1,128 @@
+{
+  "scope": "scalar/specification only; no encrypted execution",
+  "theorem_4_8": {
+    "N": 2,
+    "h": 1,
+    "d": 13,
+    "q": 5,
+    "Q": 5045,
+    "P": 5,
+    "rlk": [
+      5,
+      0
+    ],
+    "input_plaintext": 26,
+    "rs_high": 1,
+    "rs_low": -3,
+    "recombined": 10,
+    "size_lhs": 1353,
+    "size_rhs": "5045/2",
+    "printed_target": "676/5",
+    "normalized_target": "52/5",
+    "printed_error": "626/5",
+    "normalized_error": "2/5",
+    "bound": "6/5"
+  },
+  "lemma4_4_proof_step": {
+    "difference": [
+      -1,
+      1
+    ],
+    "scope": "refutes the (0,e) intermediate identity; not the whole E_relin bound"
+  },
+  "domains": {
+    "retained_near_unit": {
+      "count": 16384,
+      "unique": 16384,
+      "max_norm2_numerator": "1402356718130427075557605043364807683678962625",
+      "min_norm2_numerator": "1401623441863491349730559683916882656859521924",
+      "norm2_denominator": "1427247692705959881058285969449495136382746624"
+    },
+    "s100-annulus125-e80-v1": {
+      "count": 16384,
+      "unique": 16384,
+      "max_norm2_numerator": "1358495682163785791351723695191690661250237377",
+      "min_norm2_numerator": "1357772614367857693697853034006958892182930308",
+      "norm2_denominator": "1427247692705959881058285969449495136382746624"
+    }
+  },
+  "conditional_scalar_bound": {
+    "T": "8.2718061255302767487140869206996285356581211090087890625E-25",
+    "radius": "0.9765625",
+    "K_upper": "0.604993936729619783655786075941842958535614619200053420380073777747279902416251212153653339047339783034447228928297095581",
+    "K_plus_one_quarter_upper": "0.854993936729619783655786075941842958535614619200053420380073777747279902416251212153653339047339783034447228928297095581",
+    "assumptions": "complex E0<=T; complex A8<=T/4; observer errors separately controlled",
+    "arithmetic": "120 decimal digits; every positive multiplication ROUND_CEILING"
+  },
+  "conditional_fresh_lift": {
+    "root_Q": "4351076192504582573028955542568059722726124918549871163258363939509367528753042879466104620076569375918883166581647737866648169107072896932403917125997623794988732903770883376327783940097",
+    "root_Q_bits": 620,
+    "sampler_abs_bound": 39,
+    "aggregate_coefficient_bound": 1282983,
+    "message_coefficient_bound": "23384026197294446691258957323460528314494920687616",
+    "assumptions": "pinned successful Peikert samples; dense |v_j|<=1; h128; noiseScale1; |m_j|<=2^164",
+    "conclusion": "fresh center(m+noise)=m+noise; not an intermediate circuit lift certificate"
+  },
+  "exact_scale_recurrence": [
+    "1267650600228229401496703205376",
+    {
+      "round": 1,
+      "numerator_bits": 201,
+      "denominator_bits": 100
+    },
+    {
+      "round": 2,
+      "numerator_bits": 401,
+      "denominator_bits": 300
+    },
+    {
+      "round": 3,
+      "numerator_bits": 801,
+      "denominator_bits": 700
+    },
+    {
+      "round": 4,
+      "numerator_bits": 1601,
+      "denominator_bits": 1500
+    },
+    {
+      "round": 5,
+      "numerator_bits": 3201,
+      "denominator_bits": 3100
+    },
+    {
+      "round": 6,
+      "numerator_bits": 6401,
+      "denominator_bits": 6300
+    },
+    {
+      "round": 7,
+      "numerator_bits": 12801,
+      "denominator_bits": 12700
+    },
+    {
+      "round": 8,
+      "numerator_bits": 25601,
+      "denominator_bits": 25500
+    }
+  ],
+  "passed_checks": [
+    "thm4.8_missing_divisor_exact_counterexample",
+    "signed_rounding_ties_down",
+    "printed_tensor_sign_counterexample",
+    "lemma4.4_two_coordinate_rounding_carry",
+    "exhaustive_1105_dcp_coordinates",
+    "exhaustive_7225_correlated_rs_coordinates",
+    "component_vs_complex_norm_counterexample",
+    "headroom_is_not_nonwrap_certificate",
+    "both_input_families_in_unit_disk",
+    "16384_exact_unique_dyadics_each",
+    "annulus_radius_exact_integer_bound",
+    "annulus_nonvanishing_output_exact_bound",
+    "directed_256_power_conditioning_budget",
+    "finite_sampler_conditional_fresh_nonwrap",
+    "eight_exact_prime_scale_receipts"
+  ],
+  "count": 15,
+  "status": "PASS_SCALAR_ONLY"
+}

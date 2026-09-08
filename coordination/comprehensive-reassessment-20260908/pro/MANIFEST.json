@@ -1,0 +1,211 @@
+{
+  "schema": "comprehensive-reassessment-return-manifest/v1",
+  "task": "COMPREHENSIVE-REASSESSMENT-20260908",
+  "date": "2026-09-08",
+  "self_excluding": true,
+  "manifest_excluded_path": "MANIFEST.json",
+  "source_commit": "3c02988fb5655dc6ea48f4f7d559e62d9d4a9d37",
+  "source_branch": "codex/s100-fresh-error-repair-20260907",
+  "task_material_commit": "42ec0669bd08f76253fb93f3b00c608eb09fecf2",
+  "official_openfhe": {
+    "version": "1.5.0",
+    "commit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+    "required_native_bits": 64,
+    "required_backend": 4,
+    "build_executed_or_attested_in_this_review": false
+  },
+  "input": {
+    "file_name": "comprehensive-reassessment-3c02988.zip",
+    "bytes": 9045349,
+    "sha256": "08760af7def640afa06caf939c9ff7a5805d4cc6c567b49f24024cbf2f7c9158",
+    "members": 231,
+    "payloads": 230,
+    "payload_bytes": 20710267,
+    "manifest_bytes": 380750,
+    "manifest_sha256": "a36da7ea7c28242965d7eef7949dbba0baa7d47ba55198e103190f4de1020e21",
+    "paper_sha256": "61d9b948b17b6a624d3bf3372462555288308011226d2893e9e6bc3d6d197eac",
+    "validation": "CRC, safe unique member paths, 230 payload size/hash matches; 117 direct Git blobs verified; transformed gzip-derived TSVs handled separately"
+  },
+  "delivery_classification": {
+    "scientific_reassessment": "completed_with_explicit_assumptions",
+    "new_contract": "s100-annulus125-e80-v1",
+    "contract_patch": "additive_candidate_applies_to_exact_input_source_not_compiled_not_run",
+    "production_source_changed": false,
+    "existing_test_files_changed": false,
+    "existing_CMake_prefix_changed": false,
+    "workflow_changed": false,
+    "source_after_owner_integration": "must_receive_a_new_reviewed_commit_not_the_original_source_id",
+    "patch_paths": [
+      "CMakeLists.txt",
+      "tests/s100_annulus125_eight_square_test.cpp"
+    ]
+  },
+  "execution": {
+    "scalar_checks_passed": 15,
+    "literal_paper_counterexample_expected_exit": 1,
+    "retained_endpoint_scalar_replay": {
+      "hosts": 2,
+      "slots_per_host": 16384,
+      "decimal_precisions": [
+        150,
+        210
+      ],
+      "maximum_comparison_pairs": 16,
+      "new_ciphertexts": 0
+    },
+    "fresh_retained_anchor_interval_replay": {
+      "components": 20,
+      "intervals_above_threshold": 3,
+      "decimal_precision": 240,
+      "conditional_error_box": "+/- 1e-100",
+      "propagated_error": "A+B excluding C"
+    },
+    "synthetic_parser_controls": {
+      "positive": 1,
+      "negative_rejections": 7,
+      "live_ciphertext_results": 0
+    },
+    "patch_apply_check_exit": 0,
+    "patch_apply_exit": 0,
+    "Cxx_builds": 0,
+    "project_test_program_runs": 0,
+    "FFT_runs": 0,
+    "new_encrypted_payloads": 0,
+    "CI_dispatches": 0,
+    "remote_writes": 0,
+    "external_messages": 0,
+    "gitleaks_runs": 0,
+    "new_Cxx_RED_GREEN": "NOT_EXECUTED",
+    "new_annulus_numerical_result": "NOT_EXECUTED"
+  },
+  "four_layer_status": {
+    "algorithm": "bounded_semantic_support_and_retained_S116_full_chain_validation_not_universal_proof",
+    "paper_parameters": "S100_quantity_scale_alignment_retained_original_stress_FAIL_new_named_domain_unexecuted",
+    "Table3_numerical_statistical_performance": "NOT_REPRODUCED_EXACTLY",
+    "deployment_security": "UNRESOLVED"
+  },
+  "payload_file_count": 24,
+  "payload_bytes": 235480,
+  "files": [
+    {
+      "path": "CONTRACT.patch",
+      "bytes": 16914,
+      "sha256": "8b7c07c34493e4a758fa51f6affab98bcee42f1c3408ade9608a83c98878e3d8"
+    },
+    {
+      "path": "DECISION.md",
+      "bytes": 8293,
+      "sha256": "eb8d2a26744400927e87a9fec88bf417d89fe267974299c0b910a8c0733708a5"
+    },
+    {
+      "path": "EXECUTION_LEDGER.md",
+      "bytes": 9139,
+      "sha256": "9b3ee795f94c72c52fee36ac68f599634857d92d8fa63efdfc1c3395f3c4cb35"
+    },
+    {
+      "path": "INPUT_BINDING.json",
+      "bytes": 4838,
+      "sha256": "ca912a2f2ebe98ec5e4b7f20772eb098867b3df62c7410ab0397315763a9437d"
+    },
+    {
+      "path": "READ_RANGES.jsonl",
+      "bytes": 18070,
+      "sha256": "f39262d5f4a7da9285cefa769d2466fe6a1d75c81a00bfb120a862d796a02741"
+    },
+    {
+      "path": "REASSESSMENT.zh-CN.md",
+      "bytes": 35794,
+      "sha256": "951833368aa9a7d0a8107098723d6479fb1b1e9ff9969539c402f11cbb030a8f"
+    },
+    {
+      "path": "SUPPLEMENTARY_SOURCES.md",
+      "bytes": 4481,
+      "sha256": "eeda048527886938f6104371245e394a1f27d33bd5e97a9c608b3c5a87feef9b"
+    },
+    {
+      "path": "TEST_PLAN.md",
+      "bytes": 13004,
+      "sha256": "42e74ee3b03e4297fce8c04647eb3ba0bc3229ae1a18c938f2796637d36eda4a"
+    },
+    {
+      "path": "checks/replay_annulus125.py",
+      "bytes": 9540,
+      "sha256": "88e3d36235271a011b06a4141bedeee935ca32d35eb9827da5918e93ddc7e77f"
+    },
+    {
+      "path": "checks/replay_fresh_anchors.py",
+      "bytes": 3879,
+      "sha256": "2b87f4d779fe4b5c0b8732ddb15dbb0745099c9b5598c46865ec118d7b8e9f96"
+    },
+    {
+      "path": "checks/replay_retained_endpoints.py",
+      "bytes": 4578,
+      "sha256": "d6f0ebc1410e091e0bd74fa95f65bb0bbf83b52c6aa05ee92d38165a7f199c21"
+    },
+    {
+      "path": "checks/scalar_reassessment.py",
+      "bytes": 8710,
+      "sha256": "bf556bee7860d1d9bc7075aa11c03cb1e80e643ebe445cefd9cf155bc4b3d391"
+    },
+    {
+      "path": "checks/verify_packet_and_patch.py",
+      "bytes": 6140,
+      "sha256": "db6e1c1ba3fd445d32fe5cd3f4e095886d90a6b674573b8c8580058e81109746"
+    },
+    {
+      "path": "full_files/CMakeLists.txt",
+      "bytes": 20873,
+      "sha256": "c0b29ba9c77862d99cb0e2192a11ca006a4479b9753d403256f3f08125f13a0c"
+    },
+    {
+      "path": "full_files/tests/s100_annulus125_eight_square_test.cpp",
+      "bytes": 14731,
+      "sha256": "5400472e160ec65e38d03b1d58705221046da5c8797aceec040af45b2d31d365"
+    },
+    {
+      "path": "patches/CMAKE_ADDITION.txt",
+      "bytes": 1427,
+      "sha256": "95e41196f888e120d1807a19e5244a26250cfaf985ef204dce431757d65f989e"
+    },
+    {
+      "path": "results/annulus_parser_self_test.json",
+      "bytes": 310,
+      "sha256": "eacb1d8dbc6d19a8ccbe2cd950e7f573bcaa7da3e9a99715ae33e1e3fda7ca54"
+    },
+    {
+      "path": "results/fresh_anchor_interval_replay.json",
+      "bytes": 23608,
+      "sha256": "cb0ee7189c5d4de7368d4bf425c5e40c9826af34d0c7f2827e4e8b351a1d43f0"
+    },
+    {
+      "path": "results/packet_patch_static.json",
+      "bytes": 3104,
+      "sha256": "903d87d92842c3c6df956c160c0ec1113d4baa5c379135213a5d5085d5e1b21c"
+    },
+    {
+      "path": "results/retained_endpoint_replay_150.json",
+      "bytes": 9124,
+      "sha256": "2b00f1899d25d0d396e8f1545b12581f76516c63d9202c985a7318a250c73ec2"
+    },
+    {
+      "path": "results/retained_endpoint_replay_210.json",
+      "bytes": 10803,
+      "sha256": "a0898a6a236639449d55ebac2d8bc473a3b6abf1faf8eea5e0f25a4aac988500"
+    },
+    {
+      "path": "results/retained_precision_comparison.json",
+      "bytes": 3509,
+      "sha256": "d9ece0b4ca908e9679931b6699552bb80bb1e272190ecdbe64f985e6222aeffb"
+    },
+    {
+      "path": "results/scalar_green.json",
+      "bytes": 4063,
+      "sha256": "64705fe1ca4e2674a6641de36c56cb7791b778b674af70b9038d7b57dcd53ebc"
+    },
+    {
+      "path": "results/scalar_red.txt",
+      "bytes": 548,
+      "sha256": "676804db21155dc0c8c682690ab13552238a48811fa9a9cab416a937f278e755"
+    }
+  ]
+}

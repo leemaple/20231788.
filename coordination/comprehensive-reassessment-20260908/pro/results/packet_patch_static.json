@@ -1,0 +1,88 @@
+{
+  "status": "PASS_STATIC_ONLY",
+  "input_zip_bytes": 9045349,
+  "input_zip_sha256": "08760af7def640afa06caf939c9ff7a5805d4cc6c567b49f24024cbf2f7c9158",
+  "members": 231,
+  "payloads": 230,
+  "payload_bytes": 20710267,
+  "manifest_bytes": 380750,
+  "input_manifest_sha256": "a36da7ea7c28242965d7eef7949dbba0baa7d47ba55198e103190f4de1020e21",
+  "direct_git_blob_rows_verified": 117,
+  "transformed_rows_not_raw_git_blobs": [
+    {
+      "path": "evidence/coordination/fs-endpoint-live-run-01/linux/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.linux.34039088536.1.tsv",
+      "transform": "gzip.decompress; original Git gzip source/hash retained above",
+      "source_git_blob": "4f9e7a43aac2d7d1b411992b22f5953099bc162d",
+      "source_sha256": "920e9dc1fb177cedf93f758b1bb0925b5dae19e228e2398c787f38356ce8b8a5"
+    },
+    {
+      "path": "evidence/coordination/fs-endpoint-live-run-01/windows/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.windows.34039088536.1.tsv",
+      "transform": "gzip.decompress; original Git gzip source/hash retained above",
+      "source_git_blob": "a581862977d9426d90e0512bbcf0efe103b845b4",
+      "source_sha256": "fb0c558b71ab30bdc80af28d3a01214428d30dfc3c4ed5c6f73fab6ff638beaf"
+    }
+  ],
+  "source_commit": "3c02988fb5655dc6ea48f4f7d559e62d9d4a9d37",
+  "task_commit": "42ec0669bd08f76253fb93f3b00c608eb09fecf2",
+  "paper_sha256": "61d9b948b17b6a624d3bf3372462555288308011226d2893e9e6bc3d6d197eac",
+  "official_reference_count": 77,
+  "boost_reference_count": 4,
+  "patch_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/mnt/data/reassessment_output/CONTRACT.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/mnt/data/reassessment_output/CONTRACT.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "python_ast_parsed": [
+    "replay_annulus125.py",
+    "replay_fresh_anchors.py",
+    "replay_retained_endpoints.py",
+    "scalar_reassessment.py",
+    "verify_packet_and_patch.py"
+  ],
+  "builds": 0,
+  "project_tests_executed": 0,
+  "new_encrypted_samples": 0,
+  "remote_writes": 0,
+  "environment": {
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "tools": {
+      "git": {
+        "path": "/usr/bin/git",
+        "exit_code": 0,
+        "first_line": "git version 2.47.3"
+      },
+      "cmake": {
+        "path": "/usr/bin/cmake",
+        "exit_code": 0,
+        "first_line": "cmake version 3.31.6"
+      },
+      "c++": {
+        "path": "/usr/bin/c++",
+        "exit_code": 0,
+        "first_line": "c++ (Debian 14.2.0-19) 14.2.0"
+      }
+    },
+    "shallow_OpenFHE_installation_matches": [],
+    "qualification": "No full pinned OpenFHE checkout/build was established. Probe is not a global absence proof."
+  },
+  "S100_exact_S8_over_2pow100": "1.000364850389603922850588307864032785175907537109905979456931700098910492448645577720454525130413660"
+}
