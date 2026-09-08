@@ -1,4 +1,12 @@
-# Initial lift/nonwrap — Pro returned; independent return reviews pending
+# Initial lift/nonwrap — proof adopted conditionally; diagnostic fixes required
+
+## Current disposition — independent reviews complete
+
+Root fully read both final independent reports. ADOPTED_CONTRACT.md records conditional mathematical adoption, the non-equivalent encoded127/128 versus fresh255/256 seed distinction, and the stronger conditional StableRound initial coefficient bound. No core equation rejected. Original S100E80FAIL unchanged.
+
+Candidate F1–F4 are accepted for successor fixes: CMake identity binding/early validation; bounded file read; controlled deep-JSON rejection; algebraic test containment instead of overlap. Three-way threshold boundary coverage must also be added. No original Pro artifact will be modified. Next: isolated public-encoder-cap worktree, test-first fixes, independent re-review and bounded Windows/GitHub execution. Do not claim the public cap before the actual reviewed encoding/interval result exists.
+
+This goal turn is PROGRESS through completed review and explicit adoption/fix decisions. Earlier pending labels below are historical.
 
 ## Latest checkpoint — 2026-09-09 02:12 CST
 
