@@ -7,7 +7,7 @@
 1. Git source-state checks and incremental documentation commit/push, recorded in Git history. `git diff a4b815a -- src include tests CMakeLists.txt .github/workflows` remained empty. No merge or default-branch modification.
 2. Official-source and handoff integrity checks, bounded secret scans and ZIP verification: exact commands, file counts, bytes and hashes are in `PACKET_RECEIPT.json`. These are packaging checks, not numerical tests.
 3. Source-only lexical inventory of base parameter setters and independent source readings; see `ROOT_COVERAGE_CHECKLIST.md`, `ROOT_RANDOMNESS_MAP.md` and the other review maps. No compiler/runtime claim follows from a source read.
-4. Poppler rendered user-supplied paper pages 4, 5 and 13 at 115 dpi; root visually inspected all three. User PDF and packet PDF SHA-256 matched. See `ROOT_PAPER_CROSSCHECK.md`. No new PDF report was generated or sent.
+4. Poppler rendered user-supplied paper pages 4, 5 and 13 at 115 dpi; root visually inspected all three. After Pro's 21:54 CST progress mentioned a Theorem 4.8 normalization inconsistency, root additionally rendered page 8 at 130 dpi and visually checked that entire page. This follow-up is not claimed as a blind independent discovery. User PDF and packet PDF SHA-256 matched. See `ROOT_PAPER_CROSSCHECK.md`. No new PDF report was generated or sent.
 5. Root read and then ran the new standard-library script exactly once:
 
    ```sh
