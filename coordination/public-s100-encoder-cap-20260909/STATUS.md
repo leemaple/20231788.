@@ -7,7 +7,7 @@
 - 参数/流程图谱先完成并复核，再从它导出当前诊断；[中文导读](../../docs/parameter-atlas/README.zh-CN.md)是面向使用者的主入口。
 - Pro 的初始分解/八轮边界返回已完整保留、回放和独立复核，[采用条件](../initial-lift-nonwrap-20260909/ADOPTED_CONTRACT.md)未放宽。
 - 诊断候选 F1–F4 修订已独立审核接受；真实解析负例、文件边界、错误区间反例和三分支判定均有轻量 RED/GREEN 记录，最终11项检查通过。见[执行台账](EXECUTION_LEDGER.md)和[独立复核](FIX_REVIEW.md)。这些检查不涉及编码、变换或加密。
-- 原有生产源码和固定原输入保持不变。C++ 新声明/driver/opt-in target 已提交；函数定义故意缺失，以便先在远端建立真实缺定义链接 RED。
+- 原有生产算法和固定原输入保持不变。已先在远端建立真实缺定义链接 RED，再加入已审的21行include/薄函数；没有改动现有编码算法体。
 
 ## 当前负责人和后继
 
@@ -15,10 +15,14 @@ Codex root 负责集成、证据和远端 tag；既有 `annulus_ci` 独立工作
 
 CI 返回已由根端完整复核，3项合成门禁及独立源码检查通过；最终暂存差异经 Gitleaks 解码扫描无发现。CI 已提交并推送为 `230f59ed71fca5393041c0ba44227d354099e440`。确认本地/远端 tag 不存在后，仅创建了 RED tag `public-s100-encoder-cap-red-20260909`。
 
-实际 RED run：[34264640912](https://github.com/leemaple/20231788./actions/runs/34264640912)，attempt1，source230f59ed71fca5393041c0ba44227d354099e440，2026-09-09 02:42:32 Asia/Shanghai 创建。当前观察为 in_progress：事件门禁和精确源码/输入绑定已通过，正在取得全新官方 OpenFHE；尚无链接结果。不要创建第二个 RED tag、强制覆盖或重跑。
+实际 RED run：[34264640912](https://github.com/leemaple/20231788./actions/runs/34264640912)，attempt1，source230f59ed71fca5393041c0ba44227d354099e440，2026-09-09 02:42:32 Asia/Shanghai 创建。已完成：库/driver编译后，链接准确缺少目标函数、build_exit2。工作流的 success 表示负例被正确识别，不是可执行程序通过。15份原始artifact文件逐字节保留于red-evidence，API回执、SHA和[验收说明](RED_INTAKE_AND_GREEN_GATE.md)已提交。
 
-下一步只读等待并取得此 run 的结果和证据。只有实际链接失败明确指向缺少 `InspectFixedS100PublicEncoding` 定义后，才加入已审的薄诊断函数并复核 GREEN。随后按顺序做真实 metadata/API-negative、4个小变换、原公开编码1次、来源核验、完整区间变换1次。禁止换输入、生成新密钥，或在 Mac 构建/变换。失败也保留退出码与输出，不能为了拿到 PASS 自动换样本。
+薄函数与不可变Pro原始完整文件逐字节相同，独立复核接受；源码、RED回执和审查已推送为28bab40431eebc85d72521c6d9dc840ecd675cd7。确认本地/远端不存在GREEN标签后，仅创建 `public-s100-encoder-cap-once-20260909`。实际 GREEN run：[34265676284](https://github.com/leemaple/20231788./actions/runs/34265676284)，source28bab40431eebc85d72521c6d9dc840ecd675cd7，2026-09-09 02:52:59 Asia/Shanghai 创建，02:56:48作业完成success。实际编译、metadata、空输入API、11项scalar/4项tiny全部通过；原公开编码1次，完整区间变换1次，输出ENCODER_CAP_CERTIFIED。
+
+36份返回文件共675446bytes已逐字节保留于green-evidence，原公开JSON458583bytes，SHA2567cac9765f0c5e567840ebc347a59e50d039107c7b6a92c037152b69bd8edd94f。根端轻量intake核对8份源码Git blob、原始/留存字节、系数流hash和最大值、固定schema、真实metadata、退出码、精确有理cap比较及构建记录，PASS；没有在本机重跑任何变换。运行/验包回执分别为GREEN_RUN_RECEIPT.json和GREEN_INTAKE.json。
+
+下一步完成独立数学采用复核，明确把实际p证据代入既有条件定理的范围，然后整理当前源码、历史适用性和精度问题各自剩余项。两个one-shot run均已终态，不再轮询或重跑它们，不新建替代标签。原输入/参数未更改，无新密钥/采样/加解密或八轮链。
 
 ## 尚不能声称
 
-当前远端 RED 已运行但尚无链接/编码/完整区间结果。原 S100 E80 仍 FAIL。幅度认证即使成立，也只先对哈希绑定的这个公开多项式成立；历史来源等价、最终精度、表3统计/HEaaN来源和安全性分别保留。没有新定时任务，也没有本轮 PDF/Telegram 投递。
+当前远端 RED/GREEN和公开幅度认证已得到结果，数学采用复核待完成。原 S100 E80 仍 FAIL。幅度认证只先对哈希绑定的这个公开多项式成立；历史来源等价、最终精度、表3统计/HEaaN来源和安全性分别保留。来源比对经独立复核接受为关键源码段匹配，不是历史二进制/系数等价证明。没有新定时任务，也没有本轮 PDF/Telegram 投递。
