@@ -1,0 +1,750 @@
+{
+  "check": "PASS",
+  "meaning": "source-bound lexical and small-integer constant/scale checks only",
+  "not_checked": [
+    "primality certification",
+    "samplers",
+    "FFT",
+    "OpenFHE runtime",
+    "FHE precision",
+    "security"
+  ],
+  "source_commit": "a4b815a733efe81897325e2a8e4c826a4ebfa439",
+  "official_pin": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+  "packet_sha256": "abc4df778754a2d3713f1442fbfe34d69af274f3638e65d4d362f35aa93fdd68",
+  "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "base_setters": [
+    "SetPlaintextModulus",
+    "SetDigitSize",
+    "SetStandardDeviation",
+    "SetSecretKeyDist",
+    "SetMaxRelinSkDeg",
+    "SetPREMode",
+    "SetMultipartyMode",
+    "SetExecutionMode",
+    "SetDecryptionNoiseMode",
+    "SetNoiseEstimate",
+    "SetDesiredPrecision",
+    "SetStatisticalSecurity",
+    "SetNumAdversarialQueries",
+    "SetThresholdNumOfParties",
+    "SetKeySwitchTechnique",
+    "SetScalingTechnique",
+    "SetBatchSize",
+    "SetFirstModSize",
+    "SetNumLargeDigits",
+    "SetMultiplicativeDepth",
+    "SetScalingModSize",
+    "SetSecurityLevel",
+    "SetRingDim",
+    "SetEvalAddCount",
+    "SetKeySwitchCount",
+    "SetEncryptionTechnique",
+    "SetMultiplicationTechnique",
+    "SetPRENumHops",
+    "SetInteractiveBootCompressionLevel",
+    "SetCompositeDegree",
+    "SetRegisterWordSize",
+    "SetCKKSDataType"
+  ],
+  "CKKS_disabled_setters": [
+    "SetPlaintextModulus",
+    "SetEvalAddCount",
+    "SetKeySwitchCount",
+    "SetEncryptionTechnique",
+    "SetMultiplicationTechnique",
+    "SetPRENumHops",
+    "SetMultipartyMode",
+    "SetThresholdNumOfParties"
+  ],
+  "profiles": {
+    "S100": {
+      "ordered_Q_and_roots": [
+        [
+          1125899904679937,
+          26113207984
+        ],
+        [
+          1125899903827969,
+          150640639383
+        ],
+        [
+          1152921504598720513,
+          100545759574150
+        ],
+        [
+          1152921504597016577,
+          31693996050849
+        ],
+        [
+          1152921504595968001,
+          88651361085495
+        ],
+        [
+          1152921504595640321,
+          9679305630873
+        ],
+        [
+          1152921504593412097,
+          24428769072221
+        ],
+        [
+          1152921504592822273,
+          18776242964106
+        ],
+        [
+          1152921504592429057,
+          5821397352863
+        ],
+        [
+          1152921504589938689,
+          33888991361320
+        ],
+        [
+          1099510054913,
+          121567553
+        ]
+      ],
+      "P_and_root": [
+        1152921504606584833,
+        4443670208963
+      ],
+      "Q_bit_length": 620,
+      "QP_bit_length": 680,
+      "rounds": [
+        {
+          "round": 1,
+          "family": 0,
+          "family_Q_count": 11,
+          "input_pair_Q_count": 10,
+          "output_pair_Q_count": 9,
+          "consumed_Mult": 1152921504589938689,
+          "Div": 1099510054913,
+          "recorded_scale_pow2": 100,
+          "exact_scale_numerator_pow2": 200,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 1099510054913,
+              "exponent": 1
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0000014305272771002557455230560366180455757476089"
+        },
+        {
+          "round": 2,
+          "family": 1,
+          "family_Q_count": 10,
+          "input_pair_Q_count": 9,
+          "output_pair_Q_count": 8,
+          "consumed_Mult": 1152921504592429057,
+          "Div": 1099510054913,
+          "recorded_scale_pow2": 100,
+          "exact_scale_numerator_pow2": 400,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 1099510054913,
+              "exponent": 3
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0000042915858104693794811089183739690221030566688"
+        },
+        {
+          "round": 3,
+          "family": 2,
+          "family_Q_count": 9,
+          "input_pair_Q_count": 8,
+          "output_pair_Q_count": 7,
+          "consumed_Mult": 1152921504592822273,
+          "Div": 1099510054913,
+          "recorded_scale_pow2": 100,
+          "exact_scale_numerator_pow2": 800,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 1099510054913,
+              "exponent": 7
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0000100137270930997828008403596083403104682263368"
+        },
+        {
+          "round": 4,
+          "family": 3,
+          "family_Q_count": 8,
+          "input_pair_Q_count": 7,
+          "output_pair_Q_count": 6,
+          "consumed_Mult": 1152921504593412097,
+          "Div": 1099510054913,
+          "recorded_scale_pow2": 100,
+          "exact_scale_numerator_pow2": 1600,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 1099510054913,
+              "exponent": 15
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 8
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504593412097,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0000214581073752272198660639970448875842695857441"
+        },
+        {
+          "round": 5,
+          "family": 4,
+          "family_Q_count": 7,
+          "input_pair_Q_count": 6,
+          "output_pair_Q_count": 5,
+          "consumed_Mult": 1152921504595640321,
+          "Div": 1099510054913,
+          "recorded_scale_pow2": 100,
+          "exact_scale_numerator_pow2": 3200,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 1099510054913,
+              "exponent": 31
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 16
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 8
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504593412097,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504595640321,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0000443472589258045845962734150538616171263723471"
+        },
+        {
+          "round": 6,
+          "family": 5,
+          "family_Q_count": 6,
+          "input_pair_Q_count": 5,
+          "output_pair_Q_count": 4,
+          "consumed_Mult": 1152921504595968001,
+          "Div": 1099510054913,
+          "recorded_scale_pow2": 100,
+          "exact_scale_numerator_pow2": 6400,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 1099510054913,
+              "exponent": 63
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 32
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 16
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 8
+            },
+            {
+              "integer": 1152921504593412097,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504595640321,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504595968001,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0000901271334607582981294495363629503604963301883"
+        },
+        {
+          "round": 7,
+          "family": 6,
+          "family_Q_count": 5,
+          "input_pair_Q_count": 4,
+          "output_pair_Q_count": 3,
+          "consumed_Mult": 1152921504597016577,
+          "Div": 1099510054913,
+          "recorded_scale_pow2": 100,
+          "exact_scale_numerator_pow2": 12800,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 1099510054913,
+              "exponent": 127
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 64
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 32
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 16
+            },
+            {
+              "integer": 1152921504593412097,
+              "exponent": 8
+            },
+            {
+              "integer": 1152921504595640321,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504595968001,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504597016577,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0001816931688288637129328250151998805843875059569"
+        },
+        {
+          "round": 8,
+          "family": 7,
+          "family_Q_count": 4,
+          "input_pair_Q_count": 3,
+          "output_pair_Q_count": 2,
+          "consumed_Mult": 1152921504598720513,
+          "Div": 1099510054913,
+          "recorded_scale_pow2": 100,
+          "exact_scale_numerator_pow2": 25600,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 1099510054913,
+              "exponent": 255
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 128
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 64
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 32
+            },
+            {
+              "integer": 1152921504593412097,
+              "exponent": 16
+            },
+            {
+              "integer": 1152921504595640321,
+              "exponent": 8
+            },
+            {
+              "integer": 1152921504595968001,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504597016577,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504598720513,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0003648503896039228505883078640327851759075371099"
+        }
+      ]
+    },
+    "S116": {
+      "ordered_Q_and_roots": [
+        [
+          288230191468118017,
+          43136605093011213
+        ],
+        [
+          288230165698314241,
+          82872750907637397
+        ],
+        [
+          1152921504598720513,
+          100545759574150
+        ],
+        [
+          1152921504597016577,
+          31693996050849
+        ],
+        [
+          1152921504595968001,
+          88651361085495
+        ],
+        [
+          1152921504595640321,
+          9679305630873
+        ],
+        [
+          1152921504593412097,
+          24428769072221
+        ],
+        [
+          1152921504592822273,
+          18776242964106
+        ],
+        [
+          1152921504592429057,
+          5821397352863
+        ],
+        [
+          1152921504589938689,
+          33888991361320
+        ],
+        [
+          72057589742960641,
+          50608680790172261
+        ]
+      ],
+      "P_and_root": [
+        1152921504606584833,
+        4443670208963
+      ],
+      "Q_bit_length": 652,
+      "QP_bit_length": 712,
+      "rounds": [
+        {
+          "round": 1,
+          "family": 0,
+          "family_Q_count": 11,
+          "input_pair_Q_count": 10,
+          "output_pair_Q_count": 9,
+          "consumed_Mult": 1152921504589938689,
+          "Div": 72057589742960641,
+          "recorded_scale_pow2": 116,
+          "exact_scale_numerator_pow2": 232,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 72057589742960641,
+              "exponent": 1
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "5.96193139162998059080606632236208824537420E-8"
+        },
+        {
+          "round": 2,
+          "family": 1,
+          "family_Q_count": 10,
+          "input_pair_Q_count": 9,
+          "output_pair_Q_count": 8,
+          "consumed_Mult": 1152921504592429057,
+          "Div": 72057589742960641,
+          "recorded_scale_pow2": 116,
+          "exact_scale_numerator_pow2": 464,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 72057589742960641,
+              "exponent": 3
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "1.788557923619843253673060636990501457912750E-7"
+        },
+        {
+          "round": 3,
+          "family": 2,
+          "family_Q_count": 9,
+          "input_pair_Q_count": 8,
+          "output_pair_Q_count": 7,
+          "consumed_Mult": 1152921504592822273,
+          "Div": 72057589742960641,
+          "recorded_scale_pow2": 116,
+          "exact_scale_numerator_pow2": 928,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 72057589742960641,
+              "exponent": 7
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "4.173284508447103896429857592660604227501634E-7"
+        },
+        {
+          "round": 4,
+          "family": 3,
+          "family_Q_count": 8,
+          "input_pair_Q_count": 7,
+          "output_pair_Q_count": 6,
+          "consumed_Mult": 1152921504593412097,
+          "Div": 72057589742960641,
+          "recorded_scale_pow2": 116,
+          "exact_scale_numerator_pow2": 1856,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 72057589742960641,
+              "exponent": 15
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 8
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504593412097,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "8.942734268265448417146672932317323591513124E-7"
+        },
+        {
+          "round": 5,
+          "family": 4,
+          "family_Q_count": 7,
+          "input_pair_Q_count": 6,
+          "output_pair_Q_count": 5,
+          "consumed_Mult": 1152921504595640321,
+          "Div": 72057589742960641,
+          "recorded_scale_pow2": 116,
+          "exact_scale_numerator_pow2": 3712,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 72057589742960641,
+              "exponent": 31
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 16
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 8
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504593412097,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504595640321,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0000018481621285397545963145312963581119913676914"
+        },
+        {
+          "round": 6,
+          "family": 5,
+          "family_Q_count": 6,
+          "input_pair_Q_count": 5,
+          "output_pair_Q_count": 4,
+          "consumed_Mult": 1152921504595968001,
+          "Div": 72057589742960641,
+          "recorded_scale_pow2": 116,
+          "exact_scale_numerator_pow2": 7424,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 72057589742960641,
+              "exponent": 63
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 32
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 16
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 8
+            },
+            {
+              "integer": 1152921504593412097,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504595640321,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504595968001,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0000037559419774574049036023232609028897361906349"
+        },
+        {
+          "round": 7,
+          "family": 6,
+          "family_Q_count": 5,
+          "input_pair_Q_count": 4,
+          "output_pair_Q_count": 3,
+          "consumed_Mult": 1152921504597016577,
+          "Div": 72057589742960641,
+          "recorded_scale_pow2": 116,
+          "exact_scale_numerator_pow2": 14848,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 72057589742960641,
+              "exponent": 127
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 64
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 32
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 16
+            },
+            {
+              "integer": 1152921504593412097,
+              "exponent": 8
+            },
+            {
+              "integer": 1152921504595640321,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504595968001,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504597016577,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0000075715116846497370630765868757476674809282178"
+        },
+        {
+          "round": 8,
+          "family": 7,
+          "family_Q_count": 4,
+          "input_pair_Q_count": 3,
+          "output_pair_Q_count": 2,
+          "consumed_Mult": 1152921504598720513,
+          "Div": 72057589742960641,
+          "recorded_scale_pow2": 116,
+          "exact_scale_numerator_pow2": 29696,
+          "exact_scale_denominator_factors": [
+            {
+              "integer": 72057589742960641,
+              "exponent": 255
+            },
+            {
+              "integer": 1152921504589938689,
+              "exponent": 128
+            },
+            {
+              "integer": 1152921504592429057,
+              "exponent": 64
+            },
+            {
+              "integer": 1152921504592822273,
+              "exponent": 32
+            },
+            {
+              "integer": 1152921504593412097,
+              "exponent": 16
+            },
+            {
+              "integer": 1152921504595640321,
+              "exponent": 8
+            },
+            {
+              "integer": 1152921504595968001,
+              "exponent": 4
+            },
+            {
+              "integer": 1152921504597016577,
+              "exponent": 2
+            },
+            {
+              "integer": 1152921504598720513,
+              "exponent": 1
+            }
+          ],
+          "approx_exact_to_recorded_ratio_minus_one_50digits": "0.0000152026932966911198087405725575424662676971042"
+        }
+      ]
+    }
+  }
+}
