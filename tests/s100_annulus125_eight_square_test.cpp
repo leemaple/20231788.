@@ -1,0 +1,324 @@
+// Pro-drafted additive contract, integrated with independent review assertions.
+// Contract s100-annulus125-e80-v1. Never replaces the retained S100 stress test.
+#include "paper_endpoint_observer_contract.h"
+#include "openfhe_2023_1788/double_ckks.h"
+#include "openfhe_2023_1788/repeated_mult2.h"
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
+
+#ifndef S100_ANNULUS125_SOURCE_COMMIT
+#error "Bind this candidate to the reviewed integration commit"
+#endif
+
+namespace {
+namespace pf = paper_full_test;
+namespace ob = paper_endpoint_contract;
+namespace io = openfhe_2023_1788::client_io;
+using namespace openfhe_2023_1788;
+using pf::Int;
+using pf::Require;
+using B = ob::Binary768;
+using Z = ob::Complex<768>;
+using Plan = std::shared_ptr<const RepeatedMult2Plan>;
+using Receipt = std::shared_ptr<const RepeatedMult2Receipt>;
+constexpr const char* kContract = "s100-annulus125-e80-v1";
+
+B P2(int e) { return boost::multiprecision::ldexp(B(1), e); }
+Z Mul(const Z& a, const Z& b) {
+    return {a.real*b.real-a.imag*b.imag, a.real*b.imag+a.imag*b.real};
+}
+Z Sub(const Z& a, const Z& b) { return {a.real-b.real, a.imag-b.imag}; }
+Z Power256(Z z) { for (unsigned i=0; i<8; ++i) z=Mul(z,z); return z; }
+B Norm2(const Z& z) {
+    Require(boost::math::isfinite(z.real) && boost::math::isfinite(z.imag), "nonfinite endpoint");
+    const B n=z.real*z.real+z.imag*z.imag;
+    Require(boost::math::isfinite(n), "nonfinite norm");
+    return n;
+}
+B ComponentDistance(const Z& a,const Z& b) {
+    const Z d=Sub(a,b); (void)Norm2(d);
+    return std::max(B(boost::multiprecision::abs(d.real)),B(boost::multiprecision::abs(d.imag)));
+}
+Z FromClient(const io::ClientComplex& z) {
+    // No fixed-512 -> dynamic-768 conversion (Boost 1.83 warning-as-error seam).
+    return {B(z.real.str(170,std::ios_base::scientific)),
+            B(z.imag.str(170,std::ios_base::scientific))};
+}
+Z Input(std::size_t s) {
+    const std::size_t t=s/2;
+    const B a=B(999)/1024-B(t%16)/65536+B(s)*P2(-75);
+    B b=B(1+(t/16)%8)/1024;
+    if ((t/512)%2) b=-b;
+    switch ((t/128)%4) {
+        case 0: return {a,b};
+        case 1: return {-b,a};
+        case 2: return {-a,-b};
+        default: return {b,-a};
+    }
+}
+
+bool SlotOrderGood(const ob::Observation& observed,const std::vector<Z>& reference) {
+    Require(observed.at512.size()==pf::kSlots && observed.at768.size()==pf::kSlots &&
+            reference.size()==pf::kSlots,"monomial full-slot shape");
+    for (std::size_t s=0;s<pf::kSlots;++s) {
+        const Z low{B(observed.at512[s].real),B(observed.at512[s].imag)};
+        if (ComponentDistance(low,reference[s])>P2(-120) ||
+            ComponentDistance(observed.at768[s],reference[s])>P2(-120)) return false;
+    }
+    return true;
+}
+void ObserverControl() {
+    pf::IntegerPolynomial monomial{std::vector<Int>(pf::kN,0),Int(17)};
+    monomial.coefficients[1]=1;
+    const pf::Scale unit{1,1};
+    auto observed=ob::Observe(monomial,unit);
+    const auto reference=ob::DirectSparseReference768({{1,Int(1)}},unit);
+    Require(SlotOrderGood(observed,reference),"direct all-slot monomial control");
+    std::swap(observed.at512[2],observed.at512[3]);
+    std::swap(observed.at768[2],observed.at768[3]);
+    Require(!SlotOrderGood(observed,reference),"shared non-anchor permutation must fail");
+}
+void CheckScale(const Receipt& r,const pf::Scale& expected) {
+    Require(r && r->GetExactScale().GetNumerator()==expected.numerator &&
+            r->GetExactScale().GetDenominator()==expected.denominator,"independent exact scale");
+}
+void CheckReceipt(const Receipt& receipt,RepeatedPhase phase,std::size_t family,
+                  std::size_t operation,bool terminal,const pf::Scale& scale) {
+    CheckScale(receipt,scale);
+    Require(receipt->GetPhase()==phase && receipt->GetFamilyIndex()==family &&
+            receipt->GetOperationIndex()==operation && receipt->IsTerminal()==terminal,
+            "receipt complete stage identity");
+}
+void CheckPair(const CiphertextPair& pair,const Plan& plan,std::size_t round,
+               const pf::Scale& scale) {
+    Require(round<=8,"returned round range");
+    const bool terminal=round==8;
+    const std::size_t family=terminal?7:round;
+    const std::size_t level=terminal?2:1;
+    const auto lifecycle=round==0?PairLifecycle::ReadyForFirstMult:
+        (terminal?PairLifecycle::RefreshRequired:PairLifecycle::ReadyForRepeatedMult);
+    const auto phase=round==0?RepeatedPhase::Input:
+        (terminal?RepeatedPhase::Rescaled:RepeatedPhase::Reentry);
+    const auto r=pair.GetRepeatedReceipt();
+    CheckReceipt(r,phase,family,round,terminal,scale);
+    if (round==0) Require(!r->GetParent(),"fresh receipt has no parent");
+    Require(pair.GetContextIdentity()==plan->GetFamilyContext(family).get() &&
+            pair.GetKeyTag()==plan->GetFamilyKeyTag(family) && pair.GetLevel()==level &&
+            pair.GetLifecycle()==lifecycle && pair.GetFormat()==Format::EVALUATION &&
+            pair.GetComponentCount()==2,"returned pair physical metadata/lifecycle");
+    Require(pair.GetDivisor().ConvertToInt()==pf::kDiv && pair.GetSlots()==pf::kSlots &&
+            pair.GetOrderedModuli().size()==10-round && pair.GetNoiseScaleDegree()==2 &&
+            pair.GetRecordedScalingFactor()==std::ldexp(1.0,100),"S100 pair profile");
+    const auto& compatibility=pair.GetPaperScale();
+    Require(compatibility.divisor==lbcrypto::NativeInteger(pf::kDiv) &&
+            compatibility.inputRecordedScalingFactor==std::ldexp(1.0,100) &&
+            std::isfinite(compatibility.approximateLogicalScalingFactor) &&
+            std::isfinite(compatibility.approximateRecombinedLogicalScalingFactor) &&
+            compatibility.approximateLogicalScalingFactor>0 &&
+            compatibility.approximateRecombinedLogicalScalingFactor>0,
+            "finite positive compatibility metadata");
+    for (const auto& cipher:{pair.GetHigh(),pair.GetLow()}) {
+        Require(cipher && cipher->GetCryptoContext()==plan->GetFamilyContext(family) &&
+                cipher->GetKeyTag()==plan->GetFamilyKeyTag(family) &&
+                cipher->GetElements().size()==2,"family-local ciphertext");
+        Require(cipher->GetCryptoParameters()==plan->GetFamilyContext(family)->GetCryptoParameters() &&
+                cipher->GetLevel()==level && cipher->GetSlots()==pf::kSlots &&
+                cipher->GetNoiseScaleDeg()==2 && cipher->GetScalingFactor()==std::ldexp(1.0,100) &&
+                cipher->GetScalingFactorInt()==lbcrypto::NativeInteger(1) &&
+                cipher->GetEncodingType()==lbcrypto::CKKS_PACKED_ENCODING &&
+                cipher->GetMetadataMap() && cipher->GetMetadataMap()->empty(),
+                "ciphertext physical metadata");
+        for (const auto& poly:cipher->GetElements()) {
+            Require(poly.GetNumOfElements()==10-round && poly.GetFormat()==Format::EVALUATION,
+                    "pair active tower shape");
+            for (std::size_t j=0;j<10-round;++j) {
+                const auto& t=poly.GetElementAtIndex(j);
+                Require(pair.GetOrderedModuli()[j].ConvertToInt()==pf::kQ[j] &&
+                        t.GetModulus().ConvertToInt()==pf::kQ[j] &&
+                        t.GetParams()->GetRootOfUnity().ConvertToInt()==pf::kRoots[j] &&
+                        t.GetParams()->GetCyclotomicOrder()==pf::kM,"ordered modulus/root");
+            }
+        }
+    }
+    Require(pair.GetHigh()!=pair.GetLow() &&
+            pair.GetHigh()->GetMetadataMap()!=pair.GetLow()->GetMetadataMap(),
+            "separate pair wrappers/maps");
+}
+struct Evaluation final {
+    RepeatedMult2Result terminal;
+    std::array<Receipt,9> receipts;
+};
+// Evaluator boundary: no secret, plaintext, oracle, observed error, or callback.
+Evaluation Evaluate(const Plan& plan,const ReadOnlyCiphertext& ciphertext) {
+    DoubleCKKS evaluator(plan);
+    const auto scales=pf::Scales();
+    auto pair=evaluator.DCP(ciphertext);
+    std::array<Receipt,9> receipts{};
+    CheckPair(pair,plan,0,scales[0]); receipts[0]=pair.GetRepeatedReceipt();
+    for (std::size_t round=1;round<=8;++round) {
+        pair=evaluator.Mult2(pair,pair);
+        CheckPair(pair,plan,round,scales[round]);
+        receipts[round]=pair.GetRepeatedReceipt();
+        auto rs=receipts[round];
+        if (round<8) rs=rs->GetParent();
+        CheckReceipt(rs,RepeatedPhase::Rescaled,round-1,round,round==8,scales[round]);
+        const auto relin=rs->GetParent();
+        const auto ts=pf::Reduced(scales[round-1].numerator*scales[round-1].numerator,
+            scales[round-1].denominator*scales[round-1].denominator*pf::kDiv);
+        CheckReceipt(relin,RepeatedPhase::Relinearized,round-1,round,false,ts);
+        const auto tensor=relin->GetParent();
+        CheckReceipt(tensor,RepeatedPhase::Tensor,round-1,round,false,ts);
+        Require(tensor->GetParent()==receipts[round-1],"same-chain Tensor parent");
+    }
+    auto terminal=evaluator.RCBWithReceipt(pair);
+    Require(terminal.GetReceipt()==receipts[8],"terminal RCB receipt identity");
+    return {std::move(terminal),std::move(receipts)};
+}
+
+B CheckObservation(const pf::IntegerPolynomial& poly,const pf::Scale& scale,
+                   const ob::Observation& observed,const io::DecodedSlots& producer,
+                   const std::array<pf::Complex,10>& roots) {
+    Require(observed.at512.size()==pf::kSlots && observed.at768.size()==pf::kSlots &&
+            producer.values.size()==pf::kSlots,"all endpoint slots present");
+    Int l1=0;
+    for (const auto& c:poly.coefficients) l1+=(c<0?Int(-c):c);
+    Require(l1==observed.coefficientOneNorm,"independent exact coefficient one-norm");
+    Require(l1*scale.denominator<=(scale.numerator<<64),"observer supported envelope");
+    const auto anchors=pf::Horner(poly,scale,roots);
+    B maximum=0;
+    for (std::size_t s=0;s<pf::kSlots;++s) {
+        const Z low{B(observed.at512[s].real),B(observed.at512[s].imag)};
+        const B cross=ComponentDistance(low,observed.at768[s]);
+        const B codec=ComponentDistance(FromClient(producer.values[s]),observed.at768[s]);
+        maximum=std::max(maximum,std::max(cross,codec));
+    }
+    for (std::size_t a=0;a<pf::kAnchors.size();++a) {
+        const Z h{B(anchors[a].real.str(170,std::ios_base::scientific)),
+                  B(anchors[a].imag.str(170,std::ios_base::scientific))};
+        maximum=std::max(maximum,ComponentDistance(h,observed.at768[pf::kAnchors[a]]));
+    }
+    Require(maximum<=P2(-120),"observer/producer/Horner consistency (not a transcendental proof)");
+    return maximum;
+}
+struct Maximum final {
+    B squared=0;
+    std::size_t slot=0;
+    void Add(const Z& z,std::size_t s) {
+        const B n=Norm2(z);
+        if (n>squared) { squared=n; slot=s; }
+    }
+};
+void EmitMax(std::ostream& out,const char* name,const Maximum& m) {
+    out << "max\t" << name << '\t' << m.slot << '\t'
+        << boost::multiprecision::sqrt(m.squared) << '\n';
+}
+void EmitError(std::ostream& out,const Z& z) { out << '\t' << z.real << '\t' << z.imag; }
+
+int Run(const std::filesystem::path& output) {
+    // A fresh owner-only build directory is required. This is not a race-safe
+    // publication protocol. Refuse an existing file so a second invocation
+    // cannot overwrite the first sample. Never retry after a failure.
+    Require(!std::filesystem::exists(output),"output exists; refuse a second sample");
+    std::ofstream out(output,std::ios::out|std::ios::binary);
+    Require(out.good(),"cannot create endpoint evidence");
+    out << std::scientific << std::setprecision(120);
+    out << "#s100-annulus125-e80-v1\nmeta\tsource_commit\t" << S100_ANNULUS125_SOURCE_COMMIT
+        << "\nmeta\topenfhe_pin\tdf495ba2e91739a6dc8f1de254fc5a41155ce504"
+        << "\nmeta\tinput_formula\tfour-phase-999-dyadic-v1"
+        << "\nmeta\tnorm\tmax-complex-modulus"
+        << "\nmeta\tassurance\tCONDITIONAL_OBSERVER_NOT_FORMAL"
+        << "\nmeta\tsecurity\tUNRESOLVED\nmeta\tlegacy_S100_stress\tFAIL_RETAINED\n";
+    out.flush(); Require(out.good(),"initial evidence flush");
+    ObserverControl(); // One keyless control; no sampled key can be selected by it.
+    const auto scales=pf::Scales();
+    std::vector<Z> input; input.reserve(pf::kSlots);
+    std::vector<io::ClientComplex> values; values.reserve(pf::kSlots);
+    const B radius=B(125)/128;
+    for (std::size_t s=0;s<pf::kSlots;++s) {
+        const Z z=Input(s);
+        Require(Norm2(z)<radius*radius && Norm2(Power256(z))>P2(-20),"explicit nonvacuous input domain");
+        input.push_back(z);
+        values.push_back({io::ClientReal(z.real.str(100,std::ios_base::scientific)),
+                          io::ClientReal(z.imag.str(100,std::ios_base::scientific))});
+        Require(ComponentDistance(FromClient(values.back()),z)==0,"exact dyadic client bridge");
+    }
+    Require(Norm2(Sub(input[1],input[0]))==P2(-150),"sub-binary64 input witness");
+    auto setup=CreatePaperRepeatedMult2Setup(); // Exactly one h128 root setup.
+    io::HighPrecisionClientIO client(setup.plan);
+    const io::FreshEncodingSpec spec{static_cast<std::uint32_t>(pf::kSlots),
+        io::PositiveRationalScale::FromPositive(Int(1)<<100,1)};
+    const auto fresh=client.Encrypt(setup.publicKey,values,spec); // ONE public payload encryption.
+    const auto freshCipher=fresh.CloneForEvaluation();
+    const auto evaluated=Evaluate(setup.plan,freshCipher); // All 8 before ANY decryption.
+    const auto terminal=client.BindRepeatedRcb(evaluated.terminal);
+    const auto producer0=client.Decrypt(setup.rootSecret,fresh);
+    const auto producer8=client.Decrypt(setup.rootSecret,terminal);
+    const auto secret=pf::ReadSecret(setup.rootSecret);
+    const auto poly0=pf::SparseDecrypt(freshCipher,secret);
+    const auto poly8=pf::SparseDecrypt(evaluated.terminal.GetCiphertext(),secret);
+    const auto observed0=ob::Observe(poly0,scales[0]);
+    const auto observed8=ob::Observe(poly8,scales[8]);
+    const auto roots=pf::AnchorRoots();
+    const B agreement0=CheckObservation(poly0,scales[0],observed0,producer0,roots);
+    const B agreement8=CheckObservation(poly8,scales[8],observed8,producer8,roots);
+    out << "meta\tchain_count\t1\nmeta\tsquares\t8\nmeta\tslots\t16384\n";
+    for (std::size_t i=0;i<=8;++i) {
+        const auto& scale=evaluated.receipts[i]->GetExactScale();
+        out << "scale\t" << i << '\t' << scale.GetNumerator() << '\t' << scale.GetDenominator() << '\n';
+    }
+    out << "agreement\tfresh\t" << agreement0 << "\nagreement\tterminal\t" << agreement8 << '\n';
+    out << "slot\tE0_obs.real\tE0_obs.imag\tE8_obs.real\tE8_obs.imag\tE8_prod.real\tE8_prod.imag\n";
+    Maximum e0,e8,e8prod,inherited,added;
+    for (std::size_t s=0;s<pf::kSlots;++s) {
+        const Z ideal=Power256(input[s]);
+        const Z prop=Power256(observed0.at768[s]); // Physical fresh phase, NOT producer readout.
+        const Z a0=Sub(observed0.at768[s],input[s]);
+        const Z a8=Sub(observed8.at768[s],ideal);
+        const Z p8=Sub(FromClient(producer8.values[s]),ideal);
+        const Z i8=Sub(prop,ideal), residual=Sub(observed8.at768[s],prop);
+        e0.Add(a0,s); e8.Add(a8,s); e8prod.Add(p8,s); inherited.Add(i8,s); added.Add(residual,s);
+        out << s; EmitError(out,a0); EmitError(out,a8); EmitError(out,p8); out << '\n';
+    }
+    const B T=P2(-80);
+    const Z idealDifference=Sub(Power256(input[1]),Power256(input[0]));
+    const Z actualDifference=Sub(FromClient(producer8.values[1]),FromClient(producer8.values[0]));
+    Require(Norm2(idealDifference)>16*T*T,"nonvanishing high-precision output witness");
+    const bool witness=Norm2(Sub(actualDifference,idealDifference))<=4*T*T;
+    const bool pass=e0.squared<=T*T && added.squared<=T*T/16 &&
+                    e8.squared<=T*T && e8prod.squared<=T*T && witness;
+    EmitMax(out,"E0_obs",e0); EmitMax(out,"E8_obs",e8); EmitMax(out,"E8_prod",e8prod);
+    EmitMax(out,"I8_obs",inherited); EmitMax(out,"A8_obs",added);
+    out << "gate\tE0_le_T\t" << (e0.squared<=T*T)
+        << "\ngate\tA8_le_T_over_4\t" << (added.squared<=T*T/16)
+        << "\ngate\tE8_obs_le_T\t" << (e8.squared<=T*T)
+        << "\ngate\tE8_prod_le_T\t" << (e8prod.squared<=T*T)
+        << "\ngate\twitness\t" << witness
+        << "\nstatus\tCOMPLETE\t" << (pass?"PASS":"FAIL") << '\n';
+    out.flush(); Require(out.good(),"final evidence flush failed");
+    out.close(); Require(!out.fail(),"final evidence close failed");
+    std::cout << kContract << " status=COMPLETE result=" << (pass?"PASS":"FAIL")
+              << " chain_count=1 squares=8 slots=16384 security=UNRESOLVED\n" << std::flush;
+    Require(std::cout.good(),"final stdout flush failed");
+    return pass?0:1; // Numerical failure is retained; no catch, seed change, or retry.
+}
+} // namespace
+
+int main(int argc,char** argv) {
+    if (argc==2 && std::string(argv[1])=="--controls") {
+        ObserverControl();
+        std::cout << kContract << " controls=PASS encrypted_runs=0\n" << std::flush;
+        Require(std::cout.good(),"controls stdout flush failed");
+        return 0;
+    }
+    Require(argc==3 && std::string(argv[1])=="--output","usage: --output NEW_FILE.tsv");
+    return Run(std::filesystem::path(argv[2]));
+}
