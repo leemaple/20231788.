@@ -1,5 +1,13 @@
 # Initial lift/nonwrap — Pro live; independent initialization contract accepted conditionally
 
+## Latest checkpoint — 2026-09-09 01:42 CST
+
+Independent canonical review is final: conditional acceptance, no material bridge equation rejected. Root fully read it and resolved the inverse-canonical normalization lemma, overloaded message notation, and repeatability finding. See CANONICAL_REVIEW_DISPOSITION.md. The original checker/result at0513090 remain byte-frozen; a new replay entry point ran twice exit0 with byte-identical output after the direct rerun reproduced FileExistsError exit1. E_enc<=1/512 remains unproved; no production/E80 claim follows.
+
+Same Pro conversation was observed live at01:42:41CST, Stop answering visible. No stop/reload/retry/follow-up/duplicate task. Pro remains primary author; independent candidate was not injected. This checkpoint is PROGRESS through resolved review findings, not a blocked turn. No heavy local work, CI, source change, timer or quota retry.
+
+The sections below retain the chronological earlier observations; their pending-review labels describe those earlier checkpoints, not the latest completed independent review.
+
 Latest Pro observation 2026-09-09 01:10:34 CST. Branch `codex/initial-lift-nonwrap-20260909`, base b86105b, unchanged production a4b815a. Initial task/probe and submission receipts are pushed at bf5b88d.
 
 Previous goal turn: PROGRESS — Relin2 return was independently reviewed, bounded corrections resolved, adopted contract and balanced witness committed/pushed at b86105b. It did not complete the paper reproduction.

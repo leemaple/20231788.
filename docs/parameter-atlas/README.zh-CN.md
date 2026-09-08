@@ -10,6 +10,8 @@
 
 **误差契约补充（2026-09-09）：** [Relin2 源码误差契约：复核后采用版](../../coordination/relin2-bound-20260908/ADOPTED_CONTRACT.md)把具体 HYBRID、升模、两坐标舍入和 RS2 的误差关系接入本图谱。Pro 主推导经根端回放与独立数学复核后有条件采纳，三处表述修订已明确处置。它补齐一个局部数学对应缺口，不意味着原 S100 精度失败已解决。
 
+**边界分析补充（2026-09-09）：** [原 S100 八轮边界：条件、复核和重复检查入口](../../coordination/initial-lift-nonwrap-20260909/CANONICAL_REVIEW_DISPOSITION.md)解释如何把实际参数接入逐轮不绕回分析。独立复核接受其条件性推导，八轮轻量整数检查成立；编码误差前提仍未证明，Pro 主推导仍待返回。这不是新的密文精度 PASS。
+
 固定依据：项目运行源码 `a4b815a733efe81897325e2a8e4c826a4ebfa439`，官方 OpenFHE 1.5.0 `df495ba2e91739a6dc8f1de254fc5a41155ce504`，native64/backend4。文档分支是 `codex/parameter-atlas-20260908`。后续文档提交不改变上述运行源码身份。
 
 ## 1. 论文究竟做了什么
