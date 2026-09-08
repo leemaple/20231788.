@@ -1,0 +1,81 @@
+{
+  "utc": "2026-09-08T18:08:04.115939+00:00",
+  "archive": "/Users/lifeng/Documents/20231788-openfhe-initial-lift-nonwrap-20260909/artifacts/returns/initial-lift-nonwrap-20260909/INITIAL-LIFT-NONWRAP-01-return.zip",
+  "bytes": 238632,
+  "sha256": "241b123f520afc8cefe616435e0496c52d3899b0a9f4b5525d4f63562f87cb51",
+  "regular_members": 80,
+  "expanded_bytes": 819613,
+  "manifest_sha256": "27518ad6b641509df4a971adb50e13f40576f31480e9791871f96223d7b950db",
+  "manifest_paths_crc_hashes": "PASS",
+  "bound_source_git_blobs_verified": [
+    "checks/bound_source/project/CMakeLists.txt",
+    "checks/bound_source/project/src/high_precision_client_io.cpp",
+    "checks/bound_source/project/src/repeated_mult2.cpp",
+    "checks/bound_source/project/tests/paper_full_eight_square_oracle.h"
+  ],
+  "scans": [
+    {
+      "phase": "decoded initial-lift return; one exact scanner-definition literal masked",
+      "files": 80,
+      "bytes": 819607,
+      "patterns": [
+        "aws_access_key",
+        "github_token",
+        "private_key_block",
+        "slack_token"
+      ],
+      "findings": []
+    },
+    {
+      "phase": "decoded initial-lift return",
+      "version_command": [
+        "/opt/homebrew/bin/gitleaks",
+        "version"
+      ],
+      "command": [
+        "/opt/homebrew/bin/gitleaks",
+        "stdin",
+        "--ignore-gitleaks-allow",
+        "--gitleaks-ignore-path",
+        "/dev/null",
+        "--max-decode-depth",
+        "5",
+        "--max-archive-depth",
+        "1",
+        "--redact",
+        "--no-banner",
+        "--no-color",
+        "--report-format",
+        "json",
+        "--report-path",
+        "-"
+      ],
+      "environment_keys": [
+        "GOMAXPROCS",
+        "LANG",
+        "LC_ALL",
+        "PATH"
+      ],
+      "tool_version": "8.30.1",
+      "exit_code": 0,
+      "findings": [],
+      "framed_bytes": 824442,
+      "framed_sha256": "96d95428db3753391c94fef20fd9678284cdf25ade37604abd15c20c92bff070"
+    }
+  ],
+  "destination": "/Users/lifeng/Documents/20231788-openfhe-initial-lift-nonwrap-20260909/coordination/initial-lift-nonwrap-20260909/pro",
+  "targeted_false_positive": {
+    "path": "evidence/RETURN_TARGETED_SCAN.json",
+    "sha256": "012d0842051fa47a343dec30a3f69e89c1e46b458e2efb1cbf25f6a0f426ac52",
+    "finding": "github_token pattern matched bare prefix inside its own regex definition",
+    "disposition": "exact known regex field verified; only that literal masked for targeted scan; all original bytes Gitleaks-scanned and retained unchanged"
+  },
+  "conversation": "https://chatgpt.com/c/6aa0400a-2dc8-83ec-8b3e-85f019a32321",
+  "title": "执行初始DCP推导",
+  "ui": "6 / Pro; highest visible Pro5of5 before submission; backend unattested",
+  "terminal_observed_utc": "2026-09-08T18:05:10.683Z",
+  "displayed_duration": "Worked for 60m 2s",
+  "download_clicks": 1,
+  "returned_scripts_executed": false,
+  "semantic_acceptance": "PENDING independent review and bounded replay; intake integrity only"
+}

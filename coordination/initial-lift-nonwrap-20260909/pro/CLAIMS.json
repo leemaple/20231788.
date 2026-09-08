@@ -1,0 +1,564 @@
+{
+  "schema": "initial-lift-nonwrap-claims-v1",
+  "task": "INITIAL-LIFT-NONWRAP-01",
+  "language": "zh-CN",
+  "scope": "original S100 near-unit; no parameter/input/noise/threshold changes",
+  "input_binding": {
+    "archive_sha256": "0cde0f999e13445e2faec46a4bf34dbcf6e47131c53afcf9e57375051eed7bed",
+    "manifest_sha256": "96a45b3de562d23d30090e2048cb66d2c0412318a691bc204988fad736e305a7",
+    "production_commit": "a4b815a733efe81897325e2a8e4c826a4ebfa439",
+    "official_commit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+    "evidence_commit": "b86105b33294a84ce76d65f585eb16d25ae07156",
+    "task_commit": "6d42e6ea2d807cd7fdb9fc1433349694a6f06b48"
+  },
+  "adopted_amendments": {
+    "zero_digit_carry": "sufficient_not_necessary",
+    "h128_witness": "all-positive is abstract; balanced64/64 respects counts but PRNG full reachability unproved",
+    "C18_A07": "no circular support-bound assumption; source-success support derived directly"
+  },
+  "assumptions": [
+    {
+      "id": "A01_RING_SEMANTICS",
+      "statement": "固定 native64/backend4 环算子实现所述精确模环语义；本轮不另行形式化验证底层FFT/NTT。",
+      "status": "adopted_dependency",
+      "verified_in_this_turn": false,
+      "sources": [
+        "S14",
+        "S29",
+        "S30"
+      ]
+    },
+    {
+      "id": "A02_HONEST_FIXED_PATH",
+      "statement": "原公开payload路径、诚实h128根秘密/同家族key行、一塔一分区、单P、unsigned conversion、ns=1；不扩张为任意外来key。",
+      "status": "source_bound_domain",
+      "verified_in_this_turn": "source inspection only; no historical secret measurement",
+      "sources": [
+        "S07",
+        "S09",
+        "S17",
+        "S21",
+        "S23",
+        "S29"
+      ]
+    },
+    {
+      "id": "A03_SUCCESSFUL_FINITE_SAMPLING",
+      "statement": "固定源码的成功Peikert路径，相关sigma为名义3.19F或已说明局部private默认1；context PKE不是统一sigma1；成功支持39从源码推导而非预设自身结论。",
+      "status": "source_bound_domain",
+      "verified_in_this_turn": "support derivation and finite scalar bound; no sampling",
+      "sources": [
+        "S10",
+        "S11",
+        "S13",
+        "S34"
+      ]
+    },
+    {
+      "id": "A04_ACTUAL_ENCODER_CAP",
+      "statement": "同一个原near-unit S100实际ComputeEncoding结果p满足 max|sigma(p)/2^100| <=127/128。",
+      "status": "unproved_public_numeric_premise",
+      "value": null,
+      "bound_numerator": "127",
+      "bound_denominator": "128",
+      "future_action": "PUBLIC-S100-ENCODER-CAP-01"
+    },
+    {
+      "id": "A05_HISTORICAL_ENCODING_EQUIVALENCE",
+      "statement": "若将未来公开p证书用于历史运行，需证明编码输入、源码、数值依赖/构建与历史相关语义等价；同名profile/自报commit不足。",
+      "status": "unproved_provenance_premise",
+      "value": null
+    },
+    {
+      "id": "A06_IDEAL_NEAREST_ENCODING_DEFINITION",
+      "statement": "只在理想最终编码命题中，把理想多项式定义为S8*sigma_inverse(x^256)最近舍入，系数误差<=1/2；不假设实际encoder等于它。",
+      "status": "mathematical_definition_not_implementation_measurement",
+      "value": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "IL01",
+      "title": "输入身份与内容来源",
+      "status": "observed_in_this_turn",
+      "statement": "ZIP bytes/SHA/CRC/537成员、536载荷大小与hash、527次Git blob内容核对通过；未认证Git祖先或运行二进制。",
+      "assumptions": [],
+      "depends_on": [],
+      "source_ids": [],
+      "check_evidence": [
+        "evidence/INPUT_VERIFICATION.json",
+        "evidence/INPUT_UNCHANGED.json"
+      ],
+      "unknowns": {
+        "remote_commit_ancestry_verified": null
+      }
+    },
+    {
+      "id": "IL02",
+      "title": "正确范数桥与中心化反例",
+      "status": "proved",
+      "statement": "系数<=canonical<=N*系数，canonical乘法性成立；系数中心化不保证canonical收缩。",
+      "assumptions": [],
+      "depends_on": [],
+      "source_ids": [
+        "S05",
+        "P4"
+      ],
+      "check_evidence": [
+        "checks/results/results.json#/model_groups"
+      ],
+      "unknowns": {}
+    },
+    {
+      "id": "IL03",
+      "title": "真实公开加密噪声界",
+      "status": "proved_with_source_domain",
+      "statement": "fresh相位p+f，f=e_pk*v+e0+s*e1；Ec=1282983，Ecanonical=42040786944，成功支持39；均非测量值。",
+      "assumptions": [
+        "A01_RING_SEMANTICS",
+        "A02_HONEST_FIXED_PATH",
+        "A03_SUCCESSFUL_FINITE_SAMPLING"
+      ],
+      "depends_on": [],
+      "source_ids": [
+        "S07",
+        "S08",
+        "S09",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S21",
+        "S34"
+      ],
+      "check_evidence": [
+        "checks/results/results.json#/PKE_noise_coefficient_bound"
+      ],
+      "unknowns": {
+        "historical_sigma_measured": null,
+        "historical_f": null
+      }
+    },
+    {
+      "id": "IL04",
+      "title": "实际编码与理想编码分开",
+      "status": "proved_source_guard_scope",
+      "statement": "p定义为原ComputeEncoding的signedCoefficients；中心范围、两精度稳定舍入guard不是p等于理想逆嵌入的误差定理。",
+      "assumptions": [],
+      "depends_on": [],
+      "source_ids": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S06"
+      ],
+      "check_evidence": [
+        "checks/results/results.json#/model_groups"
+      ],
+      "unknowns": {
+        "actual_p_equals_ideal_rounding": null,
+        "actual_p_canonical_norm": null
+      }
+    },
+    {
+      "id": "IL05",
+      "title": "初始DCP相容整数提升",
+      "status": "proved_with_source_domain",
+      "statement": "h0=(p+f-rho_d)/d、l0=rho_d、M0=p+f都是相容整数提升；dQ倍数除d后模Q消去，不需先假定fresh nonwrap。",
+      "assumptions": [
+        "A01_RING_SEMANTICS",
+        "A02_HONEST_FIXED_PATH"
+      ],
+      "depends_on": [
+        "IL03",
+        "IL04"
+      ],
+      "source_ids": [
+        "S14",
+        "S15",
+        "P6"
+      ],
+      "check_evidence": [
+        "checks/results/results.json#/model_groups"
+      ],
+      "unknowns": {}
+    },
+    {
+      "id": "IL06",
+      "title": "真实初值接口",
+      "status": "proved_with_source_domain",
+      "statement": "Rd=70918398541824；H0<=(Mc+Ec+Rd)/d、L0<=Rd、M0<=Mc+Ec，分别明确模Q/F margin。",
+      "assumptions": [
+        "A01_RING_SEMANTICS",
+        "A02_HONEST_FIXED_PATH",
+        "A03_SUCCESSFUL_FINITE_SAMPLING"
+      ],
+      "depends_on": [
+        "IL03",
+        "IL05"
+      ],
+      "source_ids": [
+        "S15"
+      ],
+      "check_evidence": [
+        "checks/results/results.json#/Rd_coefficient"
+      ],
+      "unknowns": {}
+    },
+    {
+      "id": "IL07",
+      "title": "整数中心guard-only界不足",
+      "status": "proved_budget_failure_not_actual_wrap",
+      "statement": "仅用Mc=(dQ0-1)/2的预算，fresh充分界超半模数1282982.5，DCP high超约64.50000117；不能据此称满足全部浮点guard的实际p绕回。",
+      "assumptions": [],
+      "depends_on": [
+        "IL04",
+        "IL06"
+      ],
+      "source_ids": [],
+      "check_evidence": [
+        "checks/results/results.json#/exact_center_guard_only"
+      ],
+      "unknowns": {
+        "actual_initial_wrap": null
+      }
+    },
+    {
+      "id": "IL08",
+      "title": "八步全局相容提升",
+      "status": "proved_with_adopted_dependency",
+      "statement": "依次使用报告(8)(11)(12)定义不中心化整数提升；Q倍数除mu后为Qnext倍数；rho项重组消去，需先独立margin再识别中心相位。",
+      "assumptions": [
+        "A01_RING_SEMANTICS",
+        "A02_HONEST_FIXED_PATH",
+        "A03_SUCCESSFUL_FINITE_SAMPLING"
+      ],
+      "depends_on": [
+        "IL05",
+        "IL06"
+      ],
+      "source_ids": [
+        "S16",
+        "S17",
+        "S18",
+        "S19",
+        "S23",
+        "S25",
+        "S27",
+        "S29",
+        "S30",
+        "S32",
+        "S33",
+        "P7",
+        "P8"
+      ],
+      "check_evidence": [
+        "checks/results/results.json#/model_groups"
+      ],
+      "unknowns": {}
+    },
+    {
+      "id": "IL09",
+      "title": "冻结参数与精确尺度",
+      "status": "observed_and_algebraically_proved",
+      "statement": "12组q/root整数模幂/互素核对通过；Snext=S²/(d*mu)，与closed product逐层相等；不重置scale。",
+      "assumptions": [],
+      "depends_on": [],
+      "source_ids": [
+        "S20",
+        "S21",
+        "S22",
+        "S25",
+        "S26"
+      ],
+      "check_evidence": [
+        "checks/results/results.json#/input_binding",
+        "checks/results/conditional_spectral_certificate.json#/steps"
+      ],
+      "unknowns": {}
+    },
+    {
+      "id": "IL10",
+      "title": "canonical单调有理递推",
+      "status": "proved_with_source_domain",
+      "statement": "报告(16)(17)(18)由相容提升推出；保留低平方、两项Relin、两次RS余数；无需中途canonical中心化收缩。",
+      "assumptions": [
+        "A01_RING_SEMANTICS",
+        "A02_HONEST_FIXED_PATH",
+        "A03_SUCCESSFUL_FINITE_SAMPLING"
+      ],
+      "depends_on": [
+        "IL02",
+        "IL06",
+        "IL08",
+        "IL09"
+      ],
+      "source_ids": [
+        "S18",
+        "S29",
+        "S30",
+        "S33"
+      ],
+      "check_evidence": [
+        "checks/run_checks.py"
+      ],
+      "unknowns": {}
+    },
+    {
+      "id": "IL11",
+      "title": "原S100八步条件nonwrap证书",
+      "status": "conditional",
+      "statement": "仅在A04及既有路径假设下，初始+八步所有列出相位margin通过；末步最大列示组合半模数比<0.268651182804。原公开公式没有改动。",
+      "assumptions": [
+        "A01_RING_SEMANTICS",
+        "A02_HONEST_FIXED_PATH",
+        "A03_SUCCESSFUL_FINITE_SAMPLING",
+        "A04_ACTUAL_ENCODER_CAP"
+      ],
+      "depends_on": [
+        "IL10"
+      ],
+      "source_ids": [
+        "S20",
+        "S26"
+      ],
+      "check_evidence": [
+        "checks/results/conditional_spectral_certificate.json",
+        "checks/results/results.json#/public_near_unit_input"
+      ],
+      "unknowns": {
+        "actual_premise_verified": null,
+        "actual_historical_nonwrap": null
+      }
+    },
+    {
+      "id": "IL12",
+      "title": "C25粗界第一次失效",
+      "status": "observed_conditional_budget_failure",
+      "statement": "同一K-CAP下粗N递推第5次平方首次不能认证；NdH4²约1.083344520893e188，预算比floorlog2=285；不是实际绕回。",
+      "assumptions": [
+        "A04_ACTUAL_ENCODER_CAP"
+      ],
+      "depends_on": [
+        "IL06",
+        "IL09"
+      ],
+      "source_ids": [
+        "S33"
+      ],
+      "check_evidence": [
+        "checks/results/conditional_coarse_c25.json"
+      ],
+      "unknowns": {
+        "actual_wrap_from_bound_failure": null
+      }
+    },
+    {
+      "id": "IL13",
+      "title": "K=1分析负控制",
+      "status": "observed_sufficient_bound_failure",
+      "statement": "只放宽分析K至1，不运行任何新输入；第8步RCB预算失效而成员预算通过，说明命题不能互换。",
+      "assumptions": [],
+      "depends_on": [
+        "IL10"
+      ],
+      "source_ids": [],
+      "check_evidence": [
+        "checks/results/K1_negative_control.json"
+      ],
+      "unknowns": {
+        "production_wrap_witness": null
+      }
+    },
+    {
+      "id": "IL14",
+      "title": "理想最终编码有空间",
+      "status": "proved_under_definition",
+      "statement": "原公开公式理想x^256按最近编码定义，最终系数上界/半模数<0.2104551668648；不替代实际p/高低/RCB的nonwrap。",
+      "assumptions": [
+        "A06_IDEAL_NEAREST_ENCODING_DEFINITION"
+      ],
+      "depends_on": [
+        "IL02",
+        "IL09"
+      ],
+      "source_ids": [
+        "S26"
+      ],
+      "check_evidence": [
+        "checks/results/results.json#/ideal_final_encoding_coeff_bound_over_Qhalf"
+      ],
+      "unknowns": {}
+    },
+    {
+      "id": "IL15",
+      "title": "nonwrap不等于E80",
+      "status": "proved_scope_limitation",
+      "statement": "精确误差仍含初始p+f、低平方遗漏、Relin和RS；末步支持级局部界约3.152785331518e-20，高于E80，不能改写为测量误差或整链PASS。",
+      "assumptions": [
+        "A01_RING_SEMANTICS",
+        "A02_HONEST_FIXED_PATH",
+        "A03_SUCCESSFUL_FINITE_SAMPLING",
+        "A04_ACTUAL_ENCODER_CAP"
+      ],
+      "depends_on": [
+        "IL08",
+        "IL10",
+        "IL11"
+      ],
+      "source_ids": [
+        "S05",
+        "S16",
+        "S18",
+        "S35",
+        "S38",
+        "S43"
+      ],
+      "check_evidence": [
+        "checks/results/conditional_spectral_certificate.json#/steps/7/local_error_bound"
+      ],
+      "unknowns": {}
+    },
+    {
+      "id": "IL16",
+      "title": "历史三条证据保持分离",
+      "status": "supplied_history_not_reexecuted",
+      "statement": "原S100两平台E80 FAIL；S116两平台改参PASS；annulus125 Linux一次改输入且新key/noise样本PASS。不得合并或单因素因果外推。",
+      "assumptions": [],
+      "depends_on": [],
+      "source_ids": [
+        "S28",
+        "S35",
+        "S36",
+        "S37",
+        "S43",
+        "S44"
+      ],
+      "check_evidence": [
+        "checks/results/results.json#/historical_S100_E80"
+      ],
+      "unknowns": {}
+    },
+    {
+      "id": "IL17",
+      "title": "诊断候选验证状态",
+      "status": "candidate_unexecuted_except_scalar_static_checks",
+      "statement": "仅7500标量端点断言、13解析负例、两patch内存重放/四完整文件/原ComputeEncoding函数体不变通过；C++、4小变换和完整编码/变换未执行。",
+      "assumptions": [],
+      "depends_on": [
+        "IL04"
+      ],
+      "source_ids": [
+        "S03",
+        "S04",
+        "S06",
+        "S24",
+        "S45",
+        "S46"
+      ],
+      "check_evidence": [
+        "checks/results/candidate_scalar_checks.json",
+        "checks/results/candidate_static_checks.json"
+      ],
+      "unknowns": {
+        "CXX_RED_observed": null,
+        "CXX_GREEN_observed": null,
+        "full_transform_result": null
+      }
+    },
+    {
+      "id": "IL18",
+      "title": "真实历史nonwrap尚未认证",
+      "status": "unproved",
+      "statement": "整数代数桥已成立，但A04未测；未来本次p证书应用到历史还需A05。不能把条件证书或中心guard标为历史测量。",
+      "assumptions": [
+        "A04_ACTUAL_ENCODER_CAP",
+        "A05_HISTORICAL_ENCODING_EQUIVALENCE"
+      ],
+      "depends_on": [
+        "IL04",
+        "IL11",
+        "IL16"
+      ],
+      "source_ids": [
+        "S05",
+        "S19",
+        "S29",
+        "S30",
+        "S34"
+      ],
+      "check_evidence": [],
+      "unknowns": {
+        "historical_wrap_integers": null,
+        "historical_high_low": null,
+        "historical_nonwrap": null
+      }
+    },
+    {
+      "id": "IL19",
+      "title": "完整论文目标继续",
+      "status": "not_claimed_complete",
+      "statement": "未补齐Table3同源分布/HEaaN/API/噪声/统计来源，也未修好原E80；本子任务不代表完整复现完成。",
+      "assumptions": [],
+      "depends_on": [
+        "IL15",
+        "IL16",
+        "IL18"
+      ],
+      "source_ids": [
+        "S39",
+        "P13"
+      ],
+      "check_evidence": [],
+      "unknowns": {
+        "full_paper_reproduction_pass": null
+      }
+    },
+    {
+      "id": "IL20",
+      "title": "唯一可验收后继",
+      "status": "proposed_one_action",
+      "statement": "PUBLIC-S100-ENCODER-CAP-01：一次原公开实际编码+一次独立区间全奇根检查；0采样/加解密；按上界/下界/不确定三分支验收并停止。",
+      "assumptions": [],
+      "depends_on": [
+        "IL11",
+        "IL17",
+        "IL18"
+      ],
+      "source_ids": [
+        "S01",
+        "S03",
+        "S04",
+        "S06",
+        "S24",
+        "S26",
+        "S45"
+      ],
+      "check_evidence": [
+        "NEXT_ACTION.md",
+        "candidate/DIAGNOSTIC_DESIGN.zh-CN.md"
+      ],
+      "unknowns": {}
+    }
+  ],
+  "unknown_values": {
+    "actual_encoding_canonical_norm": null,
+    "actual_encoder_K_cap": null,
+    "historical_nonwrap": null,
+    "historical_sigma_measurement": null,
+    "CXX_diagnostic_result": null,
+    "full_interval_transform_result": null,
+    "full_paper_goal_complete": null
+  },
+  "actual_execution_flags": {
+    "CXX_compilation": false,
+    "FFT_NTT": false,
+    "crypto_sampling_encryption_decryption": false,
+    "input_project_modified": false,
+    "historical_full_slot_capture_reprocessed": false,
+    "CI_dispatched": false,
+    "external_contact_or_delegation": false
+  },
+  "unique_next_action": "PUBLIC-S100-ENCODER-CAP-01"
+}

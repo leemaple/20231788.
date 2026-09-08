@@ -1,0 +1,365 @@
+cmake_minimum_required(VERSION 3.16.3)
+
+project(openfhe_2023_1788 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+find_package(OpenFHE 1.5.0 CONFIG REQUIRED)
+
+if(NOT BASE_OPENFHE_VERSION VERSION_EQUAL "1.5.0")
+    message(FATAL_ERROR "This project requires official OpenFHE 1.5.0; found ${BASE_OPENFHE_VERSION}")
+endif()
+
+if(UNIX AND NOT APPLE)
+    add_link_options(-Wl,--no-as-needed)
+endif()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenFHE_CXX_FLAGS}")
+
+include_directories(${OPENMP_INCLUDES})
+include_directories(SYSTEM
+    ${OpenFHE_INCLUDE}
+    ${OpenFHE_INCLUDE}/third-party/include
+    ${OpenFHE_INCLUDE}/core
+    ${OpenFHE_INCLUDE}/pke
+    ${OpenFHE_INCLUDE}/binfhe
+)
+link_directories(${OpenFHE_LIBDIR} ${OPENMP_LIBRARIES})
+
+add_library(openfhe_2023_1788 src/double_ckks.cpp)
+target_sources(openfhe_2023_1788 PRIVATE src/high_precision_client_io.cpp)
+target_sources(openfhe_2023_1788 PRIVATE src/repeated_mult2.cpp src/paper_h128_client_keypair.cpp)
+target_include_directories(openfhe_2023_1788 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(openfhe_2023_1788 PUBLIC ${OpenFHE_SHARED_LIBRARIES})
+if(MINGW)
+    target_compile_definitions(openfhe_2023_1788 PUBLIC _USE_MATH_DEFINES)
+endif()
+
+add_executable(dcp_rcb_test tests/dcp_rcb_test.cpp)
+target_link_libraries(dcp_rcb_test PRIVATE openfhe_2023_1788)
+
+# Compile-only public API contract. It is intentionally not a CTest entry.
+add_executable(tensor2_api_contract_test tests/tensor2_api_contract_test.cpp)
+target_link_libraries(tensor2_api_contract_test PRIVATE openfhe_2023_1788)
+
+# Compile-only public API contract. It is intentionally excluded from the
+# default build and is not a CTest entry, so the accepted production suite can
+# build before this red-first seam is compiled explicitly.
+add_executable(relin2_api_contract_test EXCLUDE_FROM_ALL tests/relin2_api_contract_test.cpp)
+target_link_libraries(relin2_api_contract_test PRIVATE openfhe_2023_1788)
+
+# Compile-only public API contract. It is intentionally excluded from the
+# default build and is not a CTest entry, so this red-first seam is compiled
+# explicitly by CI before the production API exists.
+add_executable(rs2_api_contract_test EXCLUDE_FROM_ALL tests/rs2_api_contract_test.cpp)
+target_link_libraries(rs2_api_contract_test PRIVATE openfhe_2023_1788)
+
+# The first Mult2 slice intentionally proves the absent public API in CI.
+add_executable(mult2_api_contract_test EXCLUDE_FROM_ALL tests/mult2_api_contract_test.cpp)
+target_link_libraries(mult2_api_contract_test PRIVATE openfhe_2023_1788)
+
+# Red-first API seam, explicitly compiled after the existing runtime suite.
+add_executable(add_api_contract_test EXCLUDE_FROM_ALL tests/add_api_contract_test.cpp)
+target_link_libraries(add_api_contract_test PRIVATE openfhe_2023_1788)
+
+# Deliberate Sub API red, compiled explicitly after the accepted runtime suite.
+add_executable(sub_api_contract_test EXCLUDE_FROM_ALL tests/sub_api_contract_test.cpp)
+target_link_libraries(sub_api_contract_test PRIVATE openfhe_2023_1788)
+
+add_executable(pair_add_test tests/pair_add_test.cpp)
+target_link_libraries(pair_add_test PRIVATE openfhe_2023_1788)
+
+add_executable(pair_sub_test tests/pair_sub_test.cpp)
+target_link_libraries(pair_sub_test PRIVATE openfhe_2023_1788)
+
+# Independent integer/CRT oracle at the public pair Add/Sub and RCB seams.
+add_executable(pair_arithmetic_test tests/pair_arithmetic_test.cpp)
+target_link_libraries(pair_arithmetic_test PRIVATE openfhe_2023_1788)
+
+add_executable(tensor2_test tests/tensor2_test.cpp)
+target_link_libraries(tensor2_test PRIVATE openfhe_2023_1788)
+
+add_executable(relin2_test tests/relin2_test.cpp)
+target_link_libraries(relin2_test PRIVATE openfhe_2023_1788)
+
+add_executable(rs2_test tests/rs2_test.cpp)
+target_link_libraries(rs2_test PRIVATE openfhe_2023_1788)
+
+add_executable(mult2_test tests/mult2_test.cpp)
+target_link_libraries(mult2_test PRIVATE openfhe_2023_1788)
+
+add_executable(mult2_e2e_oracle_test tests/mult2_e2e_oracle_test.cpp)
+target_link_libraries(mult2_e2e_oracle_test PRIVATE openfhe_2023_1788)
+
+add_executable(precision_dcp_rcb_contract_test
+    tests/precision_dcp_rcb_contract_test.cpp
+    tests/precision_dcp_rcb_fixture.cpp)
+target_link_libraries(precision_dcp_rcb_contract_test PRIVATE openfhe_2023_1788)
+
+add_executable(precision_first_mult2_contract_test
+    tests/precision_first_mult2_contract_test.cpp
+    tests/precision_dcp_rcb_fixture.cpp)
+target_link_libraries(precision_first_mult2_contract_test PRIVATE openfhe_2023_1788)
+
+# Cycle A RED: preserve the accepted default build/57-test checkpoint before
+# compiling the deliberately absent production client-I/O public header.
+add_executable(precision_client_io_first_mult2_contract_test EXCLUDE_FROM_ALL
+    tests/precision_client_io_first_mult2_contract_test.cpp)
+target_link_libraries(precision_client_io_first_mult2_contract_test PRIVATE openfhe_2023_1788)
+execute_process(COMMAND git rev-parse HEAD
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    OUTPUT_VARIABLE LOSSLESS_IO_SOURCE_COMMIT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    RESULT_VARIABLE LOSSLESS_IO_GIT_RESULT)
+if(NOT LOSSLESS_IO_GIT_RESULT EQUAL 0)
+    message(FATAL_ERROR "Cannot record exact lossless-I/O test source commit")
+endif()
+target_compile_definitions(precision_client_io_first_mult2_contract_test PRIVATE
+    LOSSLESS_IO_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+
+# Preserve the independently accepted contract sources and build them explicitly
+# after the legacy 57-test checkpoint in the combined hosted workflow.
+add_executable(repeated_mult2_semantic_two_square_test EXCLUDE_FROM_ALL
+    tests/repeated_mult2_semantic_two_square_test.cpp
+    tests/precision_dcp_rcb_fixture.cpp)
+target_link_libraries(repeated_mult2_semantic_two_square_test PRIVATE openfhe_2023_1788)
+
+add_executable(paper_h128_client_keypair_contract_test EXCLUDE_FROM_ALL
+    tests/paper_h128_client_keypair_contract_test.cpp)
+target_link_libraries(paper_h128_client_keypair_contract_test PRIVATE openfhe_2023_1788)
+
+# One paper-scale end-to-end behavior slice. Keep the accepted 60-test
+# checkpoint buildable before explicitly compiling its new public seam.
+add_executable(paper_full_eight_square_contract_test EXCLUDE_FROM_ALL
+    tests/paper_full_eight_square_contract_test.cpp
+    tests/paper_endpoint_scaled_norm.cpp
+    tests/paper_endpoint_exact_scalars.cpp
+    tests/paper_endpoint_transform.cpp
+    tests/paper_endpoint_diagnostics.cpp
+    tests/paper_endpoint_evidence_writer.cpp)
+target_link_libraries(paper_full_eight_square_contract_test PRIVATE openfhe_2023_1788)
+target_compile_definitions(paper_full_eight_square_contract_test PRIVATE
+    PAPER_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+
+if(MSVC)
+    target_compile_options(paper_full_eight_square_contract_test PRIVATE /W4 /WX)
+    target_compile_options(repeated_mult2_semantic_two_square_test PRIVATE /W4 /WX)
+    target_compile_options(paper_h128_client_keypair_contract_test PRIVATE /W4 /WX)
+    target_compile_options(openfhe_2023_1788 PRIVATE /W4 /WX)
+    target_compile_options(dcp_rcb_test PRIVATE /W4 /WX)
+    target_compile_options(tensor2_api_contract_test PRIVATE /W4 /WX)
+    target_compile_options(relin2_api_contract_test PRIVATE /W4 /WX)
+    target_compile_options(rs2_api_contract_test PRIVATE /W4 /WX)
+    target_compile_options(mult2_api_contract_test PRIVATE /W4 /WX)
+    target_compile_options(add_api_contract_test PRIVATE /W4 /WX)
+    target_compile_options(sub_api_contract_test PRIVATE /W4 /WX)
+    target_compile_options(pair_add_test PRIVATE /W4 /WX)
+    target_compile_options(pair_sub_test PRIVATE /W4 /WX)
+    target_compile_options(pair_arithmetic_test PRIVATE /W4 /WX)
+    target_compile_options(tensor2_test PRIVATE /W4 /WX)
+    target_compile_options(relin2_test PRIVATE /W4 /WX)
+    target_compile_options(rs2_test PRIVATE /W4 /WX)
+    target_compile_options(mult2_test PRIVATE /W4 /WX)
+    target_compile_options(mult2_e2e_oracle_test PRIVATE /W4 /WX)
+    target_compile_options(precision_dcp_rcb_contract_test PRIVATE /W4 /WX)
+    target_compile_options(precision_first_mult2_contract_test PRIVATE /W4 /WX)
+    target_compile_options(precision_client_io_first_mult2_contract_test PRIVATE /W4 /WX)
+else()
+    target_compile_options(paper_full_eight_square_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(repeated_mult2_semantic_two_square_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(paper_h128_client_keypair_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(openfhe_2023_1788 PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(dcp_rcb_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(tensor2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(relin2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(rs2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(mult2_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(add_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(sub_api_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(pair_add_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(pair_sub_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(pair_arithmetic_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(tensor2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(relin2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(rs2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(mult2_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(mult2_e2e_oracle_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(precision_dcp_rcb_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(precision_first_mult2_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(precision_client_io_first_mult2_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
+
+enable_testing()
+add_test(NAME dcp_rcb COMMAND dcp_rcb_test)
+add_test(NAME precision_dcp_rcb_high_precision_contract
+         COMMAND precision_dcp_rcb_contract_test)
+add_test(NAME precision_first_mult2_high_precision_contract
+         COMMAND precision_first_mult2_contract_test)
+add_test(NAME pair_add_runtime_behavior COMMAND pair_add_test)
+add_test(NAME pair_sub_runtime_behavior COMMAND pair_sub_test)
+add_test(NAME pair_arithmetic_controlled_oracle COMMAND pair_arithmetic_test controlled_oracle)
+add_test(NAME pair_arithmetic_public_lifecycles_keyless
+         COMMAND pair_arithmetic_test public_lifecycles_keyless)
+add_test(NAME pair_arithmetic_compatibility_rejections
+         COMMAND pair_arithmetic_test compatibility_rejections)
+add_test(NAME tensor2_valid_arithmetic_immutability COMMAND tensor2_test valid_arithmetic_immutability)
+add_test(NAME tensor2_result_scale_contract COMMAND tensor2_test result_scale_contract)
+add_test(NAME tensor2_right_input_validation COMMAND tensor2_test right_input_validation)
+add_test(NAME tensor2_mutual_compatibility COMMAND tensor2_test mutual_compatibility)
+add_test(NAME tensor2_prearithmetic_key_compatibility COMMAND tensor2_test prearithmetic_key_compatibility)
+add_test(NAME relin2_tensor_validation_order COMMAND relin2_test tensor_validation_order)
+add_test(NAME relin2_insufficient_active_basis COMMAND relin2_test insufficient_active_basis)
+add_test(NAME relin2_missing_eval_key COMMAND relin2_test missing_eval_key)
+add_test(NAME relin2_key_empty COMMAND relin2_test key_empty)
+add_test(NAME relin2_key_null_first COMMAND relin2_test key_null_first)
+add_test(NAME relin2_key_wrong_context COMMAND relin2_test key_wrong_context)
+add_test(NAME relin2_key_wrong_tag COMMAND relin2_test key_wrong_tag)
+add_test(NAME relin2_key_wrong_subtype COMMAND relin2_test key_wrong_subtype)
+add_test(NAME relin2_key_hybrid_a_length COMMAND relin2_test key_hybrid_a_length)
+add_test(NAME relin2_key_hybrid_b_length COMMAND relin2_test key_hybrid_b_length)
+add_test(NAME relin2_key_hybrid_entry_basis COMMAND relin2_test key_hybrid_entry_basis)
+add_test(NAME relin2_key_hybrid_entry_format COMMAND relin2_test key_hybrid_entry_format)
+add_test(NAME relin2_key_bv_zero_digit_a_length COMMAND relin2_test key_bv_zero_digit_a_length)
+add_test(NAME relin2_key_bv_zero_digit_b_length COMMAND relin2_test key_bv_zero_digit_b_length)
+add_test(NAME relin2_key_bv_nonzero_digit_a_length COMMAND relin2_test key_bv_nonzero_digit_a_length)
+add_test(NAME relin2_key_bv_nonzero_digit_b_length COMMAND relin2_test key_bv_nonzero_digit_b_length)
+add_test(NAME relin2_key_bv_zero_digit_entry_basis COMMAND relin2_test key_bv_zero_digit_entry_basis)
+add_test(NAME relin2_key_bv_nonzero_digit_entry_basis COMMAND relin2_test key_bv_nonzero_digit_entry_basis)
+add_test(NAME relin2_key_bv_zero_digit_entry_format COMMAND relin2_test key_bv_zero_digit_entry_format)
+add_test(NAME relin2_key_bv_nonzero_digit_entry_format COMMAND relin2_test key_bv_nonzero_digit_entry_format)
+add_test(NAME relin2_valid_arithmetic_state_immutability COMMAND relin2_test valid_arithmetic_state_immutability)
+add_test(NAME relin2_controlled_witnesses_and_boundaries COMMAND relin2_test controlled_witnesses_and_boundaries)
+add_test(NAME relin2_representative_public_input COMMAND relin2_test representative_public_input)
+add_test(NAME relin2_key_extra_later_valid COMMAND relin2_test key_extra_later_valid)
+add_test(NAME relin2_key_malformed_later_ignored COMMAND relin2_test key_malformed_later_ignored)
+add_test(NAME relin2_hybrid_valid_shapes COMMAND relin2_test hybrid_valid_shapes)
+add_test(NAME relin2_bv_zero_digit_valid_shapes COMMAND relin2_test bv_zero_digit_valid_shapes)
+add_test(NAME relin2_bv_nonzero_digit_valid_shapes COMMAND relin2_test bv_nonzero_digit_valid_shapes)
+add_test(NAME relin2_first_recombined_rcb_validation COMMAND relin2_test first_recombined_rcb_validation)
+add_test(NAME relin2_first_recombined_tensor2_validation COMMAND relin2_test first_recombined_tensor2_validation)
+add_test(NAME relin2_tensor2_requires_first_lifecycle COMMAND relin2_test tensor2_requires_first_lifecycle)
+add_test(NAME rs2_wrong_lifecycle COMMAND rs2_test wrong_lifecycle)
+add_test(NAME rs2_valid_arithmetic_state_immutability
+         COMMAND rs2_test valid_arithmetic_state_immutability)
+add_test(NAME rs2_mixed_tower_format COMMAND rs2_test mixed_tower_format)
+add_test(NAME rs2_untouched_public_pipeline COMMAND rs2_test untouched_public_pipeline)
+add_test(NAME rs2_declared_basis_mismatch COMMAND rs2_test declared_basis_mismatch)
+add_test(NAME rs2_terminal_rejections COMMAND rs2_test terminal_rejections)
+
+add_test(NAME mult2_composition_contract COMMAND mult2_test composition_contract)
+add_test(NAME mult2_e2e_hybrid_real COMMAND mult2_e2e_oracle_test hybrid_real)
+add_test(NAME mult2_e2e_hybrid_complex COMMAND mult2_e2e_oracle_test hybrid_complex)
+add_test(NAME mult2_e2e_bv_real COMMAND mult2_e2e_oracle_test bv_real)
+add_test(NAME mult2_e2e_bv_complex COMMAND mult2_e2e_oracle_test bv_complex)
+add_test(NAME mult2_pair_add_input_hybrid_complex
+         COMMAND mult2_e2e_oracle_test pair_add_input_hybrid_complex)
+add_test(NAME mult2_pair_sub_input_hybrid_complex
+         COMMAND mult2_e2e_oracle_test pair_sub_input_hybrid_complex)
+add_test(NAME precision_client_io_first_mult2_contract
+         COMMAND precision_client_io_first_mult2_contract_test)
+add_test(NAME repeated_mult2_semantic_two_square_contract
+         COMMAND repeated_mult2_semantic_two_square_test)
+add_test(NAME paper_h128_client_keypair_contract
+         COMMAND paper_h128_client_keypair_contract_test)
+add_test(NAME paper_full_eight_square_contract
+         COMMAND paper_full_eight_square_contract_test)
+set_tests_properties(paper_full_eight_square_contract PROPERTIES
+    TIMEOUT 1200
+    RUN_SERIAL TRUE
+    ENVIRONMENT "OMP_NUM_THREADS=2")
+
+# Explicitly built one-operation experimental seam; no original endpoint chain.
+add_test(NAME experimental_precision116_profile_seam
+         COMMAND paper_full_eight_square_contract_test --experimental-precision116-profile-seam)
+set_tests_properties(experimental_precision116_profile_seam PROPERTIES
+    TIMEOUT 1200
+    RUN_SERIAL TRUE
+    ENVIRONMENT "OMP_NUM_THREADS=2")
+
+# Opt-in full eight-square numerical experiment. The default legacy registry
+# and build remain byte-for-byte as above; CI ownership stays with root.
+option(OPENFHE_2023_1788_ENABLE_EXPERIMENTAL_PRECISION116_EIGHT_SQUARE
+    "Register the explicit experimental precision116 eight-square numerical test" OFF)
+if(OPENFHE_2023_1788_ENABLE_EXPERIMENTAL_PRECISION116_EIGHT_SQUARE)
+    add_executable(experimental_precision116_eight_square_test EXCLUDE_FROM_ALL
+        tests/experimental_precision116_eight_square_test.cpp)
+    target_link_libraries(experimental_precision116_eight_square_test PRIVATE openfhe_2023_1788)
+    target_compile_definitions(experimental_precision116_eight_square_test PRIVATE
+        EXPERIMENTAL_PRECISION116_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+    if(MSVC)
+        target_compile_options(experimental_precision116_eight_square_test PRIVATE /W4 /WX)
+    else()
+        target_compile_options(experimental_precision116_eight_square_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME experimental_precision116_eight_square_contract
+        COMMAND experimental_precision116_eight_square_test)
+    set_tests_properties(experimental_precision116_eight_square_contract PROPERTIES
+        TIMEOUT 1200
+        RUN_SERIAL TRUE
+        ENVIRONMENT "OMP_NUM_THREADS=2"
+        LABELS "experimental;precision116;eight-square")
+endif()
+
+# S100 fresh-only attribution: no legacy registry or workflow changes.
+option(OPENFHE_2023_1788_ENABLE_S100_FRESH_ERROR_DIAGNOSTIC
+    "Register the explicit S100 shared-encoding controls and fresh-only diagnostic" OFF)
+if(OPENFHE_2023_1788_ENABLE_S100_FRESH_ERROR_DIAGNOSTIC)
+    add_executable(s100_fresh_error_diagnostic_test EXCLUDE_FROM_ALL
+        tests/s100_fresh_error_diagnostic_test.cpp
+        tests/paper_endpoint_transform.cpp
+        tests/paper_endpoint_scaled_norm.cpp)
+    target_link_libraries(s100_fresh_error_diagnostic_test PRIVATE openfhe_2023_1788)
+    target_compile_definitions(s100_fresh_error_diagnostic_test PRIVATE
+        S100_FRESH_ERROR_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+    if(MSVC)
+        target_compile_options(s100_fresh_error_diagnostic_test PRIVATE /W4 /WX)
+    else()
+        target_compile_options(s100_fresh_error_diagnostic_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME s100_encoding_inspection_contract
+        COMMAND s100_fresh_error_diagnostic_test --controls)
+    add_test(NAME s100_fresh_error_diagnostic
+        COMMAND s100_fresh_error_diagnostic_test --fresh)
+    set_tests_properties(s100_encoding_inspection_contract PROPERTIES
+        TIMEOUT 120 RUN_SERIAL TRUE ENVIRONMENT "OMP_NUM_THREADS=2"
+        LABELS "s100;encoding-inspection;opt-in")
+    set_tests_properties(s100_fresh_error_diagnostic PROPERTIES
+        TIMEOUT 1200 RUN_SERIAL TRUE ENVIRONMENT "OMP_NUM_THREADS=2"
+        LABELS "s100;fresh-only;diagnostic;opt-in")
+endif()
+
+# Additive, independently named domain contract; original S100 FAIL is retained.
+# Execution uses a separately reviewed, isolated one-shot path.
+option(OPENFHE_2023_1788_ENABLE_S100_ANNULUS125
+    "Register s100-annulus125-e80-v1 (not the original S100 stress contract)" OFF)
+if(OPENFHE_2023_1788_ENABLE_S100_ANNULUS125)
+    add_executable(s100_annulus125_eight_square_test EXCLUDE_FROM_ALL
+        tests/s100_annulus125_eight_square_test.cpp
+        tests/paper_endpoint_transform.cpp
+        tests/paper_endpoint_scaled_norm.cpp)
+    target_link_libraries(s100_annulus125_eight_square_test PRIVATE openfhe_2023_1788)
+    target_compile_definitions(s100_annulus125_eight_square_test PRIVATE
+        S100_ANNULUS125_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+    if(MSVC)
+        target_compile_options(s100_annulus125_eight_square_test PRIVATE /W4 /WX)
+    else()
+        target_compile_options(s100_annulus125_eight_square_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME s100_annulus125_eight_square_v1
+        COMMAND s100_annulus125_eight_square_test --output
+            "${CMAKE_CURRENT_BINARY_DIR}/s100-annulus125-${LOSSLESS_IO_SOURCE_COMMIT}.tsv")
+    set_tests_properties(s100_annulus125_eight_square_v1 PROPERTIES
+        TIMEOUT 1200 RUN_SERIAL TRUE ENVIRONMENT "OMP_NUM_THREADS=2"
+        LABELS "s100;annulus125;eight-square;opt-in;not-table3-statistics")
+endif()
+
+# INITIAL-LIFT-NONWRAP-01 candidate. OFF and excluded from all/default CTest.
+option(OPENFHE1788_PUBLIC_ENCODER_DIAGNOSTIC "Build the key-free original S100 encoding probe" OFF)
+if(OPENFHE1788_PUBLIC_ENCODER_DIAGNOSTIC)
+    add_executable(public_s100_encoding_dump EXCLUDE_FROM_ALL diagnostics/public_s100_encoding_dump.cpp)
+    target_include_directories(public_s100_encoding_dump PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+    target_link_libraries(public_s100_encoding_dump PRIVATE openfhe_2023_1788)
+    target_compile_definitions(public_s100_encoding_dump PRIVATE OPENFHE1788_SOURCE_COMMIT="${OPENFHE1788_SOURCE_COMMIT}")
+endif()

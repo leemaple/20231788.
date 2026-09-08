@@ -1,0 +1,72 @@
+{
+  "status": "PASS",
+  "author_only_replay_commands": [
+    {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-B",
+        "/mnt/data/INITIAL-LIFT-NONWRAP-01/checks/run_checks.py",
+        "--input-dir",
+        "/mnt/data/INITIAL-LIFT-NONWRAP-01/checks/bound_source",
+        "--out-dir",
+        "/mnt/data/initial_lift_replay_03/results"
+      ],
+      "exit": 0,
+      "started_utc": "2026-09-08T17:49:10.308989+00:00",
+      "ended_utc": "2026-09-08T17:49:11.025158+00:00",
+      "stdout_sha256": "8cc2c4bfc3363723ec56fbd8057cb35e32e32d2f3c71d992af701c18882c0abf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-B",
+        "/mnt/data/INITIAL-LIFT-NONWRAP-01/checks/check_candidate_scalars.py",
+        "--out",
+        "/mnt/data/initial_lift_replay_03/results/candidate_scalar_checks.json"
+      ],
+      "exit": 0,
+      "started_utc": "2026-09-08T17:49:11.025292+00:00",
+      "ended_utc": "2026-09-08T17:49:11.726556+00:00",
+      "stdout_sha256": "2d4db5f869880960ef0173412ce8346b7b4c081d91e383e20c41fd50dbbe866b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-B",
+        "/mnt/data/INITIAL-LIFT-NONWRAP-01/checks/check_candidate_static.py",
+        "--input-dir",
+        "/mnt/data/INITIAL-LIFT-NONWRAP-01/checks/bound_source",
+        "--out",
+        "/mnt/data/initial_lift_replay_03/results/candidate_static_checks.json"
+      ],
+      "exit": 0,
+      "started_utc": "2026-09-08T17:49:11.726615+00:00",
+      "ended_utc": "2026-09-08T17:49:12.265629+00:00",
+      "stdout_sha256": "f0f2615984ce2512802ecdeb095bfa8be19a1dbcf9b4911b81dd9a3f1f1f6986",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "byte_identical_result_files": [
+    "K1_negative_control.json",
+    "candidate_scalar_checks.json",
+    "candidate_static_checks.json",
+    "conditional_coarse_c25.json",
+    "conditional_spectral_certificate.json",
+    "results.json",
+    "summary.tsv"
+  ],
+  "claim_dependency_graph_acyclic": true,
+  "claims": 20,
+  "assumptions": 6,
+  "source_rows_hash_range_and_read_request_coverage": 51,
+  "original_byte_snapshots_verified": 8,
+  "outward_decimal_rational_records": 168,
+  "Python_files_AST_parsed_not_compiled": 8,
+  "actual_encoder_cap_still_unknown": true,
+  "candidate_transform_TDD_executed": false,
+  "CXX_compiled_or_run": false,
+  "FFT_NTT_or_sampling_calls": 0,
+  "input_project_writes": 0
+}

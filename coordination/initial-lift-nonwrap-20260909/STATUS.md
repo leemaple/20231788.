@@ -1,4 +1,16 @@
-# Initial lift/nonwrap — Pro live; independent initialization contract accepted conditionally
+# Initial lift/nonwrap — Pro returned; independent return reviews pending
+
+## Latest checkpoint — 2026-09-09 02:12 CST
+
+Pro terminal observed02:05:10CST, displayed Worked for60m2s, no Stop answering. Downloaded final ZIP once; 238632bytes/80regular members/SHA241b123f520afc8cefe616435e0496c52d3899b0a9f4b5525d4f63562f87cb51 verified. RETURN_INTAKE.json records all-member CRC/size/hash/input binding, four Gitblob-equal source snapshots and decoded Gitleaks8.30.1 zero findings. Initial targeted scan stopped on the report's literal token regex prefix; root inspected and narrowly masked that exact hash-bound regex literal for targeted scanning only, retaining all original bytes and scanning them unmasked with Gitleaks. No returned code executed before reading.
+
+Root fully read the Chinese proof, claims, source map, ledger, candidate design/NEXT_ACTION, both patches, transform test file, all three replayed check scripts and the imported interval candidate. Root ran only the three bounded algebra/scalar/static checks (exit0 each), and all seven result files are byte-identical to Pro's originals. No transform/C++/sampling/FHE/CI. An additional read-only root audit verified51 source-map hashes/text ranges against the original sent ZIP and8 exact snapshots. Browser space213 closed after terminal/download retention, done:true; conversation URL remains recoverable.
+
+Main return uses encoded cap127/128 and a normalized recurrence, not the earlier root fresh-phase cap255/256. Its smaller final bound is not a precision improvement or changed-input experiment. Actual encoded cap and historical provenance equivalence remain unknown. Main proof/source review owner `/root/relin2_source_contract_map` owns PRO_RETURN_MATH_REVIEW.md; independent new GPT6Astra/high requested-unverified reviewer `/root/public_encoder_candidate_review` owns PUBLIC_ENCODER_CANDIDATE_REVIEW.md. Both are bounded read-only reviews apart from their owned notes. Root retains integration and execution responsibility. Do not run candidate C++ or transforms until review findings are resolved and a scoped remote TDD action is recorded.
+
+This goal turn is PROGRESS: terminal material received, safely retained and bounded checks independently replayed. Previous turns were VERIFIED WAIT on a live Pro handle, not blocker turns. Full paper goal remains active and originalS100E80FAIL unchanged.
+
+Candidate reviewer has already found a root-verified P1: returned CMake line364 references unset OPENFHE1788_SOURCE_COMMIT instead of the existing LOSSLESS_IO_SOURCE_COMMIT. This would produce empty build identity and fail parser acceptance after encoding. Hold actual diagnostic execution until the binding and early identity validation are fixed/tested. Final two independent reviews are still pending.
 
 ## Latest checkpoint — 2026-09-09 01:42 CST
 

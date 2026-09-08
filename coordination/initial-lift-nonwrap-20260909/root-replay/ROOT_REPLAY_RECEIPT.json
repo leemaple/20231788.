@@ -1,0 +1,92 @@
+{
+  "utc": "2026-09-08T18:10:13.092641+00:00",
+  "executions": [
+    {
+      "command": [
+        "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-I",
+        "/Users/lifeng/Documents/20231788-openfhe-initial-lift-nonwrap-20260909/coordination/initial-lift-nonwrap-20260909/pro/checks/run_checks.py",
+        "--input-dir",
+        "/Users/lifeng/Documents/20231788-openfhe-initial-lift-nonwrap-20260909/coordination/initial-lift-nonwrap-20260909/pro/checks/bound_source",
+        "--out-dir",
+        "/Users/lifeng/Documents/20231788-openfhe-initial-lift-nonwrap-20260909/coordination/initial-lift-nonwrap-20260909/root-replay"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.176828
+    },
+    {
+      "command": [
+        "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-I",
+        "/Users/lifeng/Documents/20231788-openfhe-initial-lift-nonwrap-20260909/coordination/initial-lift-nonwrap-20260909/pro/checks/check_candidate_scalars.py",
+        "--out",
+        "/Users/lifeng/Documents/20231788-openfhe-initial-lift-nonwrap-20260909/coordination/initial-lift-nonwrap-20260909/root-replay/candidate_scalar_checks.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.113604
+    },
+    {
+      "command": [
+        "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-I",
+        "/Users/lifeng/Documents/20231788-openfhe-initial-lift-nonwrap-20260909/coordination/initial-lift-nonwrap-20260909/pro/checks/check_candidate_static.py",
+        "--input-dir",
+        "/Users/lifeng/Documents/20231788-openfhe-initial-lift-nonwrap-20260909/coordination/initial-lift-nonwrap-20260909/pro/checks/bound_source",
+        "--out",
+        "/Users/lifeng/Documents/20231788-openfhe-initial-lift-nonwrap-20260909/coordination/initial-lift-nonwrap-20260909/root-replay/candidate_static_checks.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.03355
+    }
+  ],
+  "comparisons": [
+    {
+      "file": "results.json",
+      "bytes": 7458,
+      "sha256": "1c4cd18a79de6f9cc0e48126f4c1205fe598add3a307669036d0522c7a9a71c9",
+      "byte_identical": true
+    },
+    {
+      "file": "conditional_spectral_certificate.json",
+      "bytes": 69839,
+      "sha256": "810b8b62aeb70563dcd8e640af5d95c1afdac54ceab2f6568e475e02a2421e47",
+      "byte_identical": true
+    },
+    {
+      "file": "conditional_coarse_c25.json",
+      "bytes": 15546,
+      "sha256": "f0d588276b1d19fd170ac045acf61c2247f26ede5423da2cdb571c3f4ad2e88e",
+      "byte_identical": true
+    },
+    {
+      "file": "K1_negative_control.json",
+      "bytes": 69822,
+      "sha256": "efc0d5684f7b9885bb5c438cbda7042358ff0a2667eaaea73b873e8559c13937",
+      "byte_identical": true
+    },
+    {
+      "file": "summary.tsv",
+      "bytes": 654,
+      "sha256": "dd596f40f3f42bab802d7ea7128ce37b4fea812a50749e642c75b1254d5bf679",
+      "byte_identical": true
+    },
+    {
+      "file": "candidate_scalar_checks.json",
+      "bytes": 1174,
+      "sha256": "e7d1e905ed428f15bdd2fea8e392a767e56635140d21b4c9d3c562503b716a7f",
+      "byte_identical": true
+    },
+    {
+      "file": "candidate_static_checks.json",
+      "bytes": 418,
+      "sha256": "5c8ce757e79214b4a8af7012d0b452fea091c1b2a489580a1ba62003be5a7ebd",
+      "byte_identical": true
+    }
+  ],
+  "status": "PASS",
+  "scope": "9 finite algebra groups; 16384 public scalar formula values; 3 rational eight-step budgets; 7500 scalar interval endpoint assertions; 13 parser negatives; 2 in-memory patches. No transforms, crypto, sampling, C++ or CI.",
+  "semantic_review": "PENDING independent return reviews; arithmetic replay is not E80 or K-CAP verification"
+}
