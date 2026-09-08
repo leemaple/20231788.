@@ -60,6 +60,10 @@ def main():
     for path in tree(SOURCE, 'coordination/initial-lift-nonwrap-20260909/pro',
                      'coordination/initial-lift-nonwrap-20260909/root-replay',
                      'coordination/public-s100-encoder-cap-20260909'):
+        # Historical scanner regex text triggers the strict token-prefix gate.
+        # Omit that unnecessary report; never weaken the scan or alter evidence.
+        if path == 'coordination/initial-lift-nonwrap-20260909/pro/evidence/RETURN_TARGETED_SCAN.json':
+            continue
         add_git(SOURCE, path)
     for name in ('ADOPTED_CONTRACT.md', 'ROOT_RETURN_REVIEW.md', 'PRO_RETURN_MATH_REVIEW.md',
                  'CANONICAL_REVIEW_DISPOSITION.md', 'PUBLIC_ENCODER_CANDIDATE_REVIEW.md', 'RETURN_INTAKE.json'):
@@ -91,6 +95,7 @@ def main():
         'source_commit': SOURCE, 'task_commit': head, 'branch': BRANCH, 'tracked_state': 'clean',
         'official_pin': 'df495ba2e91739a6dc8f1de254fc5a41155ce504',
         'historical_manifests_are_provenance_not_current_path_hashes': True,
+        'omitted_historical_scan_report': 'coordination/initial-lift-nonwrap-20260909/pro/evidence/RETURN_TARGETED_SCAN.json; literal regex prefix, not task evidence; original Git bytes unchanged',
         'excluded': ['quarantined implementations', 'modified local OpenFHE', 'build outputs',
                      'runtime/browser state', 'credentials', 'nested archives', 'secret-bearing/full-slot ciphertext captures'],
         'selected_targeted_scan': selected_targeted, 'selected_gitleaks_scan': selected_gitleaks,
