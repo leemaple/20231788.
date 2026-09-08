@@ -1,0 +1,84 @@
+{
+  "status": "PASS",
+  "checked_at_utc": "2026-09-08T04:51:27.731298+00:00",
+  "python_version": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "scope": "read-only delivery QA; no numerical rerun or encrypted experiment",
+  "checks": {
+    "first_pass": {
+      "sha256": "eaea61c388cadb419097917d16ac93edf7abbce2833a87bf03e7389b9ef444e5",
+      "bound_files_unchanged": 14,
+      "freeze_utc": "2026-09-08T04:33:32.438385+00:00",
+      "first_author_read_utc": "2026-09-08T04:33:45.651214+00:00",
+      "pre_freeze_read_ranges": 80,
+      "all_read_ranges": 100,
+      "ordering_consistent": true,
+      "trusted_external_timestamp": false
+    },
+    "input": {
+      "bytes": 13743164,
+      "sha256": "c30b6e84a53712792cfda4ec17da7b434ee745aebad3949916a90fa6d528a0b1",
+      "manifest_sha256": "6cbd05178b788ead26ea12c1032c6fa8f22cad77e65488886a8d1b8f74fbbcdc",
+      "regular_members_unchanged": 310,
+      "CRC": "PASS",
+      "source_commit": "03f37b6ec7b8d6d87ff68d15d2843c3aa9ac6a9b"
+    },
+    "two_precision_comparison": {
+      "both_new_PASS": true,
+      "both_old_platforms_still_FAIL": true,
+      "differences": {
+        "new": {
+          "E0_obs": "3.9825417352276242246037045721041934026022968333774E-205",
+          "E8_obs": "8.30692788627768484461587160472451529505721806079E-207",
+          "E8_prod": "7.80077724332489828363171737629473389018474418183E-207",
+          "I8_obs": "1.308936224149020970474585403828784193273289607690658E-203",
+          "A8_obs": "2.45878504524835436433366405049999358299241708424123E-206"
+        },
+        "old": {
+          "linux": {
+            "E0": "2.9924013066646093108782079741903710067134866035569E-205",
+            "E8": "2.9052187070941707785942282416043013459653158126618E-204",
+            "I8": "4.567117622260284791505522910116113425440466392756716E-202",
+            "A8": "4.822075560852240582974383154146931674769174691514819E-204"
+          },
+          "windows": {
+            "E0": "1.5434230062421661483102901073668881733763130472323E-205",
+            "E8": "4.768854687801488669988246108753068233972930321929E-205",
+            "I8": "3.375581524521760825977706240484073800731337507154608E-202",
+            "A8": "1.2461253985776899857183427611140982714189294275994452E-203"
+          }
+        }
+      },
+      "not_a_formal_error_proof": true
+    },
+    "real_vs_synthetic": {
+      "negative_tests_separate": true,
+      "historical_receiver_expected_RED": true,
+      "current_receiver_GREEN": true,
+      "production_RED_claimed": false,
+      "new_encrypted_runs": 0
+    },
+    "documents_and_scripts": {
+      "required_reports": [
+        "FIRST_PASS.md",
+        "REVIEW.md",
+        "RESULT_FOR_CRYPTO_EXPERT.zh-CN.md",
+        "NEXT_ACTION.md",
+        "EXECUTION_LEDGER.md",
+        "REPRODUCE.md",
+        "EXTERNAL_REFERENCE_NOTES.md"
+      ],
+      "AST_parsed_scripts": [
+        "independent_boundaries.py",
+        "independent_scalar.py",
+        "post_author_scalar.py",
+        "receiver_regression.py",
+        "replay_old_s100.py",
+        "verify_delivery.py",
+        "verify_packet.py"
+      ],
+      "JSON_parse": "PASS"
+    },
+    "output_manifest": "NOT_YET_CREATED_AT_INITIAL_QA; subsequently verified during ZIP packaging"
+  }
+}
+process_exit=0
