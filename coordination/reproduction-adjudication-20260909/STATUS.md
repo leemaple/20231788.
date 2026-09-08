@@ -1,5 +1,7 @@
 # Reproduction adjudication handoff
 
+**Successor adopted:** [PUBLIC-S100-ECD-CELL-01](../public-s100-ecd-cell-20260909/ADOPTED_RESULT.zh-CN.md) completed on reviewed GitHub sourcec5cf80b/run34275429052. All32768current-p rounding cells certified; root artifact/source/row intake and separate mathematical adoption PASS. Encoding-only bound now applies to this p. The original Pro return remains immutable; earlier pending checkpoints below are historical. Original S100 E80 remains FAIL and broader reproduction stays active.
+
 **Latest checkpoint: TERMINAL RETURN / independent adoption in progress.** Pro terminal observed 2026-09-09 04:10:29.733 Asia/Shanghai (displayed Worked for 43m59s), after one uninterrupted submission. Downloaded once, all 42 files preserved, exact manifest/14 retained Git bindings/strict secret scans PASS. Task space214 closed only after verified download. No live Pro thought remains. See [return review](RETURN_REVIEW.md) and RETURN_INTAKE.json. Scalar replay has 53 PASS checks with matching mathematical results; candidate transforms remain NOT RUN. No production arithmetic defect identified; original S100 E80 remains FAIL. Next bounded work is independent all-coefficient nearest-rounding certification, conditional on review and fixing candidate harness findings. Earlier RUNNING/preparation checkpoints below are historical.
 
 2026-09-09 Asia/Shanghai. Source/evidence snapshot: 31e24bec1eb2db5d13de3b442a9e909e26db7206, codex/public-encoder-cap-20260909, clean and equal to upstream before preparation.
