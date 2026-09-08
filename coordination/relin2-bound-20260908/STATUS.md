@@ -1,0 +1,20 @@
+# Relin2 implementation-bound review — LIVE
+
+2026-09-08 23:27:42 CST latest browser observation: the exact conversation [执行误差契约推导](https://chatgpt.com/c/6aa0282e-7014-83ec-8a1f-973111a7a29d) still shows Stop answering. Its visible progress reports attachment identity verification, reading Relin2/key generation/CKKS source, and review of relinearization bounds. The page claims 500 members / 499 manifest payloads / 491 Git blobs verified; this is Pro progress, not a returned proof independently accepted by root. No final archive yet.
+
+## Ownership and next action
+
+- Pro main derivation: same task space212/tab9533F30F517B38F4D587EE28C715E3E9, one submission23:22:22. Highest visible Pro5of5; backend not attested. Preserve its thought, no refresh/stop/retry/resubmission.
+- Independent source map: `/root/relin2_source_contract_map`, GPT-5.6Sol/high requested, running per collaboration status. Output owned only `INDEPENDENT_SOURCE_MAP.md`; deliberately excluded from initial Pro packet.
+- Root: integration and independent algebra. `ROOT_ALGEBRA_DRAFT.md` was authored before the Pro return and not sent into its live context. `check_root_algebra.py` executed once, exit0; output `ROOT_ALGEBRA_CHECK.json`. Its checks cover a direct recombination scalar model, rejection of a missing first-coordinate error, a two-coordinate nonadditivity counterexample, and modular/centered wrap distinction. The final rational upper-bound evaluation is explicitly conditional on unverified assumptions. No OpenFHE, crypto, FFT/NTT or sampling.
+- Next: read completed independent map when available, then continue the same Pro conversation's read-only monitoring; safely intake returned ZIP, validate identities and fully read proof/check scripts before any execution. Compare against independent derivations, resolve material findings, then select any genuinely needed Windows/GitHub diagnostic. Nothing is dispatched to CI now.
+
+## Unchanged scientific boundary
+
+Runtime source still a4b815a. Original S100 E80FAIL remains; S116changed-profilePASS and annuluschanged-input/new-samplePASS are separate. Relin2 contract work can close a mathematical correspondence gap, but it does not promise to eliminate fresh error or complete the entire paper reproduction. No production/test/CMake/workflow change; no new timer; no author contact. Fable unavailable until a real recovery signal, Codex owns fallback without repeated quota probes.
+
+## Continuation audit
+
+Previous turn: PROGRESS — five historical job build records were retrieved and published at bbd4e73, establishing four actual OpenMP-enabled dependency builds and distinguishing cached annulus provenance.
+
+This turn: PROGRESS — an exact-source mathematical task was packaged, sanitized, submitted once and confirmed live with substantive source-reading progress; root also completed independent bounded algebra checks. Full goal remains active, not complete and not blocked.
