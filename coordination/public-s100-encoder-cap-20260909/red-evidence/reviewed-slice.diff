@@ -1,0 +1,589 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 097b911..bcefdac 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -354,3 +354,12 @@ if(OPENFHE_2023_1788_ENABLE_S100_ANNULUS125)
+         TIMEOUT 1200 RUN_SERIAL TRUE ENVIRONMENT "OMP_NUM_THREADS=2"
+         LABELS "s100;annulus125;eight-square;opt-in;not-table3-statistics")
+ endif()
++
++# Key-free public-encoding evidence; never part of all/default CTest.
++option(OPENFHE1788_PUBLIC_ENCODER_DIAGNOSTIC "Build the key-free original S100 encoding probe" OFF)
++if(OPENFHE1788_PUBLIC_ENCODER_DIAGNOSTIC)
++    add_executable(public_s100_encoding_dump EXCLUDE_FROM_ALL diagnostics/public_s100_encoding_dump.cpp)
++    target_include_directories(public_s100_encoding_dump PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests)
++    target_link_libraries(public_s100_encoding_dump PRIVATE openfhe_2023_1788)
++    target_compile_definitions(public_s100_encoding_dump PRIVATE OPENFHE1788_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
++endif()
+diff --git a/diagnostics/certify_public_encoder.py b/diagnostics/certify_public_encoder.py
+new file mode 100644
+index 0000000..52e1c88
+--- /dev/null
++++ b/diagnostics/certify_public_encoder.py
+@@ -0,0 +1,287 @@
++#!/usr/bin/env python3
++"""Reviewed successor of the INITIAL-LIFT-NONWRAP-01 transform candidate.
++
++All numerical endpoints are integers on a 2^-224 grid. The CLI computes one
++interval forward canonical transform of PUBLIC pre-residue coefficients, not
++OpenFHE/NTT/decryption. Import has no transforms, sampling or I/O side effects.
++Only the scalar arithmetic / parser helpers were tested in the author turn.
++"""
++from __future__ import annotations
++import argparse
++from dataclasses import dataclass
++from fractions import Fraction
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import re
++import stat
++import sys
++
++BITS = 224
++UNIT = 1 << BITS
++N = 32768
++SCALE = 1 << 100
++BASE_COMMIT = 'a4b815a733efe81897325e2a8e4c826a4ebfa439'
++Q = [1125899904679937,1125899903827969,1152921504598720513,
++     1152921504597016577,1152921504595968001,1152921504595640321,
++     1152921504593412097,1152921504592822273,1152921504592429057,
++     1152921504589938689,1099510054913]
++ROOTS = [26113207984,150640639383,100545759574150,31693996050849,
++         88651361085495,9679305630873,24428769072221,18776242964106,
++         5821397352863,33888991361320,121567553]
++KEYS = {'schema','profile','base_source_commit','build_source_commit','boost_version',
++        'compiler','n','slots','gap','cyclotomic_order','scale_num','scale_den',
++        'full_moduli','full_roots','encoding_calls','crypto_calls','coefficients'}
++
++
++def ceil_div(a: int, b: int) -> int:
++    if b <= 0: raise ValueError('positive divisor required')
++    return -((-a)//b)
++
++
++@dataclass(frozen=True)
++class Interval:
++    lo: int
++    hi: int
++
++    def __post_init__(self):
++        if type(self.lo) is not int or type(self.hi) is not int or self.lo > self.hi:
++            raise ValueError('invalid interval endpoints')
++
++    @classmethod
++    def rational(cls, p: int, q: int=1) -> 'Interval':
++        if q <= 0: raise ValueError('positive denominator required')
++        return cls((p*UNIT)//q, ceil_div(p*UNIT,q))
++
++    def __add__(self, other: 'Interval') -> 'Interval':
++        return Interval(self.lo+other.lo,self.hi+other.hi)
++
++    def __neg__(self) -> 'Interval':
++        return Interval(-self.hi,-self.lo)
++
++    def __sub__(self, other: 'Interval') -> 'Interval':
++        return self+-other
++
++    def __mul__(self, other: 'Interval') -> 'Interval':
++        products=(self.lo*other.lo,self.lo*other.hi,self.hi*other.lo,self.hi*other.hi)
++        return Interval(min(products)//UNIT,ceil_div(max(products),UNIT))
++
++    def divide_positive_integer(self, divisor: int) -> 'Interval':
++        if divisor <= 0: raise ValueError('positive divisor required')
++        return Interval(self.lo//divisor,ceil_div(self.hi,divisor))
++
++    def square(self) -> 'Interval':
++        upper=max(self.lo*self.lo,self.hi*self.hi)
++        lower=0 if self.lo<=0<=self.hi else min(self.lo*self.lo,self.hi*self.hi)
++        return Interval(lower//UNIT,ceil_div(upper,UNIT))
++
++    def expanded(self, radius: Fraction) -> 'Interval':
++        if radius < 0: raise ValueError('nonnegative radius required')
++        r=ceil_div(radius.numerator*UNIT,radius.denominator)
++        return Interval(self.lo-r,self.hi+r)
++
++    def contains(self, x: Fraction) -> bool:
++        return self.lo*x.denominator <= x.numerator*UNIT <= self.hi*x.denominator
++
++    def json(self) -> dict:
++        return {'lower_numerator':str(self.lo),'upper_numerator':str(self.hi),
++                'denominator':str(UNIT)}
++
++
++ZERO=Interval(0,0)
++ONE=Interval(UNIT,UNIT)
++# Complex intervals are (real interval, imaginary interval).
++ComplexInterval=tuple[Interval,Interval]
++
++
++def cadd(a: ComplexInterval,b: ComplexInterval) -> ComplexInterval:
++    return a[0]+b[0],a[1]+b[1]
++
++
++def csub(a: ComplexInterval,b: ComplexInterval) -> ComplexInterval:
++    return a[0]-b[0],a[1]-b[1]
++
++
++def cmul(a: ComplexInterval,b: ComplexInterval) -> ComplexInterval:
++    return a[0]*b[0]-a[1]*b[1],a[0]*b[1]+a[1]*b[0]
++
++
++def atan_reciprocal_bounds(denominator: int) -> tuple[Fraction,Fraction]:
++    if denominator < 2: raise ValueError('alternating convergence domain')
++    terms=96
++    partial=sum((Fraction((-1)**j,(2*j+1)*denominator**(2*j+1))
++                 for j in range(terms)),Fraction(0))
++    adjacent=partial+Fraction((-1)**terms,(2*terms+1)*denominator**(2*terms+1))
++    return min(partial,adjacent),max(partial,adjacent)
++
++
++def pi_interval() -> Interval:
++    a,b=atan_reciprocal_bounds(5)
++    c,d=atan_reciprocal_bounds(239)
++    lo,hi=16*a-4*d,16*b-4*c
++    lower=Interval.rational(lo.numerator,lo.denominator)
++    upper=Interval.rational(hi.numerator,hi.denominator)
++    return Interval(lower.lo,upper.hi)
++
++
++def sincos_small(x: Interval) -> ComplexInterval:
++    """Returns (cos(x),sin(x)); |x|<=1. Taylor remainder is explicitly added."""
++    bound=Fraction(max(abs(x.lo),abs(x.hi)),UNIT)
++    if bound>1: raise ValueError('Taylor argument outside fixed certified domain')
++    powers=[ONE]
++    for _ in range(63):powers.append(powers[-1]*x)
++    cosine=ZERO;sine=ZERO
++    for k in range(32):
++        cosine=cosine+powers[2*k]*Interval.rational((-1)**k,math.factorial(2*k))
++        sine=sine+powers[2*k+1]*Interval.rational((-1)**k,math.factorial(2*k+1))
++    return (cosine.expanded(bound**64/math.factorial(64)),
++            sine.expanded(bound**65/math.factorial(65)))
++
++
++def classify_cap(enclosure: Interval) -> str:
++    """Classify a squared-modulus enclosure against the frozen exact cap."""
++    if enclosure.hi*16384 <= 16129*UNIT:
++        return 'ENCODER_CAP_CERTIFIED'
++    if enclosure.lo*16384 > 16129*UNIT:
++        return 'ENCODER_CAP_REFUTED'
++    return 'INCONCLUSIVE_INTERVAL'
++
++
++def canonical_bounds(coefficients: list[int], scale: int) -> dict:
++    """ROOT-ONLY TRANSFORM. Includes all N odd 2N-th roots (conjugates too)."""
++    n=len(coefficients)
++    if n<4 or n>N or n&(n-1) or scale<=0:
++        raise ValueError('fixed bounded power-of-two transform domain')
++    seed=sincos_small(pi_interval().divide_positive_integer(n))
++    roots=[(ONE,ZERO)]
++    for _ in range(1,n): roots.append(cmul(roots[-1],seed))
++    data=[cmul((Interval.rational(c,scale),ZERO),roots[j])
++          for j,c in enumerate(coefficients)]
++    # Bit-reversal, then positive-exponent radix-2 DIT. This yields
++    # sum_j (p_j/S) exp(pi*i*j/n) exp(2*pi*i*j*k/n).
++    j=0
++    for i in range(1,n):
++        bit=n>>1
++        while j&bit:j^=bit;bit>>=1
++        j^=bit
++        if i<j:data[i],data[j]=data[j],data[i]
++    length=2;butterflies=0
++    while length<=n:
++        half=length//2;stride=2*(n//length)
++        for start in range(0,n,length):
++            for j in range(half):
++                u=data[start+j]
++                t=cmul(data[start+j+half],roots[j*stride])
++                data[start+j]=cadd(u,t)
++                data[start+j+half]=csub(u,t)
++                butterflies+=1
++        length*=2
++    squares=[z[0].square()+z[1].square() for z in data]
++    low_index=max(range(n),key=lambda i:squares[i].lo)
++    high_index=max(range(n),key=lambda i:squares[i].hi)
++    enclosure=Interval(squares[low_index].lo,squares[high_index].hi)
++    cap_squared=Fraction(127,128)**2
++    status=classify_cap(enclosure)
++    return {'status':status,'maximum_squared_modulus':enclosure.json(),
++            'cap_squared':{'numerator':str(cap_squared.numerator),'denominator':str(cap_squared.denominator)},
++            'max_lower_root_index':low_index,'max_upper_root_index':high_index,
++            'maximum_component_interval_width_numerator':str(max(max(z[0].hi-z[0].lo,z[1].hi-z[1].lo) for z in data)),
++            'root_seed':{'real':seed[0].json(),'imag':seed[1].json()},
++            'n':n,'all_odd_roots_including_conjugates':True,
++            'butterflies':butterflies,'root_multiplications':n-1,
++            'forward_canonical_transforms':1,'grid_bits':BITS}
++
++
++def integer_string(value: object) -> int:
++    if not isinstance(value,str) or len(value)>200 or not re.fullmatch(r'0|-?[1-9][0-9]*',value):
++        raise ValueError('noncanonical or oversized integer string')
++    return int(value)
++
++
++def validate_payload(data: dict) -> list[int]:
++    if not isinstance(data,dict) or set(data)!=KEYS:
++        raise ValueError('exact public-only schema required; unknown/missing fields rejected')
++    fixed={'schema':'initial-lift-public-encoding-v1','profile':'original-s100-near-unit-v1',
++           'base_source_commit':BASE_COMMIT,'n':N,'slots':N//2,'gap':1,'cyclotomic_order':2*N,
++           'scale_num':str(SCALE),'scale_den':'1','full_moduli':list(map(str,Q)),
++           'full_roots':list(map(str,ROOTS)),'encoding_calls':1,'crypto_calls':0}
++    for key,expected in fixed.items():
++        if data[key]!=expected or type(data[key]) is not type(expected):
++            raise ValueError('wrong frozen metadata: '+key)
++    if not isinstance(data['build_source_commit'],str) or not re.fullmatch('[0-9a-f]{40}',data['build_source_commit']):
++        raise ValueError('actual build source commit must be recorded (not unknown)')
++    for key in ('compiler','boost_version'):
++        if not isinstance(data[key],str) or not 1<=len(data[key])<=200 or any(ord(c)<32 for c in data[key]):
++            raise ValueError('invalid nonsecret build metadata')
++    if type(data['coefficients']) is not list or len(data['coefficients'])!=N:
++        raise ValueError('exactly N public coefficients required')
++    coefficients=[integer_string(x) for x in data['coefficients']]
++    modulus=math.prod(Q)
++    if any(2*abs(c)>=modulus for c in coefficients):
++        raise ValueError('encoder centered coefficient guard violated')
++    return coefficients
++
++
++def no_duplicates(pairs):
++    out={}
++    for key,value in pairs:
++        if key in out: raise ValueError('duplicate JSON field')
++        out[key]=value
++    return out
++
++
++def read_public_bytes(path: Path) -> bytes:
++    """Bounded regular-file input for the Linux runner / macOS scalar checks.
++
++    NOFOLLOW rejects symlinks atomically; NONBLOCK prevents a substituted FIFO
++    from blocking before the descriptor's regular-file check. Unsupported hosts
++    fail explicitly rather than silently weakening this input contract.
++    """
++    descriptor=os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++    with os.fdopen(descriptor, 'rb') as stream:
++        if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
++            raise ValueError('regular nonsymlink public input required')
++        raw=stream.read(12_000_001)
++    if len(raw)>12_000_000 or not raw.endswith(b'\n') or b'\r' in raw:
++        raise ValueError('bounded LF-terminated complete public JSON required')
++    return raw
++
++
++def main() -> int:
++    parser=argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--public-encoding',required=True,type=Path)
++    parser.add_argument('--out',required=True,type=Path)
++    parser.add_argument('--allow-transform-after-root-review',action='store_true')
++    args=parser.parse_args()
++    if not args.allow_transform_after_root_review:
++        parser.error('transform execution is reserved for the reviewed root successor')
++    if args.out.exists():raise ValueError('refusing to overwrite aggregate certificate')
++    raw=read_public_bytes(args.public_encoding)
++    try:
++        payload=json.loads(raw.decode('utf-8'),object_pairs_hook=no_duplicates)
++    except RecursionError as error:
++        raise ValueError('JSON nesting exceeds decoder limit') from error
++    coefficients=validate_payload(payload)
++    result=canonical_bounds(coefficients,SCALE)
++    result.update(schema='initial-lift-public-cap-result-v1',
++        public_payload_sha256=hashlib.sha256(raw).hexdigest(),
++        coefficient_stream_sha256=hashlib.sha256(''.join(str(c)+'\n' for c in coefficients).encode('ascii')).hexdigest(),
++        maximum_absolute_coefficient=str(max(map(abs,coefficients))),
++        base_source_commit=BASE_COMMIT,build_source_commit=payload['build_source_commit'],
++        boost_version=payload['boost_version'],compiler=payload['compiler'],
++        source_build_origin='REQUIRES_SEPARATE_ROOT_RECEIPT; JSON labels are not attestations',
++        historical_secret_pairing=None,historical_E80_status='UNCHANGED_FAIL',
++        FHE_encryption_decryption_sampling_calls=0,
++        theorem_scope='This one exact public polynomial; all honest finite-support keys only after source/path adoption')
++    with args.out.open('x',encoding='utf-8',newline='\n') as stream:
++        json.dump(result,stream,ensure_ascii=False,indent=2);stream.write('\n')
++    print(json.dumps({'status':result['status'],'forward_canonical_transforms':1,'crypto_calls':0}))
++    return {'ENCODER_CAP_CERTIFIED':0,'ENCODER_CAP_REFUTED':2,'INCONCLUSIVE_INTERVAL':3}[result['status']]
++
++
++if __name__=='__main__':
++    try:sys.exit(main())
++    except (ValueError,OSError,KeyError,TypeError,json.JSONDecodeError) as error:
++        print('PUBLIC_CAP_REJECTED: '+str(error),file=sys.stderr);sys.exit(4)
+diff --git a/diagnostics/public_s100_encoding_dump.cpp b/diagnostics/public_s100_encoding_dump.cpp
+new file mode 100644
+index 0000000..cf25a10
+--- /dev/null
++++ b/diagnostics/public_s100_encoding_dump.cpp
+@@ -0,0 +1,90 @@
++#include "openfhe_2023_1788/public_s100_encoding_probe.h"
++#include "paper_full_eight_square_oracle.h"
++#include <boost/version.hpp>
++#include <filesystem>
++#include <fstream>
++#include <iostream>
++#include <string>
++
++#ifndef OPENFHE1788_SOURCE_COMMIT
++#define OPENFHE1788_SOURCE_COMMIT "unknown"
++#endif
++namespace io = openfhe_2023_1788::client_io;
++namespace fs = std::filesystem;
++namespace {
++void Quoted(std::ostream& out, const std::string& value) {
++    out << '"';
++    for (unsigned char c : value) {
++        if (c == '"' || c == '\\') out << '\\' << static_cast<char>(c);
++        else if (c < 32) throw std::runtime_error("control character in output metadata");
++        else out << static_cast<char>(c);
++    }
++    out << '"';
++}
++void Strings(std::ostream& out, const std::vector<std::string>& values) {
++    out << '[';
++    for (std::size_t i=0;i<values.size();++i) {
++        if (i) out << ',';
++        Quoted(out, values[i]);
++    }
++    out << ']';
++}
++}
++int main(int argc, char** argv) {
++    try {
++        const std::string sourceCommit=OPENFHE1788_SOURCE_COMMIT;
++        if (sourceCommit.size()!=40 || sourceCommit.find_first_not_of("0123456789abcdef")!=std::string::npos)
++            throw std::runtime_error("build source identity must be 40 lowercase hexadecimal characters");
++        if (argc==2 && std::string(argv[1])=="--metadata") {
++            std::cout << "{\"build_source_commit\":";
++            Quoted(std::cout, sourceCommit);
++            std::cout << ",\"encoding_calls\":0,\"crypto_calls\":0}\n";
++            return 0;
++        }
++        if (argc==2 && std::string(argv[1])=="--api-negative") {
++            bool rejected=false;
++            try { (void)io::diagnostic::InspectFixedS100PublicEncoding({}); }
++            catch (const std::invalid_argument&) { rejected=true; }
++            if (!rejected) throw std::runtime_error("wrong-shape input was accepted");
++            std::cout << "API_NEGATIVE_PASS encoding_calls=0\n";
++            return 0;
++        }
++        if (argc!=2) throw std::invalid_argument("usage: public_s100_encoding_dump OUTPUT.json | --api-negative | --metadata");
++        const fs::path destination(argv[1]);
++        if (fs::exists(destination)) throw std::runtime_error("refusing to overwrite output");
++        // The only original-input preparation and the only ComputeEncoding call.
++        // No setup, crypto context, key, sampling, encryption or decryption.
++        const auto values=paper_full_test::ClientInputs(paper_full_test::Inputs());
++        const auto inspection=io::diagnostic::InspectFixedS100PublicEncoding(values);
++        if (inspection.signedCoefficients.size()!=32768 || inspection.slots!=16384 || inspection.strideGap!=1)
++            throw std::runtime_error("unexpected inspection geometry");
++        std::ofstream out(destination, std::ios::binary | std::ios::out);
++        out.exceptions(std::ios::badbit | std::ios::failbit);
++        out << "{\n\"schema\":\"initial-lift-public-encoding-v1\",\n"
++               "\"profile\":\"original-s100-near-unit-v1\",\n"
++               "\"base_source_commit\":\"a4b815a733efe81897325e2a8e4c826a4ebfa439\",\n"
++               "\"build_source_commit\":";
++        Quoted(out, OPENFHE1788_SOURCE_COMMIT);
++        out << ",\n\"boost_version\":"; Quoted(out, BOOST_LIB_VERSION);
++        out << ",\n\"compiler\":"; Quoted(out, __VERSION__);
++        out << ",\n\"n\":32768,\n\"slots\":16384,\n\"gap\":1,\n\"cyclotomic_order\":65536,\n"
++               "\"scale_num\":";
++        Quoted(out, inspection.logicalScale.Numerator().convert_to<std::string>());
++        out << ",\n\"scale_den\":";
++        Quoted(out, inspection.logicalScale.Denominator().convert_to<std::string>());
++        out << ",\n\"full_moduli\":"; Strings(out, inspection.basis.moduliDecimal);
++        out << ",\n\"full_roots\":"; Strings(out, inspection.basis.rootsOfUnityDecimal);
++        out << ",\n\"encoding_calls\":1,\n\"crypto_calls\":0,\n\"coefficients\":[";
++        for (std::size_t i=0;i<inspection.signedCoefficients.size();++i) {
++            if(i) out << ',';
++            Quoted(out, inspection.signedCoefficients[i].convert_to<std::string>());
++        }
++        out << "]\n}\n";
++        out.flush(); out.close();
++        std::cout << "PUBLIC_ENCODING_WRITTEN encoding_calls=1 crypto_calls=0\n";
++        return 0;
++    } catch (const std::exception& error) {
++        std::cerr << "PUBLIC_ENCODING_FAILED: " << error.what() << '\n';
++        return 1;
++    }
++}
+diff --git a/include/openfhe_2023_1788/public_s100_encoding_probe.h b/include/openfhe_2023_1788/public_s100_encoding_probe.h
+new file mode 100644
+index 0000000..6e1862a
+--- /dev/null
++++ b/include/openfhe_2023_1788/public_s100_encoding_probe.h
+@@ -0,0 +1,11 @@
++#ifndef OPENFHE_2023_1788_PUBLIC_S100_ENCODING_PROBE_H
++#define OPENFHE_2023_1788_PUBLIC_S100_ENCODING_PROBE_H
++#include "openfhe_2023_1788/high_precision_client_io.h"
++namespace openfhe_2023_1788::client_io::diagnostic {
++// Diagnostic-only, no context/key creation. This calls the existing
++// ComputeEncoding with the frozen S100 public geometry/basis/scale.
++// It does NOT create a validated client, ciphertext or repeated-plan receipt.
++// The standalone driver supplies the unchanged original public input formula.
++EncodingInspection InspectFixedS100PublicEncoding(const std::vector<ClientComplex>& values);
++}
++#endif
+diff --git a/tests/public_encoder_scalar_contract_test.py b/tests/public_encoder_scalar_contract_test.py
+new file mode 100644
+index 0000000..c724c3f
+--- /dev/null
++++ b/tests/public_encoder_scalar_contract_test.py
+@@ -0,0 +1,116 @@
++"""Parser-only public CLI contracts; every input fails before any transform."""
++import argparse
++import importlib.util
++from fractions import Fraction
++import math
++from pathlib import Path
++import subprocess
++import sys
++from tempfile import TemporaryDirectory
++import unittest
++
++
++ROOT = Path(__file__).resolve().parents[1]
++parser = argparse.ArgumentParser(add_help=False)
++parser.add_argument('--candidate-module', type=Path,
++                    default=ROOT/'diagnostics/certify_public_encoder.py')
++options, remaining = parser.parse_known_args()
++CANDIDATE = options.candidate_module.resolve()
++spec = importlib.util.spec_from_file_location('public_cap_scalar_tdd', CANDIDATE)
++module = importlib.util.module_from_spec(spec)
++sys.modules[spec.name] = module
++spec.loader.exec_module(module)
++
++
++class AlgebraicOracleBoundary(unittest.TestCase):
++    def test_cap_classification_below_equal_above_and_straddling(self):
++        # 16129/16384 is exactly representable on the candidate's binary grid.
++        cap = 16129*(module.UNIT//16384)
++        cases = [(cap-2, cap-1, 'ENCODER_CAP_CERTIFIED'),
++                 (cap, cap, 'ENCODER_CAP_CERTIFIED'),
++                 (cap+1, cap+2, 'ENCODER_CAP_REFUTED'),
++                 (cap-1, cap+1, 'INCONCLUSIVE_INTERVAL')]
++        for lower, upper, expected in cases:
++            with self.subTest(expected=expected, lower=lower):
++                self.assertEqual(module.classify_cap(module.Interval(lower, upper)), expected)
++
++    def test_false_point_above_sqrt_is_not_a_containment_certificate(self):
++        # Importing the remote models does not run their test cases/transforms.
++        oracle_spec = importlib.util.spec_from_file_location(
++            'public_cap_models', ROOT/'tests/public_encoder_transform_contract_test.py')
++        oracle = importlib.util.module_from_spec(oracle_spec)
++        oracle_spec.loader.exec_module(oracle)
++        denominator = 1 << 224
++        floor_root = math.isqrt(2*denominator*denominator)
++        false_point = 10+5*Fraction(floor_root+1, denominator)
++        with self.assertRaises(AssertionError):
++            oracle.assert_sqrt_enclosure(self, false_point, false_point)
++
++
++class PublicFileBoundary(unittest.TestCase):
++    def test_exact_limit_is_read_but_one_more_byte_is_rejected(self):
++        with TemporaryDirectory(prefix='public-encoder-file-test-') as directory:
++            source = Path(directory)/'public.json'
++            payload = b' '*11_999_999+b'\n'
++            with source.open('xb') as stream:
++                stream.write(payload)
++            self.assertEqual(module.read_public_bytes(source), payload)
++            with source.open('ab') as stream:
++                stream.write(b'\n')
++            with self.assertRaisesRegex(ValueError, 'bounded LF'):
++                module.read_public_bytes(source)
++
++    def test_symlink_is_not_accepted_as_regular_input(self):
++        with TemporaryDirectory(prefix='public-encoder-file-test-') as directory:
++            source = Path(directory)/'public.json'
++            with source.open('xb') as stream:
++                stream.write(b'{}\n')
++            alias = Path(directory)/'alias.json'
++            alias.symlink_to(source)
++            with self.assertRaises((ValueError, OSError)):
++                module.read_public_bytes(alias)
++
++    def test_directory_is_not_regular_input(self):
++        with TemporaryDirectory(prefix='public-encoder-file-test-') as directory:
++            with self.assertRaises((ValueError, OSError)):
++                module.read_public_bytes(Path(directory))
++
++
++class PublicEncoderParserContract(unittest.TestCase):
++    def assert_rejected(self, payload):
++        with TemporaryDirectory(prefix='public-encoder-parser-test-') as directory:
++            source = Path(directory)/'public.json'
++            output = Path(directory)/'certificate.json'
++            with source.open('xb') as stream:
++                stream.write(payload)
++            result = subprocess.run(
++                [sys.executable, '-B', '-I', str(CANDIDATE),
++                 '--public-encoding', str(source), '--out', str(output),
++                 '--allow-transform-after-root-review'],
++                capture_output=True, text=True, timeout=10)
++            self.assertEqual(result.returncode, 4, result.stderr)
++            self.assertIn('PUBLIC_CAP_REJECTED:', result.stderr)
++            self.assertNotIn('Traceback', result.stderr)
++            self.assertFalse(output.exists(), 'Rejected input must not create a certificate')
++
++    def test_deep_json_is_controlled_rejection(self):
++        self.assert_rejected(b'['*10000+b'0'+b']'*10000+b'\n')
++
++    def test_duplicate_fields_are_rejected_by_actual_decoder(self):
++        self.assert_rejected(b'{"schema":"x","schema":"y"}\n')
++
++    def test_truncated_json_is_rejected(self):
++        self.assert_rejected(b'{"schema":\n')
++
++    def test_invalid_utf8_is_rejected(self):
++        self.assert_rejected(b'{"schema":"\xff"}\n')
++
++    def test_crlf_is_rejected(self):
++        self.assert_rejected(b'{}\r\n')
++
++    def test_missing_final_lf_is_rejected(self):
++        self.assert_rejected(b'{}')
++
++
++if __name__ == '__main__':
++    unittest.main(argv=[sys.argv[0], *remaining])
+diff --git a/tests/public_encoder_transform_contract_test.py b/tests/public_encoder_transform_contract_test.py
+new file mode 100644
+index 0000000..e7fb2f5
+--- /dev/null
++++ b/tests/public_encoder_transform_contract_test.py
+@@ -0,0 +1,38 @@
++#!/usr/bin/env python3
++"""Four tiny transforms: run only on the remote execution host."""
++import importlib.util
++from pathlib import Path
++import sys
++from fractions import Fraction as F
++import math
++import unittest
++p=Path(__file__).resolve().parents[1]/'diagnostics/certify_public_encoder.py'
++spec=importlib.util.spec_from_file_location('public_cap_transform_tdd',p)
++m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m)
++
++def interval(row):
++    v=row['maximum_squared_modulus'];return F(int(v['lower_numerator']),int(v['denominator'])),F(int(v['upper_numerator']),int(v['denominator']))
++
++def assert_sqrt_enclosure(case, a, b):
++    D=1<<224;t=math.isqrt(2*D*D)
++    case.assertLessEqual(a,10+5*F(t,D))
++    case.assertGreaterEqual(b,10+5*F(t+1,D))
++
++class RootTransformModels(unittest.TestCase):
++    def test_zero(self):
++        r=m.canonical_bounds([0]*8,1)
++        self.assertEqual(interval(r),(0,0));self.assertEqual(r['status'],'ENCODER_CAP_CERTIFIED')
++    def test_monomial(self):
++        r=m.canonical_bounds([0,1]+[0]*6,1);a,b=interval(r)
++        self.assertLessEqual(a,1);self.assertGreaterEqual(b,1)
++        self.assertLess(b-a,F(1,1<<160));self.assertEqual(r['status'],'ENCODER_CAP_REFUTED')
++    def test_nontrivial_exact_N4(self):
++        a,b=interval(m.canonical_bounds([3,1,1,2],1))
++        self.assertLessEqual(a,15);self.assertGreaterEqual(b,15)
++        self.assertLess(b-a,F(1,1<<160))
++    def test_centering_is_not_canonical_contraction(self):
++        a,b=interval(m.canonical_bounds([-2,1,1,2],1))
++        # Compare against a rigorous rational sqrt(2) enclosure, not floating sqrt.
++        assert_sqrt_enclosure(self,a,b)
++        self.assertGreater(a,15);self.assertLess(b-a,F(1,1<<160))
++if __name__=='__main__':unittest.main()

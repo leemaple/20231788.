@@ -1,4 +1,5 @@
 #include "openfhe_2023_1788/high_precision_client_io.h"
+#include "openfhe_2023_1788/public_s100_encoding_probe.h"
 #include "openfhe_2023_1788/repeated_mult2.h"
 #include "scheme/ckksrns/ckksrns-cryptoparameters.h"
 
@@ -754,5 +755,25 @@ DecodedSlots HighPrecisionClientIO::Decrypt(const lbcrypto::PrivateKey<DCRTPoly>
     }
     return {std::move(values), input.state_, {modulus, maximum, ExactInteger(modulus / 2 - maximum), ClientReal(maximumDisagreement)}};
 }
+
+namespace diagnostic {
+EncodingInspection InspectFixedS100PublicEncoding(const std::vector<ClientComplex>& values) {
+    if (values.size()!=16384)
+        throw std::invalid_argument("public S100 probe requires exactly 16384 slots");
+    // A value-initialized snapshot only. No BindContext, plan/factory or key call.
+    // ComputeEncoding reads only geometry/fullBasis/FreshExactScale here.
+    ContextBinding binding{};
+    binding.geometry={16384,32768,65536,1};
+    binding.fullBasis={65536,32768,
+        {"1125899904679937","1125899903827969","1152921504598720513","1152921504597016577","1152921504595968001","1152921504595640321","1152921504593412097","1152921504592822273","1152921504592429057","1152921504589938689","1099510054913"},
+        {"26113207984","150640639383","100545759574150","31693996050849","88651361085495","9679305630873","24428769072221","18776242964106","5821397352863","33888991361320","121567553"}};
+    const FreshEncodingSpec spec{16384,PositiveRationalScale::FromPositive(ExactInteger(1)<<100,1)};
+    const TransformTable<Primary> primary(binding.geometry);
+    const TransformTable<CheckReal> check(binding.geometry);
+    auto encoded=ComputeEncoding(binding,values,spec,primary,check);
+    return {std::move(encoded.coefficients),binding.fullBasis,spec.logicalScale,
+            binding.geometry.slots,binding.geometry.gap,CanonicalProjection::OpenFhePackedStride};
+}
+}  // namespace diagnostic
 
 }  // namespace openfhe_2023_1788::client_io

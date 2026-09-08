@@ -1,0 +1,16 @@
+[ 14%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/double_ckks.cpp.o
+[ 28%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/high_precision_client_io.cpp.o
+[ 42%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/repeated_mult2.cpp.o
+[ 57%] Building CXX object CMakeFiles/openfhe_2023_1788.dir/src/paper_h128_client_keypair.cpp.o
+[ 71%] Linking CXX static library libopenfhe_2023_1788.a
+[ 71%] Built target openfhe_2023_1788
+[ 85%] Building CXX object CMakeFiles/public_s100_encoding_dump.dir/diagnostics/public_s100_encoding_dump.cpp.o
+[100%] Linking CXX executable public_s100_encoding_dump
+/usr/bin/ld: CMakeFiles/public_s100_encoding_dump.dir/diagnostics/public_s100_encoding_dump.cpp.o: in function `main':
+/home/runner/work/20231788./20231788./diagnostics/public_s100_encoding_dump.cpp:58:(.text.startup+0x1c7): undefined reference to `openfhe_2023_1788::client_io::diagnostic::InspectFixedS100PublicEncoding(std::vector<openfhe_2023_1788::client_io::ClientComplex, std::allocator<openfhe_2023_1788::client_io::ClientComplex> > const&)'
+/usr/bin/ld: /home/runner/work/20231788./20231788./diagnostics/public_s100_encoding_dump.cpp:46:(.text.startup+0x6ea): undefined reference to `openfhe_2023_1788::client_io::diagnostic::InspectFixedS100PublicEncoding(std::vector<openfhe_2023_1788::client_io::ClientComplex, std::allocator<openfhe_2023_1788::client_io::ClientComplex> > const&)'
+collect2: error: ld returned 1 exit status
+gmake[3]: *** [CMakeFiles/public_s100_encoding_dump.dir/build.make:105: public_s100_encoding_dump] Error 1
+gmake[2]: *** [CMakeFiles/Makefile2:837: CMakeFiles/public_s100_encoding_dump.dir/all] Error 2
+gmake[1]: *** [CMakeFiles/Makefile2:844: CMakeFiles/public_s100_encoding_dump.dir/rule] Error 2
+gmake: *** [Makefile:420: public_s100_encoding_dump] Error 2
