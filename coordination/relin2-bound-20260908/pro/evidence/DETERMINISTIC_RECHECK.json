@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "commands": [
+    {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "/mnt/data/relin_work/output/checks/verify_input_archive.py",
+        "/mnt/data/relin2-implementation-bound-a4b815a.zip",
+        "--output",
+        "/mnt/data/relin_work/recheck/INPUT_VERIFICATION.json"
+      ],
+      "exit_code": 0,
+      "stderr_empty": true,
+      "stdout_sha256": "61cb96aa29e5c43e7a498718bc689c998e58785c1d1251333b52695166265b4f"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "/mnt/data/relin_work/output/checks/model_checks.py",
+        "--output",
+        "/mnt/data/relin_work/recheck/model_results.json"
+      ],
+      "exit_code": 0,
+      "stderr_empty": true,
+      "stdout_sha256": "b3430543516379d0d4ca627901866c7ce8bded8d292d09d1e293108c7ed16638"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "/mnt/data/relin_work/output/checks/public_bounds.py",
+        "--input-root",
+        "/mnt/data/relin_work/input",
+        "--output",
+        "/mnt/data/relin_work/recheck/public_bounds.json",
+        "--table",
+        "/mnt/data/relin_work/recheck/public_bounds.tsv"
+      ],
+      "exit_code": 0,
+      "stderr_empty": true,
+      "stdout_sha256": "5fba3debff2ec4b327354763d6baeb1d357f28474270f18cf32590e3f7df12ae"
+    }
+  ],
+  "byte_identical_results": [
+    "evidence/INPUT_VERIFICATION.json",
+    "checks/model_results.json",
+    "checks/public_bounds.json",
+    "checks/public_bounds.tsv"
+  ],
+  "model_tests": 13,
+  "public_families": 8,
+  "random_samples": 0,
+  "FHE_calls": 0,
+  "transforms": 0
+}

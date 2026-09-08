@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "python_syntax": [
+    {
+      "path": "checks/model_checks.py",
+      "syntax": "PASS",
+      "sha256": "b165fabb42e257e4d75c43c434164c50efda859d6fe6d39a286ae43977422415"
+    },
+    {
+      "path": "checks/public_bounds.py",
+      "syntax": "PASS",
+      "sha256": "41b7d882186510d781704b21c606f4b4e08f37b967651e893898c3903b7b47da"
+    },
+    {
+      "path": "checks/verify_delivery.py",
+      "syntax": "PASS",
+      "sha256": "f056cf8323a5b58cbeaa5f028c1f66c178d7b03d6cf699f6d0b8893001aaf69d"
+    },
+    {
+      "path": "checks/verify_input_archive.py",
+      "syntax": "PASS",
+      "sha256": "0cc8358bb4abe571f00bb598be60b80674cae40bb49d658575a2846ebda57979"
+    }
+  ],
+  "claim_count": 30,
+  "source_map_rows": 50,
+  "unknown_conditions_preserved": true,
+  "historical_FHE_reexecution_claims": 0,
+  "narrow_credential_pattern_scan": {
+    "files_scanned_at_this_stage": 23,
+    "patterns": [
+      "PEM_private_key",
+      "AWS_access_key",
+      "GitHub_token",
+      "Slack_token"
+    ],
+    "findings": [],
+    "limitation": "Limited byte-pattern check only; not gitleaks, not exhaustive secret detection. Model constants are explicitly synthetic."
+  }
+}

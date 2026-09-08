@@ -1,0 +1,145 @@
+{
+  "utc": "2026-09-08T16:36:25.372229+00:00",
+  "status": "PASS",
+  "script_pins": {
+    "model_checks.py": "b165fabb42e257e4d75c43c434164c50efda859d6fe6d39a286ae43977422415",
+    "public_bounds.py": "41b7d882186510d781704b21c606f4b4e08f37b967651e893898c3903b7b47da",
+    "verify_delivery.py": "f056cf8323a5b58cbeaa5f028c1f66c178d7b03d6cf699f6d0b8893001aaf69d",
+    "verify_input_archive.py": "0cc8358bb4abe571f00bb598be60b80674cae40bb49d658575a2846ebda57979"
+  },
+  "work_directory": "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/artifacts/replays/relin2-bound-20260908",
+  "runs": [
+    {
+      "script": "verify_input_archive.py",
+      "argv": [
+        "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-I",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/coordination/relin2-bound-20260908/pro/checks/verify_input_archive.py",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/artifacts/handoffs/relin2-bound-20260908/relin2-implementation-bound-a4b815a.zip",
+        "--output",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/artifacts/replays/relin2-bound-20260908/INPUT_VERIFICATION.json"
+      ],
+      "exit": 0,
+      "stdout_sha256": "61cb96aa29e5c43e7a498718bc689c998e58785c1d1251333b52695166265b4f",
+      "stderr_bytes": 0
+    },
+    {
+      "script": "model_checks.py",
+      "argv": [
+        "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-I",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/coordination/relin2-bound-20260908/pro/checks/model_checks.py",
+        "--output",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/artifacts/replays/relin2-bound-20260908/model_results.json"
+      ],
+      "exit": 0,
+      "stdout_sha256": "b3430543516379d0d4ca627901866c7ce8bded8d292d09d1e293108c7ed16638",
+      "stderr_bytes": 0
+    },
+    {
+      "script": "public_bounds.py",
+      "argv": [
+        "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-I",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/coordination/relin2-bound-20260908/pro/checks/public_bounds.py",
+        "--input-root",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/artifacts/replays/relin2-bound-20260908/input",
+        "--output",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/artifacts/replays/relin2-bound-20260908/public_bounds.json",
+        "--table",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/artifacts/replays/relin2-bound-20260908/public_bounds.tsv"
+      ],
+      "exit": 0,
+      "stdout_sha256": "5fba3debff2ec4b327354763d6baeb1d357f28474270f18cf32590e3f7df12ae",
+      "stderr_bytes": 0
+    },
+    {
+      "script": "verify_delivery.py",
+      "argv": [
+        "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-I",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/coordination/relin2-bound-20260908/pro/checks/verify_delivery.py",
+        "/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908/coordination/relin2-bound-20260908/pro"
+      ],
+      "exit": 0,
+      "stdout_sha256": "8971dcfde5e8ca061f6aee0efc503e7d812109659cb83309850cc466178b37aa",
+      "stderr_bytes": 0
+    }
+  ],
+  "byte_comparisons": [
+    {
+      "output": "INPUT_VERIFICATION.json",
+      "bytes": 141982,
+      "sha256": "146b3703c2c5f70dd07f53993165162e17aa521261796777eefbf962f3d103b4",
+      "byte_identical_to_return": true
+    },
+    {
+      "output": "model_results.json",
+      "bytes": 5443,
+      "sha256": "b3430543516379d0d4ca627901866c7ce8bded8d292d09d1e293108c7ed16638",
+      "byte_identical_to_return": true
+    },
+    {
+      "output": "public_bounds.json",
+      "bytes": 214253,
+      "sha256": "860cab606a381a576202af5f393fe1a4e7742ee90b7b4d119d14d0a1b95a7b5a",
+      "byte_identical_to_return": true
+    },
+    {
+      "output": "public_bounds.tsv",
+      "bytes": 664,
+      "sha256": "3a319503f5e474ce5be6f4649cc3f17cce3916ab271ed212a218f4498a15eb66",
+      "byte_identical_to_return": true
+    }
+  ],
+  "source_map_rows_hash_and_text_intervals_verified": 50,
+  "independent_root_formula_comparisons": [
+    {
+      "step": 1,
+      "pro_bound_below_root_bound": true,
+      "exact_difference_is_root_extra_zero_d_digit_allowance": true
+    },
+    {
+      "step": 2,
+      "pro_bound_below_root_bound": true,
+      "exact_difference_is_root_extra_zero_d_digit_allowance": true
+    },
+    {
+      "step": 3,
+      "pro_bound_below_root_bound": true,
+      "exact_difference_is_root_extra_zero_d_digit_allowance": true
+    },
+    {
+      "step": 4,
+      "pro_bound_below_root_bound": true,
+      "exact_difference_is_root_extra_zero_d_digit_allowance": true
+    },
+    {
+      "step": 5,
+      "pro_bound_below_root_bound": true,
+      "exact_difference_is_root_extra_zero_d_digit_allowance": true
+    },
+    {
+      "step": 6,
+      "pro_bound_below_root_bound": true,
+      "exact_difference_is_root_extra_zero_d_digit_allowance": true
+    },
+    {
+      "step": 7,
+      "pro_bound_below_root_bound": true,
+      "exact_difference_is_root_extra_zero_d_digit_allowance": true
+    },
+    {
+      "step": 8,
+      "pro_bound_below_root_bound": true,
+      "exact_difference_is_root_extra_zero_d_digit_allowance": true
+    }
+  ],
+  "scope": "13 deterministic public synthetic model groups; 8 exact Fraction family bounds; archive/delivery integrity. No FHE, FFT/NTT, sampling, production tests, or historical endpoint replay.",
+  "semantic_acceptance": "Still requires mathematical/source review; these checks do not establish original S100 E80.",
+  "input_subset_note": "Only frozen repeated_mult2.cpp is staged for the sole public_bounds source consumer; full original archive separately verified."
+}

@@ -1,0 +1,1034 @@
+{
+  "schema": "relin2-implementation-bound-claims-v1",
+  "production_source_commit": "a4b815a733efe81897325e2a8e4c826a4ebfa439",
+  "official_pin": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+  "assumption_registry": [
+    {
+      "id": "A01",
+      "description": "固定输入身份与参数来源",
+      "status": "verified_offline",
+      "established_in_stated_scope": true,
+      "qualification": "Archive, outer manifest, paper hash and recorded Git blobs match. This is not a new remote commit-membership proof."
+    },
+    {
+      "id": "A02",
+      "description": "DCRT 加乘／格式转换实现已指定的精确商环算子",
+      "status": "primitive_semantics_assumption",
+      "established_in_stated_scope": null,
+      "qualification": "No FFT/NTT or Barrett implementation execution/full reaudit in this slice."
+    },
+    {
+      "id": "A03",
+      "description": "一塔一分区、单 P、ns=1、FIXEDMANUAL、固定 ordered Q/root/P",
+      "status": "source_enforced_profile",
+      "established_in_stated_scope": true,
+      "qualification": "S02/S03/S29 and the fixed family guards."
+    },
+    {
+      "id": "A04",
+      "description": "同根稀疏三元秘密且 ∥s∥1=128",
+      "status": "honest_factory_contract",
+      "established_in_stated_scope": true,
+      "qualification": "S04/S45 checks; no secret disclosed or sampled in this slice."
+    },
+    {
+      "id": "A05",
+      "description": "诚实生成的 s²→s evaluation key 方程",
+      "status": "honest_setup_condition",
+      "established_in_stated_scope": null,
+      "qualification": "Generated-source equation is proved; arbitrary structurally accepted external key is not authenticated by guards."
+    },
+    {
+      "id": "A06",
+      "description": "WITH_REDUCED_NOISE=OFF 的 unsigned conversion 分支",
+      "status": "source_branch_and_build_receipt",
+      "established_in_stated_scope": true,
+      "qualification": "Source semantics read; original S100/S116 build evidence supports OFF. No claim about every cached binary."
+    },
+    {
+      "id": "A07",
+      "description": "成功的 finite-Peikert key error coefficients ≤39",
+      "status": "conditional_source_support_bound",
+      "established_in_stated_scope": true,
+      "qualification": "Covers both nominal 3.19F and private default1; assumes A05 and the fixed DGG consumer. Historical actual sigma unmeasured."
+    },
+    {
+      "id": "A08",
+      "description": "输入 M_a/M_b 等于各自中心重组相位，即 alpha=0",
+      "status": "not_established_for_historical_chain",
+      "established_in_stated_scope": null,
+      "qualification": "Can follow from explicit phase bounds; not a structural guard."
+    },
+    {
+      "id": "A09",
+      "description": "相对于 T* 的 w_pre=w_out=0",
+      "status": "not_established_for_historical_chain",
+      "established_in_stated_scope": null,
+      "qualification": "Sufficient margin NW is specified; its failure does not imply wrap."
+    },
+    {
+      "id": "A10",
+      "description": "给出真实上界的高低部范数／上游 fresh phase bound",
+      "status": "additional_bound_interface",
+      "established_in_stated_scope": null,
+      "qualification": "May be supplied analytically or by protected aggregate diagnostics, not by assuming E8<T."
+    },
+    {
+      "id": "A11",
+      "description": "比较两算子使用同一家族的同一 key 行及相容 P 索引",
+      "status": "source_path_condition",
+      "established_in_stated_scope": true,
+      "qualification": "Does not assert equality of independently generated keys across families."
+    },
+    {
+      "id": "A12",
+      "description": "所有分区 digit 相加都不换代表（kappa_j=0）",
+      "status": "special_case_only",
+      "established_in_stated_scope": null,
+      "qualification": "Not guaranteed universally; general equations retain kappa/G. No assertion about unseen historical inputs."
+    },
+    {
+      "id": "A13",
+      "description": "历史报告及其范围按原记录引用",
+      "status": "record_reference_not_reexecution",
+      "established_in_stated_scope": true,
+      "qualification": "No old full-slot captures reprocessed; component/complex norm distinctions preserved."
+    }
+  ],
+  "unknown_policy": "null means not established; false is not substituted for an unobserved state. Source-scoped facts do not assert historical runtime measurements.",
+  "claims": [
+    {
+      "id": "C01",
+      "statement": "||fg||c<=||f||c||g||1; ||f||c<=||f||can<=N||f||c; ||s||1=h",
+      "equation_domain": "integer ring / complex canonical norms",
+      "assumptions": [
+        "A02",
+        "A04"
+      ],
+      "basis": [
+        "S01",
+        "S04"
+      ],
+      "role": "Fix domains and deterministic norm conversions",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C01]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": []
+    },
+    {
+      "id": "C02",
+      "statement": "F_f=d*Q_f; Q_f=prod(q_0..q_(9-f)); alpha=1; P is one fixed prime",
+      "equation_domain": "public identities",
+      "assumptions": [
+        "A01",
+        "A03"
+      ],
+      "basis": [
+        "S02",
+        "S03",
+        "S04",
+        "S29",
+        "S45"
+      ],
+      "role": "Concrete active/raised/auxiliary bases",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C02]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": true
+      },
+      "model_checks": [
+        "public_bounds"
+      ]
+    },
+    {
+      "id": "C03",
+      "statement": "B_j+A_j*s == P*theta_j*s^2+e_j (mod QP)",
+      "equation_domain": "congruence in R_QP",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A11"
+      ],
+      "basis": [
+        "S05",
+        "S06",
+        "S07",
+        "S08"
+      ],
+      "role": "Honest s² key equation",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C03]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "The generation path proves the equation; structure-only validation does not prove it for an arbitrary supplied key.",
+        "source_mapping_supports_stated_form": null,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M01",
+        "M04",
+        "M06"
+      ]
+    },
+    {
+      "id": "C04",
+      "statement": "D_j(c)=U_qj(c), extended as that integer to the complementary basis",
+      "equation_domain": "integer lift and congruences",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A06"
+      ],
+      "basis": [
+        "S09",
+        "S10",
+        "S12",
+        "S29",
+        "S36"
+      ],
+      "role": "Exact one-prime digit semantics",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C04]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M04",
+        "M06",
+        "M12"
+      ]
+    },
+    {
+      "id": "C05",
+      "statement": "r_i=U_P(z_i); t_i=(z_i-r_i)/P in R; MD(z_i)=[t_i]_Q=[floor(z_i/P)]_Q",
+      "equation_domain": "integer equality and quotient-ring output",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A06"
+      ],
+      "basis": [
+        "S10",
+        "S11",
+        "S12",
+        "S14",
+        "S50"
+      ],
+      "role": "Two unsigned-P quotients, not nearest rounding",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C05]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M01",
+        "M04",
+        "M06"
+      ]
+    },
+    {
+      "id": "C06",
+      "statement": "Relin_Q(u)=([u0+t0]_Q,[u1+t1]_Q)",
+      "equation_domain": "equality in R_Q²",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A06"
+      ],
+      "basis": [
+        "S13",
+        "S14",
+        "S15",
+        "S50"
+      ],
+      "role": "Connect primitive to consumed output",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C06]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M01",
+        "M06"
+      ]
+    },
+    {
+      "id": "C07",
+      "statement": "nu_Q(c)=(sum D_j(c)e_j-r0-s*r1)/P in R; out.phase == in.phase+nu (mod Q)",
+      "equation_domain": "integer integrality plus phase congruence",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A11"
+      ],
+      "basis": [
+        "S05",
+        "S06",
+        "S07",
+        "S09",
+        "S13",
+        "S15",
+        "S50"
+      ],
+      "role": "Single-relinearization decoded contract",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C07]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M03",
+        "M05",
+        "M06"
+      ]
+    },
+    {
+      "id": "C08",
+      "statement": "||nu_Q(c)||c <= (sum ||D_j||c||e_j||1+(1+h)(P-1))/P",
+      "equation_domain": "coefficient norm inequality",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06"
+      ],
+      "basis": [
+        "S06",
+        "S07",
+        "S09",
+        "S14",
+        "S15",
+        "S50"
+      ],
+      "role": "Explicit key-noise and two-remainder bound",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C08]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M06"
+      ]
+    },
+    {
+      "id": "C09",
+      "statement": "delta_i == -g_i+eta_i (mod Q), G_i=sum q_j*kappa_j*K_ij, eta_i=floor((r_i(u)+r_i(v)-U_P(G_i))/P)",
+      "equation_domain": "integer definitions / coordinate congruence",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A06",
+        "A11"
+      ],
+      "basis": [
+        "S09",
+        "S10",
+        "S13",
+        "S14",
+        "S15",
+        "S50"
+      ],
+      "role": "Full near-additivity retaining two digit/output corrections",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C09]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M01",
+        "M02",
+        "M04",
+        "M06",
+        "M13"
+      ]
+    },
+    {
+      "id": "C10",
+      "statement": "Delta nu=(-sum q_j*kappa_j*e_j-Delta r0-s*Delta r1)/P; norm <= (sum q_j||kappa_j||c||e_j||1+2(1+h)(P-1))/P",
+      "equation_domain": "integer identity and coefficient norm bound",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A11"
+      ],
+      "basis": [
+        "S06",
+        "S09",
+        "S13",
+        "S14",
+        "S50"
+      ],
+      "role": "Decoded near-additivity with key-noise carry",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C10]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M05",
+        "M06"
+      ]
+    },
+    {
+      "id": "C11",
+      "statement": "When kappa=0, delta_i==eta_i (mod Q), eta_i in {0,1}^N, decoded carry <=1+h; first coordinate need not vanish; a public-symbolic witness at current N32768/h128/Q/P attains coefficient norm h+1",
+      "equation_domain": "conditional special case; overstrong assertion refuted in model",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A06",
+        "A11",
+        "A12"
+      ],
+      "basis": [
+        "S09",
+        "S14",
+        "S15",
+        "S50",
+        "S01"
+      ],
+      "role": "Correct replacement for the special no-digit-carry case",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C11]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "kappa=0 is not established for historical inputs and is not used in C16.",
+        "source_mapping_supports_stated_form": null,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M01",
+        "M02",
+        "M03",
+        "M13"
+      ]
+    },
+    {
+      "id": "C12",
+      "statement": "General unsigned CRT lift D=U_M(c)+M*a and r_app=U_P(z)+P*beta; multi-prime MD=floor(z/P)-beta",
+      "equation_domain": "abstract unreduced CRT model",
+      "assumptions": [
+        "A02",
+        "A06"
+      ],
+      "basis": [
+        "S09",
+        "S10",
+        "S11",
+        "S36",
+        "S50"
+      ],
+      "role": "Explain why single-prime model is not a full arbitrary-HYBRID theorem",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C12]",
+      "status": "proved_for_stated_primitive_model_not_full_general_profile",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": null,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M12"
+      ]
+    },
+    {
+      "id": "C13",
+      "statement": "pi_Q Relin_F(raise_d H)=Relin_Q(dH); extra d digit=0",
+      "equation_domain": "coordinate equality in R_Q²",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A06",
+        "A11"
+      ],
+      "basis": [
+        "S08",
+        "S09",
+        "S13",
+        "S14",
+        "S36",
+        "S50"
+      ],
+      "role": "Restriction naturality under the same family key",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C13]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M07"
+      ]
+    },
+    {
+      "id": "C14",
+      "statement": "DCP: high_i=(A_i-C_d(A_i))/d mod Q; low_i=C_d(A_i) mod Q; d*high+low=pi_Q A",
+      "equation_domain": "integer quotient / coordinate equality in R_Q²",
+      "assumptions": [
+        "A02",
+        "A03"
+      ],
+      "basis": [
+        "S16",
+        "S17",
+        "S18",
+        "S37"
+      ],
+      "role": "Centered DCP and exact recombination",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C14]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M08"
+      ]
+    },
+    {
+      "id": "C15",
+      "statement": "RCB(Relin2(H,L))=Relin_Q(dH)+Relin_Q(L) in R_Q²",
+      "equation_domain": "coordinate equality in R_Q²",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A06",
+        "A11"
+      ],
+      "basis": [
+        "S08",
+        "S13",
+        "S16",
+        "S19",
+        "S20",
+        "S38",
+        "S42",
+        "S50"
+      ],
+      "role": "Direct Relin2 contract without assuming additivity",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C15]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M07",
+        "M08"
+      ]
+    },
+    {
+      "id": "C16",
+      "statement": "nu2=nu_Q(dH2)+nu_Q(L2); output.phase==T+nu2 mod Q; ||nu2||c<=B_Q(dH2)+B_Q(L2)",
+      "equation_domain": "integer error / congruence / norm bound",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A11"
+      ],
+      "basis": [
+        "S08",
+        "S15",
+        "S16",
+        "S42",
+        "S50"
+      ],
+      "role": "Actual two-call relinearization error; not d*nu(H2)",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C16]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M08"
+      ]
+    },
+    {
+      "id": "C17",
+      "statement": "tau_prime-tau=nu2-Q*w2; ||tau||c+B2<Q/2 implies w2=0; mod-error and centered-phase difference are distinct",
+      "equation_domain": "exact integer equality with wrap",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A11"
+      ],
+      "basis": [
+        "S08",
+        "S15",
+        "S42"
+      ],
+      "role": "Lift-aware interpretation of decoded error",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C17]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M11"
+      ]
+    },
+    {
+      "id": "C18",
+      "statement": "Successful key-error coefficient support <=39 covers nominal 3.19F and OpenMP private default1 (13)",
+      "equation_domain": "conditional deterministic implementation support",
+      "assumptions": [
+        "A01",
+        "A03",
+        "A04",
+        "A05",
+        "A07"
+      ],
+      "basis": [
+        "S02",
+        "S06",
+        "S07",
+        "S21",
+        "S39",
+        "S46",
+        "S32"
+      ],
+      "role": "No measured sigma or noise reduction required",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C18]",
+      "status": "conditional_source_bound",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "No historical private DGG instance or noise vector inspected; not a statement that all PKE/payload noise uses sigma1.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "public_bounds"
+      ]
+    },
+    {
+      "id": "C19",
+      "statement": "BK=(39*N*sum(qj-1)+(1+h)(P-1))/P; B2=2*BK; B2<Q/2 and d*N*B2/S_f^2<T/2^40 for all 8 S100 families",
+      "equation_domain": "public integer/Fraction inequalities",
+      "assumptions": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A11"
+      ],
+      "basis": [
+        "S02",
+        "S03",
+        "S06",
+        "S07",
+        "S21",
+        "S28",
+        "S39"
+      ],
+      "role": "Useful uniform local Relin2 bound",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C19]",
+      "status": "conditional_source_bound_with_executed_exact_arithmetic",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "The algebraic local term is bounded; total observed error and nonwrap are not thereby certified.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "public_bounds"
+      ]
+    },
+    {
+      "id": "C20",
+      "statement": "low_rel.phase == h_a*l_b+l_a*h_b+nu_Q(L2)+rho_d0+s*rho_d1 (mod Q); ||rho_d0+s*rho_d1||c<=R_d",
+      "equation_domain": "phase congruence / coefficient bound",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A11"
+      ],
+      "basis": [
+        "S08",
+        "S16",
+        "S17",
+        "S18",
+        "S22"
+      ],
+      "role": "DCP remainder survives in the low part despite recombination cancellation",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C20]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M08"
+      ]
+    },
+    {
+      "id": "C21",
+      "statement": "T*=d*h_a*h_b+h_a*l_b+l_a*h_b; d*T*=M_a*M_b-l_a*l_b; M_a=d*h_a+l_a",
+      "equation_domain": "integer ring identity; tensor phase congruence",
+      "assumptions": [
+        "A02",
+        "A03"
+      ],
+      "basis": [
+        "S22",
+        "S23",
+        "S40",
+        "S41",
+        "S44"
+      ],
+      "role": "Correct Tensor2 lift and positive cross terms",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C21]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M10"
+      ]
+    },
+    {
+      "id": "C22",
+      "statement": "RCB(RS2(pair))=RS(RCB(pair)); y=T*/m+nu2/m+rho_m-Q_prime*(w_pre+w_out)",
+      "equation_domain": "coordinate congruence and exact rational/integer phase equality",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A11"
+      ],
+      "basis": [
+        "S17",
+        "S18",
+        "S24",
+        "S25",
+        "S26",
+        "S27",
+        "S37",
+        "S42",
+        "S43",
+        "S49"
+      ],
+      "role": "One recombined RS error with explicit wrap terms",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C22]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M09",
+        "M10"
+      ]
+    },
+    {
+      "id": "C23",
+      "statement": "S_next=S_a*S_b/(d*m); can(y)/S_next=can(Ma)can(Mb)/(SaSb)-can(la*lb)/(SaSb)+d*can(nu2)/(SaSb)+dm*can(rho)/(SaSb)-(Qprime/S_next)can(W)",
+      "equation_domain": "exact canonical embedding equality after integer lifts",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A11"
+      ],
+      "basis": [
+        "S22",
+        "S24",
+        "S28",
+        "S42"
+      ],
+      "role": "Full normalized Mult2 identity, not a modulo division",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C23]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M10"
+      ]
+    },
+    {
+      "id": "C24",
+      "statement": "For input alpha=0 and no wrap, local normalized error <= (La*Lb+d*N*B2+dm*N*R_m)/(SaSb); NW suffices for w_pre=w_out=0",
+      "equation_domain": "conditional precision bound",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "A10",
+        "A11"
+      ],
+      "basis": [
+        "S22",
+        "S24",
+        "S28"
+      ],
+      "role": "Non-circular sufficient conditions and correctly weighted local terms",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C24]",
+      "status": "conditional_not_verified_on_original_chains",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": null,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M10",
+        "M11",
+        "public_bounds"
+      ]
+    },
+    {
+      "id": "C25",
+      "statement": "Hnext<=N*Ha*Hb/m+(BK+Rd)/(dm)+Rm; Lnext<=(N*(Ha*Lb+La*Hb)+BK+Rd)/m+(1+d)*Rm",
+      "equation_domain": "coefficient norm recurrence for centered high/low phases",
+      "assumptions": [
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A10",
+        "A11"
+      ],
+      "basis": [
+        "S08",
+        "S16",
+        "S17",
+        "S18",
+        "S22",
+        "S24"
+      ],
+      "role": "Explicit upstream/next-step bound interface; no canonical monotonicity assumption",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C25]",
+      "status": "conditional_analytic_recurrence_not_eight_step_certificate",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M08",
+        "M09"
+      ]
+    },
+    {
+      "id": "C26",
+      "statement": "Failure of a sufficient nonwrap bound does not imply actual wrap; local RS coarse bound exceeds T; initial low-product coarse bound exceeds T",
+      "equation_domain": "logical distinction plus public rational inequalities",
+      "assumptions": [
+        "A01",
+        "A03",
+        "A04",
+        "A07"
+      ],
+      "basis": [
+        "S02",
+        "S17",
+        "S18",
+        "S24",
+        "S28"
+      ],
+      "role": "Exact reasons public coarse bounds cannot establish S100 E80",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C26]",
+      "status": "proved_under_explicit_assumptions",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": true
+      },
+      "model_checks": [
+        "M11",
+        "public_bounds"
+      ]
+    },
+    {
+      "id": "C27",
+      "statement": "Lemma4.4 one-coordinate correction lacks a derivation and does not transfer to this HYBRID; no production contract violation established",
+      "equation_domain": "proof applicability classification",
+      "assumptions": [
+        "A01",
+        "A02",
+        "A03",
+        "A06"
+      ],
+      "basis": [
+        "S01",
+        "S08",
+        "S09",
+        "S14",
+        "S15",
+        "S30",
+        "S48"
+      ],
+      "role": "Distinguish proof gap from actual implementation bug",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C27]",
+      "status": "analysis_disposition_supported_by_derivation_and_model",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": null
+      },
+      "model_checks": [
+        "M01",
+        "M04",
+        "M13"
+      ]
+    },
+    {
+      "id": "C28",
+      "statement": "Original S100 two chains retain FAIL; fresh B-dominant diagnostic is a different sample",
+      "equation_domain": "historical evidence reference",
+      "assumptions": [
+        "A13"
+      ],
+      "basis": [
+        "S31",
+        "S33"
+      ],
+      "role": "Preserve observed E/I/A and attribution boundaries",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C28]",
+      "status": "recorded_not_rerun",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Original whole-chain files are not present or replayed in this slice; record values are not new measurements.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": true
+      },
+      "model_checks": []
+    },
+    {
+      "id": "C29",
+      "statement": "S116 changed-parameter PASS and annulus changed-input/new-draw PASS do not replace original S100 FAIL",
+      "equation_domain": "experimental-scope distinction",
+      "assumptions": [
+        "A13"
+      ],
+      "basis": [
+        "S32",
+        "S34",
+        "S35"
+      ],
+      "role": "Avoid changing the claim population or threshold",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C29]",
+      "status": "recorded_not_rerun",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Source-semantic result, not a measured statement about historical secret states.",
+        "source_mapping_supports_stated_form": true,
+        "implementation_satisfies_all_claim_assumptions": true
+      },
+      "model_checks": []
+    },
+    {
+      "id": "C30",
+      "statement": "No identified production statement and no production RED; adopt bounded Relin2 contract without new FHE solely for this gap; ideal post-fresh arithmetic does not remove fixed inherited error",
+      "equation_domain": "bounded engineering disposition",
+      "assumptions": [
+        "A01",
+        "A13"
+      ],
+      "basis": [
+        "S08",
+        "S24",
+        "S31",
+        "S33",
+        "S47"
+      ],
+      "role": "Unique next action, not completion of the entire reproduction",
+      "proof_location": "RELIN2_BOUND.zh-CN.md [C30]",
+      "status": "bounded_disposition_not_bug_free_certificate",
+      "current_implementation": {
+        "historical_runtime_application_verified_this_round": null,
+        "qualification": "Model mutants are not production RED/GREEN. No assertion that all future Relin-related issues are excluded.",
+        "source_mapping_supports_stated_form": null,
+        "implementation_satisfies_all_claim_assumptions": true
+      },
+      "model_checks": []
+    }
+  ]
+}
