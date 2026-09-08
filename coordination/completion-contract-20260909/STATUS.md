@@ -1,5 +1,11 @@
 # Completion-contract adjudication
 
+**Current: Pro active, submitted once at 2026-09-09 05:01:24 Asia/Shanghai.**
+Conversation [执行深度审查](https://chatgpt.com/c/6aa077a5-8628-83ec-9fc9-75b5540f2830).
+See PRO_SUBMISSION.md for actual attachment/model/one-message evidence. No final
+verdict yet; do not repeat the task or interrupt thinking. Preparation statements
+below are historical checkpoints, superseded by this receipt.
+
 Prepared against clean-room source `a7f54de2701a1b9bc02660f66febeff707b56651`.
 Owner: Codex integration; intended independent semantic reviewer: web ChatGPT Pro,
 highest verified visible effort. Separate Codex requirements preflight retained.
