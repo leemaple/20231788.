@@ -1,5 +1,7 @@
 # Parameter and randomness atlas — active documentation task
 
+LATEST21:14CST: complete454member2,273,139byte sanitized source packet submitted ONCE21:12:54.201 to https://chatgpt.com/c/6aa009d7-cca4-83ec-9aab-1edac246bb44 (完成参数文档 Research), Ego211/tab21FBD0E06002EFFCAEBD2147941359A0; UI6/Pro highestPower5of5 verified, backendunattested. Stable page shows attachment/user task, Pro source-verification intention, Interacted with Files and Stop answering. LIVE, no returned document yet. See SUBMISSION_RECEIPT.md and PACKET_RECEIPT.json. Root has a fresh331file official-source mirror under ignored artifacts/reference-sources/parameter-atlas-openfhe-df495ba2 for independent read-only checks; each byte verified against official fixed Git blob. Continue same thought without stop/refresh/resubmission. No build/FFT/sampler/FHE/CI run. Initial pre-submission entries below are historical.
+
 2026-09-08 Asia/Shanghai, new explicit user request: build the detailed parameter/randomness/step/change-impact reference FIRST, then use it for debugging. This is new authorized work, not a rerun of the concluded annulus review or permission to patch algorithms now.
 
 - Worktree `/Users/lifeng/Documents/20231788-openfhe-parameter-atlas-20260908`; branch `codex/parameter-atlas-20260908`; fixed runtime baseline `a4b815a733efe81897325e2a8e4c826a4ebfa439`. Original annulus branch remains intact. Only documentation/research intake is changed here.
