@@ -1,0 +1,22 @@
+# Public encoder cap execution ledger — 2026-09-09 Asia/Shanghai
+
+## Scope and provenance
+
+Root base 32d813042580f7306f78ea27662192a3e27ff430. Original Pro return is immutable under `coordination/initial-lift-nonwrap-20260909/pro/`; original Python candidate SHA-256 is 728494aa1b074300b7fe5c8ddc7c6ed1f16eab4bcc0c6a792be7e489eb094b89. Successor copies only that reviewed clean-room draft. Existing production codec/input bodies are unchanged. C++ declaration/driver/opt-in target are present; the function definition is deliberately absent for the future real remote link RED.
+
+All local commands below use `/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -B -I tests/public_encoder_scalar_contract_test.py`, unless the original-candidate override is specified. They perform bounded integer/Fraction, JSON, subprocess parser and file-boundary checks only. Importing the tiny-model module does not run its test cases. Local C++ builds, encoding, FFT/NTT, FHE, random sampling and full interval transforms: **0**. These are not precision experiments.
+
+## Observed chronological TDD receipts
+
+1. F3 original parser: `--candidate-module coordination/initial-lift-nonwrap-20260909/pro/candidate/certify_public_encoder.py`. Initial depth3000 fixture was nondiscriminating (4/4 PASS); read-only investigation found this Python decoder accepts that depth despite recursion limit1000. Raising fixture depth to10000 produced the actual RED: 4 tests,1 failure,3 pass,0.307s, exit1. CLI returned1 with `RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string`, expected controlled exit4. No certificate. Do not count the earlier passing fixture as a reproduced defect.
+2. F3 successor narrow parse-boundary translation:4/4 PASS,0.194s, exit0. Only decoder `RecursionError` becomes `ValueError`; algorithm errors are not blanket-caught.
+3. F2 bounded regular-file seam:3 new tests plus prior4. RED:7 tests,3 errors,0.215s,exit1 because `read_public_bytes` did not exist. This is a missing-behavior RED, not a regression claim. Tests cover exactly12,000,000bytes,one more byte,symlink and directory. GREEN after descriptor-based bounded read:7/7 PASS,0.207s,exit0. `O_NOFOLLOW` is atomic; `O_NONBLOCK` avoids blocking on nonregular substitutions before `fstat`; only12,000,001bytes can be read. This file boundary is explicitly Linux/macOS, not claimed Windows portable.
+4. F4 original overlap oracle transplanted into the tiny-model test module, without executing a transform: false point at rational upper sqrt endpoint wrongly passed. RED:8 tests,1 failure,0.249s,exit1, `AssertionError not raised`. Corrected sufficient containment `a<=L,b>=U`:8/8 PASS,0.228s,exit0. Original returned test remains unchanged. Future remote script still contains exactly4 transform models.
+5. Shared three-way classifier seam: RED9 tests,4 failing subcases,0.260s,exit1 because `classify_cap` did not exist. Missing-behavior RED. After extracting the frozen exact comparison and using it in the real transform:9/9 PASS,0.226s,exit0. Cases below,equal,above,straddling16129/16384; equal is certified, lower strictly above refutes, overlap remains inconclusive.
+6. Added CRLF and missing-final-LF regression assertions for already implemented parser behavior (not new RED claims):11/11 PASS,0.456s,exit0. `git diff --quiet a4b815a733efe81897325e2a8e4c826a4ebfa439 -- src tests/paper_full_eight_square_oracle.h` exited0: all current production source and original input header are unchanged before the deliberate link RED. Decoded Gitleaks8.30.1 scans of diagnostics and this coordination directory reported no leaks; final staged-slice scan remains required before push.
+
+## Pending; not claimed
+
+Independent successor review is now accepted in `FIX_REVIEW.md`: all F1–F4 source fixes resolved within scope; reviewer independently observed final11/11 scalar checks in0.826s and recorded all six source hashes. Root read the complete final review and matched these hashes. Provider diversity remains reduced under the recorded Fable unavailability fallback; two Codex contexts are not two providers.
+
+Still pending: CI gate review, actual remote link RED, compiled metadata, C++ API-negative,4 tiny transforms,1 original public encoding,1 full outward interval transform and returned artifact intake. No new workflow run has been dispatched by root at this checkpoint. Original S100 E80 remains FAIL; no inference from these parser/scalar checks to the paper's precision claim.

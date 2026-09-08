@@ -354,3 +354,12 @@ if(OPENFHE_2023_1788_ENABLE_S100_ANNULUS125)
         TIMEOUT 1200 RUN_SERIAL TRUE ENVIRONMENT "OMP_NUM_THREADS=2"
         LABELS "s100;annulus125;eight-square;opt-in;not-table3-statistics")
 endif()
+
+# Key-free public-encoding evidence; never part of all/default CTest.
+option(OPENFHE1788_PUBLIC_ENCODER_DIAGNOSTIC "Build the key-free original S100 encoding probe" OFF)
+if(OPENFHE1788_PUBLIC_ENCODER_DIAGNOSTIC)
+    add_executable(public_s100_encoding_dump EXCLUDE_FROM_ALL diagnostics/public_s100_encoding_dump.cpp)
+    target_include_directories(public_s100_encoding_dump PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+    target_link_libraries(public_s100_encoding_dump PRIVATE openfhe_2023_1788)
+    target_compile_definitions(public_s100_encoding_dump PRIVATE OPENFHE1788_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+endif()
