@@ -1,0 +1,114 @@
+{
+  "schema": "conditional-canonical-nonwrap-draft-v1",
+  "execution_status": "PASS",
+  "adoption_status": "DRAFT_PENDING_INDEPENDENT_EIGHT_STEP_REVIEW",
+  "script_sha256": "5b4ccc33e215323c159e95460c79a25ab6d0466766d5988ee80b964c0a62a68a",
+  "source_sha256": "6781d01ff9b4012e7c6d14d16f482def0821c54f4e81e2de80bd8db9d1aea41b",
+  "oracle_sha256": "08d6c4dfe6761b84d893d90c120418a29d8a2b96aa05304e95728d72e4c3e203",
+  "assumptions": [
+    "adopted exact ring, honest key, coherent finite support and Relin2/DCP/RS source contracts",
+    "actual integer fresh phase can-norm <= (255/256)*2^100; sufficient from E_enc<=1/512 plus frozen input radius and worst-case PKE support"
+  ],
+  "E_enc_bound_verified_here": false,
+  "historical_phase_bound_verified_here": false,
+  "all_eight_sufficient_induction_checks_pass": true,
+  "centering_canonical_contraction_counterexample": {
+    "original": [
+      3,
+      2,
+      -1,
+      1
+    ],
+    "centered": [
+      -2,
+      2,
+      -1,
+      1
+    ],
+    "original_max_norm_squared": "15",
+    "centered_max_norm_squared": "10+5*sqrt(2)"
+  },
+  "rows": [
+    {
+      "round": 1,
+      "Q_bits": 580,
+      "high_can_bound": "1148419547807886337",
+      "low_can_bound": "2323854083418488832",
+      "next_high_can_bound": "1143935170381604105",
+      "next_low_can_bound": "6953413762943435357",
+      "all_five_margin_tests_positive": true,
+      "output_recombined_over_halfQ_upper_millionths": 1
+    },
+    {
+      "round": 2,
+      "Q_bits": 520,
+      "high_can_bound": "1143935170381604105",
+      "low_can_bound": "6953413762943435357",
+      "next_high_can_bound": "1135018879278366024",
+      "next_low_can_bound": "16122286198640151554",
+      "all_five_margin_tests_positive": true,
+      "output_recombined_over_halfQ_upper_millionths": 1
+    },
+    {
+      "round": 3,
+      "Q_bits": 460,
+      "high_can_bound": "1135018879278366024",
+      "low_can_bound": "16122286198640151554",
+      "next_high_can_bound": "1117394246866557335",
+      "next_low_can_bound": "34067731077109831990",
+      "all_five_margin_tests_positive": true,
+      "output_recombined_over_halfQ_upper_millionths": 1
+    },
+    {
+      "round": 4,
+      "Q_bits": 400,
+      "high_can_bound": "1117394246866557335",
+      "low_can_bound": "34067731077109831990",
+      "next_high_can_bound": "1082961761020527386",
+      "next_low_can_bound": "68359723060962940679",
+      "all_five_margin_tests_positive": true,
+      "output_recombined_over_halfQ_upper_millionths": 1
+    },
+    {
+      "round": 5,
+      "Q_bits": 340,
+      "high_can_bound": "1082961761020527386",
+      "low_can_bound": "68359723060962940679",
+      "next_high_can_bound": "1017247203005769559",
+      "next_low_can_bound": "130747108873766098487",
+      "all_five_margin_tests_positive": true,
+      "output_recombined_over_halfQ_upper_millionths": 1
+    },
+    {
+      "round": 6,
+      "Q_bits": 280,
+      "high_can_bound": "1017247203005769559",
+      "low_can_bound": "130747108873766098487",
+      "next_high_can_bound": "897538876584778868",
+      "next_low_can_bound": "233045772744379458013",
+      "all_five_margin_tests_positive": true,
+      "output_recombined_over_halfQ_upper_millionths": 1
+    },
+    {
+      "round": 7,
+      "Q_bits": 220,
+      "high_can_bound": "897538876584778868",
+      "low_can_bound": "233045772744379458013",
+      "next_high_can_bound": "698725829791056400",
+      "next_low_can_bound": "365171871451149559154",
+      "all_five_margin_tests_positive": true,
+      "output_recombined_over_halfQ_upper_millionths": 1
+    },
+    {
+      "round": 8,
+      "Q_bits": 160,
+      "high_can_bound": "698725829791056400",
+      "low_can_bound": "365171871451149559154",
+      "next_high_can_bound": "423461426707938322",
+      "next_low_can_bound": "444947255378839268027",
+      "all_five_margin_tests_positive": true,
+      "output_recombined_over_halfQ_upper_millionths": 734588
+    }
+  ],
+  "scope": "Pure integer/Fraction model. Not a production test, historical wrap observation, E80 certificate, encoding-error proof or changed-input experiment."
+}
