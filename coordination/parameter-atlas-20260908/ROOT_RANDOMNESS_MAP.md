@@ -122,6 +122,14 @@ After the independent worker completed this map, root inspected `O:src/pke/inclu
 
 Consequently the seven projected-family private-key wrappers in `P:src/repeated_mult2.cpp:373–375` consume tag-generation randomness before their tags are replaced with the root tag. This resolves the explicitly upstream-unknown constructor boundary in `PROJECT_PARAMETER_MAP.md`. It does not mean that those wrappers sample seven new secret polynomials. Root performed source inspection only, not key construction or RNG execution.
 
+### Root follow-up: fixed Q does not make auxiliary-parameter construction RNG-free
+
+Root additionally read `O:src/pke/lib/schemerns/rns-cryptoparameters.cpp:44–175`, `ckksrns-cryptoparameters.cpp:185–188`, and `O:src/core/include/math/nbtheory-impl.h:63–129,183–230,261–394`. Project `MakeFamily` invokes `PrecomputeCRTTables` before obtaining the context; its frozen Q does not skip upstream HYBRID P generation. That path computes partition size `ceil(sizeQ/numPartQ)`, sizes P using `ceil(max_partition_bits/auxBits)`, obtains the CKKS prime step `2*N`, then calls `FirstPrime`, `PreviousPrime` (skipping primes already in Q), and `RootOfUnity`.
+
+The prime search advances along a fixed arithmetic progression but uses randomized Miller–Rabin witnesses to accept candidates. `RootOfUnity` calls `FindGenerator`, which factorizes `q-1` using primality tests and Pollard–Rho, and draws trial generators through the same `RNG`/PRNG accessor. It then cycles through coprime powers and selects the minimum primitive root. Thus the returned root is canonical for valid prime/order inputs even though its construction consumes random words; do not equate a fixed public output with a randomness-free computation. No prime, factorization, root search, or precomputation was executed by root here.
+
+This precedes the already documented h128 adapter basis validation, key-tag construction, and cryptographic samplers. A statement of an exhaustive cryptographic-call count must not be relabeled an exhaustive global PRNG draw count. Final documentation must include parameter-construction consumers as well as encryption consumers.
+
 - [x] Distinguish PRNG engine state from context parameters, metadata “seed” names, and distribution objects.
 - [x] Identify normal entropy-mixing path, exception behavior, expansion, thread-local/OpenMP branches, and debug fixed-seed branch without reading secret material.
 - [x] Distinguish ordinary sparse h192, explicit project h128, dense v, and sparse sign-count conditioning.

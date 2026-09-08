@@ -1,0 +1,56 @@
+# 论文原页独立核对：给参数参考文档的验收约束
+
+2026-09-08。根端在 Pro 主文档仍在生成时进行；没有向活动中的对话注入本记录。仅阅读原文、渲染页面与核对源码，没有运行构建、采样、FFT、加密或实验。
+
+## 来源与实际检查
+
+- 用户提供的 `/Users/lifeng/.zcode/workspace/default/2023.1788.pdf` 与本次已校验交接包 `references/paper/PAPER-2023-1788.pdf` 的 SHA-256 一致：`61d9b948b17b6a624d3bf3372462555288308011226d2893e9e6bc3d6d197eac`。
+- 阅读交接包中原文文本的 §2.1、§2.2、§3–§4 相关检索上下文，以及 §6、§6.1、§6.3、表 3、结论；公式文本提取可能丢失排版，不能独自证明符号正确。
+- 使用 Poppler `pdftoppm -f PAGE -l PAGE -r 115 -png`，逐页渲染并目视检查 PDF 第 4、5、13 页。临时输出目录 `/private/tmp/openfhe-atlas-paper-qa.ZggHcf`，不是最终交付物。
+- 额外源码核对：项目 `src/double_ckks.cpp:826–890`；固定 OpenFHE pin 的 `gen-cryptocontext-ckksrns-params.h:55–103`、`gen-cryptocontext-params-defaults.h:46–88`；项目 `src/repeated_mult2.cpp:111–225`。源码基线同本目录 TASK/输入清单。
+
+## 一、必须区分论文目标与本项目验收
+
+论文的 double precision 不是把计算切换成 C++ `double`。目标是将 CKKS 密文拆成高、低两部分，利用三项乘积近似表示原乘积，使一次乘法消耗约一半的模数预算。论文 §6.3 的具体例子是初始缩放因子 `2^100`、连续 8 次平方；100 位缩放因子不是承诺最终具有 100 位有效精度。
+
+第 13 页实际表 3 的 Mult2 行为：`N=2^15`，`d_num=11`，单线程乘法时间 `179 ms`，64 位单元 NTT 计数 `350`，最大层密文 `5.08 MB`，单个 switching key `30.6 MB`；参数表为 `log2(Q_L P)≈680`、`log2 Δ=100`、Base 两个 50 位素数、Mult 八个 60 位素数、Div 一个 40 位素数、P 一个 60 位素数、`h=128`。
+
+正文的精度结果是 1000 次执行的误差无穷范数平均值对应约 `2^-81.8`；它不是所有输入/密钥均小于该值的定理，不是单次试验的强制精确目标，也不是相对误差的自动定义。用户已明确不需要复刻 1000 次实验，因此文档应采用实际项目测试的样本数、范数与阈值，不能假称复现了论文的统计平均。
+
+表 3 的尺寸还有容易忽略的脚注 6：密文尺寸不采用最大层可行的种子压缩，而 switching-key 尺寸采用这种表示。将 OpenFHE 未压缩序列化大小直接对比该表会混入口径差异。单线程时间也不能直接和项目 OMP2、不同硬件及含验证器的总时间相比较。
+
+## 二、论文给出的分布符号不是完整 HEaaN 采样配置
+
+PDF 第 4 页 §2.1 明确分开：秘钥固定 Hamming weight `h`、加密临时量的分布 `χ_enc`、误差分布 `χ_err`。它写的是“按指定分布”抽取重量为 h 的三元秘钥，并没有由 h 唯一规定 `χ_enc`。
+
+因此不能从表 3 的 h128 推出临时量 v 也是 h128，也不能直接断言 HEaaN 与当前 OpenFHE 的符号平衡约束、误差 sigma、熵源、拒绝抽样、线程随机流完全相同。已检查的表格和方法段没有给出这些实现身份。应将其列为原始实现仍待验证的条件，不擅自填充为 OpenFHE 默认值。
+
+论文的 `B_Dec` 是限制解密后代表元大小的数学界限；不应仅因为看到 OpenFHE 的解密 API 就声称它实现了完全相同的运行时拒绝条件。系数范数、canonical embedding 范数、槽位分量误差和复数模误差须各自定义。
+
+## 三、原文符号存在需要显式解释的局部不一致
+
+PDF 第 4 页写 `sk=(1,s)`、`pk=(-a*s+e,a)`，解密使用内积。第 5 页 §2.2 的 Tensor 展示式却印为 `(b*b', -a*b'-a'*b, a*a')`，紧接着又声称其与 `(1,s,s²)` 的内积等于两个解密值的乘积。这不是本次文本提取产生的负号：已目视原页确认。
+
+在该处已声明的正号内积约定下，直接展开 `(b+a*s)(b'+a'*s)`，中间项应为 `a*b'+a'*b`。因此这组印刷式存在局部符号不一致；本记录不对整篇论文做无效推断。最终 atlas 应说明项目遵循自洽的 OpenFHE 元素/解密约定，不能把这行孤立的负号照抄为修改乘法的理由。
+
+项目 Tensor2 在 `src/double_ckks.cpp:853–859` 调用三次 `EvalMultNoRelin` 后把两个交叉乘积相加。本次只是观察该调用，没有执行它；其底层元素卷积应在主文档引用固定 OpenFHE 实现锚点，与上面的代数约定核对。这个符号检查本身不等于发现或修复了项目 bug。
+
+## 四、论文步骤与 OpenFHE 对象生命周期要分开
+
+- DCP/RCB 是高低表示之间的分解/重组。不得把每个 family 的 reentry 对象包装自动称作一次新的 DCP 或误差刷新。
+- 论文 §6.2 的 18 层例子需要两次额外误差刷新，解释了 3 个 Div 素数；§6.3 的 8 层高精度例子明确不使用该刷新。不能从别的表借用 Div 数量来解释表 3。
+- Relin2 先升高部分再重线性化、再分解的设计用于控制高部分误差；分别随意 relinearize 两个部分并不是同一算法。RS2 的两次 rescale 用于误差补偿，最终只消耗本层同一个乘法素数。
+- 初始缩放是 `Δ≈q_div*q_mult`；实际素数只近似 2 的幂。项目的精确有理尺度递推、OpenFHE `scalingFactor` 兼容字段和 `noiseScaleDeg` 必须分别列出，不能把 metadata 的赋值描述成系数已被除掉。
+- 本项目手工构造固定 Q 的参数对象，再计算 P/QP/分区表，最后获取 context；不是普通 `GenCryptoContext(CCParams)` 自动生成生产参数。自动选参默认值不能覆盖该手工路径的明确实参。
+
+## 五、32 个基础 setter 不能简单称为 32 个可调 CKKS 开关
+
+根端进一步核对 CKKS 专门的参数类型：以下 8 个基础 setter 被 `DISABLED_FOR_CKKSRNS` 覆盖：`PlaintextModulus`、`EvalAddCount`、`KeySwitchCount`、`EncryptionTechnique`、`MultiplicationTechnique`、`PRENumHops`、`MultipartyMode`、`ThresholdNumOfParties`。
+
+这不等于手工 `CryptoParametersCKKSRNS` 内部没有对应字段。例如项目显式构造并校验 STANDARD/HPS/FIXED_NOISE_MULTIPARTY 等值。需要同时说明“公开 CKKS CCParams 不允许这样设置”和“内部手工构造路径实际传入什么”。
+
+当前 pin 的 native64 自动 CKKS 默认是 FLEXIBLEAUTOEXT、first60、scale50、HEStd_128_classic、UNIFORM_TERNARY、REAL；项目生产固定 profile 则是 FIXEDMANUAL、固定实际素数、HEStd_NotSet、显式 h128 秘钥、COMPLEX。这些差异必须用来源解释，而不是列出一张默认表就结束。
+
+## 后续用途
+
+本记录仅用于验收 Pro 主文档：需要补足的内容在其结束后统一核对，不打断当前思考。只有参数、随机性、数学步骤、对象生命周期和历史测量口径都说明清楚，才从具体差异中选择下一项最小诊断。尚未选择或执行新实验，没有提出要降低噪声、修改符号或更换采样器。
