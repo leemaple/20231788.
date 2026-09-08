@@ -2,13 +2,19 @@
 
 This branch is a greenfield implementation of the `t=2` Double-CKKS multiplication method from IACR ePrint 2023/1788 for official pristine OpenFHE 1.5.0.
 
-**最新交付与用户检查入口（2026-09-07）：[中文检查指南](CHECK_AND_HANDOFF.zh-CN.md)。** 最新增量在 `codex/s100-fresh-error-repair-20260907` 分支；仓库默认分支仍是上一版。原 S100 精度 FAIL 保留，现有测试／审核未发现明确未处理的生产实现缺陷，但不构成绝对正确性证明。用户已决定不联系作者、暂不继续追加实验。
+**最新交付与用户检查入口（2026-09-08）：[中文检查指南](CHECK_AND_HANDOFF.zh-CN.md)。** 最新增量在 `codex/s100-annulus125-20260908` 分支，不等于仓库默认分支。用户已重新授权全面复核及必要远端实验；不联系作者的决定仍有效。一次独立命名、调整输入范围的 S100 完整八平方实验通过，生产乘法代码未因此修改；原近单位圆 S100 精度 FAIL 保留，不能声称论文表 3 已完整复现。
 
-此前 S116 固定快照说明：[实现做了什么、复现命令、结果与限制](REPRODUCE.zh-CN.md)。下方 delivery/default-branch 记录描述上一轮 S116 交付，最新源码身份、诊断增量和当前停止边界以中文检查指南为准。
+最新实测与边界：[S100 单次条件输入实验说明](coordination/s100-annulus125-20260908/RESULT.zh-CN.md)。此前 S116 固定快照说明：[实现做了什么、复现命令、结果与限制](REPRODUCE.zh-CN.md)。下方历史 delivery/default-branch 记录描述上一轮 S116 交付，不能覆盖最新指南的分支、源码和验收边界。
 
 The destination repository's previous implementation and every related local code tree are quarantined and are not inputs. Development begins with paper-derived specifications and red-first independent-oracle tests.
 
 ## Live project state
+
+- Current scientific source: `03f37b6ec7b8d6d87ff68d15d2843c3aa9ac6a9b`, [single Linux run34184869227](https://github.com/leemaple/20231788./actions/runs/34184869227). One public-key payload, eight squares, all16384 complex slots; final maximum complex-modulus error `1.462314103884e-25`, below `2^-80`. This holds for one predeclared annulus125 input vector and one actual key/noise sample, not all S100 inputs or keys. Raw data and process/scale/hash evidence are committed under `coordination/s100-annulus125-20260908/experiment-evidence/`; the [independent result review](coordination/s100-annulus125-20260908/INDEPENDENT_RESULT_REVIEW.md) records limits.
+- Original near-unit S100 remains FAIL; S116's earlier two-platform PASS remains a separately changed-parameter result. Exact Table3 provenance/statistics/performance and deployment security remain unresolved. The full reproduction objective is not complete. No repeated sample or restored high-frequency engineering timer follows this PASS.
+- Current continuation: [active coordination checkpoint](coordination/s100-fresh-error-repair-01/STATUS.md). The renewed independent browser Pro review has its own [exact-source handoff receipt](coordination/annulus-independent-pro-review-20260908/SUBMISSION_RECEIPT.md); do not treat an in-progress review as accepted evidence.
+
+## Historical S116 delivery state (2026-09-07)
 
 - Status checkpoint: **2026-09-07 Asia/Shanghai**. The constructive t=2 algorithm implementation is **delivered with qualified experimental-profile correctness**, not exact Table3 reproduction or a security-certified library. The [delivery record](IMPLEMENTATION_DELIVERY.md) maps requirements to evidence. The remote default branch has the implementation; the protected local reporting checkout intentionally retains its existing edits.
 - Implemented paths include DCP/RCB, Tensor2, Relin2, RS2, Mult2, pair Add/Sub, high-precision client I/O, repeated multiplication and same-root h=128 setup. The original paper-scale path has actually executed one encryption followed by eight squarings on both hosts at `N=32768` / 16384 slots. **Its execution completed, but its frozen numerical acceptance failed.** See the [full-slot acceptance and retained evidence](coordination/fs-endpoint-live-run-01/ACCEPTANCE.md).
@@ -31,6 +37,8 @@ The destination repository's previous implementation and every related local cod
 All coherent project changes are committed in small checkpoints and pushed immediately. Agent work stays on isolated branches until reviewed; shared history is never force-pushed. Red/green records are retained under [`artifacts/tdd/dcp-rcb`](artifacts/tdd/dcp-rcb) and [`artifacts/tdd/tensor2`](artifacts/tdd/tensor2).
 
 ## Test entry points and execution limits
+
+The additional `s100_annulus125_eight_square_test` target is optional (`OPENFHE_2023_1788_ENABLE_S100_ANNULUS125=ON`, default OFF). Its one predeclared live run is already complete. Do not rerun, move, or recreate `s100-annulus125-once-20260908`; the user check guide provides a pure scalar replay of committed data without another encrypted sample. The older test entries below retain their distinct historical scopes.
 
 Use pristine OpenFHE **1.5.0**, commit `df495ba2e91739a6dc8f1de254fc5a41155ce504`, native64/backend4. The [hosted workflow](.github/workflows/dcp-rcb.yml) records dependency setup, compiler versions, exact source provenance and commands for Ubuntu/GCC and Windows/MINGW64. Put sustained compilation and cryptographic tests on those hosts, not the shared Mac.
 
