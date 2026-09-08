@@ -97,13 +97,14 @@ def main() -> int:
     parser.add_argument("--executable", type=Path, required=True)
     parser.add_argument("--result-directory", type=Path, required=True)
     parser.add_argument("--source-commit", required=True)
-    parser.add_argument("--timeout-seconds", type=float, default=1200)
     args = parser.parse_args()
     return run_once(
         args.executable,
         args.result_directory,
         args.source_commit,
-        args.timeout_seconds,
+        # The CLI cannot change the predeclared 1200-second experiment limit.
+        # Shorter durations remain available only to synthetic function tests.
+        1200,
     )
 
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Synthetic completed-process evidence seam; zero encryption/FFT/builds."""
 import json
+import hashlib
 from pathlib import Path
 import sys
 import tempfile
@@ -38,6 +39,10 @@ class CompletedEvidence(unittest.TestCase):
         result = json.loads((self.root / "verification.json").read_text())
         self.assertEqual(result["status"], "PASS")
         self.assertEqual([r["decimal_precision"] for r in result["replays"]], [180, 230])
+        self.assertEqual(set(result["evidence_sha256"]),
+                         {"program-start.json", "program-end.json", "raw.tsv", "stdout.txt", "stderr.txt"})
+        for name, digest in result["evidence_sha256"].items():
+            self.assertEqual(digest, hashlib.sha256((self.root / name).read_bytes()).hexdigest())
         with self.assertRaises(FileExistsError):
             finalize_once.finalize(self.root, self.source)
 

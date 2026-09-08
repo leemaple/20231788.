@@ -182,6 +182,18 @@ class SyntheticRunOnceContract(unittest.TestCase):
         self.assertEqual((result / "raw.tsv").read_text(), "partial\n")
         self.assertIn("before-timeout", (result / "stdout.txt").read_text())
 
+    def test_cli_rejects_timeout_override_before_starting_a_process(self):
+        marker = self.root / "launched"
+        exe = self.fake(f"import pathlib\npathlib.Path({str(marker)!r}).write_text('launched')\n")
+        result = self.root / "override-result"
+        completed = subprocess.run(
+            [sys.executable, "-B", str(RUNNER), "--executable", str(exe),
+             "--result-directory", str(result), "--source-commit", "c" * 40,
+             "--timeout-seconds", "600"], capture_output=True, text=True, check=False)
+        self.assertEqual(completed.returncode, 2, "the frozen CLI must reject a timeout knob")
+        self.assertFalse(marker.exists())
+        self.assertFalse(result.exists())
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()

@@ -39,8 +39,10 @@ def finalize(directory, source_commit):
     for name in names:
         path = directory / name
         need(path.is_file() and not path.is_symlink(), "missing/nonregular evidence: " + name)
-    start = json.loads((directory / "program-start.json").read_text())
-    end = json.loads((directory / "program-end.json").read_text())
+    need(0 < (directory / "raw.tsv").stat().st_size <= 32 * 1024 * 1024, "invalid TSV size")
+    evidence = {name: (directory / name).read_bytes() for name in names}
+    start = json.loads(evidence["program-start.json"])
+    end = json.loads(evidence["program-end.json"])
     for receipt in (start, end):
         need(receipt.get("source_commit") == source_commit and
              receipt.get("contract") == receiver.CONTRACT and
@@ -59,11 +61,9 @@ def finalize(directory, source_commit):
     need(end.get("timed_out") is False and type(code) is int and code in (0, 1),
          "incomplete/abnormal process; not a numerical result")
     decision = "PASS" if code == 0 else "FAIL"
-    need((directory / "stderr.txt").read_bytes() == b"", "unexpected process stderr")
-    need((directory / "stdout.txt").read_bytes() == banner(decision).encode(), "process stdout mismatch")
-    path = directory / "raw.tsv"
-    need(0 < path.stat().st_size <= 32 * 1024 * 1024, "invalid TSV size")
-    raw = path.read_bytes()
+    need(evidence["stderr.txt"] == b"", "unexpected process stderr")
+    need(evidence["stdout.txt"] == banner(decision).encode(), "process stdout mismatch")
+    raw = evidence["raw.tsv"]
     text = raw.decode("utf-8")
     replays = [receiver.replay(text, source_commit, code, digits) for digits in (180, 230)]
     a, b = replays
@@ -71,6 +71,9 @@ def finalize(directory, source_commit):
          "cross-precision decision disagreement")
     with localcontext() as context:
         context.prec = 250
+        need(abs(Decimal(a["terminal_component_disagreement"]) -
+                 Decimal(b["terminal_component_disagreement"])) < Decimal(2) ** -300,
+             "cross-precision terminal agreement disagreement")
         for name, maximum in a["maxima"].items():
             other = b["maxima"][name]
             need(maximum["slot"] == other["slot"] and
@@ -78,6 +81,7 @@ def finalize(directory, source_commit):
                  "cross-precision maximum disagreement: " + name)
     result = {"contract": receiver.CONTRACT, "source_commit": source_commit,
               "status": decision, "process_exit": code, "raw_bytes": len(raw),
+              "evidence_sha256": {name: hashlib.sha256(data).hexdigest() for name, data in evidence.items()},
               "raw_sha256": hashlib.sha256(raw).hexdigest(), "replays": replays,
               "scope": "one supplied process record; scalar replay, not independent runtime attestation",
               "assurance": "CONDITIONAL_OBSERVER_NOT_FORMAL", "legacy_S100_stress": "FAIL_RETAINED",
