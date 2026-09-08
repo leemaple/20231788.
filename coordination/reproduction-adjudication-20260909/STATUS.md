@@ -1,6 +1,6 @@
 # Reproduction adjudication handoff
 
-**Latest checkpoint: RUNNING.** One submission at 2026-09-09 03:25:10.493 Asia/Shanghai; stable live response verified at03:25:49.132. [执行复现裁决审查](https://chatgpt.com/c/6aa06117-a1b8-83ec-bb22-710339c3b865), Ego space214/tabD647EDB87359BE64B27A10EC248F92E7. See SUBMISSION_RECEIPT.md, PACKET_VALIDATION.md and PACKET_RECEIPT.json. Preserve uninterrupted thought; no new timers. Earlier preparation checkpoints below are historical, not current dispatch status.
+**Latest checkpoint: TERMINAL RETURN / independent adoption in progress.** Pro terminal observed 2026-09-09 04:10:29.733 Asia/Shanghai (displayed Worked for 43m59s), after one uninterrupted submission. Downloaded once, all 42 files preserved, exact manifest/14 retained Git bindings/strict secret scans PASS. Task space214 closed only after verified download. No live Pro thought remains. See [return review](RETURN_REVIEW.md) and RETURN_INTAKE.json. Scalar replay has 53 PASS checks with matching mathematical results; candidate transforms remain NOT RUN. No production arithmetic defect identified; original S100 E80 remains FAIL. Next bounded work is independent all-coefficient nearest-rounding certification, conditional on review and fixing candidate harness findings. Earlier RUNNING/preparation checkpoints below are historical.
 
 2026-09-09 Asia/Shanghai. Source/evidence snapshot: 31e24bec1eb2db5d13de3b442a9e909e26db7206, codex/public-encoder-cap-20260909, clean and equal to upstream before preparation.
 

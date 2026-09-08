@@ -1,0 +1,33 @@
+obligation	exact evidence/source	verdict	remaining gap	why it matters	next-action dependency
+R01 输入包/当前manifest身份	TASK.md; MANIFEST.json; evidence/INPUT_VERIFICATION.json	proven	无；历史嵌套manifest不替代当前project身份	避免用旧源给当前结论背书	已完成，下一行动校验交付manifest
+R02 官方依赖固定源身份	S12-S14,S31-S34; INPUT_VERIFICATION:331 official files/749 Git blob checks	proven	没有逐行形式验证全部331件；此项仅字节和pin	固定真实实现分支，不依赖main/latest	无新增依赖获取
+R03 原S100名义参数与精确尺度	S08:23-47;S10:111-226,257-311;S19:p13	proven	名义对齐不等于作者所有精确参数/安全性	区分S100与S116	冻结，不修改
+R04 DCP/RCB模环对应	S09:398-438,1227-1243;S13:693-712	proven	以固定精确环算术语义为边界；不声称所有底层平台均实测	真实除法/中心余数和重组一致	不重做
+R05 Tensor2三项与LL省略	S09:826-892;S19:p7	proven	LL是设计误差项，非精确乘法	避免把有意省略当BUG	不修改
+R06 Relin2真实误差/高项零塔	S07;S09:894-1078;S12:308-437;S13:966-1014	conditional	合同固定alpha1/P/ns/诚实keys/分支；未泛化任意配置	高低噪声/carry不能虚假相加	沿用采用版；不再重推
+R07 RS2重组及尺度除d*m	S09:1080-1210;S14:172-190;S10:279-311	proven	精确ring和receipt语义；不等于最终E80保证	避免仅改metadata或遗漏d	冻结
+R08 family同根秘密与重入	S10:351-378,473-571;S26:174-234	conditional	调用正确且底层有限路径正常；无本轮实测	更换context不等于刷新/重采秘密	冻结，不申请新key
+R09 evaluator不读取明文/私钥或纠偏	S09:1213-1282;S26:190-206;S10:509-571	proven	限定所审生产调用路径，不排除任意将来改码	防止伪复现	候选仅外部公开观察器
+R10 PKE实际分布和诚实生成支持	S31:111-196;S07;S06;S20:318-329	conditional	支持界不是历史噪声实测，也非作者分布等同	nonwrap与噪声项有明确来源	不再诊断dense-v，不改噪声
+R11 当前公开p的实际来源绑定	S01;S02:26-33;S05;S35:55-81	proven	仅当前run34265676284，不是历史p	使有限数学证书指向真实对象	下一行动只读取同一原字节
+R12 当前p幅度A04	S02:9-24;S03;SCALAR_CHECKS_COMPLETE	proven	基于已审旧区间transform证书；本轮只验精确端点	新证据已填关键nonwrap前提	已完成，不重跑forward
+R13 初始和八轮兼容整数代表/半模数	S06;S02:18-24	conditional	A04当前已证；继续明确A01-A03诚实/source/ring条件	非绕回不推出小误差	沿用，不作为另一次行动
+R14 历史p与当前p的数值身份	S04;S02:38	missing	片段桥不证明历史Boost/二进制/实际系数相同	不把当前证明当历史密文观测	本切片不填；不影响当前对象认证
+R15 原输入dyadic/slot顺序与客户端桥	S08:97-119;S35:55-58;SCALAR_PROOF:1-2	proven	按通常正确的精确数构造/格式化语义；不形式验证全部Boost	新观察器必须检查原z而非另造输入	候选固定公式及3个标量样例
+R16 当前p两个系数的理想最近舍入	SCALAR_PROOF:2;SCALAR_CHECKS_COMPLETE actual_two_coefficients	proven	只j=0,16384；其余32766项未认证	新的外部解析锚和源绑定负控基础	作为完整inverse的解析控制
+R17 当前p全部32768项Ecd最近舍入	S11:425-437,463-484;S17:687-691;FINDINGS F01	missing	双精度稳定/幅度不等于所有理想舍入区间	自有编码实现到论文Ecd的有限对应性	唯一直接目标PUBLIC-S100-ECD-CELL-01
+R18 当前纯编码八平方确定性预算	SCALAR_PROOF:4;SCALAR_CHECKS_COMPLETE	conditional	以前提R17为条件；不含PKE/求值/读出项	GREEN可使η<=2^-86及小于0.424505*T预算适用	依赖R17；公式比较已完成
+R19 生产读出与精确尺度/Poly路径	S11:685-756;S32:70-95;S10:279-311	conditional	数学库正常；本轮不新解密；非完整严格三角误差证书	不能用double Plaintext Decode替代高精度结果	不安排重复读出
+R20 独立全槽fresh观测及A/B/C	S17:583-698;S18;S25	conditional	512/768直接trig误差模型有明确条件；不是理想Ecd舍入证书	已经有全槽，不重复只补十点	已有执行，不再采样
+R21 初始误差传播的同样本归因	S15,S16的signed_tuple;S23	conditional	沿用各自观察器模型；新fresh不得与旧E8配对	正确实现也可能因fresh传播不能达E80	已有结论，不重复理想传播
+R22 原S100两平台冻结E80数值验收	S15,S16;SCALAR_CHECKS_COMPLETE retained_endpoint_checks	contradicted	两个真实E8下界>T；不是缺少运行	完整复现尚未完成的实质边界	本切片任何结果不改原FAIL
+R23 小环/错基/错族/错尺度等负控支持	S26:242-256;S27:470-477;S28	conditional	源码存在且有既有工程证据；本轮没有重跑所有原测试	负控不能以历史注释或CI徽章代替	不重做已存在观察器；新分类器另有语义负控
+R24 新Ecd观察器本身的有效性	candidate/check_rounding.py;SCALAR_PROOF:5	missing	代码仅静态检查；四个tiny和一个full未执行/未独审采用	防止用新错误oracle给生产错判	唯一切片内先审数学+tiny，再full
+R25 S116结果与原条件分离	S21;S20:400-406	proven	改变Base/Div/Scale/QP；不能当S100修复	保留真实PASS但不替代原目标	不重跑
+R26 annulus结果与原条件分离	S22;S20:400-406	proven	Linux新输入且新样本；无Windows结果	避免跨输入/样本因果配对	不重跑
+R27 论文均值/范数与本项目门槛对应	S19:p13;S08:125-127;S20:355-356,390-396	conditional	论文经验均值不是逐输入保证；统计同源未完成	算法正确和经验复现是不同承诺	不恢复1000次，不改单次E80
+R28 同源论文初始化/分布/精确实现身份	S19:p13;S20:394;TASK facts	missing	作者精确初始化未建立，不能猜替代sampler	不能宣称同源Table3数值经验复现	非本次唯一行动，不以新随机链补未知条件
+R29 声明安全性时的评估依据	S10:176-226;S20:301,318-319,382	missing	手工HEStd_NotSet/h128/QP680不自动给安全等级	正确性/精度PASS均不等于安全认证	本次公开观察器不依赖新的安全估计
+R30 历史OpenMP配置的新来源进展	S24:7-27	proven	四作业ON/找到；并未实测所有局部sigma/runtime	不得重复宣布OpenMP完全未知或据此改噪声	保留，非本次下一行动
+R31 历史二进制/cache和运行时等同性	S24:23-35;S04	conditional	annulus同cache名不保证字节等同；历史参数宏不是全部runtime实测	限制跨运行推广；不影响本p只读认证	不另开广泛来源研究
+R32 交付/运行可追溯与未执行界限	EXECUTION_LEDGER.md;MANIFEST.sha256.json;NEXT_ACTION.md	proven	只对本轮实际文件/检查声明；runner结果未产生	不能把计划、意见一致或AST当实验PASS	独立执行后另存完整输出，不覆盖本包

@@ -1,0 +1,93 @@
+{
+  "scope": "Major actual command/result ledger, not a verbatim terminal/session or syscall capture",
+  "commands": [
+    {
+      "id": "C01",
+      "command": "python /mnt/data/adj_work/verify_input.py",
+      "exit_code": 0,
+      "scope": "原包CRC/当前manifest/749 Git blobs；不运行项目",
+      "evidence": "INPUT_VERIFICATION.json"
+    },
+    {
+      "id": "C02",
+      "command": "python /mnt/data/adj_work/read.py <file:start:end> ...; earlier sed/grep reads",
+      "exit_code": 0,
+      "scope": "多次纯读取；文件/请求区间见READ_REQUESTS，未伪造逐子命令完整终端日志",
+      "evidence": "READ_REQUESTS.jsonl"
+    },
+    {
+      "id": "C03",
+      "command": "Python fitz render supplied paper physical pages 4,7,8,13; container.open_image",
+      "exit_code": 0,
+      "scope": "PDF渲染及目视；非OCR、非数值变换",
+      "evidence": "SOURCE_INDEX S19; 原PDFSHA"
+    },
+    {
+      "id": "C04",
+      "command": "python -B tools/run_scalar_checks.py --output .../SCALAR_CHECKS_INITIAL.json",
+      "exit_code": 0,
+      "scope": "47项初版有限检查；输出字节现保存为PHASE1_47",
+      "evidence": "SCALAR_CHECKS_PHASE1_47.json"
+    },
+    {
+      "id": "C05",
+      "command": "python -B tools/run_scalar_checks.py --output .../SCALAR_CHECKS_FINAL.json",
+      "exit_code": 0,
+      "scope": "加入runner文件后的47项复核；输出字节现保存为PHASE2_47",
+      "evidence": "SCALAR_CHECKS_PHASE2_47.json"
+    },
+    {
+      "id": "C06",
+      "command": "python -B tools/run_scalar_checks.py --output .../SCALAR_CHECKS_COMPLETE.json",
+      "exit_code": 0,
+      "scope": "53项最终套件；新增6项历史端点有理证据核验",
+      "evidence": "SCALAR_CHECKS_COMPLETE.json"
+    },
+    {
+      "id": "C07",
+      "command": "python -B tools/verify_input_packet.py /mnt/data/reproduction-adjudication-31e24be.zip --output .../INPUT_RECHECK.json",
+      "exit_code": 0,
+      "scope": "交付可重用检查器再次核验原ZIP；无解包执行",
+      "evidence": "INPUT_RECHECK.json"
+    },
+    {
+      "id": "C08",
+      "command": "bash -n candidate/run_reviewed_once.sh",
+      "exit_code": 0,
+      "scope": "shell仅语法检查，未执行脚本",
+      "evidence": "FINAL_STATIC_CHECKS.json"
+    },
+    {
+      "id": "C09",
+      "command": "Python ast.parse over all 7 delivered candidate/tools .py files",
+      "exit_code": 0,
+      "scope": "仅AST语法解析，不生成字节码，不调用tiny/full候选",
+      "evidence": "FINAL_STATIC_CHECKS.json"
+    },
+    {
+      "id": "C10",
+      "command": "Python static delivery QA: 32 matrix rows, 36 source hashes, copied originals, primitive extraction, current AST hashes and required files",
+      "exit_code": 0,
+      "scope": "76项交付静态一致性检查；无变换",
+      "evidence": "DELIVERY_STATIC_QA.json"
+    }
+  ],
+  "non_shell_tools": [
+    {
+      "tool": "files.search",
+      "attempts": 2,
+      "result": "no indexed ZIP content; fallback to already mounted exact attachment",
+      "exit_code": null
+    },
+    {
+      "tool": "web.open fixed paper page/PDF",
+      "result": "paper page/PDF retrieved on later attempt; fixed attachment remains authority",
+      "exit_code": null
+    },
+    {
+      "tool": "web.screenshot pages 3,6,7,12 (zero based)",
+      "result": "failed access/403; used locally rendered supplied PDF pages instead",
+      "exit_code": null
+    }
+  ]
+}
