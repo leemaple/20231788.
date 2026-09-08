@@ -4,6 +4,8 @@
 
 先读本页理解机制；查具体参数/代码请读[完整中文图谱](reference/OPENFHE_CKKS_PARAMETER_ATLAS.zh-CN.md)，并合读[根端复核与限定](REVIEW_NOTES.zh-CN.md)。主图谱包括 132 条参数记录、13 个执行步骤、22 类变更影响及 127 个固定源码引用。未启用的接口也分类标出，不把它们误写成当前有效配置。
 
+**后续证据补充（2026-09-08）：** [历史构建来源核查](../../coordination/build-provenance-20260908/ASSESSMENT.zh-CN.md)已确认原 S100 / S116 两平台的依赖配置均开启并找到 OpenMP；annulus 使用缓存，库的完整来源仍需单独限定。这推进了下文的构建未知项，不是新精度结果；原始主稿与勘误回执保持不变。
+
 范围是论文 2023/1788 的 `t=2` 方法、本项目实际调用的 CKKS-RNS 路径及相关参数；不是所有 OpenFHE 算法的百科全书。BFV/BGV、未启用的 bootstrapping、多人协议等字段需要分类说明，但本项目没有因此实现这些功能。
 
 固定依据：项目运行源码 `a4b815a733efe81897325e2a8e4c826a4ebfa439`，官方 OpenFHE 1.5.0 `df495ba2e91739a6dc8f1de254fc5a41155ce504`，native64/backend4。文档分支是 `codex/parameter-atlas-20260908`。后续文档提交不改变上述运行源码身份。

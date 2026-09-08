@@ -1,0 +1,1339 @@
+{
+  "utc": "2026-09-08T15:10:15.643078+00:00",
+  "scope": "Read-only existing run/job/artifact metadata and selected log signals; no new CI/test or binary inspection.",
+  "collector_revision": 2,
+  "limitation": "gh may label log steps UNKNOWN STEP. Selection is by signal, not step name; reported step labels are preserved, not inferred. Attempt 1 remains unchanged; its zero selected lines were a collector limitation.",
+  "runs": [
+    {
+      "databaseId": 34039088536,
+      "headSha": "ed5fd192a89d6d4728ad295e87cf06a3f4abc832",
+      "status": "completed",
+      "conclusion": "failure",
+      "createdAt": "2026-09-06T14:24:57Z",
+      "updatedAt": "2026-09-06T14:39:26Z",
+      "url": "https://github.com/leemaple/20231788./actions/runs/34039088536",
+      "label": "original-S100",
+      "artifacts": [
+        {
+          "id": 9991322373,
+          "name": "fs-residual-endpoint-windows-34039088536-1",
+          "size_in_bytes": 3645844,
+          "expired": false,
+          "created_at": "2026-09-06T14:39:21Z"
+        },
+        {
+          "id": 9991240511,
+          "name": "fs-residual-endpoint-linux-34039088536-1",
+          "size_in_bytes": 3645686,
+          "expired": false,
+          "created_at": "2026-09-06T14:34:04Z"
+        }
+      ],
+      "jobs": [
+        {
+          "id": 101502439156,
+          "name": "linux-gcc",
+          "url": "https://github.com/leemaple/20231788./actions/runs/34039088536/job/101502439156",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "number": 5,
+              "name": "Verify OpenFHE provenance",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T14:25:13Z",
+              "completedAt": "2026-09-06T14:25:13Z"
+            },
+            {
+              "number": 8,
+              "name": "Cache pristine OpenFHE install",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T14:25:27Z",
+              "completedAt": "2026-09-06T14:25:27Z"
+            },
+            {
+              "number": 9,
+              "name": "Configure OpenFHE",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T14:25:27Z",
+              "completedAt": "2026-09-06T14:25:31Z"
+            },
+            {
+              "number": 10,
+              "name": "Build and install OpenFHE",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T14:25:31Z",
+              "completedAt": "2026-09-06T14:28:04Z"
+            },
+            {
+              "number": 12,
+              "name": "Configure clean-room project",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T14:28:04Z",
+              "completedAt": "2026-09-06T14:28:05Z"
+            },
+            {
+              "number": 61,
+              "name": "Post Cache pristine OpenFHE install",
+              "status": "completed",
+              "conclusion": "skipped",
+              "startedAt": "2026-09-06T14:34:04Z",
+              "completedAt": "2026-09-06T14:34:04Z"
+            }
+          ],
+          "log_bytes": 1168302,
+          "log_sha256": "04209bef3ec85899e6fb1c7ea383bc336f963848b4c62ff0e86e252aded4ff35",
+          "selected_nonsecret_build_lines": [
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:01.5768036Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:03.6518103Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:03.8221974Z   ref: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:03.8230705Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:04.0556272Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:05.1663500Z  * branch            df495ba2e91739a6dc8f1de254fc5a41155ce504 -> FETCH_HEAD"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:05.1766868Z [command]/usr/bin/git checkout --progress --force df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:05.2357282Z Note: switching to 'df495ba2e91739a6dc8f1de254fc5a41155ce504'."
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:13.4238071Z df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:13.4396321Z ^[[36;1mtest \"$actual\" = \"$OPENFHE_COMMIT\"^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:13.4448709Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:13.5896879Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:26.3898172Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:27.2295738Z   key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504-native64-backend4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:27.2297952Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:27.4664184Z Cache not found for input keys: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504-native64-backend4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:27.4811895Z ##[group]Run cmake -S .ci/openfhe-src -B .ci/openfhe-build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${OPENFHE_PREFIX} -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF -DBUILD_EXTRAS=OFF -DWITH_OPENMP=ON -DNATIVE_SIZE=64 -DMATHBACKEND=4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:27.4814923Z ^[[36;1mcmake -S .ci/openfhe-src -B .ci/openfhe-build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${OPENFHE_PREFIX} -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF -DBUILD_EXTRAS=OFF -DWITH_OPENMP=ON -DNATIVE_SIZE=64 -DMATHBACKEND=4^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:27.4860236Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:28.6180683Z -- The C compiler identification is GNU 13.3.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:29.6914938Z -- The CXX compiler identification is GNU 13.3.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:30.4406946Z -- WITH_OPENMP:        ON"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:30.4407320Z -- NATIVE_SIZE:        64"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:30.4408022Z -- WITH_NATIVEOPT:     OFF"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:30.4410525Z -- WITH_REDUCED_NOISE: OFF"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:31.0529090Z -- MATHBACKEND is set to 4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:31.0529610Z -- MATHBACKEND set to 4. Setting WITH_BE4 to ON"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:31.5860355Z -- Found OpenMP_C: -fopenmp (found version \"4.5\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:31.6841010Z -- Found OpenMP_CXX: -fopenmp (found version \"4.5\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:31.6844468Z -- Found OpenMP: TRUE (found version \"4.5\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:31.9656296Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:28:04.6706026Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:28:04.8812060Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:28:04.9480931Z -- The CXX compiler identification is GNU 13.3.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:28:05.1056166Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:15.6247239Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:18.4254495Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:21.2076326Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:22.2355657Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:22.4666600Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:23.8885633Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:26.8599666Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:29.7768425Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:32.7133770Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:56.0826294Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:31:14.3381612Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:31:25.4473454Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:31:25.6229175Z 58: test=precision_client_io_first_mult2_contract result=PASS source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 claim_scope=low-N-first-operation-production-io-diagnostic N=64 S=16 gap=2 native=64 backend=4 depth=7 scaling_bits=50 first_bits=55 key_switch=HYBRID scaling=FIXEDMANUAL data=COMPLEX execution=EXEC_EVALUATION decrypt_noise=FIXED_NOISE_DECRYPT encryption=STANDARD multiplication=HPS PRE=NOT_SET noise_scale=1 secret=UNIFORM_TERNARY security=HEStd_NotSet fresh_keypairs=1 eval_keygen_calls=1 q_div=1125899906843009 q_l=1125899906840833 exact_scale_numerator=1606938044258990275541962092341162602522202993782792835301376 exact_scale_denominator=1267650600226646386227681786497 max_fresh_public_error=2.03528806990143964358458946032390275511367092e-28 max_fresh_oracle_error=2.03528806990143964358458946032390275511367092e-28 max_product_public_error=4.24252339668076997396525546809643475565450825e-28 max_product_oracle_error=4.24252339668076997396525546809643475565450825e-28 input_public_delta_error=1.46855079356216185154681953254837787418088277e-28 input_oracle_delta_error=1.46855079356216185154681953254837787418088277e-28 product_public_delta_error=7.23097558463517048091214519197295061902232855e-29 product_oracle_delta_error=7.23097558463517048091214519197295061902232855e-29 max_horner_component_disagreement=1.032506025503258084397e-107 cross_precision_error=1.25228787555953788113517449643467952325213224e-165 centered_headroom=32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577140 malformed_key_rejections=32"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:31:25.6828347Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:31:26.6298250Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:31:28.1868320Z 58: test=precision_client_io_first_mult2_contract result=PASS source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 claim_scope=low-N-first-operation-production-io-diagnostic N=64 S=16 gap=2 native=64 backend=4 depth=7 scaling_bits=50 first_bits=55 key_switch=HYBRID scaling=FIXEDMANUAL data=COMPLEX execution=EXEC_EVALUATION decrypt_noise=FIXED_NOISE_DECRYPT encryption=STANDARD multiplication=HPS PRE=NOT_SET noise_scale=1 secret=UNIFORM_TERNARY security=HEStd_NotSet fresh_keypairs=1 eval_keygen_calls=1 q_div=1125899906843009 q_l=1125899906840833 exact_scale_numerator=1606938044258990275541962092341162602522202993782792835301376 exact_scale_denominator=1267650600226646386227681786497 max_fresh_public_error=2.92696653268993655182101034918172246775388096e-28 max_fresh_oracle_error=2.92696653268993655182101034918172246775388096e-28 max_product_public_error=5.53743124530925149489480950453868514214972158e-28 max_product_oracle_error=5.53743124530925149489480950453868514214972158e-28 input_public_delta_error=1.24447633025013932674209327997586884898256962e-28 input_oracle_delta_error=1.24447633025013932674209327997586884898256962e-28 product_public_delta_error=2.55452341251112444771148607512738046332207665e-28 product_oracle_delta_error=2.55452341251112444771148607512738046332207665e-28 max_horner_component_disagreement=1.032506025503273407195e-107 cross_precision_error=1.25228787555953788092233019382254966361360422e-165 centered_headroom=32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577100 malformed_key_rejections=32"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:31:29.1883309Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:32:32.4123897Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:32:32.4492117Z 61: BEGIN test=paper_full_eight_square_contract source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 native=64 backend=4 N=32768 M=65536 slots=16384 gap=1 h=128 nominal=50 P=1152921504606584833 P_root=4443670208963 chain_count=1"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:33:57.6616592Z 61: COMPLETE test=paper_full_eight_square_contract result=FAIL source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 reason=paper contract: accumulated numeric acceptance failures: 9"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:33:57.6888776Z BEGIN test=paper_full_eight_square_contract source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 native=64 backend=4 N=32768 M=65536 slots=16384 gap=1 h=128 nominal=50 P=1152921504606584833 P_root=4443670208963 chain_count=1"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:33:57.8101993Z COMPLETE test=paper_full_eight_square_contract result=FAIL source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 reason=paper contract: accumulated numeric acceptance failures: 9"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:02.8513248Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:03.0176351Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            }
+          ]
+        },
+        {
+          "id": 101502439304,
+          "name": "windows-mingw64",
+          "url": "https://github.com/leemaple/20231788./actions/runs/34039088536/job/101502439304",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "number": 6,
+              "name": "Verify OpenFHE provenance",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T14:26:58Z",
+              "completedAt": "2026-09-06T14:27:00Z"
+            },
+            {
+              "number": 7,
+              "name": "Configure OpenFHE",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T14:27:00Z",
+              "completedAt": "2026-09-06T14:27:06Z"
+            },
+            {
+              "number": 8,
+              "name": "Build and install OpenFHE",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T14:27:06Z",
+              "completedAt": "2026-09-06T14:30:51Z"
+            },
+            {
+              "number": 10,
+              "name": "Configure clean-room project",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T14:30:52Z",
+              "completedAt": "2026-09-06T14:30:53Z"
+            }
+          ],
+          "log_bytes": 1235083,
+          "log_sha256": "4303688fe2c4030c2c2d3014047db5838927dc656b42e7416a1814b629696714",
+          "selected_nonsecret_build_lines": [
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:01.5144161Z ^[[36;1mgit -C $env:OPENFHE_SOURCE fetch --depth 1 origin $env:OPENFHE_COMMIT^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:01.6820931Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:07.5958306Z  * branch            df495ba2e91739a6dc8f1de254fc5a41155ce504 -> FETCH_HEAD"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:17.6635298Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:25:17.8787062Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:26:56.9472093Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:26:58.0205208Z ^[[36;1mtest \"$actual\" = \"$OPENFHE_COMMIT\"^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:26:58.0210452Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:00.0410960Z ^[[36;1m  -DWITH_OPENMP=ON \\^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:00.0411323Z ^[[36;1m  -DNATIVE_SIZE=64 \\^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:00.0411690Z ^[[36;1m  -DMATHBACKEND=4^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:00.0415758Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:00.5227518Z -- The C compiler identification is GNU 16.2.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:00.7446574Z -- The CXX compiler identification is GNU 16.2.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:01.6200018Z -- WITH_OPENMP:        ON"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:01.6202777Z -- NATIVE_SIZE:        64"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:01.6203647Z -- WITH_NATIVEOPT:     OFF"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:01.6204722Z -- WITH_REDUCED_NOISE: OFF"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:03.2591661Z -- MATHBACKEND is set to 4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:03.2592151Z -- MATHBACKEND set to 4. Setting WITH_BE4 to ON"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:04.2900985Z -- Found OpenMP_C: -fopenmp (found version \"5.2\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:04.6528004Z -- Found OpenMP_CXX: -fopenmp (found version \"5.2\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:04.6534221Z -- Found OpenMP: TRUE (found version \"5.2\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:27:06.3765611Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:51.5624266Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:52.2769054Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:52.6687343Z -- The CXX compiler identification is GNU 16.2.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:30:53.2844984Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:33:59.2077831Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:02.8051613Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:06.3401167Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:06.9248041Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:07.3537528Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:10.2232253Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:13.8199929Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:17.3789965Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:20.9461229Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:51.0679123Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:51.5770750Z 58: test=precision_client_io_first_mult2_contract result=PASS source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 claim_scope=low-N-first-operation-production-io-diagnostic N=64 S=16 gap=2 native=64 backend=4 depth=7 scaling_bits=50 first_bits=55 key_switch=HYBRID scaling=FIXEDMANUAL data=COMPLEX execution=EXEC_EVALUATION decrypt_noise=FIXED_NOISE_DECRYPT encryption=STANDARD multiplication=HPS PRE=NOT_SET noise_scale=1 secret=UNIFORM_TERNARY security=HEStd_NotSet fresh_keypairs=1 eval_keygen_calls=1 q_div=1125899906843009 q_l=1125899906840833 exact_scale_numerator=1606938044258990275541962092341162602522202993782792835301376 exact_scale_denominator=1267650600226646386227681786497 max_fresh_public_error=3.32064372890193943477552918472604474638830339e-28 max_fresh_oracle_error=3.32064372890193943477552918472604474638830339e-28 max_product_public_error=3.45054578254102863488152952556054128145502061e-28 max_product_oracle_error=3.45054578254102863488152952556054128145502061e-28 input_public_delta_error=1.51580845232069713459779904216234295568364407e-28 input_oracle_delta_error=1.51580845232069713459779904216234295568364407e-28 product_public_delta_error=2.0527954713026067834260989094095818291884099e-29 product_oracle_delta_error=2.0527954713026067834260989094095818291884099e-29 max_horner_component_disagreement=1.032506023719914068269e-107 cross_precision_error=1.25263019393725536218798514799257357349528887e-165 centered_headroom=32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577061 malformed_key_rejections=32"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:34:51.6580567Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:35:17.3960492Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:35:32.2540108Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:35:33.6193687Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:35:36.4670084Z 58: test=precision_client_io_first_mult2_contract result=PASS source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 claim_scope=low-N-first-operation-production-io-diagnostic N=64 S=16 gap=2 native=64 backend=4 depth=7 scaling_bits=50 first_bits=55 key_switch=HYBRID scaling=FIXEDMANUAL data=COMPLEX execution=EXEC_EVALUATION decrypt_noise=FIXED_NOISE_DECRYPT encryption=STANDARD multiplication=HPS PRE=NOT_SET noise_scale=1 secret=UNIFORM_TERNARY security=HEStd_NotSet fresh_keypairs=1 eval_keygen_calls=1 q_div=1125899906843009 q_l=1125899906840833 exact_scale_numerator=1606938044258990275541962092341162602522202993782792835301376 exact_scale_denominator=1267650600226646386227681786497 max_fresh_public_error=3.37750749771786106302943678154961589638641035e-28 max_fresh_oracle_error=3.37750749771786106302943678154961589638641035e-28 max_product_public_error=4.82523798371779413786384779603184059868649167e-28 max_product_oracle_error=4.82523798371779413786384779603184059868649167e-28 input_public_delta_error=1.64055851407848099026104516690192948331949405e-29 input_oracle_delta_error=1.64055851407848099026104516690192948331949405e-29 product_public_delta_error=5.53914406357690256627826990232755110196679885e-28 product_oracle_delta_error=5.53914406357690256627826990232755110196679885e-28 max_horner_component_disagreement=1.032506023719914068167e-107 cross_precision_error=1.25263019393725536189409109794850627091127631e-165 centered_headroom=32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577107 malformed_key_rejections=32"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:35:37.6166713Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:37:14.2180483Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:37:15.0336622Z 61: BEGIN test=paper_full_eight_square_contract source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 native=64 backend=4 N=32768 M=65536 slots=16384 gap=1 h=128 nominal=50 P=1152921504606584833 P_root=4443670208963 chain_count=1"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:39:12.8893269Z 61: COMPLETE test=paper_full_eight_square_contract result=FAIL source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 reason=paper contract: accumulated numeric acceptance failures: 7"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:39:12.8920991Z BEGIN test=paper_full_eight_square_contract source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 native=64 backend=4 N=32768 M=65536 slots=16384 gap=1 h=128 nominal=50 P=1152921504606584833 P_root=4443670208963 chain_count=1"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:39:13.0276213Z COMPLETE test=paper_full_eight_square_contract result=FAIL source=ed5fd192a89d6d4728ad295e87cf06a3f4abc832 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 reason=paper contract: accumulated numeric acceptance failures: 7"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:39:20.0928650Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T14:39:20.5615976Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "databaseId": 34055816234,
+      "headSha": "2b8b349edf5575556347082c1b725f6696c743b6",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-09-06T19:44:09Z",
+      "updatedAt": "2026-09-06T19:56:54Z",
+      "url": "https://github.com/leemaple/20231788./actions/runs/34055816234",
+      "label": "S116",
+      "artifacts": [],
+      "jobs": [
+        {
+          "id": 101547399114,
+          "name": "linux-gcc",
+          "url": "https://github.com/leemaple/20231788./actions/runs/34055816234/job/101547399114",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "number": 5,
+              "name": "Verify OpenFHE provenance",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T19:44:24Z",
+              "completedAt": "2026-09-06T19:44:24Z"
+            },
+            {
+              "number": 8,
+              "name": "Cache pristine OpenFHE install",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T19:44:37Z",
+              "completedAt": "2026-09-06T19:44:37Z"
+            },
+            {
+              "number": 9,
+              "name": "Configure OpenFHE",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T19:44:37Z",
+              "completedAt": "2026-09-06T19:44:39Z"
+            },
+            {
+              "number": 10,
+              "name": "Build and install OpenFHE",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T19:44:39Z",
+              "completedAt": "2026-09-06T19:47:10Z"
+            },
+            {
+              "number": 12,
+              "name": "Configure clean-room project",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T19:47:10Z",
+              "completedAt": "2026-09-06T19:47:10Z"
+            },
+            {
+              "number": 71,
+              "name": "Post Cache pristine OpenFHE install",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T19:51:34Z",
+              "completedAt": "2026-09-06T19:51:36Z"
+            }
+          ],
+          "log_bytes": 681592,
+          "log_sha256": "828c3e1a3c138d2b4483a7f4f77602605b69d0f43804f63a6927bcb7a0000bef",
+          "selected_nonsecret_build_lines": [
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:15.2313431Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:17.4446482Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:17.6213893Z   ref: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:17.6225589Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:17.8505117Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:18.6124194Z  * branch            df495ba2e91739a6dc8f1de254fc5a41155ce504 -> FETCH_HEAD"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:18.6237758Z [command]/usr/bin/git checkout --progress --force df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:18.6814886Z Note: switching to 'df495ba2e91739a6dc8f1de254fc5a41155ce504'."
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:24.4312669Z df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:24.4457793Z ^[[36;1mtest \"$actual\" = \"$OPENFHE_COMMIT\"^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:24.4506647Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:24.5858058Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:37.2190371Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:37.3430019Z   key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504-native64-backend4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:37.3432640Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:37.7019906Z Cache not found for input keys: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504-native64-backend4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:37.7135309Z ##[group]Run cmake -S .ci/openfhe-src -B .ci/openfhe-build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${OPENFHE_PREFIX} -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF -DBUILD_EXTRAS=OFF -DWITH_OPENMP=ON -DNATIVE_SIZE=64 -DMATHBACKEND=4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:37.7137133Z ^[[36;1mcmake -S .ci/openfhe-src -B .ci/openfhe-build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${OPENFHE_PREFIX} -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF -DBUILD_EXTRAS=OFF -DWITH_OPENMP=ON -DNATIVE_SIZE=64 -DMATHBACKEND=4^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:37.7176678Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:38.1342711Z -- The C compiler identification is GNU 13.3.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:38.3110377Z -- The CXX compiler identification is GNU 13.3.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:38.7882782Z -- WITH_OPENMP:        ON"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:38.7883083Z -- NATIVE_SIZE:        64"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:38.7883634Z -- WITH_NATIVEOPT:     OFF"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:38.7884569Z -- WITH_REDUCED_NOISE: OFF"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:39.1379702Z -- MATHBACKEND is set to 4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:39.1380159Z -- MATHBACKEND set to 4. Setting WITH_BE4 to ON"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:39.4329663Z -- Found OpenMP_C: -fopenmp (found version \"4.5\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:39.5145181Z -- Found OpenMP_CXX: -fopenmp (found version \"4.5\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:39.5148346Z -- Found OpenMP: TRUE (found version \"4.5\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:39.7263221Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:47:10.1023587Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:47:10.3353118Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:47:10.3986327Z -- The CXX compiler identification is GNU 13.3.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:47:10.5480555Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:16.3647109Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:19.0979311Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:21.7965459Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:22.5913068Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:22.8628084Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:24.3373957Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:27.0247548Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:29.6644976Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:32.2868376Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:53.4194789Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:50:10.4059540Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:50:20.2977098Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:50:20.4703758Z 58: test=precision_client_io_first_mult2_contract result=PASS source=2b8b349edf5575556347082c1b725f6696c743b6 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 claim_scope=low-N-first-operation-production-io-diagnostic N=64 S=16 gap=2 native=64 backend=4 depth=7 scaling_bits=50 first_bits=55 key_switch=HYBRID scaling=FIXEDMANUAL data=COMPLEX execution=EXEC_EVALUATION decrypt_noise=FIXED_NOISE_DECRYPT encryption=STANDARD multiplication=HPS PRE=NOT_SET noise_scale=1 secret=UNIFORM_TERNARY security=HEStd_NotSet fresh_keypairs=1 eval_keygen_calls=1 q_div=1125899906843009 q_l=1125899906840833 exact_scale_numerator=1606938044258990275541962092341162602522202993782792835301376 exact_scale_denominator=1267650600226646386227681786497 max_fresh_public_error=2.77548082341508097333118584752312482026620676e-28 max_fresh_oracle_error=2.77548082341508097333118584752312482026620676e-28 max_product_public_error=2.12749819798853587117037613690638734308312419e-28 max_product_oracle_error=2.12749819798853587117037613690638734308312419e-28 input_public_delta_error=2.16975721922937178694365870121547660415959965e-28 input_oracle_delta_error=2.16975721922937178694365870121547660415959965e-28 product_public_delta_error=1.85322549566647802855427072750988818430882933e-28 product_oracle_delta_error=1.85322549566647802855427072750988818430882933e-28 max_horner_component_disagreement=1.032506025503238009367e-107 cross_precision_error=1.25228787555953788094782663951871760535334275e-165 centered_headroom=32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577089 malformed_key_rejections=32"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:50:20.5372390Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:50:21.4753286Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:50:23.0442650Z 58: test=precision_client_io_first_mult2_contract result=PASS source=2b8b349edf5575556347082c1b725f6696c743b6 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 claim_scope=low-N-first-operation-production-io-diagnostic N=64 S=16 gap=2 native=64 backend=4 depth=7 scaling_bits=50 first_bits=55 key_switch=HYBRID scaling=FIXEDMANUAL data=COMPLEX execution=EXEC_EVALUATION decrypt_noise=FIXED_NOISE_DECRYPT encryption=STANDARD multiplication=HPS PRE=NOT_SET noise_scale=1 secret=UNIFORM_TERNARY security=HEStd_NotSet fresh_keypairs=1 eval_keygen_calls=1 q_div=1125899906843009 q_l=1125899906840833 exact_scale_numerator=1606938044258990275541962092341162602522202993782792835301376 exact_scale_denominator=1267650600226646386227681786497 max_fresh_public_error=2.69770415183295256886694789586530283060410188e-28 max_fresh_oracle_error=2.69770415183295256886694789586530283060410188e-28 max_product_public_error=2.73953019137246890307115574281217031489050941e-28 max_product_oracle_error=2.73953019137246890307115574281217031489050941e-28 input_public_delta_error=1.12248508021720739627164624899774079827251161e-28 input_oracle_delta_error=1.12248508021720739627164624899774079827251161e-28 product_public_delta_error=1.01303355173651783034348757015278446835608203e-28 product_oracle_delta_error=1.01303355173651783034348757015278446835608203e-28 max_horner_component_disagreement=1.032506025503326293817e-107 cross_precision_error=1.25228787555953788124701606785007853886482812e-165 centered_headroom=32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577054 malformed_key_rejections=32"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:50:24.0197341Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:50:24.0801715Z -- The CXX compiler identification is GNU 13.3.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:50:24.2370375Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:51:14.0778923Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:51:14.0908891Z 63: EXPERIMENTAL_PRECISION116_EIGHT_SQUARE event=START source=2b8b349edf5575556347082c1b725f6696c743b6 baseline_source=2759fa90840946ef42957c7ba71ebea47e0e4995 profile=experimental-s116-d56-b58-v1 squares=8 full_slots=16384 requested_chain_count=1 security=UNRESOLVED required_openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 native=64 backend=4 boost_version=108300"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:51:36.0057161Z Cache saved with key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504-native64-backend4"
+            }
+          ]
+        },
+        {
+          "id": 101547399237,
+          "name": "windows-mingw64",
+          "url": "https://github.com/leemaple/20231788./actions/runs/34055816234/job/101547399237",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "number": 6,
+              "name": "Verify OpenFHE provenance",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T19:46:06Z",
+              "completedAt": "2026-09-06T19:46:07Z"
+            },
+            {
+              "number": 7,
+              "name": "Configure OpenFHE",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T19:46:07Z",
+              "completedAt": "2026-09-06T19:46:14Z"
+            },
+            {
+              "number": 8,
+              "name": "Build and install OpenFHE",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T19:46:14Z",
+              "completedAt": "2026-09-06T19:49:57Z"
+            },
+            {
+              "number": 10,
+              "name": "Configure clean-room project",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-06T19:49:58Z",
+              "completedAt": "2026-09-06T19:49:59Z"
+            }
+          ],
+          "log_bytes": 731195,
+          "log_sha256": "5b54dfb5667e68d21afcf769216beec6c2e9721979faf462b12358f24dd02325",
+          "selected_nonsecret_build_lines": [
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:13.4066296Z ^[[36;1mgit -C $env:OPENFHE_SOURCE fetch --depth 1 origin $env:OPENFHE_COMMIT^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:13.5446373Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:19.7937660Z  * branch            df495ba2e91739a6dc8f1de254fc5a41155ce504 -> FETCH_HEAD"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:29.7408008Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:44:29.9746315Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:05.1435028Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:06.1332557Z ^[[36;1mtest \"$actual\" = \"$OPENFHE_COMMIT\"^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:06.1335733Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:07.9887570Z ^[[36;1m  -DWITH_OPENMP=ON \\^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:07.9887798Z ^[[36;1m  -DNATIVE_SIZE=64 \\^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:07.9888020Z ^[[36;1m  -DMATHBACKEND=4^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:07.9891522Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:08.4404130Z -- The C compiler identification is GNU 16.2.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:08.6537962Z -- The CXX compiler identification is GNU 16.2.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:09.5538989Z -- WITH_OPENMP:        ON"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:09.5539198Z -- NATIVE_SIZE:        64"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:09.5541880Z -- WITH_NATIVEOPT:     OFF"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:09.5542718Z -- WITH_REDUCED_NOISE: OFF"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:11.2307964Z -- MATHBACKEND is set to 4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:11.2308379Z -- MATHBACKEND set to 4. Setting WITH_BE4 to ON"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:12.2730389Z -- Found OpenMP_C: -fopenmp (found version \"5.2\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:12.6231659Z -- Found OpenMP_CXX: -fopenmp (found version \"5.2\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:12.6235636Z -- Found OpenMP: TRUE (found version \"5.2\")"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:46:14.0756036Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:57.9074232Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:58.6658368Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:59.0846295Z -- The CXX compiler identification is GNU 16.2.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:49:59.7442415Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:53:24.6725898Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:53:28.7109806Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:53:32.7348501Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:53:33.3397760Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:53:33.8015778Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:53:36.7026859Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:53:40.6540747Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:53:44.5912696Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:53:48.4297604Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:54:21.2846202Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:54:21.7886018Z 58: test=precision_client_io_first_mult2_contract result=PASS source=2b8b349edf5575556347082c1b725f6696c743b6 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 claim_scope=low-N-first-operation-production-io-diagnostic N=64 S=16 gap=2 native=64 backend=4 depth=7 scaling_bits=50 first_bits=55 key_switch=HYBRID scaling=FIXEDMANUAL data=COMPLEX execution=EXEC_EVALUATION decrypt_noise=FIXED_NOISE_DECRYPT encryption=STANDARD multiplication=HPS PRE=NOT_SET noise_scale=1 secret=UNIFORM_TERNARY security=HEStd_NotSet fresh_keypairs=1 eval_keygen_calls=1 q_div=1125899906843009 q_l=1125899906840833 exact_scale_numerator=1606938044258990275541962092341162602522202993782792835301376 exact_scale_denominator=1267650600226646386227681786497 max_fresh_public_error=2.40163982614923860879909509323265709861616571e-28 max_fresh_oracle_error=2.40163982614923860879909509323265709861616571e-28 max_product_public_error=5.3567580117512389366602771982055497244888164e-28 max_product_oracle_error=5.3567580117512389366602771982055497244888164e-28 input_public_delta_error=3.38416730741385665136049925287062286748268033e-29 input_oracle_delta_error=3.38416730741385665136049925287062286748268033e-29 product_public_delta_error=6.31344177971617567842221645866527886658195446e-29 product_oracle_delta_error=6.31344177971617567842221645866527886658195446e-29 max_horner_component_disagreement=1.032506023719914068158e-107 cross_precision_error=1.25263019393725536215142248431784412327685068e-165 centered_headroom=32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577042 malformed_key_rejections=32"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:54:21.8727418Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:54:49.2284902Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:55:05.5571135Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:55:06.9632720Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:55:09.9052174Z 58: test=precision_client_io_first_mult2_contract result=PASS source=2b8b349edf5575556347082c1b725f6696c743b6 openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 claim_scope=low-N-first-operation-production-io-diagnostic N=64 S=16 gap=2 native=64 backend=4 depth=7 scaling_bits=50 first_bits=55 key_switch=HYBRID scaling=FIXEDMANUAL data=COMPLEX execution=EXEC_EVALUATION decrypt_noise=FIXED_NOISE_DECRYPT encryption=STANDARD multiplication=HPS PRE=NOT_SET noise_scale=1 secret=UNIFORM_TERNARY security=HEStd_NotSet fresh_keypairs=1 eval_keygen_calls=1 q_div=1125899906843009 q_l=1125899906840833 exact_scale_numerator=1606938044258990275541962092341162602522202993782792835301376 exact_scale_denominator=1267650600226646386227681786497 max_fresh_public_error=2.64260074696539282978086236917414933100379357e-28 max_fresh_oracle_error=2.64260074696539282978086236917414933100379357e-28 max_product_public_error=4.23382680237366594409640863388865648512421486e-28 max_product_oracle_error=4.23382680237366594409640863388865648512421486e-28 input_public_delta_error=1.27691369029793571170732623954638572985710541e-28 input_oracle_delta_error=1.27691369029793571170732623954638572985710541e-28 product_public_delta_error=5.00427927747635653538277488960065060993802218e-29 product_oracle_delta_error=5.00427927747635653538277488960065060993802218e-29 max_horner_component_disagreement=1.032506023719914068703e-107 cross_precision_error=1.25263019393725536189998073871549638568882893e-165 centered_headroom=32592575621437030210620824512759899172413712944662430971418726595098153787900901747269577044 malformed_key_rejections=32"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:55:11.0615411Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:55:11.4730292Z -- The CXX compiler identification is GNU 16.2.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:55:12.1347917Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:56:27.7508510Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-06T19:56:28.1421025Z 63: EXPERIMENTAL_PRECISION116_EIGHT_SQUARE event=START source=2b8b349edf5575556347082c1b725f6696c743b6 baseline_source=2759fa90840946ef42957c7ba71ebea47e0e4995 profile=experimental-s116-d56-b58-v1 squares=8 full_slots=16384 requested_chain_count=1 security=UNRESOLVED required_openfhe_pin=df495ba2e91739a6dc8f1de254fc5a41155ce504 native=64 backend=4 boost_version=109200"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "databaseId": 34184869227,
+      "headSha": "03f37b6ec7b8d6d87ff68d15d2843c3aa9ac6a9b",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-09-08T03:50:02Z",
+      "updatedAt": "2026-09-08T03:52:24Z",
+      "url": "https://github.com/leemaple/20231788./actions/runs/34184869227",
+      "label": "S100-annulus125",
+      "artifacts": [
+        {
+          "id": 10040186604,
+          "name": "s100-annulus125-once-34184869227-1",
+          "size_in_bytes": 12663306,
+          "expired": false,
+          "created_at": "2026-09-08T03:52:20Z"
+        }
+      ],
+      "jobs": [
+        {
+          "id": 101931070901,
+          "name": "s100-annulus125-once",
+          "url": "https://github.com/leemaple/20231788./actions/runs/34184869227/job/101931070901",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "number": 8,
+              "name": "Verify exact clean OpenFHE source and sole official remote",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-08T03:50:19Z",
+              "completedAt": "2026-09-08T03:50:19Z"
+            },
+            {
+              "number": 11,
+              "name": "Restore pristine OpenFHE install cache",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-08T03:50:36Z",
+              "completedAt": "2026-09-08T03:50:36Z"
+            },
+            {
+              "number": 12,
+              "name": "Record exact OpenFHE cache result",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-08T03:50:36Z",
+              "completedAt": "2026-09-08T03:50:36Z"
+            },
+            {
+              "number": 13,
+              "name": "Configure pinned OpenFHE native64 backend4",
+              "status": "completed",
+              "conclusion": "skipped",
+              "startedAt": "2026-09-08T03:50:36Z",
+              "completedAt": "2026-09-08T03:50:36Z"
+            },
+            {
+              "number": 14,
+              "name": "Build and install pinned OpenFHE with two workers",
+              "status": "completed",
+              "conclusion": "skipped",
+              "startedAt": "2026-09-08T03:50:36Z",
+              "completedAt": "2026-09-08T03:50:36Z"
+            },
+            {
+              "number": 15,
+              "name": "Configure isolated one-shot candidate build",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-09-08T03:50:36Z",
+              "completedAt": "2026-09-08T03:50:38Z"
+            }
+          ],
+          "log_bytes": 115703,
+          "log_sha256": "7d7df611f34f16ad6859bb7fa246868d9185901c557ef6d1f598ec968c106884",
+          "selected_nonsecret_build_lines": [
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:05.9785631Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:07.6342047Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:07.6573869Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:07.8370453Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:08.7960001Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:12.7629625Z   ref: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:12.7636159Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:12.9555676Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:13.8838501Z  * branch            df495ba2e91739a6dc8f1de254fc5a41155ce504 -> FETCH_HEAD"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:13.8939169Z [command]/usr/bin/git checkout --progress --force df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:13.9508569Z Note: switching to 'df495ba2e91739a6dc8f1de254fc5a41155ce504'."
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:19.2321835Z df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:19.3396386Z ^[[36;1mtest \"$(git -C .ci/openfhe-src rev-parse HEAD)\" = \"$OPENFHE_COMMIT\"^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:19.3399626Z ^[[36;1mprintf 'openfhe_sha=%s\\n' \"$OPENFHE_COMMIT\" >> \"$S100_EVIDENCE/provenance.txt\"^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:19.3437677Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:19.5515609Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:35.8515902Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:36.3157697Z   key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504-native64-backend4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:36.3159697Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:36.4833353Z Cache hit for: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504-native64-backend4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:36.7129420Z Cache restored successfully"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:36.7211008Z Cache restored from key: openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504-native64-backend4"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:36.7306246Z ##[group]Run printf 'openfhe_cache_hit=%s\\n' \"$OPENFHE_CACHE_HIT\" >> \"$S100_EVIDENCE/provenance.txt\""
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:36.7306957Z ^[[36;1mprintf 'openfhe_cache_hit=%s\\n' \"$OPENFHE_CACHE_HIT\" >> \"$S100_EVIDENCE/provenance.txt\"^[[0m"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:36.7345534Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:36.7492647Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:37.8427740Z -- The CXX compiler identification is GNU 13.3.0"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:50:38.2220370Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:51:41.2639096Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:52:15.1721376Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:52:19.8573680Z   OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504"
+            },
+            {
+              "step": "UNKNOWN STEP",
+              "line": "2026-09-08T03:52:21.0696481Z Cache hit occurred on the primary key openfhe-1.5.0-Linux-gcc-df495ba2e91739a6dc8f1de254fc5a41155ce504-native64-backend4, not saving cache."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
