@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "scalar_checks": 33,
+  "scalar_result": "BYTE_SEMANTIC_EQUAL",
+  "doc_red_exit": 1,
+  "doc_green_exit": 0,
+  "rejected_text_mutations": 12,
+  "doc_result": "EQUAL_EXCEPT_EXECUTION_TIMESTAMP",
+  "commands": [
+    {
+      "name": "scalar",
+      "command": [
+        "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-I",
+        "/Users/lifeng/Documents/20231788-openfhe-ecd-cell-20260909/coordination/completion-contract-20260909/pro/checks/bounded_checks.py",
+        "/Users/lifeng/Documents/20231788-openfhe-ecd-cell-20260909/artifacts/completion-contract-input-replay-20260909",
+        "/Users/lifeng/Documents/20231788-openfhe-ecd-cell-20260909/coordination/completion-contract-20260909/root-replay/BOUNDED_CHECKS.json"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "docs",
+      "command": [
+        "/Users/lifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-I",
+        "/Users/lifeng/Documents/20231788-openfhe-ecd-cell-20260909/coordination/completion-contract-20260909/pro/checks/doc_review_checks.py",
+        "--input-root",
+        "/Users/lifeng/Documents/20231788-openfhe-ecd-cell-20260909/artifacts/completion-contract-input-replay-20260909",
+        "--delivery-root",
+        "/Users/lifeng/Documents/20231788-openfhe-ecd-cell-20260909/coordination/completion-contract-20260909/pro",
+        "--evidence-dir",
+        "/Users/lifeng/Documents/20231788-openfhe-ecd-cell-20260909/coordination/completion-contract-20260909/root-replay"
+      ],
+      "exit": 0
+    }
+  ],
+  "FFT_NTT_encoding_sampling_FHE_build_CI": 0
+}

@@ -1,6 +1,15 @@
 # Completion-contract adjudication
 
-**Current: Pro active, submitted once at 2026-09-09 05:01:24 Asia/Shanghai.**
+**Current: terminal return received, verified and adopted with qualifications.**
+See [ADOPTED_RESULT.zh-CN.md](ADOPTED_RESULT.zh-CN.md), independent adoption review,
+RETURN_INTAKE.json and root-replay/ROOT_REPLAY.json. No new scientific execution;
+original S100 remains FAIL and the full goal is not marked complete. Browser215
+closed after successful download/intake. Final independent integration review
+passed with A1/A2 resolved; see FINAL_INTEGRATION.md. The documentation/adjudication
+slice is ready for Git publication; publication is verified separately against
+the actual remote, not inferred from this pre-commit status.
+
+Historical submission checkpoint: Pro active, submitted once at 2026-09-09 05:01:24 Asia/Shanghai.
 Conversation [执行深度审查](https://chatgpt.com/c/6aa077a5-8628-83ec-9fc9-75b5540f2830).
 See PRO_SUBMISSION.md for actual attachment/model/one-message evidence. No final
 verdict yet; do not repeat the task or interrupt thinking. Preparation statements

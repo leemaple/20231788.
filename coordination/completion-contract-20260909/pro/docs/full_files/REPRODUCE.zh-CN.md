@@ -2,8 +2,6 @@
 
 ## 当前状态限定（COMPLETION-CONTRACT-01，2026-09-09）
 
-当前入口：[复核后采用版](coordination/completion-contract-20260909/ADOPTED_RESULT.zh-CN.md)、[原始完整报告](coordination/completion-contract-20260909/pro/COMPLETION_CONTRACT.zh-CN.md)、[当前分支获取与检查指南](CHECK_AND_HANDOFF.zh-CN.md)。下文历史实验命令不能替代这些分项状态。
-
 本页以下操作属于历史 S116 快照。当前供件 a7f54de 的验收合同见同批 `COMPLETION_CONTRACT.zh-CN.md` 及更新后的交付指南。原 S100 Linux／Windows E80 均 FAIL；S116 两平台 PASS 与 annulus 单 Linux PASS 不得替代它。当前编码 p 已获严格 Ecd 证书，但不是旧密文重新通过。算法有条件正确性判断、原冻结数值验收、表3原作者统计及安全性分别报告；总体冻结数值项尚未全通过。作者实验设置未知不是所有工程判断的自动门槛。没有本轮新增编译或密文运行。
 
 

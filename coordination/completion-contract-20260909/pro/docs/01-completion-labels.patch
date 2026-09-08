@@ -1,0 +1,59 @@
+--- a/CHECK_AND_HANDOFF.zh-CN.md
++++ b/CHECK_AND_HANDOFF.zh-CN.md
+@@ -1,6 +1,33 @@
+-# 交付与自行检查指南（2026-09-08 更新）
++# 交付与自行检查指南（COMPLETION-CONTRACT-01 更新）
+ 
+-## 最新增补：请先看这里
++## 当前供件与验收边界：2026-09-09
++
++本节优先解释下面的历史“最新／停止／完成”措辞，不覆盖或删除历史证据。供件分支为 `codex/public-s100-ecd-cell-20260909`；固定源码为 `a7f54de2701a1b9bc02660f66febeff707b56651`，任务为 `fcd745ae30a3f54e37b8ac060c854c226e38feb1`。这些是本轮归档身份，不是本审查人查询或更改了实时远端分支。
++
++当前可作有条件的 t=2 算法／工程正确性判断；原 S100 冻结近单位圆八平方在 Linux 和 Windows 均仍 FAIL，完整冻结数值验收尚未全项通过。S116 的两平台 PASS 属于 Base58/Div56/S116/QP712；annulus125 只是一条 Linux 新输入／新随机样本的 PASS，不能代表原实验修好或整个 annulus／所有密钥通过。没有认证部署安全。
++
++当前公开 p 的全32768系数理想 Ecd 对应已经由 run34275429052 的严格舍入证书关闭，已有幅度与非绕回契约可按其前提使用；它不是旧 p 的身份认证，不是新 FHE PASS。未取得作者同源实验配置和未做表3千次统计，不自动阻断对公开算法的工程判断；但也不能把现有结果写成表3统计／性能已复现。
++
++```text
++COMPLETION_CONTRACT_ID: COMPLETION-CONTRACT-01
++SOURCE_SNAPSHOT: a7f54de2701a1b9bc02660f66febeff707b56651
++ALGORITHM_CORRECTNESS: CONDITIONAL_SUPPORTED
++ORIGINAL_S100_LINUX_E80: FAIL
++ORIGINAL_S100_WINDOWS_E80: FAIL
++S116_LINUX_E80: PASS_SEPARATE_CHANGED_PARAMETERS
++S116_WINDOWS_E80: PASS_SEPARATE_CHANGED_PARAMETERS
++ANNULUS125_LINUX_E80: PASS_ONE_CHANGED_INPUT_SAMPLE
++ANNULUS125_WINDOWS_E80: NOT_RUN
++CURRENT_P_ECD: CERTIFIED_NOT_HISTORICAL_P
++TABLE3_ORIGINAL_STATISTICS: NOT_REPRODUCED_NOT_A_UNIVERSAL_ENGINEERING_GATE
++DEPLOYMENT_SECURITY: NOT_CERTIFIED
++OVERALL_FROZEN_ACCEPTANCE: NOT_ALL_PASSED
++NEXT_CRYPTO_RUN: NONE_JUSTIFIED
++```
++
++本轮不改生产、输入、参数、噪声、truth、阈值或测试通过语义，不发起编译／CI／新加密。没有定位出有依据的最小生产修复；唯一必要交付是本次合同与文档勘误。完整论证、要求权威和执行记录在同批 `COMPLETION_CONTRACT.zh-CN.md`、`REQUIREMENT_AUTHORITY.tsv`、`FINDINGS.md`、`NEXT_BOUNDARY.md`、`EXECUTION_LEDGER.md`；这些文件随任务交付，不应假称已合并到实时默认分支。以下历史构建／clone命令仅为旧说明，不是本轮运行指令。
++
++## 2026-09-08 历史增补（其中“最新”仅指当时）
+ 
+ 用户在 9 月 8 日重新授权全面复核和必要的远端实验，取代下文 9 月 7 日“暂不继续”的工程停止安排；不联系作者的决定仍有效。
+ 
+--- a/REPRODUCE.zh-CN.md
++++ b/REPRODUCE.zh-CN.md
+@@ -1,4 +1,9 @@
+ # 2023/1788 双精度乘法：实现与复现说明
++
++## 当前状态限定（COMPLETION-CONTRACT-01，2026-09-09）
++
++本页以下操作属于历史 S116 快照。当前供件 a7f54de 的验收合同见同批 `COMPLETION_CONTRACT.zh-CN.md` 及更新后的交付指南。原 S100 Linux／Windows E80 均 FAIL；S116 两平台 PASS 与 annulus 单 Linux PASS 不得替代它。当前编码 p 已获严格 Ecd 证书，但不是旧密文重新通过。算法有条件正确性判断、原冻结数值验收、表3原作者统计及安全性分别报告；总体冻结数值项尚未全通过。作者实验设置未知不是所有工程判断的自动门槛。没有本轮新增编译或密文运行。
++
+ 
+ 本页保留的是 S116 历史固定快照的复现方法，不是最新分支检查指南。查看最新 GitHub 入口、S100 诊断增量及当前交付限制，请先读 [交付与自行检查指南](CHECK_AND_HANDOFF.zh-CN.md)。下文双平台八平方 PASS 均指实验 S116，不指原 S100。
+ 
+@@ -8,7 +13,7 @@
+ 
+ 已实现的主要步骤是：DCP 分解、Tensor2 乘法展开、Relin2 重线性化、RS2 缩减模数、Mult2 组合乘法、RCB 重组合，以及配套的 Add/Sub。客户端负责高精度输入、加密和最终解密；计算端只有公开参数、评估密钥和密文，不拿私钥，不在中间解密或刷新。
+ 
+-最重要的验证：同一条包含 16384 个复数槽位的加密输入，连续平方八次，得到每个原始值的 256 次方。最后把解密结果和独立高精度明文计算比较，检查全部槽位的实部、虚部误差。Linux、Windows 均通过原定绝对分量误差上限 `2^-80 ≈ 8.27×10^-25`。
++最重要的验证：同一条包含 16384 个复数槽位的加密输入，连续平方八次，得到每个原始值的 256 次方。最后把解密结果和独立高精度明文计算比较，检查全部槽位的实部、虚部误差。在另行命名的 S116 改参实验中，Linux、Windows 均通过该实验沿用的绝对分量误差上限 `2^-80 ≈ 8.27×10^-25`。
+ 
+ | 平台 | 最大最终分量误差 | 占误差上限 | 八次平方验证程序耗时 |
+ | --- | --- | --- | --- |

@@ -27,21 +27,6 @@ NEXT_CRYPTO_RUN: NONE_JUSTIFIED
 
 本轮不改生产、输入、参数、噪声、truth、阈值或测试通过语义，不发起编译／CI／新加密。没有定位出有依据的最小生产修复；唯一必要交付是本次合同与文档勘误。完整论证、要求权威和执行记录在同批 `COMPLETION_CONTRACT.zh-CN.md`、`REQUIREMENT_AUTHORITY.tsv`、`FINDINGS.md`、`NEXT_BOUNDARY.md`、`EXECUTION_LEDGER.md`；这些文件随任务交付，不应假称已合并到实时默认分支。以下历史构建／clone命令仅为旧说明，不是本轮运行指令。
 
-### 实际阅读与源码入口
-
-请先读[复核后采用版及限定](coordination/completion-contract-20260909/ADOPTED_RESULT.zh-CN.md)，再按需查看[完整审查报告](coordination/completion-contract-20260909/pro/COMPLETION_CONTRACT.zh-CN.md)、[50项要求表](coordination/completion-contract-20260909/pro/REQUIREMENT_AUTHORITY.tsv)、[独立复核](coordination/completion-contract-20260909/INDEPENDENT_ADOPTION_REVIEW.md)和[参数／随机性／流程图谱](docs/parameter-atlas/README.zh-CN.md)。这些才是上文“同批文件”的实际仓库位置。
-
-当前交付使用[工作分支](https://github.com/leemaple/20231788./tree/codex/public-s100-ecd-cell-20260909)，不是下方历史默认分支。若要取得当前文档与源码，在一个不存在的目标目录执行：
-
-```sh
-git clone --single-branch --branch codex/public-s100-ecd-cell-20260909 https://github.com/leemaple/20231788..git 20231788-review
-cd 20231788-review
-git status --short
-git log -1 --oneline
-```
-
-这些命令只取得和查看源码，不运行实验；本轮没有替用户执行这次 clone。审查源码锚点为上文 a7f54de，后续文档提交不代表新的数值运行。当前“无必要重跑”不禁止将来针对具体未覆盖风险、新反例或新增用户要求开展有界验证，详见采用说明。
-
 ## 2026-09-08 历史增补（其中“最新”仅指当时）
 
 用户在 9 月 8 日重新授权全面复核和必要的远端实验，取代下文 9 月 7 日“暂不继续”的工程停止安排；不联系作者的决定仍有效。

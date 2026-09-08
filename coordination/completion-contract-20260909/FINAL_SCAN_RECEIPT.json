@@ -1,0 +1,52 @@
+{
+  "scope": "final handoff documents and retained review evidence; no scientific execution",
+  "files": 60,
+  "targeted": {
+    "phase": "final adoption",
+    "files": 60,
+    "bytes": 626309,
+    "patterns": [
+      "aws_access_key",
+      "github_token",
+      "private_key_block",
+      "slack_token"
+    ],
+    "findings": []
+  },
+  "strict": {
+    "phase": "final adoption",
+    "version_command": [
+      "/opt/homebrew/bin/gitleaks",
+      "version"
+    ],
+    "command": [
+      "/opt/homebrew/bin/gitleaks",
+      "stdin",
+      "--ignore-gitleaks-allow",
+      "--gitleaks-ignore-path",
+      "/dev/null",
+      "--max-decode-depth",
+      "5",
+      "--max-archive-depth",
+      "1",
+      "--redact",
+      "--no-banner",
+      "--no-color",
+      "--report-format",
+      "json",
+      "--report-path",
+      "-"
+    ],
+    "environment_keys": [
+      "GOMAXPROCS",
+      "LANG",
+      "LC_ALL",
+      "PATH"
+    ],
+    "tool_version": "8.30.1",
+    "exit_code": 0,
+    "findings": [],
+    "framed_bytes": 631728,
+    "framed_sha256": "b66d1062dc62abf66c570e75fe3941bf97d00595af44c219009f4894874fbb7e"
+  }
+}

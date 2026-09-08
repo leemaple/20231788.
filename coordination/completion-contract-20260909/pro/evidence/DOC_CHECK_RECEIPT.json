@@ -1,0 +1,208 @@
+{
+  "schema": "completion-contract-doc-check-v1",
+  "status": "PASS",
+  "completed_utc": "2026-09-08T21:30:49.134811+00:00",
+  "primary_checks": {
+    "red": {
+      "observed_exit": 1,
+      "expected_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "historical_heading_not_unique",
+          "wrong_or_duplicate_current_field:COMPLETION_CONTRACT_ID",
+          "wrong_or_duplicate_current_field:SOURCE_SNAPSHOT",
+          "wrong_or_duplicate_current_field:ALGORITHM_CORRECTNESS",
+          "wrong_or_duplicate_current_field:ORIGINAL_S100_LINUX_E80",
+          "wrong_or_duplicate_current_field:ORIGINAL_S100_WINDOWS_E80",
+          "wrong_or_duplicate_current_field:S116_LINUX_E80",
+          "wrong_or_duplicate_current_field:S116_WINDOWS_E80",
+          "wrong_or_duplicate_current_field:ANNULUS125_LINUX_E80",
+          "wrong_or_duplicate_current_field:ANNULUS125_WINDOWS_E80",
+          "wrong_or_duplicate_current_field:CURRENT_P_ECD",
+          "wrong_or_duplicate_current_field:TABLE3_ORIGINAL_STATISTICS",
+          "wrong_or_duplicate_current_field:DEPLOYMENT_SECURITY",
+          "wrong_or_duplicate_current_field:OVERALL_FROZEN_ACCEPTANCE",
+          "wrong_or_duplicate_current_field:NEXT_CRYPTO_RUN",
+          "current_branch_missing",
+          "task_snapshot_missing",
+          "qualification_missing:conditional_correctness",
+          "qualification_missing:not_original_p",
+          "qualification_missing:no_source_changes",
+          "qualification_missing:not_all_frozen_passed",
+          "reproduce_current_scope_missing",
+          "s116_success_not_locally_scoped",
+          "reproduce_original_failure_missing"
+        ]
+      }
+    },
+    "green": {
+      "observed_exit": 0,
+      "expected_exit": 0,
+      "result": {
+        "status": "PASS",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": []
+      }
+    }
+  },
+  "mutations": [
+    {
+      "id": "linux_fail_rewritten",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "wrong_or_duplicate_current_field:ORIGINAL_S100_LINUX_E80"
+        ]
+      }
+    },
+    {
+      "id": "windows_fail_rewritten",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "wrong_or_duplicate_current_field:ORIGINAL_S100_WINDOWS_E80"
+        ]
+      }
+    },
+    {
+      "id": "s116_scope_removed",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "wrong_or_duplicate_current_field:S116_LINUX_E80"
+        ]
+      }
+    },
+    {
+      "id": "annulus_windows_invented",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "wrong_or_duplicate_current_field:ANNULUS125_WINDOWS_E80"
+        ]
+      }
+    },
+    {
+      "id": "current_p_historical_conflation",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "wrong_or_duplicate_current_field:CURRENT_P_ECD"
+        ]
+      }
+    },
+    {
+      "id": "all_gates_declared_pass",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "wrong_or_duplicate_current_field:OVERALL_FROZEN_ACCEPTANCE"
+        ]
+      }
+    },
+    {
+      "id": "unconditional_algorithm_claim",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "wrong_or_duplicate_current_field:ALGORITHM_CORRECTNESS"
+        ]
+      }
+    },
+    {
+      "id": "wrong_source_snapshot",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "wrong_or_duplicate_current_field:SOURCE_SNAPSHOT"
+        ]
+      }
+    },
+    {
+      "id": "duplicate_field",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "wrong_or_duplicate_current_field:ORIGINAL_S100_LINUX_E80"
+        ]
+      }
+    },
+    {
+      "id": "historical_heading_removed",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "historical_heading_not_unique"
+        ]
+      }
+    },
+    {
+      "id": "local_s116_success_scope_removed",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "s116_success_not_locally_scoped"
+        ]
+      }
+    },
+    {
+      "id": "missing_reproduce_file",
+      "observed_exit": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "Frozen documentation only; not production or FHE validation.",
+        "field_count": 14,
+        "errors": [
+          "missing_or_nonregular_file:REPRODUCE.zh-CN.md"
+        ]
+      }
+    }
+  ],
+  "mutations_rejected": 12,
+  "checker_invocations": 14,
+  "patch_targets": [
+    "CHECK_AND_HANDOFF.zh-CN.md",
+    "REPRODUCE.zh-CN.md"
+  ],
+  "patch_to_complete_files": "BYTE_EXACT",
+  "historical_handoff_body": "PRESERVED_EXCEPT_EXPLICIT_HEADING_RELABEL",
+  "input_and_candidates_unchanged": true,
+  "scope": "Document labels and byte application only; NOT a production RED/GREEN or FHE test."
+}
