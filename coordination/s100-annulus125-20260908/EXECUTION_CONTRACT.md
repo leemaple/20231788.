@@ -53,6 +53,10 @@ securityUNRESOLVED, regardless of this result. No1000trial criterion and no auth
   complete intermediate receipt tuples, fresh null parent, terminal RCB receipt identity.
   Added `--controls` for keyless monomial permutation control only. No production change.
   These newly added assertions are not claimed runtime-tested or mutation-qualified yet.
+  Independent follow-up `/root/annulus_code_review` accepted the exact integrated interface
+  for compile-controls-only, reran framing and original seven receiver negatives (exit0),
+  and required moving the public ideal-difference precondition before key creation.
+  Root moved that unchanged check before setup; it cannot waste a random sample now.
 - Fresh agreement remains a source-bound runtime check: TSV has no E0_prod columns.
 - Existing-file protection is not atomic. Accept only a single-process owner-only fresh
   result directory (umask077) with no concurrent writer; no general hostile-file API claim.

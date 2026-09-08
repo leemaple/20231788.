@@ -252,6 +252,9 @@ int Run(const std::filesystem::path& output) {
         Require(ComponentDistance(FromClient(values.back()),z)==0,"exact dyadic client bridge");
     }
     Require(Norm2(Sub(input[1],input[0]))==P2(-150),"sub-binary64 input witness");
+    const B T=P2(-80);
+    const Z idealDifference=Sub(Power256(input[1]),Power256(input[0]));
+    Require(Norm2(idealDifference)>16*T*T,"nonvanishing high-precision output witness");
     auto setup=CreatePaperRepeatedMult2Setup(); // Exactly one h128 root setup.
     io::HighPrecisionClientIO client(setup.plan);
     const io::FreshEncodingSpec spec{static_cast<std::uint32_t>(pf::kSlots),
@@ -288,10 +291,7 @@ int Run(const std::filesystem::path& output) {
         e0.Add(a0,s); e8.Add(a8,s); e8prod.Add(p8,s); inherited.Add(i8,s); added.Add(residual,s);
         out << s; EmitError(out,a0); EmitError(out,a8); EmitError(out,p8); out << '\n';
     }
-    const B T=P2(-80);
-    const Z idealDifference=Sub(Power256(input[1]),Power256(input[0]));
     const Z actualDifference=Sub(FromClient(producer8.values[1]),FromClient(producer8.values[0]));
-    Require(Norm2(idealDifference)>16*T*T,"nonvanishing high-precision output witness");
     const bool witness=Norm2(Sub(actualDifference,idealDifference))<=4*T*T;
     const bool pass=e0.squared<=T*T && added.squared<=T*T/16 &&
                     e8.squared<=T*T && e8prod.squared<=T*T && witness;
