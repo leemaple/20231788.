@@ -17,3 +17,18 @@ S116 default delivery is already closed: DEFAULT_PROMOTION.md's final section an
 run34057018442 receipts supersede its earlier historical pending paragraph.
 The packet includes both the scientific two-host review and default-delivery
 receipts so no stale pending statement is mistaken for a remaining requirement.
+
+## Prepared packet and visible selector
+
+Packet created from clean task commit `fcd745ae30a3f54e37b8ac060c854c226e38feb1`:
+15,139,061 bytes, 1,007 members, SHA-256
+`31f5f6767718e2adaa1aae018dee8ceb44973f20125d0cef466a921a54174042`.
+Selection and decoded final archive both passed strict Gitleaks 8.30.1 and
+targeted scans. PACKET_RECEIPT.json retains the exact manifest and commands.
+
+Observed selector before submission: page label `6 Pro`, `Pro, 5 of 5`,
+slider value 4/max4, `Latest` checked. This is a UI observation, not an attested
+backend/API model identity. Six MESSAGE.txt paragraphs match the actual editor
+paragraphs exactly; innerText adds layout blank lines. The temporary input probe
+was removed and never submitted. Submission still requires final packet review
+and visible attachment completion.
