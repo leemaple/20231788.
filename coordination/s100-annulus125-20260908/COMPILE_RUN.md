@@ -1,5 +1,19 @@
 # First compile-controls run — active checkpoint
 
+TERMINAL UPDATE: run34183786327 completedSUCCESS2026-09-08 11:33:05CST,
+job101927970054 duration1m55s. Root inspected the downloaded9-file artifact:
+warning-clean candidate build57s; exact CTest show-only registration; keyless controls13s,
+stdout `s100-annulus125-e80-v1 controls=PASS encrypted_runs=0`, stderr empty.
+Source/harness3/3PASS1.823s, receiver synthetic controlsPASS. No default/legacy/ciphertext
+test executed. OpenFHE install cache hit, source pin clean. GCC13.3.0, Python3.12.14,
+CMake3.31.6, Boost1.83.0.1ubuntu2. Full run JSON, file hashes and raw logs retained locally
+beside this file. Artifact id10039833753,5801bytes, GitHub-reported ZIP digest
+`7bd5ef055c3b86f9782c67ecd430b9f75f8b14cb8135e59d703f20c732bc99f1`;
+the downloaded extracted files were separately hashed, not confused with ZIP bytes.
+The watch exited0; do not poll this completed run or rerun it.
+Node20-targeted pinned actions were reported forced onto Node24 by GitHub; this warning
+did not fail the job and is not a scientific correctness issue. No action migration now.
+
 Observed 2026-09-08 11:31:26 Asia/Shanghai:
 
 - Exact source `def248a04b7212088e41a72e2239496dcd3e7027`, committed and pushed.
