@@ -1,0 +1,380 @@
+name: Public S100 encoder-cap RED and one-shot certificate
+
+on:
+  push:
+    tags:
+      - public-s100-encoder-cap-red-20260909
+      - public-s100-encoder-cap-once-20260909
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-s100-encoder-cap-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REVIEW_BASE: 5f94431d413c5b30cf0163719d4e17a29543b145
+  PRODUCTION_BASE: a4b815a733efe81897325e2a8e4c826a4ebfa439
+  OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+  OPENFHE_SOURCE: ${{ github.workspace }}/.ci/openfhe-src-${{ github.run_id }}-${{ github.run_attempt }}
+  OPENFHE_BUILD: ${{ github.workspace }}/.ci/openfhe-build-${{ github.run_id }}-${{ github.run_attempt }}
+  OPENFHE_PREFIX: ${{ github.workspace }}/.ci/openfhe-install-${{ github.run_id }}-${{ github.run_attempt }}
+  PROJECT_BUILD: ${{ github.workspace }}/.ci/public-encoder-build-${{ github.run_id }}-${{ github.run_attempt }}
+  EVIDENCE_DIR: ${{ github.workspace }}/artifacts/public-s100-encoder-cap-${{ github.run_id }}-${{ github.run_attempt }}
+  PUBLIC_JSON: ${{ github.workspace }}/artifacts/public-s100-encoder-cap-${{ github.run_id }}-${{ github.run_attempt }}/public_s100_encoding.json
+  CAP_JSON: ${{ github.workspace }}/artifacts/public-s100-encoder-cap-${{ github.run_id }}-${{ github.run_attempt }}/public_s100_cap.json
+
+jobs:
+  public-encoder-cap:
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/tags/public-s100-encoder-cap-red-20260909' || github.ref == 'refs/tags/public-s100-encoder-cap-once-20260909') && github.event.created == true && github.event.deleted == false && github.event.forced == false && github.run_attempt == 1 }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out exact tag source without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Initialize unique owner-only evidence directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p -- "${GITHUB_WORKSPACE}/artifacts" "${GITHUB_WORKSPACE}/.ci"
+          test ! -e "$EVIDENCE_DIR" && test ! -L "$EVIDENCE_DIR"
+          mkdir -- "$EVIDENCE_DIR"
+          test "$(stat -c '%a' "$EVIDENCE_DIR")" = 700
+
+      - name: Set up native Python 3.12
+        id: python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+
+      - name: Repeat exact event gate without dumping the event
+        id: gate
+        shell: bash
+        env:
+          NATIVE_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: |
+          set -euo pipefail
+          python_shell="$(command -v python)"
+          test "$python_shell" = "$NATIVE_PYTHON"
+          "$python_shell" -c 'import os, sys; assert os.name == "posix" and sys.version_info[:2] == (3, 12)'
+          "$python_shell" -B coordination/public-s100-encoder-cap-20260909/test_ci_gate.py \
+            2>&1 | tee "$EVIDENCE_DIR/ci-gate-tests.log"
+          "$python_shell" -B coordination/public-s100-encoder-cap-20260909/check_ci_gate.py ci \
+            --event-path "$GITHUB_EVENT_PATH" \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --ref "$GITHUB_REF" \
+            --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --github-output "$GITHUB_OUTPUT" \
+            2>&1 | tee "$EVIDENCE_DIR/ci-event-gate.json"
+
+      - name: Bind tag, reviewed ancestry, input, codec, and source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse "${GITHUB_REF}^{commit}")" = "$GITHUB_SHA"
+          git cat-file -e "${REVIEW_BASE}^{commit}"
+          git cat-file -e "${PRODUCTION_BASE}^{commit}"
+          git merge-base --is-ancestor "$REVIEW_BASE" "$GITHUB_SHA"
+          git diff --quiet "$PRODUCTION_BASE" "$GITHUB_SHA" -- \
+            tests/paper_full_eight_square_oracle.h
+          test -z "$(git status --porcelain --untracked-files=all)"
+          sha256sum \
+            CMakeLists.txt \
+            diagnostics/certify_public_encoder.py \
+            diagnostics/public_s100_encoding_dump.cpp \
+            include/openfhe_2023_1788/public_s100_encoding_probe.h \
+            src/high_precision_client_io.cpp \
+            tests/paper_full_eight_square_oracle.h \
+            tests/public_encoder_scalar_contract_test.py \
+            tests/public_encoder_transform_contract_test.py \
+            > "$EVIDENCE_DIR/project-source-sha256.txt"
+          git show "$PRODUCTION_BASE:src/high_precision_client_io.cpp" \
+            | sha256sum > "$EVIDENCE_DIR/production-codec-sha256.txt"
+          git diff --binary "$PRODUCTION_BASE" "$GITHUB_SHA" -- \
+            src/high_precision_client_io.cpp \
+            > "$EVIDENCE_DIR/codec-source.diff"
+          git diff --binary "$REVIEW_BASE" "$GITHUB_SHA" -- \
+            CMakeLists.txt diagnostics include/openfhe_2023_1788/public_s100_encoding_probe.h \
+            src/high_precision_client_io.cpp tests/public_encoder_scalar_contract_test.py \
+            tests/public_encoder_transform_contract_test.py \
+            > "$EVIDENCE_DIR/reviewed-slice.diff"
+          printf 'project_sha=%s\nreview_base=%s\nproduction_base=%s\ntag_ref=%s\nstage=%s\nrun_id=%s\nrun_attempt=%s\n' \
+            "$GITHUB_SHA" "$REVIEW_BASE" "$PRODUCTION_BASE" "$GITHUB_REF" \
+            "${{ steps.gate.outputs.stage }}" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
+            > "$EVIDENCE_DIR/provenance.txt"
+
+      - name: Run bounded scalar and parser contracts before GREEN build
+        if: steps.gate.outputs.stage == 'green'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -B tests/public_encoder_scalar_contract_test.py \
+            2>&1 | tee "$EVIDENCE_DIR/scalar-contracts.log"
+
+      - name: Check out fresh pristine official OpenFHE source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: openfheorg/openfhe-development
+          ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+          path: .ci/openfhe-src-${{ github.run_id }}-${{ github.run_attempt }}
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Verify exact clean OpenFHE source and sole official main remote
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C "$OPENFHE_SOURCE" remote set-url origin https://github.com/openfheorg/openfhe-development.git
+          test "$(git -C "$OPENFHE_SOURCE" rev-parse HEAD)" = "$OPENFHE_COMMIT"
+          test "$(git -C "$OPENFHE_SOURCE" remote)" = origin
+          test "$(git -C "$OPENFHE_SOURCE" remote get-url --all origin)" = https://github.com/openfheorg/openfhe-development.git
+          test -z "$(git -C "$OPENFHE_SOURCE" status --porcelain --untracked-files=all)"
+          git -C "$OPENFHE_SOURCE" submodule status --recursive \
+            > "$EVIDENCE_DIR/openfhe-submodules.txt"
+          git -C "$OPENFHE_SOURCE" submodule foreach --quiet --recursive \
+            'test -z "$(git status --porcelain --untracked-files=all)"'
+          printf 'openfhe_sha=%s\n' "$OPENFHE_COMMIT" >> "$EVIDENCE_DIR/provenance.txt"
+
+      - name: Install fresh build dependency
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libboost-dev
+
+      - name: Record toolchain and Boost package provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          boost_package="$(dpkg-query -S /usr/include/boost/version.hpp | cut -d: -f1)"
+          {
+            python --version
+            cmake --version
+            c++ --version
+            dpkg-query -W -f='${binary:Package}=${Version}\n' "$boost_package"
+          } > "$EVIDENCE_DIR/toolchain-dependencies.txt" 2>&1
+
+      - name: Configure fresh OpenFHE native64 backend4 reduced-noise off
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test ! -e "$OPENFHE_BUILD" && test ! -L "$OPENFHE_BUILD"
+          test ! -e "$OPENFHE_PREFIX" && test ! -L "$OPENFHE_PREFIX"
+          cmake -S "$OPENFHE_SOURCE" -B "$OPENFHE_BUILD" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$OPENFHE_PREFIX" \
+            -DBUILD_UNITTESTS=OFF \
+            -DBUILD_EXAMPLES=OFF \
+            -DBUILD_BENCHMARKS=OFF \
+            -DBUILD_EXTRAS=OFF \
+            -DWITH_OPENMP=ON \
+            -DWITH_REDUCED_NOISE=OFF \
+            -DNATIVE_SIZE=64 \
+            -DMATHBACKEND=4 \
+            2>&1 | tee "$EVIDENCE_DIR/openfhe-configure.log"
+          test "$(stat -c '%a' "$OPENFHE_BUILD")" = 700
+
+      - name: Build and install fresh OpenFHE with two workers
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmake --build "$OPENFHE_BUILD" --parallel 2 \
+            2>&1 | tee "$EVIDENCE_DIR/openfhe-build.log"
+          cmake --install "$OPENFHE_BUILD" \
+            2>&1 | tee "$EVIDENCE_DIR/openfhe-install.log"
+
+      - name: Configure isolated public encoder target
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test ! -e "$PROJECT_BUILD" && test ! -L "$PROJECT_BUILD"
+          cmake -S . -B "$PROJECT_BUILD" \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_PREFIX_PATH="$OPENFHE_PREFIX" \
+            -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
+            -DOPENFHE1788_PUBLIC_ENCODER_DIAGNOSTIC=ON \
+            2>&1 | tee "$EVIDENCE_DIR/project-configure.log"
+          test "$(stat -c '%a' "$PROJECT_BUILD")" = 700
+
+      - name: Establish exact missing-definition link RED
+        id: red-link
+        if: steps.gate.outputs.stage == 'red'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if cmake --build "$PROJECT_BUILD" \
+            --target public_s100_encoding_dump --parallel 2 \
+            > "$EVIDENCE_DIR/red-link-build.log" 2>&1; then
+            echo 'RED target unexpectedly linked; missing API definition was not established.'
+            exit 1
+          else
+            build_exit=$?
+          fi
+          printf 'build_exit=%s\nexpected_missing_symbol=InspectFixedS100PublicEncoding\ntransforms=0\nencodings=0\ncrypto_calls=0\n' \
+            "$build_exit" > "$EVIDENCE_DIR/red-link-result.txt"
+          test "$build_exit" -ne 0
+          grep -E \
+            '(undefined reference|undefined symbol).*InspectFixedS100PublicEncoding|InspectFixedS100PublicEncoding.*(undefined reference|undefined symbol)' \
+            "$EVIDENCE_DIR/red-link-build.log"
+          test ! -e "$PROJECT_BUILD/public_s100_encoding_dump"
+
+      - name: Build only the warning-clean GREEN public encoder target
+        id: green-build
+        if: steps.gate.outputs.stage == 'green'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmake --build "$PROJECT_BUILD" \
+            --target public_s100_encoding_dump --parallel 2 --verbose \
+            2>&1 | tee "$EVIDENCE_DIR/green-build.log"
+
+      - name: Verify compiled metadata without encoding
+        if: steps.gate.outputs.stage == 'green'
+        shell: bash
+        env:
+          PUBLIC_ENCODER: ${{ env.PROJECT_BUILD }}/public_s100_encoding_dump
+        run: |
+          set -euo pipefail
+          "$PUBLIC_ENCODER" --metadata \
+            > "$EVIDENCE_DIR/metadata.json" \
+            2> "$EVIDENCE_DIR/metadata.stderr"
+          test ! -s "$EVIDENCE_DIR/metadata.stderr"
+          python - "$EVIDENCE_DIR/metadata.json" "$GITHUB_SHA" <<'PY'
+          import json
+          import pathlib
+          import sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding='utf-8'))
+          if value.get('build_source_commit') != sys.argv[2]:
+              raise SystemExit('compiled source commit does not match GITHUB_SHA')
+          if value.get('encoding_calls') != 0 or value.get('crypto_calls') != 0:
+              raise SystemExit('metadata mode performed forbidden work')
+          PY
+
+      - name: Run encoding-free public API negative
+        if: steps.gate.outputs.stage == 'green'
+        shell: bash
+        env:
+          PUBLIC_ENCODER: ${{ env.PROJECT_BUILD }}/public_s100_encoding_dump
+        run: |
+          set -euo pipefail
+          "$PUBLIC_ENCODER" --api-negative \
+            > "$EVIDENCE_DIR/api-negative.stdout" \
+            2> "$EVIDENCE_DIR/api-negative.stderr"
+          test ! -s "$EVIDENCE_DIR/api-negative.stderr"
+          grep -Fx 'API_NEGATIVE_PASS encoding_calls=0' \
+            "$EVIDENCE_DIR/api-negative.stdout"
+
+      - name: Run exactly four tiny transform models
+        if: steps.gate.outputs.stage == 'green'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -B tests/public_encoder_transform_contract_test.py \
+            2>&1 | tee "$EVIDENCE_DIR/tiny-transform-models.log"
+
+      - name: Record dependency, build, and binary provenance before public encoding
+        if: steps.gate.outputs.stage == 'green'
+        shell: bash
+        env:
+          PUBLIC_ENCODER: ${{ env.PROJECT_BUILD }}/public_s100_encoding_dump
+        run: |
+          set -euo pipefail
+          test -f "$PUBLIC_ENCODER" && test ! -L "$PUBLIC_ENCODER"
+          sha256sum "$PUBLIC_ENCODER" > "$EVIDENCE_DIR/binary.sha256"
+          ldd "$PUBLIC_ENCODER" > "$EVIDENCE_DIR/binary-ldd.txt"
+          cp -- "$PROJECT_BUILD/CMakeCache.txt" "$EVIDENCE_DIR/project-CMakeCache.txt"
+          cp -- "$OPENFHE_BUILD/CMakeCache.txt" "$EVIDENCE_DIR/openfhe-CMakeCache.txt"
+          cp -- "$PROJECT_BUILD/CMakeFiles/public_s100_encoding_dump.dir/flags.make" \
+            "$EVIDENCE_DIR/public-encoder-flags.make"
+          find "$OPENFHE_PREFIX/lib" -type f -print0 | sort -z \
+            | xargs -0 sha256sum > "$EVIDENCE_DIR/openfhe-library-sha256.txt"
+          python - "$PROJECT_BUILD" "$EVIDENCE_DIR/boost-header-sha256.txt" <<'PY'
+          import hashlib
+          import pathlib
+          import sys
+          build = pathlib.Path(sys.argv[1])
+          headers = set()
+          for dependency in build.rglob('*.d'):
+              text = dependency.read_text(encoding='utf-8', errors='strict').replace('\\\n', ' ')
+              headers.update(pathlib.Path(token) for token in text.split()
+                             if token.startswith('/usr/include/boost/'))
+          if not headers:
+              raise SystemExit('no compiler-recorded Boost headers')
+          with pathlib.Path(sys.argv[2]).open('x', encoding='utf-8') as output:
+              for path in sorted(headers):
+                  output.write(hashlib.sha256(path.read_bytes()).hexdigest() + '  ' + str(path) + '\n')
+          PY
+
+      - name: Invoke the original public encoder exactly once
+        id: encode
+        if: steps.gate.outputs.stage == 'green'
+        timeout-minutes: 15
+        shell: bash
+        env:
+          PUBLIC_ENCODER: ${{ env.PROJECT_BUILD }}/public_s100_encoding_dump
+        run: |
+          set -euo pipefail
+          test ! -e "$PUBLIC_JSON" && test ! -L "$PUBLIC_JSON"
+          if "$PUBLIC_ENCODER" "$PUBLIC_JSON" \
+            > "$EVIDENCE_DIR/public-encode.stdout" \
+            2> "$EVIDENCE_DIR/public-encode.stderr"; then
+            encode_exit=0
+          else
+            encode_exit=$?
+          fi
+          printf 'encode_exit=%s\n' "$encode_exit" > "$EVIDENCE_DIR/public-encode.exit"
+          if test "$encode_exit" -ne 0; then
+            exit "$encode_exit"
+          fi
+          test -f "$PUBLIC_JSON" && test ! -L "$PUBLIC_JSON"
+          sha256sum "$PUBLIC_JSON" > "$EVIDENCE_DIR/public-encoding.sha256"
+          python - "$PUBLIC_JSON" "$GITHUB_SHA" <<'PY'
+          import json
+          import pathlib
+          import sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding='utf-8'))
+          if value.get('build_source_commit') != sys.argv[2]:
+              raise SystemExit('public encoding source commit does not match GITHUB_SHA')
+          if value.get('encoding_calls') != 1 or value.get('crypto_calls') != 0:
+              raise SystemExit('public encoding counters violate the frozen budget')
+          PY
+
+      - name: Certify the exact public JSON with one full interval transform
+        id: certify
+        if: steps.gate.outputs.stage == 'green' && steps.encode.outcome == 'success'
+        timeout-minutes: 30
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$CAP_JSON" && test ! -L "$CAP_JSON"
+          if python -B diagnostics/certify_public_encoder.py \
+            --public-encoding "$PUBLIC_JSON" \
+            --out "$CAP_JSON" \
+            --allow-transform-after-root-review \
+            > "$EVIDENCE_DIR/public-cap.stdout" \
+            2> "$EVIDENCE_DIR/public-cap.stderr"; then
+            certify_exit=0
+          else
+            certify_exit=$?
+          fi
+          printf 'certify_exit=%s\n' "$certify_exit" > "$EVIDENCE_DIR/public-cap.exit"
+          exit "$certify_exit"
+
+      - name: Archive only explicit public-cap evidence even after failure
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: public-s100-encoder-cap-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.EVIDENCE_DIR }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30

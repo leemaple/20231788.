@@ -1,0 +1,13 @@
+# Root CI integration review — 2026-09-09
+
+Accepted for the distinct **RED tag only** after complete source review of the workflow, CI checker, tests and `CI_PLAN.md`. Independent candidate review is separately retained in `FIX_REVIEW.md`. GREEN still requires the actual RED receipt and the subsequently reviewed thin definition; this review does not bypass either gate.
+
+Reviewed hashes match `CI_PLAN.md`: workflow1f2c16761cb458229c64739ddd7e94f3c0099f766b81e53d9cfa2ed74e916f74; checker e97d8a8f0bc21428f844ecda68d258aea836bb52c9c9c26968aa83633b93f101; tests bc7d6285e404decb089d980e21bf6b7345610b554c671d190d2a3598ff75fcc1.
+
+Root independently ran bundled Python `-B coordination/public-s100-encoder-cap-20260909/test_ci_gate.py`:3/3 PASS,0.742s,exit0, followed by `check_ci_gate.py source`:PASS_SOURCE_ONLY,exit0. These are synthetic/source checks with zero encoding/transforms; they do not attest a future GitHub event or compiled output. Root also inspected all existing workflow push filters: other tag workflow matches only the unrelated exact annulus tag; other workflows are named-branch or dispatch-only. Neither new tag triggers the broad legacy workflow.
+
+Resolved during integration: API-negative banner matches actual source without invented crypto-counter text; missing-symbol RED requires error and named symbol on the same line; full encoding and certificate process exits are retained without retry and preserve nonzero outcome. All heavy work is remote with2workers, fresh pinned official OpenFHE, no cache, narrow artifacts, attempt1 and creation-only exact tags. The RED path has no encoder/test-transform invocation; stage checks precede compilation. C++ function definition is intentionally absent and all current production source remains equal to a4b815a733efe81897325e2a8e4c826a4ebfa439.
+
+Scope qualifications: metadata/counter labels are not execution attestation; source/diff checks and retained build/provenance are reviewed together. The GREEN input/parser validates the full frozen schema before its transform. The output location is a unique root-owned directory; the diagnostic does not promise arbitrary concurrent-writer safety. Python regular-file input is intentionally Unix-only, and this workflow is Linux-only. Full-source equivalence to historical binaries remains separate. The original paper precision failure has not been repaired by these source-only checks.
+
+Remote matching refs were read before dispatch and returned an empty list for the public encoder cap prefix. Root will check again immediately before creating the RED tag. No force update/deletion/rerun or GREEN tag is authorized by this review.
