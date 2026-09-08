@@ -1,0 +1,22 @@
+# Pro comprehensive reassessment — submission and recovery receipt
+
+- Task: COMPREHENSIVE-REASSESSMENT-20260908, current TASK.md, not a restart of the completed narrow S100 decision.
+- Submitted ONCE: 2026-09-08 09:51:58 Asia/Shanghai (01:51:58.915Z).
+- Saved conversation: https://chatgpt.com/c/6a9f6a3f-1520-83ec-8c62-4d0231c2196c
+- Actual title: 论文复现全面复核.
+- Ego taskspace204, name `openfhe comprehensive reassessment`. Inventory confirmed prior project spaces200/202 no longer existed before creating204. Unrelated spaces untouched.
+- UI identity: `6 / Pro`, selected `Latest`. Thinking effort menu explicitly showed `Pro, 5 of 5.`; slider aria-valuemin0, aria-valuemax4, aria-valuenow4. Root visually inspected the maximum-position slider before submission. This establishes the highest visible UI power setting, not a backend model attestation or benchmark score.
+- Exact source3c02988fb5655dc6ea48f4f7d559e62d9d4a9d37; task/builder checkpoint42ec0669bd08f76253fb93f3b00c608eb09fecf2 committed and pushed before packaging. Runtime files unchanged from tested223667e.
+- Archive9045349bytes, 231members, SHA256 `08760af7def640afa06caf939c9ff7a5805d4cc6c567b49f24024cbf2f7c9158`; manifest SHA256 `a36da7ea7c28242965d7eef7949dbba0baa7d47ba55198e103190f4de1020e21`. Absolute path and complete file inventory in PACKET_RECEIPT.json. Root inspected the final included-path listing; no quarantined implementation, credential/browser state, build tree or nested archive selected.
+- Selected230payloads and all231decoded final members: targeted scan0findings; pinned Gitleaks8.30.1 stdin scan exit0/findings[] both times; exact decoded bytes, CRC, regular paths and manifest closurePASS. Original endpoint gzip tables were decompressed for transparent scanning; original Git blob/hash recorded in each manifest origin.
+- One upload was observed in composer and then in submitted user message. No reupload or duplicate prompt.
+- Full outer message is the prefix below plus two newlines plus exact TASK.md. Expected UTF-8 SHA256 `92edcb2c7f13baf6b3c09613e804416a638c57f6c5ab72cc4ccfb01f1859362a`,6935JScharacters. Rich editor introduces paragraph blank lines; whitespace-normalized readback matched exactly before Send, no probe text remained, send enabled and attachment count1. Readback SHA256 `c0b813685312ea1c67e3c14c6e7d24012d6eecf3d600f58ea99642ee42f5aada`.
+- After single Send: visible `Pro thinking` and `Stop answering`; subsequent read-only check gave the canonical saved URL/title above and thinking=true. No terminal response or reviewed output exists at submission.
+
+Outer prefix:
+
+> 请执行以下完整任务。附件 comprehensive-reassessment-3c02988.zip：9045349 bytes，SHA-256 08760af7def640afa06caf939c9ff7a5805d4cc6c567b49f24024cbf2f7c9158，231 members。页面已选最高可见 Pro 5/5。请充分、长时间思考，不要只回执行计划；完成后返回可下载的分析/决定/测试或补丁 ZIP。
+
+## Continue from here
+
+Read-only inspect this same live conversation in Ego204. Wait without Stop, refresh, duplicate send, new competing Pro task or quota-driven reassignment. Long thought is expected; visible intermediate claims are not accepted findings. After a terminal reply, retain/download its actual output once, scan/validate paths/hash/manifest, read full review, independently challenge its mathematics and patch before applying changes. Heavy execution stays GitHub/Windows. Current brief permits reconsidering project-created acceptance assumptions with explicit rationale; never overwrite original S100 FAIL or reclassify S116 as exact Table3 replication. No author contact. No high-frequency automation or new experiment is authorized merely by this handoff.
