@@ -1,12 +1,20 @@
 """One-shot event, exact test selection and classified output gates. No FHE."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
+import stat
 
 REF = 'refs/tags/initial-phase-exact-once-20260911'
 TEST = 'initial_phase_exact_contract'
 PIN = 'df495ba2e91739a6dc8f1de254fc5a41155ce504'
+EVIDENCE = set('''provenance.txt source-sha256.txt run-history-gate.txt
+openfhe-submodules.txt toolchain.txt openfhe-configure.log openfhe-build.log
+openfhe-install.log openfhe-CMakeCache.txt project-configure.log project-build.log
+project-CMakeCache.txt executable-sha256.txt linked-libraries.txt
+linked-openfhe-sha256.txt ctest-selection.json core-dump-controls.txt ctest.log
+result-gate.txt'''.split())
 
 
 def require(ok, label):
@@ -25,6 +33,35 @@ def selection(payload, executable):
     require(isinstance(tests, list) and len(tests) == 1, 'TEST_COUNT')
     require(tests[0].get('name') == TEST
             and tests[0].get('command') == [executable, '--controls'], 'TEST_COMMAND')
+
+
+def history(pages, run_id, sha):
+    require(isinstance(pages, list) and bool(pages), 'HISTORY_PAGES')
+    runs = [run for page in pages for run in page['workflow_runs']
+            if run.get('path') == '.github/workflows/initial-phase-exact-once.yml'
+            and run.get('head_branch') == REF.split('/')[-1]
+            and run.get('event') == 'push']
+    require(len(runs) == 1, 'HISTORY_DUPLICATE_OR_ABSENT')
+    require(str(runs[0]['id']) == run_id and runs[0].get('head_sha') == sha
+            and runs[0].get('run_attempt') == 1, 'HISTORY_IDENTITY')
+
+
+def evidence(root, complete):
+    require(not root.is_symlink() and root.is_dir(), 'EVIDENCE_ROOT')
+    paths = sorted(root.iterdir())
+    names = {path.name for path in paths}
+    require(names <= EVIDENCE, 'EVIDENCE_ALLOWLIST')
+    require({'provenance.txt', 'source-sha256.txt'} <= names, 'EVIDENCE_PROVENANCE')
+    require(not complete or names == EVIDENCE, 'EVIDENCE_INCOMPLETE_SUCCESS')
+    rows = []
+    for path in paths:
+        info = path.lstat()
+        require(stat.S_ISREG(info.st_mode) and info.st_size <= 32*1024*1024,
+                'EVIDENCE_FILE_TYPE_OR_SIZE')
+        data = path.read_bytes()
+        rows.append({'path': path.name, 'bytes': len(data),
+                     'sha256': hashlib.sha256(data).hexdigest()})
+    return rows
 
 
 def expected_lines(sha):
@@ -47,7 +84,7 @@ def result(text, sha):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('mode', choices=['event', 'selection', 'result'])
+    parser.add_argument('mode', choices=['event', 'selection', 'result', 'history', 'seal'])
     parser.add_argument('path', type=Path)
     parser.add_argument('arguments', nargs='*')
     args = parser.parse_args()
@@ -57,6 +94,18 @@ def main():
     elif args.mode == 'selection':
         executable, = args.arguments
         selection(json.loads(args.path.read_text()), executable)
+    elif args.mode == 'history':
+        run_id, sha = args.arguments
+        history(json.loads(args.path.read_text()), run_id, sha)
+    elif args.mode == 'seal':
+        sha, run_id, outcome = args.arguments
+        rows = evidence(args.path, complete=outcome == 'success')
+        manifest = {'schema': 'initial-phase-public-evidence-v1', 'source_sha': sha,
+                    'run_id': run_id, 'execution_step_outcome': outcome,
+                    'manifest_self_excluded': True, 'files': rows}
+        with (args.path/'MANIFEST.json').open('x') as stream:
+            json.dump(manifest, stream, indent=2)
+            stream.write('\n')
     else:
         sha, = args.arguments
         result(args.path.read_text(), sha)

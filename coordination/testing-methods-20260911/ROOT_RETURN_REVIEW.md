@@ -109,3 +109,32 @@ A normal baseline plus two rejected copied-output mutations would close only
 this small contract slice, not original S100, N32768, noise distribution or
 paper Table 3. It cannot exclude coherent within-bound errors, missing small
 noise terms, or sampling-distribution changes.
+
+## Runner review closure, before the one remote execution
+
+The independent runner review first identified two concrete preparation gaps:
+`run_attempt` did not reject a deleted/recreated tag's new run, and a directory
+upload did not itself close the file manifest. These are runner defects, not
+cryptographic production defects. Root added read-only paginated GitHub history
+deduplication, all five executable/configuration input hashes, and a 19-file
+regular-file/size allowlist with a complete self-excluding artifact manifest.
+No repository protection, new timer, production source or C++ test was changed.
+
+The two new guard tests first failed with the expected missing `history` and
+`evidence` functions (5 tests, 2 errors). After implementation all 5 passed.
+A further real CLI seal/repeated-seal test passed; the current suite is 6/6
+(root 0.173s; independent reviewer 0.424s). YAML and all 8 Bash blocks pass
+the same bounded syntax checks. Root verified the history API field shape by
+a read-only request for one existing, unrelated-to-execution historical tag.
+
+Root fully read the first review and appended closure. Both blockers are now
+`closed, conditional`: history must remain visible in GitHub, and an external
+root receipt must bind the reviewed execution commit X and five file hashes
+before pushing the tag to X. A subsequent documentation-only commit Y will
+carry that receipt, avoiding a circular self-hash. No protection against an
+administrator erasing all run history is claimed. A piped core handler is
+disabled on the ephemeral runner before `RLIMIT_CORE=0` is applied and checked.
+
+At 10:41 CST the reviewed code is ready for its single remote attempt; no FHE
+has yet run. Pro taskspace 244 was normally completed and closed after its
+terminal return; the conversation and immutable return remain retained.

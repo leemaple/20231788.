@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: initial-phase-exact-${{ github.ref }}
@@ -59,7 +60,20 @@ jobs:
           test ! -e "$EVIDENCE_DIR" && test ! -L "$EVIDENCE_DIR"
           mkdir -p "$EVIDENCE_DIR" "${GITHUB_WORKSPACE}/.ci"
           printf 'project_sha=%s\nsource_base=%s\nrun_id=%s\nattempt=%s\ntag=%s\n' "$GITHUB_SHA" "$SOURCE_BASE" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_REF" > "$EVIDENCE_DIR/provenance.txt"
-          sha256sum tests/initial_phase_exact_contract_test.cpp CMakeLists.txt "$GUARD" .github/workflows/initial-phase-exact-once.yml > "$EVIDENCE_DIR/source-sha256.txt"
+          sha256sum tests/initial_phase_exact_contract_test.cpp CMakeLists.txt "$GUARD" \
+            coordination/testing-methods-20260911/test_runner_guard.py \
+            .github/workflows/initial-phase-exact-once.yml > "$EVIDENCE_DIR/source-sha256.txt"
+
+      - name: Refuse an earlier run for a deleted and recreated tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/actions/runs" \
+            -f event=push -f branch=initial-phase-exact-once-20260911 -f per_page=100 \
+            > "$RUNNER_TEMP/initial-phase-history.json"
+          python -B -I "$GUARD" history "$RUNNER_TEMP/initial-phase-history.json" "$GITHUB_RUN_ID" "$GITHUB_SHA" \
+            | tee "$EVIDENCE_DIR/run-history-gate.txt"
 
       - name: Check out pristine pinned OpenFHE
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -133,6 +147,7 @@ jobs:
           python -B -I "$GUARD" selection "$EVIDENCE_DIR/ctest-selection.json" "$PROJECT_BUILD/initial_phase_exact_contract_test"
 
       - name: Run one baseline and both same-ciphertext controls in one process
+        id: execution
         timeout-minutes: 5
         env:
           OMP_NUM_THREADS: 2
@@ -151,8 +166,17 @@ jobs:
             | tee "$EVIDENCE_DIR/result-gate.txt"
           test -z "$(git status --porcelain --untracked-files=all)"
 
-      - name: Retain only public evidence, never process memory or key objects
+      - name: Seal an explicit regular-file evidence allowlist
+        id: seal
         if: ${{ always() && steps.gate.outcome == 'success' }}
+        env:
+          EXECUTION_OUTCOME: ${{ steps.execution.outcome }}
+        run: |
+          set -euo pipefail
+          python -B -I "$GUARD" seal "$EVIDENCE_DIR" "$GITHUB_SHA" "$GITHUB_RUN_ID" "$EXECUTION_OUTCOME"
+
+      - name: Retain only public evidence, never process memory or key objects
+        if: ${{ always() && steps.seal.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: initial-phase-exact-${{ github.sha }}-${{ github.run_id }}
