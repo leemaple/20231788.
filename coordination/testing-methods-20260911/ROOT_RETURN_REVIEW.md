@@ -77,8 +77,35 @@ read-only commands.
   author, not its own independent reviewer. Fable/ZCode unavailable fallback
   remains explicit; there is no additional provider-diversity claim.
 
-At this checkpoint the reviews are still pending final notes; no C++ build or
-remote run has started. Any integration/runner action must record the actual
-review dispositions and exact source identity. A normal baseline plus two
-rejected copied-output mutations would close only this small contract slice,
-not original S100, N32768, noise distribution or paper Table 3.
+Both final first-pass notes are now complete. Root read them in full:
+`INITIAL_PHASE_MATH_REVIEW.md` and `INITIAL_PHASE_ENGINEERING_REVIEW.md`.
+Both give conditional acceptance for this exact one-shot Linux diagnostic;
+neither reports a concrete blocking mathematical or static C++ defect. The
+conditions are enforced by the runner plan: preserved test bytes, fresh pinned
+dependency, explicit excluded target, one `--controls` CTest, exact final result
+classification and no memory-dump artifacts. The raw public scheme seam and
+one realized sample, rather than the higher plaintext/encoder wrapper or all
+noise distributions, remain the acceptance boundary. The printed `source_base`
+is the configured checkout HEAD; the fixed production base is recorded
+separately and production `src/` and `include/` must remain unchanged.
+
+Root integrated the test byte-for-byte (comparison PASS) and only the reviewed
+18-line opt-in CMake append. The new one-shot workflow is independently under
+runner review in `INITIAL_PHASE_RUNNER_REVIEW.md`; no tag has yet been created
+and no C++ build or remote run has started at this checkpoint.
+
+The runner guard was developed test-first: the first stdlib-only run failed
+with the expected missing `runner_guard.py` error; after the minimal guard was
+added, 3 unittest methods passed (including invalid event, count, command,
+classification and source-identity cases). Root replayed them again at 10:28
+CST: 3/3 passed in 0.001 seconds of unittest-reported time. This is CI guard
+RED/GREEN, not a production algorithm bug and fix. Ruby Psych safely parsed the
+workflow (the YAML 1.1 `on` boolean-key behavior was explicitly accounted for),
+confirmed one exact tag push trigger and one job, and all six Bash run blocks
+passed `bash -n`. Actionlint and PyYAML were unavailable, so no claim of their
+validation is made. `git diff --check` passed.
+
+A normal baseline plus two rejected copied-output mutations would close only
+this small contract slice, not original S100, N32768, noise distribution or
+paper Table 3. It cannot exclude coherent within-bound errors, missing small
+noise terms, or sampling-distribution changes.

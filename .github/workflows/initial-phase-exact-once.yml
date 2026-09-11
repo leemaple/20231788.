@@ -1,0 +1,161 @@
+name: Initial phase exact N256 one-shot diagnostic
+
+on:
+  push:
+    tags:
+      - initial-phase-exact-once-20260911
+
+permissions:
+  contents: read
+
+concurrency:
+  group: initial-phase-exact-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_BASE: 33722b9c9ba9d32b36e672ee7cdaa3c3fb2a95d1
+  OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+  OPENFHE_SOURCE: ${{ github.workspace }}/.ci/initial-phase-openfhe-src
+  OPENFHE_BUILD: ${{ github.workspace }}/.ci/initial-phase-openfhe-build
+  OPENFHE_PREFIX: ${{ github.workspace }}/.ci/initial-phase-openfhe-install
+  PROJECT_BUILD: ${{ github.workspace }}/.ci/initial-phase-build
+  EVIDENCE_DIR: ${{ github.workspace }}/artifacts/initial-phase-exact-${{ github.run_id }}-${{ github.run_attempt }}
+  GUARD: coordination/testing-methods-20260911/runner_guard.py
+
+jobs:
+  exact-initial-phase:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/tags/initial-phase-exact-once-20260911' && github.event.created == true && github.event.deleted == false && github.event.forced == false && github.run_attempt == 1 }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out exact reviewed source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up native Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+
+      - name: Verify one-shot event and unchanged production before any build
+        id: gate
+        run: |
+          set -euo pipefail
+          python -B -I coordination/testing-methods-20260911/test_runner_guard.py
+          python -B -I "$GUARD" event "$GITHUB_EVENT_PATH" "$GITHUB_EVENT_NAME" "$GITHUB_REF" "$GITHUB_RUN_ATTEMPT"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse "${GITHUB_REF}^{commit}")" = "$GITHUB_SHA"
+          git merge-base --is-ancestor "$SOURCE_BASE" HEAD
+          git diff --quiet "$SOURCE_BASE" HEAD -- src include
+          test "$(git diff --name-only "$SOURCE_BASE" HEAD -- tests)" = tests/initial_phase_exact_contract_test.cpp
+          test -z "$(git status --porcelain --untracked-files=all)"
+          test "$(sha256sum tests/initial_phase_exact_contract_test.cpp | cut -d' ' -f1)" = f9c6ba30e8d9b0d19c0e4d0baccd9621e18696f6f61e7801cdb91b8940490af3
+          umask 077
+          test ! -e "$EVIDENCE_DIR" && test ! -L "$EVIDENCE_DIR"
+          mkdir -p "$EVIDENCE_DIR" "${GITHUB_WORKSPACE}/.ci"
+          printf 'project_sha=%s\nsource_base=%s\nrun_id=%s\nattempt=%s\ntag=%s\n' "$GITHUB_SHA" "$SOURCE_BASE" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_REF" > "$EVIDENCE_DIR/provenance.txt"
+          sha256sum tests/initial_phase_exact_contract_test.cpp CMakeLists.txt "$GUARD" .github/workflows/initial-phase-exact-once.yml > "$EVIDENCE_DIR/source-sha256.txt"
+
+      - name: Check out pristine pinned OpenFHE
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: openfheorg/openfhe-development
+          ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+          path: .ci/initial-phase-openfhe-src
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Verify dependency identity and toolchain
+        run: |
+          set -euo pipefail
+          test "$(git -C "$OPENFHE_SOURCE" rev-parse HEAD)" = "$OPENFHE_COMMIT"
+          test -z "$(git -C "$OPENFHE_SOURCE" status --porcelain --untracked-files=all)"
+          git -C "$OPENFHE_SOURCE" submodule status --recursive > "$EVIDENCE_DIR/openfhe-submodules.txt"
+          git -C "$OPENFHE_SOURCE" submodule foreach --quiet --recursive 'test -z "$(git status --porcelain --untracked-files=all)"'
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libboost-dev
+          { python --version; cmake --version; c++ --version; dpkg-query -W libboost-dev; } > "$EVIDENCE_DIR/toolchain.txt" 2>&1
+          printf 'openfhe_sha=%s\ncache_used=false\n' "$OPENFHE_COMMIT" >> "$EVIDENCE_DIR/provenance.txt"
+
+      - name: Build fresh dependency with explicit unchanged noise configuration
+        run: |
+          set -euo pipefail
+          test ! -e "$OPENFHE_BUILD" && test ! -e "$OPENFHE_PREFIX"
+          cmake -S "$OPENFHE_SOURCE" -B "$OPENFHE_BUILD" \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$OPENFHE_PREFIX" \
+            -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF -DBUILD_EXTRAS=OFF \
+            -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DGIT_SUBMOD_AUTO=OFF \
+            -DWITH_OPENMP=ON -DWITH_REDUCED_NOISE=OFF -DWITH_NOISE_DEBUG=OFF \
+            -DWITH_NATIVEOPT=OFF -DNATIVE_SIZE=64 -DMATHBACKEND=4 \
+            2>&1 | tee "$EVIDENCE_DIR/openfhe-configure.log"
+          cmake --build "$OPENFHE_BUILD" --parallel 2 2>&1 | tee "$EVIDENCE_DIR/openfhe-build.log"
+          cmake --install "$OPENFHE_BUILD" 2>&1 | tee "$EVIDENCE_DIR/openfhe-install.log"
+          test -z "$(git -C "$OPENFHE_SOURCE" status --porcelain --untracked-files=all)"
+          cp "$OPENFHE_BUILD/CMakeCache.txt" "$EVIDENCE_DIR/openfhe-CMakeCache.txt"
+
+      - name: Configure and build only the opted-in diagnostic
+        run: |
+          set -euo pipefail
+          test ! -e "$PROJECT_BUILD"
+          cmake -S . -B "$PROJECT_BUILD" -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$OPENFHE_PREFIX" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DOPENFHE1788_INITIAL_PHASE_DIAGNOSTIC=ON 2>&1 | tee "$EVIDENCE_DIR/project-configure.log"
+          cmake --build "$PROJECT_BUILD" --target initial_phase_exact_contract_test --parallel 2 \
+            2>&1 | tee "$EVIDENCE_DIR/project-build.log"
+          cp "$PROJECT_BUILD/CMakeCache.txt" "$EVIDENCE_DIR/project-CMakeCache.txt"
+          sha256sum "$PROJECT_BUILD/initial_phase_exact_contract_test" > "$EVIDENCE_DIR/executable-sha256.txt"
+          ldd "$PROJECT_BUILD/initial_phase_exact_contract_test" > "$EVIDENCE_DIR/linked-libraries.txt"
+          python -B -I - <<'PY'
+          import hashlib, os, pathlib, re
+          evidence = pathlib.Path(os.environ['EVIDENCE_DIR'])
+          prefix = pathlib.Path(os.environ['OPENFHE_PREFIX']).resolve()
+          linked = re.findall(r'(libOPENFHE\S+)\s+=>\s+(/\S+)', (evidence/'linked-libraries.txt').read_text())
+          assert any(name.startswith('libOPENFHEcore.') for name, _ in linked)
+          assert any(name.startswith('libOPENFHEpke.') for name, _ in linked)
+          lines = []
+          for name, raw in linked:
+              path = pathlib.Path(raw).resolve(strict=True)
+              assert path.is_relative_to(prefix), 'unreviewed OpenFHE library location'
+              lines.append(hashlib.sha256(path.read_bytes()).hexdigest()+'  '+str(path))
+          (evidence/'linked-openfhe-sha256.txt').write_text('\n'.join(lines)+'\n')
+          PY
+
+      - name: Verify exactly one controls invocation without running it
+        run: |
+          set -euo pipefail
+          ctest --test-dir "$PROJECT_BUILD" -C Release --show-only=json-v1 \
+            -R '^initial_phase_exact_contract$' > "$EVIDENCE_DIR/ctest-selection.json"
+          python -B -I "$GUARD" selection "$EVIDENCE_DIR/ctest-selection.json" "$PROJECT_BUILD/initial_phase_exact_contract_test"
+
+      - name: Run one baseline and both same-ciphertext controls in one process
+        timeout-minutes: 5
+        env:
+          OMP_NUM_THREADS: 2
+        run: |
+          set -euo pipefail
+          # A piped core handler can ignore RLIMIT_CORE. This runner is ephemeral:
+          # require a plain filename before disabling dumps for the test process.
+          sudo sysctl -w kernel.core_pattern=core
+          test "$(sysctl -n kernel.core_pattern)" = core
+          ulimit -c 0
+          test "$(ulimit -c)" = 0
+          printf 'core_pattern=core\nRLIMIT_CORE=0\n' > "$EVIDENCE_DIR/core-dump-controls.txt"
+          ctest --test-dir "$PROJECT_BUILD" -C Release --verbose --output-on-failure --no-tests=error \
+            -R '^initial_phase_exact_contract$' 2>&1 | tee "$EVIDENCE_DIR/ctest.log"
+          python -B -I "$GUARD" result "$EVIDENCE_DIR/ctest.log" "$GITHUB_SHA" \
+            | tee "$EVIDENCE_DIR/result-gate.txt"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Retain only public evidence, never process memory or key objects
+        if: ${{ always() && steps.gate.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: initial-phase-exact-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ env.EVIDENCE_DIR }}
+          if-no-files-found: error
+          retention-days: 30

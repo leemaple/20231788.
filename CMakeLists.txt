@@ -363,3 +363,21 @@ if(OPENFHE1788_PUBLIC_ENCODER_DIAGNOSTIC)
     target_link_libraries(public_s100_encoding_dump PRIVATE openfhe_2023_1788)
     target_compile_definitions(public_s100_encoding_dump PRIVATE OPENFHE1788_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
 endif()
+
+# One bounded client-side initialization diagnostic. No production target/threshold changes.
+option(OPENFHE1788_INITIAL_PHASE_DIAGNOSTIC "Build exact initial-phase N256 diagnostic" OFF)
+if(OPENFHE1788_INITIAL_PHASE_DIAGNOSTIC)
+    add_executable(initial_phase_exact_contract_test EXCLUDE_FROM_ALL
+        tests/initial_phase_exact_contract_test.cpp)
+    target_link_libraries(initial_phase_exact_contract_test PRIVATE openfhe_2023_1788)
+    target_compile_definitions(initial_phase_exact_contract_test PRIVATE
+        INITIAL_PHASE_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+    if(MSVC)
+        target_compile_options(initial_phase_exact_contract_test PRIVATE /W4 /WX)
+    else()
+        target_compile_options(initial_phase_exact_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME initial_phase_exact_contract COMMAND initial_phase_exact_contract_test --controls)
+    set_tests_properties(initial_phase_exact_contract PROPERTIES TIMEOUT 180 RUN_SERIAL TRUE
+        ENVIRONMENT "OMP_NUM_THREADS=2" LABELS "initialization;exact-oracle;diagnostic;opt-in;not-s100-acceptance")
+endif()
