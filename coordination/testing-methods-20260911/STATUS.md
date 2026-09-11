@@ -1,5 +1,28 @@
 # New user-authorised testing-method diagnosis
 
+## Latest checkpoint, remote closure: N256 PASS, original S100 unchanged
+
+Run34555701307 completed successfully at 10:47:35 CST. Exactly 1/1 CTest passed
+(0.19s test, 0.21s total real; job4m13s), one public encryption and two correctly
+classified rejected controls on copies of the same ciphertext. Root verified
+the ZIP digest/CRC/19-row manifest, all five reviewed source hashes, actual
+CTest output, history/core guards, effective configuration and loader paths.
+See `RUN_RECEIPT.md` and `RUN_RESULT.json` for the durable evidence identity.
+
+No new production bug was found; `src/` and `include/` remain unchanged from33722b9.
+This bounded test is complete, not original-S100 reproduction. No extra run,
+sample campaign, source fix, merge or timer was started. The safe next candidate
+is paper-scale in-process initialization observation, pending a new bounded
+reviewed design; it is not claimed to be running. Historical states follow.
+
+## Latest checkpoint, 10:43 CST: one remote run started
+
+Run https://github.com/leemaple/20231788./actions/runs/34555701307 is in progress
+at exact reviewed execution commit `6d2ae1c`. GitHub confirmed the tag and
+run head SHA. `RUN_RECEIPT.md` records the independent external acceptance
+commit and pre-dispatch no-history checks. No build or numerical result is
+claimed yet; no rerun or extra campaign is planned.
+
 ## Latest checkpoint, 10:42 CST: reviewed execution fixed
 
 Pro's final N256/h128 test is integrated byte-for-byte and all three root/peer
