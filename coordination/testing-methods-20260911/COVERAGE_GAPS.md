@@ -34,7 +34,7 @@ property. Historical execution status is not re-proved by source presence.
 | Public boundary | Deterministic property / exact boundary | Differential oracle | Mutation / non-mutation | Replay status |
 | --- | --- | --- | --- | --- |
 | High-precision encoder | **yes, fixed cases**: exact real/imaginary constants, signed nearest rounding, exact-half rejection, monomial and one mixed sparse polynomial (`tests/s100_fresh_error_diagnostic_test.cpp:L282-L330`). Production `StableRound` uses two precisions and rejects insufficient distance from a half (`src/high_precision_client_io.cpp:L417-L437`). | **yes, narrow plus one paper input**: the small controls generate slots by an independent direct Horner path (`tests/s100_fresh_error_diagnostic_test.cpp:L220-L245`); the current public S100 polynomial has an adopted all-32,768-coefficient interval certificate (`coordination/public-s100-ecd-cell-20260909/ADOPTED_RESULT.zh-CN.md:L13-L24`). | **yes**: wrong slot order, sign and scale sentinels, input/result ownership and repeat inspection (`tests/s100_fresh_error_diagnostic_test.cpp:L331-L341,L388-L410,L622-L629`). | **yes for current public `p`, not historical `p`**: certificate/replay is hash-bound to the saved current polynomial; it does not identify the historical Linux/Windows polynomial (`coordination/public-s100-ecd-cell-20260909/ADOPTED_RESULT.zh-CN.md:L38-L42`). |
-| Public-key initialization and fresh phase | **partial**: fixed profile guards, exact h=128/sign-balance and key/context/cache lifecycle (`tests/paper_h128_client_keypair_contract_test.cpp:L199-L239,L259-L290,L408-L524`). The live S100 diagnostic performs one public encryption and repeats the shared encoder deterministically (`tests/s100_fresh_error_diagnostic_test.cpp:L576-L624`). | **yes, one sampled phase**: exact `m`, independently sparse-decrypted `p`, raw `p-m`, production decode, full-slot two-precision observations and ten Horner anchors are separated (`tests/s100_fresh_error_diagnostic_test.cpp:L588-L644,L646-L690`). | **yes for objects/state**: keys, input values, ciphertext receipts and clones are checked unchanged (`tests/s100_fresh_error_diagnostic_test.cpp:L625-L629`; `tests/precision_client_io_first_mult2_contract_test.cpp:L745-L776`). No mutation sentinel currently targets the adopted numerical PKE support envelope itself. | **partial**: retained endpoint TSV/status and scalar replayers reproduce observed summaries, not the historical random key/noise/ciphertext. The original run artifacts record source/run/status but contain no replayable secret/key state (`coordination/fs-endpoint-live-run-01/ARTIFACTS_METADATA.json:L1-L44`; `coordination/fs-endpoint-live-run-01/linux/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.linux.34039088536.1.status.json:L1`). |
+| Public-key initialization and fresh phase | **partial**: fixed profile guards, exact h=128/sign-balance and key/context/cache lifecycle (`tests/paper_h128_client_keypair_contract_test.cpp:L199-L239,L259-L290,L408-L524`). The live S100 diagnostic performs one public encryption and repeats the shared encoder deterministically (`tests/s100_fresh_error_diagnostic_test.cpp:L576-L624`). | **yes, one sampled phase**: exact `m`, independently sparse-decrypted `p`, raw `p-m`, production decode, full-slot two-precision observations and ten Horner anchors are separated (`tests/s100_fresh_error_diagnostic_test.cpp:L588-L644,L646-L690`). Raw integer subtraction and non-centering/headroom rejection also have exact small controls (`tests/s100_fresh_error_diagnostic_test.cpp:L167-L215`). | **yes for objects/state**: keys, input values, ciphertext receipts and clones are checked unchanged (`tests/s100_fresh_error_diagnostic_test.cpp:L625-L629`; `tests/precision_client_io_first_mult2_contract_test.cpp:L745-L776`). No mutation sentinel currently targets the adopted numerical PKE support envelope itself. | **partial**: retained endpoint TSV/status and scalar replayers reproduce observed summaries, not the historical random key/noise/ciphertext. The original run artifacts record source/run/status but contain no replayable secret/key state (`coordination/fs-endpoint-live-run-01/ARTIFACTS_METADATA.json:L1-L44`; `coordination/fs-endpoint-live-run-01/linux/fs-residual-endpoint-01.v1-r1.ed5fd192a89d6d4728ad295e87cf06a3f4abc832.linux.34039088536.1.status.json:L1`). |
 | `DCP` / `RCB` | **yes**: 21 quotient/remainder boundary values include zero, signs, `d/2`, `Q/2`, `d`, and neighbours (`tests/dcp_rcb_test.cpp:L273-L303`). | **yes, every component/tower/coefficient**: independent `cpp_int` centered quotient/remainder and recombination (`tests/dcp_rcb_test.cpp:L368-L427,L478-L526`). | **yes**: input/pair deep immutability plus divisor, basis, tag, format, scale, level, degree and descriptor tampering (`tests/dcp_rcb_test.cpp:L483-L526,L652-L762`). | Deterministic fixtures are directly rerunnable; no missing precision-localizing replay was found at this seam. |
 | `Tensor2` | **yes**: explicit negacyclic wrap, signed modular wrap and omitted-low-low witnesses (`tests/tensor2_test.cpp:L231-L243,L497-L528`). | **yes, every component/tower/coefficient**: schoolbook negacyclic convolution and exact cross-term oracle (`tests/tensor2_test.cpp:L265-L370,L480-L528`). | **yes**: both input pairs are snapshot-checked; right-input, mutual-slot and pre-arithmetic key compatibility negatives exist (`tests/tensor2_test.cpp:L530-L532,L591-L645`). | Deterministic fixtures are rerunnable; the remaining paper-size issue is slot coverage at intermediate rounds, not Tensor2's fixed exact algebra. |
 | `Relin2` | **yes**: generated-key valid path plus controlled `+half`, `-half/carry`, and nonzero `v+w` witnesses (`tests/relin2_test.cpp:L4135-L4159,L4185-L4252`). | **yes, every component/tower/coefficient**: independently built public relinearization paths followed by exact `(u,v+w)` and `RCB` checks (`tests/relin2_test.cpp:L3825-L3911,L4048-L4070`). | **yes, extensive**: tensor/cache immutability plus missing/malformed/wrong-context/tag/subtype and HYBRID/BV shape/basis/format cases are registered (`CMakeLists.txt:L212-L242`). | Deterministic controlled fixtures are directly rerunnable; no uncovered exact-carry case with a stronger link to S100 was identified. |
@@ -51,7 +51,9 @@ counted as independent random samples.
 ### G1 — Assert the adopted PKE coefficient envelope on one actual fresh phase (highest priority)
 
 **Missing property.** The adopted initialization contract proves, subject to
-the fixed successful sampler path, `f = p-m = e_pk*v+e0+s*e1` and
+the fixed successful sampler path, `f = e_pk*v+e0+s*e1`. In the diagnostic's
+local names this is the raw `p-m`, where `m` is the inspected encoding and `p`
+is the independently decrypted fresh phase. The contract gives
 `||f||_coeff <= 1,282,983` (with canonical bound `42,040,786,944`), but the live
 fresh diagnostic only requires raw-lift headroom and observer consistency; it
 does not assert either adopted envelope (`coordination/initial-lift-nonwrap-20260909/ADOPTED_CONTRACT.md:L7-L18` versus
@@ -63,9 +65,10 @@ new chain: `CreatePaperRepeatedMult2Setup()` ->
 `HighPrecisionClientIO::InspectEncoding()` -> `Encrypt()` ->
 `BoundCiphertext::CloneForEvaluation()`. Reuse its test-only `ReadSecret`,
 `SparseDecrypt`, and `RawDifference`; scan all 32,768 raw coefficients and assert
-`max |p_j-m_j| <= 1,282,983`. Independently evaluate the already-constructed raw
-difference at all slots (or, cheaper first, the existing ten anchors) and compare
-against the canonical envelope. These public setup/I/O entry points are declared
+`max |p_j-m_j| <= 1,282,983`. The canonical envelope then follows exactly by the
+triangle inequality as `N * 1,282,983 = 42,040,786,944`; it needs no additional
+transform. The existing all-slot observation may remain diagnostic evidence but
+is not a substitute for the coefficient assertion. These public setup/I/O entry points are declared
 at `include/openfhe_2023_1788/repeated_mult2.h:L58-L62,L117-L123` and
 `include/openfhe_2023_1788/high_precision_client_io.h:L144-L168`.
 
@@ -81,24 +84,32 @@ small enough for E80 after conditioning; it only rules out this hard-envelope
 failure in that one sample. Because a fresh draw is not the historical draw, it
 cannot replay run 34039088536.
 
-### G2 — Dense, shrinkable encoder round-trip and near-half partitions (lower cost)
+### G2 — Projection-dense, shrinkable encoder round-trip and near-half partitions (lower cost)
 
 **Missing property.** Existing public-encoder controls are excellent but sparse:
 constants, a monomial, one mixed polynomial, quarter-integer nearest cases, and
 exact ambiguous halves. The current all-coefficient certificate is for one
 specific S100 polynomial. There is no deterministic generated property over
-dense signed polynomials, nor accepted cases close to both sides of the
+the dense legal projected subspace, nor accepted cases close to both sides of the
 ambiguous-half exclusion (`tests/s100_fresh_error_diagnostic_test.cpp:L282-L341`;
 `coordination/public-s100-ecd-cell-20260909/ADOPTED_RESULT.zh-CN.md:L20-L24,L38-L42`).
 
 **Callable interface and smallest discriminating experiment.** On the existing
-N64/S16 profile, use a fixed recorded seed to generate 8 bounded dense signed
-coefficient vectors on the legal projection lanes. Compute their slots through
-the already independent direct-Horner helper and require
+N64/S16 profile, use a portable repository-local generator with recorded seed
+`0x20231788` to generate 8 projection-dense 64-coefficient vectors: every even
+index `0,2,...,62` is in `[-2^20, 2^20-1]` (replace generated zero by one), and
+every odd index is exactly zero. Do not use an implementation-defined standard-
+library distribution. An arbitrary dense 64-coefficient vector is **not** a
+legal target here. The N64/S16 geometry has `gap=2`, and `ComputeEncoding`
+initializes all 64 coefficients to zero but writes only `2*s` and `2*s+32` for
+`s=0,...,15`; hence the 32 even indices are the exact public projection lanes
+(`src/high_precision_client_io.cpp:L18-L20,L60-L64,L180-L181,L480-L484`).
+Compute the slots through the already independent direct-Horner helper and require
 `InspectEncoding(slots,spec).signedCoefficients == coefficients`. Partition two
-additional constant cases so the intended scaled coefficient is
-`k + 1/2 - 2^-300` and `k + 1/2 + 2^-300`; both must be accepted with the
-paper half-down result, while the existing exact-half case remains rejected.
+additional sides for each `k` in `{-1,0}`, so the intended scaled coefficient is
+`k + 1/2 - 2^-300` or `k + 1/2 + 2^-300`. The four cases must be accepted with
+the side-specific nearest result (`k` below, `k+1` above), while the existing
+exact-half cases remain rejected under the paper's downward-at-half rule.
 On failure, shrink in this order: zero coefficients, halve magnitudes, minimize
 the nonzero support, then move the fractional distance toward the half. Record
 the seed and minimized vector. `EncodingInspection` explicitly exposes the exact
@@ -111,10 +122,20 @@ S100 outcome, because the current S100 `p` already has a strict all-coefficient
 certificate with a minimum positive half-cell margin. This gap is therefore
 contract hardening, not a reason to reopen the adopted current-`p` certificate.
 
-**Numerical limit.** The proposed `2^-300` offset must be constructed and checked
-in the existing multiprecision types; if conversion to `ClientReal` cannot retain
-the prescribed side exactly, the fixture is invalid and must be moved farther
-from the half, not silently accepted as a rounding failure.
+**Static fixture validity and numerical limit.** The selected exact scale is
+`2^100` and `ClientReal` is `cpp_dec_float<100>`
+(`tests/s100_fresh_error_diagnostic_test.cpp:L276-L280`;
+`include/openfhe_2023_1788/high_precision_client_io.h:L21-L29`). For a constant
+slot, the normalized perturbation is `2^-300 / 2^100 = 2^-400`, about
+`3.87e-121`, while the slot magnitude is about `2^-101`, or `3.94e-31`.
+A 100-significant-decimal-digit value near that magnitude has resolution around
+`1e-130`, so the perturbation retains its side by roughly nine decimal orders.
+It is not an exact retained dyadic claim. Construct the actual `ClientReal c`
+first; before calling `InspectEncoding`, lift that stored value into an
+independent 220-decimal type, form `x=c*2^100`, and require the observed
+`x-(k+1/2)` to have the intended sign and magnitude strictly between `2^-301`
+and `2^-299`. Failure of this fixture precondition invalidates the case rather
+than diagnosing the encoder. With that guard, `2^-300` need not be downgraded.
 
 ### G3 — Full-slot observation at the earliest failing intermediate round (defer unless justified)
 
@@ -159,9 +180,14 @@ The deterministic **input and parameter fixture** is known exactly:
   implementation is `tests/paper_full_eight_square_oracle.h:L97-L119`.
 - Historical run `34039088536`, attempt 1, source
   `ed5fd192a89d6d4728ad295e87cf06a3f4abc832`, completed one public encryption
-  and eight squares on each host. Linux final maximum component error was
-  approximately `9.14647363e-24`; Windows approximately `9.06530517e-24`, both
-  above `2^-80` (`coordination/fs-endpoint-live-run-01/ACCEPTANCE.md:L1-L18,L20-L35`).
+  and eight squares on each host. The exact retained serialized decimal fields
+  for final maximum component error are Linux
+  `+9.1464736336494205089644808375296160682844533245030246664857066764861179107962422386504402211921507287219787066e-00024`
+  at slot 11656/imaginary and Windows
+  `+9.0653051740867722240892276123015167373061709327587464723806212702966216057190209675487360777450184446811010093e-00024`
+  at slot 5091/imaginary; both exceed `2^-80`
+  (`coordination/fs-endpoint-live-run-01/LINUX_AUDIT.json:L88-L103`;
+  `coordination/fs-endpoint-live-run-01/WINDOWS_AUDIT.json:L86-L101`).
 
 There is **no exact replayable cryptographic failure fixture**: the historical
 secret, public/evaluation keys, encryption randomness, and ciphertext chain are
@@ -172,6 +198,15 @@ the immutable observed result; it must not be described as a deterministic
 ciphertext reproduction. The recent replay of the separate ten-anchor `A+B`
 ideal-propagation record likewise reproduces a scalar implication for its own
 fresh sample, not run 34039088536.
+
+The changed-profile S116 run passed the same E80 gate with the original input
+family, but changed the scale and three primes
+(`coordination/precision116-eight-square-return-01/ACCEPTANCE.md:L5-L19,L31-L35`).
+The S100 annulus run also passed after changing the input radius and drawing new
+keys/noise (`coordination/s100-annulus125-20260908/RESULT.zh-CN.md:L5-L17,L33-L42`).
+They are useful sensitivity experiments supporting initialization error plus
+conditioning as the observed dominant mechanism; neither is a replay or repair
+of the original S100 failure.
 
 ## Recommendation boundary
 
