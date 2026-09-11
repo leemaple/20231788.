@@ -1,5 +1,7 @@
 # New user-authorised testing-method diagnosis
 
+LATEST09:27CST: verified486-memberpacket submittedonce to https://chatgpt.com/c/6aa358da-b52c-83ec-9356-f0d8d742a0d9 (`执行诊断测试`); UIProthinking/Stopanswering observed. Preserve sameuninterruptedtask. Independentcoverage map returned for rootreview. No candidateadopted, no newtest/productioncode or CIrun. Existing rootrequirements/skills research commitde81456 is pushed. Historicalpre-submissiondetails below remainforprovenance.
+
 2026-09-11. Branch `codex/testing-methods-diagnosis-20260911` starts at33722b9; originalworktree preservedclean. This is engineeringinvestigation authorised by latestuser request, not a dailyheartbeat. No newtimer, productionchange or CIrun yet.
 
 GitHubskills discovery completed; see SKILL_RESEARCH.md. Existingten-anchor scalarreplay executed, same3exceedances. It is not anewciphertextresult or a newlyidentifiedproductionbug.
