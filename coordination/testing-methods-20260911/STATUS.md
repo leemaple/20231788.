@@ -1,5 +1,20 @@
 # New user-authorised testing-method diagnosis
 
+## Latest checkpoint, 10:42 CST: reviewed execution fixed
+
+Pro's final N256/h128 test is integrated byte-for-byte and all three root/peer
+review responsibilities are complete. Runner review found and closed the
+tag-recreation/history and artifact-manifest gaps. All 6 lightweight guard
+tests pass; those are not FHE results. No production `src/` or `include/`
+change exists relative to33722b9.
+
+The exact execution commit is `6d2ae1c0d0b4fa7259c6a08245a7ee004004faeb`.
+`EXECUTION_APPROVAL.json`, in a subsequent documentation-only commit, binds
+that commit and five source/configuration SHA-256 values externally. The one
+tag will point to the execution commit, not the later documentation commit.
+At this checkpoint the tag is not pushed and the remote test has not run.
+The following checkpoints are historical, not current assignments.
+
 ## Latest checkpoint, Pro return received
 
 First terminal response observed 10:07:08 CST; UI reports 38m22s of work. The
