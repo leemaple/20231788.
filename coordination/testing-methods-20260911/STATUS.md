@@ -1,5 +1,20 @@
 # New user-authorised testing-method diagnosis
 
+## Latest checkpoint, 09:45 CST
+
+Pro is still actively thinking in the same conversation. Its visible progress
+now selects a small-parameter `Encrypt` construction test using one fixed
+in-memory noise sample and an independent integer check. It has not returned
+the final patch or a result. The coverage reviewer has a separate blind task
+to examine same-noise observation/oracle validity in `SAME_NOISE_REVIEW.md`;
+it must not implement a competing test or see the author's final verdict before
+its first pass. Root inspected the real client-to-scheme encryption path and
+official dispatch interfaces and remains responsible for integration and CI.
+
+The branch is pushed through `7bdb8b8`; GitHub reports no runs on this branch.
+No C++ experiment, source mutation or new automation has been started. The
+earlier checkpoints below are retained as history, not current assignments.
+
 ## Latest checkpoint, 09:35 CST
 
 The verified 486-member packet was submitted once at 09:26:48.871 CST to
