@@ -1,0 +1,453 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -363,3 +363,21 @@
+     target_link_libraries(public_s100_encoding_dump PRIVATE openfhe_2023_1788)
+     target_compile_definitions(public_s100_encoding_dump PRIVATE OPENFHE1788_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
+ endif()
++
++# One bounded client-side initialization diagnostic. No production target/threshold changes.
++option(OPENFHE1788_INITIAL_PHASE_DIAGNOSTIC "Build exact initial-phase N256 diagnostic" OFF)
++if(OPENFHE1788_INITIAL_PHASE_DIAGNOSTIC)
++    add_executable(initial_phase_exact_contract_test EXCLUDE_FROM_ALL
++        tests/initial_phase_exact_contract_test.cpp)
++    target_link_libraries(initial_phase_exact_contract_test PRIVATE openfhe_2023_1788)
++    target_compile_definitions(initial_phase_exact_contract_test PRIVATE
++        INITIAL_PHASE_SOURCE_COMMIT="${LOSSLESS_IO_SOURCE_COMMIT}")
++    if(MSVC)
++        target_compile_options(initial_phase_exact_contract_test PRIVATE /W4 /WX)
++    else()
++        target_compile_options(initial_phase_exact_contract_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
++    endif()
++    add_test(NAME initial_phase_exact_contract COMMAND initial_phase_exact_contract_test --controls)
++    set_tests_properties(initial_phase_exact_contract PROPERTIES TIMEOUT 180 RUN_SERIAL TRUE
++        ENVIRONMENT "OMP_NUM_THREADS=2" LABELS "initialization;exact-oracle;diagnostic;opt-in;not-s100-acceptance")
++endif()
+diff --git a/tests/initial_phase_exact_contract_test.cpp b/tests/initial_phase_exact_contract_test.cpp
+new file mode 100644
+--- /dev/null
++++ b/tests/initial_phase_exact_contract_test.cpp
+@@ -0,0 +1,423 @@
++// Diagnosis-only test for source 33722b9; not an originalS100 acceptance test.
++// Oracle: exact modular inverse evaluation + integer negacyclic convolution.
++// Never prints key material, phase coefficients, seeds, ciphertexts, or exception text.
++#include "openfhe_2023_1788/paper_h128_client_keypair.h"
++#include "scheme/ckksrns/ckksrns-scheme.h"
++#include <boost/multiprecision/cpp_int.hpp>
++#include <array>
++#include <cstddef>
++#include <cstdint>
++#include <exception>
++#include <iostream>
++#include <memory>
++#include <string>
++#include <utility>
++#include <vector>
++
++#if NATIVEINT != 64 || MATHBACKEND != 4 || !defined(HAVE_INT128)
++#error "Requires pinned native64/backend4/HAVE_INT128"
++#endif
++#if defined(FIXED_SEED) || defined(DEBUG_KEY)
++#error "No deterministic or debug key configuration in this diagnostic"
++#endif
++#ifndef INITIAL_PHASE_SOURCE_COMMIT
++#error "Build through the opt-in CMake target"
++#endif
++static_assert(MAX_MODULUS_SIZE == 60, "Pinned auxiliary-prime contract");
++
++namespace {
++using namespace lbcrypto;
++using Int = boost::multiprecision::cpp_int;
++using Vector = std::vector<Int>;
++using Context = CryptoContext<DCRTPoly>;
++using Params = CryptoParametersCKKSRNS;
++using Basis = std::shared_ptr<DCRTPoly::Params>;
++using openfhe_2023_1788::CreateFixedQH128ClientKeyPair;
++constexpr std::size_t kN = 256;
++constexpr std::size_t kSlots = 128;
++constexpr std::size_t kH = 128;
++constexpr std::int64_t kGaussianBound = 39;
++constexpr std::int64_t kFreshBound = kGaussianBound * (kN + kH + 1); // 15015
++constexpr std::array<std::uint64_t, 3> kQ{{1125899906826241ULL, 1099511603713ULL, 1099511630849ULL}};
++constexpr std::array<std::uint64_t, 3> kQRoots{{5834101087838ULL, 694658335ULL, 322807922ULL}};
++constexpr std::array<std::uint64_t, 1> kP{{1152921504606844417ULL}};
++constexpr std::array<std::uint64_t, 1> kPRoots{{11821407031913010ULL}};
++
++// Only our own fixed public labels may reach stderr.
++struct ContractFailure final : std::exception {
++    explicit ContractFailure(const char* text) : label(text) {}
++    const char* label;
++};
++void Check(bool value, const char* label) {
++    if (!value) throw ContractFailure(label);
++}
++enum class Fault { Coherence, Support };
++struct NumericFailure final : std::exception {
++    explicit NumericFailure(Fault value) : kind(value) {}
++    Fault kind;
++};
++const char* FaultName(Fault f) {
++    return f == Fault::Coherence ? "FRESH_CRT_COHERENCE" : "FRESH_SUPPORT_BOUND";
++}
++Int Mod(Int x, const Int& q) { x %= q; if (x < 0) x += q; return x; }
++Int Center(Int x, const Int& q) { x = Mod(x, q); if (2 * x > q) x -= q; return x; }
++Int Abs(const Int& x) { return x < 0 ? Int(-x) : x; }
++Int Power(Int a, std::size_t e, const Int& q) {
++    Int r = 1;
++    for (; e != 0; e >>= 1) { if ((e & 1U) != 0) r = Mod(r * a, q); a = Mod(a * a, q); }
++    return r;
++}
++Int Inverse(Int a, const Int& q) {
++    Int r0=q, r1=Mod(a,q), t0=0, t1=1;
++    while (r1 != 0) {
++        const Int quotient=r0/r1, r=r0-quotient*r1, t=t0-quotient*t1;
++        r0=r1; r1=r; t0=t1; t1=t;
++    }
++    Check(r0 == 1, "ORACLE_NONINVERTIBLE");
++    return Mod(t0,q);
++}
++std::size_t Reverse8(std::size_t x) {
++    std::size_t r=0;
++    for (unsigned b=0; b<8; ++b) { r=(r<<1)|(x&1U); x>>=1; }
++    return r;
++}
++Int Composite() { Int q=1; for (const auto x : kQ) q *= x; return q; }
++
++Context MakeContext() {
++    CCParams<CryptoContextCKKSRNS> p;
++    p.SetRingDim(256);
++    p.SetBatchSize(128);
++    p.SetSecurityLevel(HEStd_NotSet);
++    p.SetStandardDeviation(3.19f);
++    p.SetSecretKeyDist(SPARSE_TERNARY);
++    p.SetDigitSize(0);
++    p.SetMaxRelinSkDeg(2);
++    p.SetScalingModSize(40);
++    p.SetFirstModSize(50);
++    p.SetMultiplicativeDepth(2);
++    p.SetNumLargeDigits(3);
++    p.SetScalingTechnique(FIXEDMANUAL);
++    p.SetKeySwitchTechnique(HYBRID);
++    p.SetPREMode(NOT_SET);
++    p.SetExecutionMode(EXEC_EVALUATION);
++    p.SetDecryptionNoiseMode(FIXED_NOISE_DECRYPT);
++    p.SetStatisticalSecurity(30);
++    p.SetNumAdversarialQueries(1);
++    p.SetCompositeDegree(1);
++    p.SetRegisterWordSize(64);
++    p.SetCKKSDataType(COMPLEX);
++    p.SetNoiseEstimate(0.0);
++    p.SetInteractiveBootCompressionLevel(SLACK);
++    // CKKS disables setters for these defaults; assert rather than bypass them.
++    Check(p.GetEncryptionTechnique() == STANDARD && p.GetMultiplicationTechnique() == HPS &&
++              p.GetMultipartyMode() == FIXED_NOISE_MULTIPARTY && p.GetThresholdNumOfParties() == 1,
++          "frozen CCParams defaults");
++    auto ep = std::make_shared<EncodingParamsImpl>(p.GetScalingModSize(), p.GetBatchSize());
++    auto cp = std::make_shared<Params>(std::make_shared<DCRTPoly::Params>(), ep,
++        p.GetStandardDeviation(), 36.0f, p.GetSecurityLevel(), p.GetDigitSize(),
++        p.GetSecretKeyDist(), p.GetMaxRelinSkDeg(), p.GetKeySwitchTechnique(),
++        p.GetScalingTechnique(), p.GetEncryptionTechnique(), p.GetMultiplicationTechnique(),
++        p.GetPREMode(), p.GetMultipartyMode(), p.GetExecutionMode(), p.GetDecryptionNoiseMode(),
++        1, p.GetStatisticalSecurity(), p.GetNumAdversarialQueries(), p.GetThresholdNumOfParties(),
++        p.GetInteractiveBootCompressionLevel(), p.GetCompositeDegree(), p.GetRegisterWordSize(),
++        p.GetCKKSDataType());
++    cp->SetNoiseScale(1);
++    cp->SetFloodingDistributionParameter(0.0);
++    cp->SetMultiplicativeDepth(2);
++    cp->SetNoiseEstimate(0.0);
++    auto scheme = std::make_shared<SchemeCKKSRNS>();
++    scheme->SetKeySwitchingTechnique(HYBRID);
++    // Explicit public parameter generator: no uninspected ComputeNumLargeDigits helper.
++    Check(scheme->ParamsGenCKKSRNS(cp, 512, 3, 40, 50, 3, SLACK), "parameter generation");
++    auto cc = CryptoContextFactory<DCRTPoly>::GetContext(cp, scheme, CKKSRNS_SCHEME);
++    cc->Enable(PKE);
++    cc->Enable(KEYSWITCH);
++    cc->Enable(LEVELEDSHE);
++    return cc;  // All construction/precomputation is finished before the adapter call.
++}
++
++void CheckBasis(const Basis& basis, const std::vector<std::uint64_t>& moduli,
++                const std::vector<std::uint64_t>& roots) {
++    Check(basis != nullptr && basis->GetCyclotomicOrder() == 512 &&
++              basis->GetRingDimension() == kN && basis->GetParams().size() == moduli.size(),
++          "frozen basis envelope");
++    BigInteger product(1);
++    for (std::size_t i = 0; i < moduli.size(); ++i) {
++        const auto& t = basis->GetParams()[i];
++        Check(t != nullptr && t->GetCyclotomicOrder() == 512 && t->GetRingDimension() == kN &&
++                  t->GetModulus() == NativeInteger(moduli[i]) &&
++                  t->GetRootOfUnity() == NativeInteger(roots[i]), "frozen modulus/root order");
++        product *= BigInteger(moduli[i]);
++    }
++    Check(product == basis->GetModulus(), "frozen composite modulus");
++}
++
++void CheckProfile(const Context& cc) {
++    const auto cp = std::dynamic_pointer_cast<Params>(cc->GetCryptoParameters());
++    Check(cp != nullptr && cc->getSchemeId() == CKKSRNS_SCHEME &&
++              std::dynamic_pointer_cast<SchemeCKKSRNS>(cc->GetScheme()) != nullptr, "CKKS types");
++    const std::vector<std::uint64_t> q(kQ.begin(), kQ.end()), qr(kQRoots.begin(), kQRoots.end());
++    CheckBasis(cp->GetElementParams(), q, qr);
++    CheckBasis(cp->GetParamsPK(), q, qr);
++    CheckBasis(cp->GetParamsP(), {kP[0]}, {kPRoots[0]});
++    CheckBasis(cp->GetParamsQP(), {kQ[0], kQ[1], kQ[2], kP[0]},
++               {kQRoots[0], kQRoots[1], kQRoots[2], kPRoots[0]});
++    Check(cp->GetNumPartQ() == 3 && cp->GetNumPerPartQ() == 1 &&
++              cp->GetNumberOfQPartitions() == 3, "frozen partition shape");
++    for (std::uint32_t i = 0; i < 3; ++i) {
++        CheckBasis(cp->GetParamsPartQ(i), {kQ[i]}, {kQRoots[i]});
++    }
++    Check(cp->GetDistributionParameter() == 3.19f && cp->GetNoiseScale() == 1 &&
++              cp->GetSecretKeyDist() == SPARSE_TERNARY && cp->GetScalingTechnique() == FIXEDMANUAL &&
++              cp->GetKeySwitchTechnique() == HYBRID && cp->GetEncryptionTechnique() == STANDARD &&
++              cp->GetPREMode() == NOT_SET && cp->GetDecryptionNoiseMode() == FIXED_NOISE_DECRYPT &&
++              cp->GetExecutionMode() == EXEC_EVALUATION && cp->GetCKKSDataType() == COMPLEX &&
++              cp->GetDigitSize() == 0 && cp->GetMaxRelinSkDeg() == 2 && cp->GetAuxBits() == 60 &&
++              cp->GetExtraBits() == 0 && cp->GetCompositeDegree() == 1 &&
++              cp->GetRegisterWordSize() == 64 && cp->GetScalingFactorReal(0) == 1099511627776.0 &&
++              cc->GetEncodingParams()->GetBatchSize() == kSlots, "frozen profile metadata");
++    const auto features = static_cast<std::uint32_t>(PKE | KEYSWITCH | LEVELEDSHE);
++    Check(cc->GetScheme()->GetEnabled() == features, "frozen enabled features");
++}
++
++
++// Non-palindromic, signed, sparse, above both 53-bit and 64-bit widths.
++// These are public integer coefficients, NOT a replacement originalS100 slot input.
++Vector PublicPolynomial() {
++    Vector p(kN,0);
++    p[0]=(Int(1)<<100)+(Int(1)<<30)+1;
++    p[1]=-((Int(1)<<100)-(Int(1)<<29)-3);
++    p[2]=(Int(1)<<65)+7;
++    p[127]=-((Int(1)<<80)+5);
++    p[128]=(Int(1)<<54)+9;
++    p[255]=-11;
++    for (const auto& x : p) Check(2*(Abs(x)+kFreshBound)<Composite(), "PUBLIC_NONWRAP");
++    return p;
++}
++void CheckElement(const DCRTPoly& a, Format format) {
++    Check(a.GetParams()!=nullptr && a.GetParams()->GetCyclotomicOrder()==2*kN &&
++          a.GetNumOfElements()==kQ.size() && a.GetFormat()==format, "ELEMENT_ENVELOPE");
++    Check(a.GetParams()->GetModulus().ToString()==Composite().convert_to<std::string>(), "ELEMENT_Q");
++    for (std::size_t t=0; t<kQ.size(); ++t) {
++        const auto& v=a.GetElementAtIndex(t);
++        Check(v.GetLength()==kN && v.GetFormat()==format &&
++              v.GetModulus()==NativeInteger(kQ[t]) && v.GetRootOfUnity()==NativeInteger(kQRoots[t]),
++              "ELEMENT_TOWER");
++    }
++}
++DCRTPoly ImportPublic(const Vector& p, const Basis& basis) {
++    BigVector values(kN, BigInteger(Composite().convert_to<std::string>()));
++    for (std::size_t i=0; i<kN; ++i)
++        values[i]=BigInteger(Mod(p[i],Composite()).convert_to<std::string>());
++    // Same two official constructor calls as high_precision_client_io.cpp:621-624.
++    Poly poly(basis, Format::COEFFICIENT);
++    poly.SetValues(std::move(values), Format::COEFFICIENT);
++    DCRTPoly result(poly,basis);
++    CheckElement(result,Format::COEFFICIENT);
++    for (std::size_t t=0; t<kQ.size(); ++t)
++        for (std::size_t i=0; i<kN; ++i)
++            Check(Int(result.GetElementAtIndex(t)[i].ToString())==Mod(p[i],Int(kQ[t])), "PUBLIC_IMPORT_EXACT");
++    return result;
++}
++
++// No OpenFHE SetFormat/INTT/CRT/decrypt in this oracle.
++// Pinned EV[k] = a(root^(2*bitreverse_8(k)+1)). Derivation in TEST_PLAN.md.
++class DirectInverse final {
++ public:
++    DirectInverse() {
++        for (std::size_t t=0; t<kQ.size(); ++t) {
++            const Int q=kQ[t], r=kQRoots[t];
++            Check(Power(r,kN,q)==q-1 && Power(r,2*kN,q)==1, "ORACLE_ROOT_ORDER");
++            Check(q>Int(2)*(3*kFreshBound+1), "ORACLE_SINGLE_TOWER_HEADROOM");
++            inverseN_[t]=Inverse(Int(kN),q);
++            for (std::size_t k=0; k<kN; ++k)
++                inversePoints_[t][k]=Inverse(Power(r,2*Reverse8(k)+1,q),q);
++        }
++    }
++    Vector Read(const DCRTPoly& a, std::size_t t) const {
++        CheckElement(a,Format::EVALUATION);
++        const Int q=kQ[t];
++        Vector out(kN,0);
++        const auto& v=a.GetElementAtIndex(t);
++        for (std::size_t k=0; k<kN; ++k) {
++            const Int y(v[k].ToString());
++            Check(y>=0 && y<q,"EV_RESIDUE_RANGE");
++            Int w=1;
++            for (std::size_t i=0; i<kN; ++i) {
++                out[i]=Mod(out[i]+y*w,q);
++                w=Mod(w*inversePoints_[t][k],q);
++            }
++        }
++        for (auto& x : out) x=Mod(x*inverseN_[t],q);
++        return out;
++    }
++ private:
++    std::array<std::array<Int,kN>,3> inversePoints_{};
++    std::array<Int,3> inverseN_{};
++};
++void PublicTransformAnchor(const DCRTPoly& coefficient, const Vector& p, const DirectInverse& oracle) {
++    auto ev=coefficient; // Owned copy; this is the system under test, not the oracle.
++    ev.SetFormat(Format::EVALUATION);
++    CheckElement(ev,Format::EVALUATION);
++    for (std::size_t t=0; t<kQ.size(); ++t) {
++        const Int q=kQ[t];
++        for (std::size_t k=0; k<kN; ++k) {
++            const Int point=Power(Int(kQRoots[t]),2*Reverse8(k)+1,q);
++            Int expected=0;
++            // Direct Horner, no fast-transform tables or native modular arithmetic.
++            for (std::size_t i=kN; i-- > 0;) expected=Mod(expected*point+p[i],q);
++            Check(Int(ev.GetElementAtIndex(t)[k].ToString())==expected,"PUBLIC_FORWARD_ANCHOR");
++        }
++        const auto recovered=oracle.Read(ev,t);
++        for (std::size_t i=0; i<kN; ++i)
++            Check(recovered[i]==Mod(p[i],q),"PUBLIC_INVERSE_ANCHOR");
++    }
++}
++std::vector<int> ReadSecret(const DCRTPoly& secret, const DirectInverse& oracle) {
++    std::vector<int> s(kN,0);
++    for (std::size_t t=0; t<kQ.size(); ++t) {
++        const auto a=oracle.Read(secret,t);
++        std::size_t h=0;
++        for (std::size_t i=0; i<kN; ++i) {
++            const Int v=Center(a[i],Int(kQ[t]));
++            Check(v==-1 || v==0 || v==1,"SECRET_TERNARY");
++            const int signedValue=v.convert_to<int>();
++            if (signedValue!=0) ++h;
++            if (t==0) s[i]=signedValue;
++            else Check(s[i]==signedValue,"SECRET_CRT_COHERENCE");
++        }
++        Check(h==kH,"SECRET_H128");
++    }
++    return s; // In-process client diagnostic only. Never serialized.
++}
++Vector Phase(const DCRTPoly& c0, const DCRTPoly& c1, const std::vector<int>& s,
++             std::size_t t, const DirectInverse& oracle) {
++    auto out=oracle.Read(c0,t);
++    const auto a=oracle.Read(c1,t);
++    // Schoolbook exact negacyclic convolution; NOT pointwise multiplication.
++    for (std::size_t i=0; i<kN; ++i) {
++        for (std::size_t j=0; j<kN; ++j) {
++            if (s[j]==0) continue;
++            const std::size_t index=i+j;
++            if (index<kN) out[index]+=a[i]*s[j];
++            else out[index-kN]-=a[i]*s[j];
++        }
++    }
++    for (auto& x : out) x=Mod(x,Int(kQ[t]));
++    return out;
++}
++void PublicKeyPhase(const PublicKey<DCRTPoly>& pk, const std::vector<int>& s,
++                    const DirectInverse& oracle) {
++    const auto& a=pk->GetPublicElements();
++    Check(a.size()==2,"PK_ARITY");
++    Vector reference;
++    for (std::size_t t=0; t<kQ.size(); ++t) {
++        auto e=Phase(a[0],a[1],s,t,oracle);
++        for (auto& x : e) { x=Center(x,Int(kQ[t])); Check(Abs(x)<=kGaussianBound,"PK_SUPPORT_BOUND"); }
++        if (t==0) reference=std::move(e);
++        else Check(reference==e,"PK_CRT_COHERENCE");
++    }
++}
++Vector FreshResidual(const Ciphertext<DCRTPoly>& ct, const std::vector<int>& s,
++                     const Vector& p, const DirectInverse& oracle) {
++    Check(ct!=nullptr && ct->GetElements().size()==2,"CT_ENVELOPE");
++    std::array<Vector,3> f;
++    const auto& a=ct->GetElements();
++    for (std::size_t t=0; t<kQ.size(); ++t) {
++        f[t]=Phase(a[0],a[1],s,t,oracle);
++        for (std::size_t i=0; i<kN; ++i) f[t][i]=Center(f[t][i]-p[i],Int(kQ[t]));
++    }
++    // Coherence is checked before the support bound; mutation expectations are precise.
++    if (f[0]!=f[1] || f[0]!=f[2]) throw NumericFailure(Fault::Coherence);
++    for (const auto& x : f[0]) if (Abs(x)>kFreshBound) throw NumericFailure(Fault::Support);
++    return f[0];
++}
++void PublicDecryptExact(const Context& cc, const Ciphertext<DCRTPoly>& ct,
++                        const PrivateKey<DCRTPoly>& sk, const Vector& p, const Vector& f) {
++    Poly decoded;
++    const auto result=cc->GetScheme()->Decrypt(ct,sk,&decoded); // Public production entrypoint.
++    Check(result.isValid && decoded.GetLength()==kN && decoded.GetFormat()==Format::COEFFICIENT,
++          "PUBLIC_DECRYPT_SHAPE");
++    Check(decoded.GetModulus().ToString()==Composite().convert_to<std::string>(),"PUBLIC_DECRYPT_MODULUS");
++    for (std::size_t i=0; i<kN; ++i)
++        Check(Int(decoded[i].ToString())==Mod(p[i]+f[i],Composite()),"PUBLIC_DECRYPT_EXACT");
++}
++Ciphertext<DCRTPoly> AddPublicConstant(const Ciphertext<DCRTPoly>& ct, bool allTowers) {
++    auto altered=ct->Clone();
++    auto elements=altered->GetElements(); // Deep value vector; no change to the baseline.
++    const std::uint64_t delta=allTowers ? static_cast<std::uint64_t>(2*kFreshBound+1) : 1ULL;
++    for (std::size_t t=0; t<(allTowers?kQ.size():std::size_t(1)); ++t) {
++        auto native=elements[0].GetElementAtIndex(t);
++        // A constant coefficient has the SAME value at every evaluation point.
++        // Copying/replacing native towers is restricted to diagnostic negative controls.
++        for (std::size_t k=0; k<kN; ++k) {
++            const Int x=Mod(Int(native[k].ToString())+delta,Int(kQ[t]));
++            native[k]=NativeInteger(x.convert_to<std::uint64_t>());
++        }
++        elements[0].SetElementAtIndex(t,std::move(native));
++    }
++    altered->SetElements(std::move(elements));
++    return altered;
++}
++void ExpectRejected(const Ciphertext<DCRTPoly>& altered, Fault expected, const std::vector<int>& s,
++                    const Vector& p, const DirectInverse& oracle, const char* mutation) {
++    bool caught=false;
++    try { static_cast<void>(FreshResidual(altered,s,p,oracle)); }
++    catch (const NumericFailure& error) {
++        Check(error.kind==expected,"WRONG_MUTATION_DIAGNOSIS"); caught=true;
++    }
++    // Contract errors, third-party errors, crashes and timeouts cannot pass this gate.
++    Check(caught,"MUTATION_SURVIVED");
++    std::cout << "mutation=" << mutation << " status=REJECTED reason=" << FaultName(expected) << '\n';
++}
++void Run(const std::string& mode) {
++    const auto cc=MakeContext();
++    CheckProfile(cc);
++    const auto cp=std::dynamic_pointer_cast<Params>(cc->GetCryptoParameters());
++    Check(cp->GetDiscreteGaussianGenerator().GetStd()==static_cast<double>(3.19f),"DGG_STD_PRECONDITION");
++    // Does not generate evaluation keys or call any Mult2/evaluator operation.
++    const auto key=CreateFixedQH128ClientKeyPair(cc);
++    Check(key.good() && key.publicKey->GetCryptoContext().get()==cc.get() &&
++          key.secretKey->GetCryptoContext().get()==cc.get() &&
++          key.publicKey->GetKeyTag()==key.secretKey->GetKeyTag(),"KEY_IDENTITY");
++    const DirectInverse oracle;
++    const auto p=PublicPolynomial();
++    const auto input=ImportPublic(p,cp->GetElementParams());
++    PublicTransformAnchor(input,p,oracle);
++    const auto s=ReadSecret(key.secretKey->GetPrivateElement(),oracle);
++    PublicKeyPhase(key.publicKey,s,oracle);
++    // ONE public encryption per process. No reset/seed substitution or capture of v/e0/e1.
++    const auto fresh=cc->GetScheme()->Encrypt(input,key.publicKey);
++    const auto f=FreshResidual(fresh,s,p,oracle);
++    PublicDecryptExact(cc,fresh,key.secretKey,p,f);
++    std::cout << "baseline=PASS profile=initial-phase-n256-h128-v1 N=256 towers=3 H=128 G=39 F=15015\n";
++    if (mode=="--controls") {
++        ExpectRejected(AddPublicConstant(fresh,false),Fault::Coherence,s,p,oracle,"one-tower-plus-one");
++        ExpectRejected(AddPublicConstant(fresh,true),Fault::Support,s,p,oracle,"all-towers-plus-30031");
++        Check(FreshResidual(fresh,s,p,oracle)==f,"BASELINE_CHANGED_BY_MUTATION");
++        PublicDecryptExact(cc,fresh,key.secretKey,p,f);
++    }
++    else if (mode=="--fault-one-tower") {
++        static_cast<void>(FreshResidual(AddPublicConstant(fresh,false),s,p,oracle));
++        Check(false,"MUTATION_SURVIVED");
++    }
++    else if (mode=="--fault-coherent") {
++        static_cast<void>(FreshResidual(AddPublicConstant(fresh,true),s,p,oracle));
++        Check(false,"MUTATION_SURVIVED");
++    }
++    std::cout << "slice=PASS originalS100=UNCHANGED source_base=" << INITIAL_PHASE_SOURCE_COMMIT
++              << " dependency_pin_declared=df495ba2e91739a6dc8f1de254fc5a41155ce504\n";
++}
++} // namespace
++int main(int argc, char** argv) {
++    try {
++        const std::string mode=argc==1?"--baseline":argv[1];
++        Check(argc<=2 && (mode=="--baseline" || mode=="--controls" || mode=="--fault-one-tower" ||
++                         mode=="--fault-coherent"),"USAGE");
++        Run(mode);
++        return 0;
++    }
++    catch (const NumericFailure& e) { std::cerr << "NUMERIC_FAIL " << FaultName(e.kind) << '\n'; return 1; }
++    catch (const ContractFailure& e) { std::cerr << "CONTRACT_FAIL " << e.label << '\n'; return 2; }
++    catch (...) { std::cerr << "UNCLASSIFIED_FAILURE detail_suppressed\n"; return 3; }
++}

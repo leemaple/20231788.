@@ -1,5 +1,19 @@
 # New user-authorised testing-method diagnosis
 
+## Latest checkpoint, Pro return received
+
+First terminal response observed 10:07:08 CST; UI reports 38m22s of work. The
+13-file return passed archive/manifest/hash/decoded-secret-scan gates and is
+retained unchanged under `pro/`. See `ROOT_RETURN_REVIEW.md` and
+`RETURN_INTAKE.json`. The bounded stdlib scalar/static check was replayed
+locally; its output matches the author's bytes. No C++ or FHE has run.
+
+Final candidate is **N256/h128 initial_phase_exact_contract**, not the earlier
+N64 zero-core interception. Fresh independent Astra mathematical and Sol
+engineering reviews are underway on the actual final code without the author's
+verdict. Earlier N64 notes are historical, not approval of this new test.
+Root prepares one exact-target remote execution; no source fix is justified.
+
 ## Latest checkpoint, 09:45 CST
 
 Pro is still actively thinking in the same conversation. Its visible progress
