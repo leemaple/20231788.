@@ -591,7 +591,9 @@ void TestResultAndScaleContract() {
 void TestRightInputValidation() {
     auto fixture = MakeTensorFixture();
     DoubleCKKS module(fixture.context);
-    auto [left, right] = MakePairs(fixture, module);
+    auto pairs = MakePairs(fixture, module);
+    auto& left = pairs.first;
+    auto& right = pairs.second;
 
     auto& corruptedScale = const_cast<PaperScaleDescriptor&>(right.GetPaperScale());
     corruptedScale.approximateLogicalScalingFactor *= 2.0L;

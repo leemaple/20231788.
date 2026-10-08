@@ -4561,7 +4561,9 @@ void TestTensor2RequiresFirstLifecycle() {
     WithRestoredEvaluationKeyCache("Tensor2 lifecycle Relin2 fixture", [&] {
         auto fixture = MakeExactTensorFixture(MakeRelinContext());
         DoubleCKKS module(fixture.context);
-        auto [firstLeft, firstRight] = MakePairs(fixture, module);
+        auto firstPairs = MakePairs(fixture, module);
+        auto& firstLeft = firstPairs.first;
+        auto& firstRight = firstPairs.second;
         auto tensor = module.Tensor2(firstLeft, firstRight);
         InstallGeneratedEvalKey(fixture, tensor.GetKeyTag());
         const auto readyForRs2 = module.Relin2(tensor);
