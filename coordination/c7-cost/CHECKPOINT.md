@@ -1,4 +1,4 @@
-# C7 cost preparation: source ready, ARM runner not acquired
+# C7 cost preparation: compatibility repair prepared, native build pending
 
 2026-10-09, Asia/Shanghai. This is engineering preparation, not a performance result.
 
@@ -8,4 +8,10 @@ GitHub run37808875468, attempt1, tag c7-cost-macos-20261009-01, ended failure. J
 
 There is no portable Mac binary yet. Local native checks, scientific timing and formal runs are all zero. The frozen paired study specification remains prospective: same exact encrypted inputs, all output coefficients/state compared, ordinary-reordered baseline, complete RS2 and Tensor2→Relin2→RS2 boundaries, all288 fixed-order observations retained. Study requires a separate diagnostic admission.
 
-Next evaluate a bounded Intel Mac remote build of universal binaries, followed by arm64 functional validation on the fixed M4. This is a new resource-routing proposal, not an executed recovery. Preserve this terminal run and do not retry the exhausted ARM pool blindly. No integration or performance/precision/publication approval.
+The single remaining recovery used source4700a4e1c13c2e9cb82c1a61a4f37b74f8b68f1b and tag c7-cost-macos-20261009-02. Run37813099937 acquired an Intel macOS15.7.9 runner with AppleClang17. Dependency configuration succeeded, but compilation failed at pristine OpenFHE dcrtpoly-impl.h:1935: OpenMP OFF leaves `limit` referenced only by an ignored pragma, and the upstream `-Werror` rejects its unused-variable warning. No project binary or functional check ran. The nine-file failure artifact is2742 bytes, SHA256844730b36e41300055145210d3a877afc578fe8239fdaa96474abb8bf8e9194a, independently matched to the server digest.
+
+Prepared repair d44e85cd2459d4ecb6630b094ef1405b34f07b7c downgrades only unused-variable errors while compiling the dependency, keeps the warning visible, and strips that exemption from imported project flags. Upstream files and arithmetic remain unchanged. Both review axes accept its limited static scope. Four tiny local syntax-only controls reproduce the warning, permit the dependency option, restore project rejection and retain errors for another warning category; they do not prove a full OpenFHE build.
+
+The local ARM controller was separately corrected to use explicit runtime checks instead of optimization-removable Python assertions, enforce45 seconds/1024MiB and reject extra or incomplete stderr/time output. Six helper controls passed; no ARM cryptographic binary was executed. The accepted controller lives in the paper workspace at engineering/c7-cost-universal-v1/run_local_arm_checks_v2.py, SHA25645d363e38a516df2f626789ef9756d94b564be980ae45413b73943cf7e2006cd. Earlier assertion-based controllers are unexecuted and not admitted.
+
+Both workflows in this preparation/recovery campaign have finished and its allocation is exhausted. No third tag, rerun or native execution is authorized by that campaign. Any subsequent execution needs an explicit new engineering plan for the identified compiler-compatibility fix, with source/budget review; the old tags and failure records remain immutable. Still no portable binary, new native functional success, scientific timing, integration, precision repair or publication approval.
