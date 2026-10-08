@@ -1284,8 +1284,10 @@ CiphertextPair DoubleCKKS::RS2WithBackend(const CiphertextPair& relinearized, RS
             }
         }
         for (auto& output : {rescaledHigh, newLow}) {
-            output->SetLevel(outputLevel);
+            // Match OpenFHE ModReduceInternalInPlace: SetLevel checks the
+            // current noise degree, so reduce that degree before raising level.
             output->SetNoiseScaleDeg(outputNoiseScaleDegree);
+            output->SetLevel(outputLevel);
             output->SetScalingFactor(outputRecordedScalingFactor);
         }
         ReadOnlyCiphertext rescaledHighReadOnly = rescaledHigh;
