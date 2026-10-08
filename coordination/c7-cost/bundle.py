@@ -49,13 +49,21 @@ for name in ("c7_cost_probe", "rs2_test"):
     file_output = subprocess.check_output(["file", str(target)], text=True)
     if "arm64" not in file_output or "Mach-O" not in file_output:
         raise RuntimeError("expected arm64 Mach-O executable")
-    link_output = subprocess.check_output(["otool", "-L", str(target)], text=True)
-    dependencies = [line.strip().split(" (")[0] for line in link_output.splitlines()[1:]]
-    if not dependencies or any(not x.startswith(("/usr/lib/", "/System/Library/")) for x in dependencies):
-        raise RuntimeError("bundle has a non-system dynamic dependency")
+    architectures = subprocess.check_output(["lipo", "-archs", str(target)], text=True).split()
+    if set(architectures) != {"arm64", "x86_64"}:
+        raise RuntimeError("expected both universal architecture slices")
+    dependencies_by_arch = {}
+    for architecture in ("arm64", "x86_64"):
+        link_output = subprocess.check_output(["otool", "-arch", architecture, "-L", str(target)], text=True)
+        dependencies = [line.strip().split(" (")[0] for line in link_output.splitlines()[1:]]
+        if not dependencies or any(not x.startswith(("/usr/lib/", "/System/Library/")) for x in dependencies):
+            raise RuntimeError("bundle has a non-system dynamic dependency")
+        dependencies_by_arch[architecture] = dependencies
     rows.append({"name": name, "bytes": target.stat().st_size,
                  "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
-                 "file": file_output.strip(), "dependencies": dependencies})
+                 "file": file_output.strip(), "architectures": architectures,
+                 "dependencies": dependencies_by_arch["arm64"],
+                 "dependencies_by_arch": dependencies_by_arch})
 if rows[1]["sha256"] != green["binary_sha256"]:
     raise RuntimeError("packaged test binary does not match functional receipt")
 manifest = {"source_commit": source_commit,
