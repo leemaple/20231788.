@@ -1,0 +1,100 @@
+name: C7 native RS2 functional engineering
+
+on:
+  push:
+    tags:
+      - c7-rs2-engineering-20261008-01
+      - c7-rs2-engineering-20261008-02
+
+permissions:
+  contents: read
+
+concurrency:
+  group: c7-native-rs2-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+  RED_COMMIT: 0fc6449cc7ee7aaa10641a437f57cf40ace561da
+  OPENFHE_PREFIX: ${{ github.workspace }}/.ci/openfhe-install
+  OMP_NUM_THREADS: '1'
+  OMP_THREAD_LIMIT: '1'
+
+jobs:
+  functional:
+    if: ${{ github.event.created == true && github.event.deleted == false && github.event.forced == false && github.run_attempt == 1 }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record source and toolchain
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p artifacts/c7-native-rs2
+          git rev-parse HEAD > artifacts/c7-native-rs2/green-commit.txt
+          cmake --version > artifacts/c7-native-rs2/cmake-version.txt
+          c++ --version > artifacts/c7-native-rs2/compiler-version.txt
+          uname -a > artifacts/c7-native-rs2/host.txt
+          python3 --version > artifacts/c7-native-rs2/python-version.txt
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: openfheorg/openfhe-development
+          ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+          path: .ci/openfhe-src
+          submodules: recursive
+          persist-credentials: false
+      - name: Configure pinned dependency
+        run: |
+          set -euo pipefail
+          test "$(git -C .ci/openfhe-src rev-parse HEAD)" = "$OPENFHE_COMMIT"
+          git -C .ci/openfhe-src rev-parse HEAD > artifacts/c7-native-rs2/openfhe-commit.txt
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libboost-dev
+          cmake -S .ci/openfhe-src -B .ci/openfhe-build \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$OPENFHE_PREFIX" \
+            -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF \
+            -DBUILD_EXTRAS=OFF -DWITH_OPENMP=ON -DNATIVE_SIZE=64 -DMATHBACKEND=4 \
+            2>&1 | tee artifacts/c7-native-rs2/openfhe-configure.txt
+      - name: Build pinned dependency with two workers
+        run: |
+          set -euo pipefail
+          cmake --build .ci/openfhe-build --parallel 2 2>&1 | tee artifacts/c7-native-rs2/openfhe-build.txt
+          cmake --install .ci/openfhe-build > artifacts/c7-native-rs2/openfhe-install.txt
+      - name: Witness expected preimplementation failures
+        run: |
+          set -euo pipefail
+          git worktree add --detach .ci/c7-red "$RED_COMMIT"
+          test "$(git -C .ci/c7-red rev-parse HEAD)" = "$RED_COMMIT"
+          cmake -S .ci/c7-red -B .ci/c7-red-build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$OPENFHE_PREFIX" 2>&1 | tee artifacts/c7-native-rs2/red-configure.txt
+          cmake --build .ci/c7-red-build --target rs2_test rs2_api_contract_test --parallel 2 \
+            2>&1 | tee artifacts/c7-native-rs2/red-build.txt
+          .ci/c7-red-build/rs2_api_contract_test
+          C7_TEST_COMMIT="$RED_COMMIT" python3 coordination/c7-native-rs2/run_functional.py \
+            red .ci/c7-red-build artifacts/c7-native-rs2
+      - name: Verify all three backends against independent integer oracle and state tests
+        run: |
+          set -euo pipefail
+          cmake -S . -B .ci/c7-green-build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$OPENFHE_PREFIX" 2>&1 | tee artifacts/c7-native-rs2/green-configure.txt
+          cmake --build .ci/c7-green-build --target rs2_test rs2_api_contract_test --parallel 2 \
+            2>&1 | tee artifacts/c7-native-rs2/green-build.txt
+          .ci/c7-green-build/rs2_api_contract_test
+          C7_TEST_COMMIT="$GITHUB_SHA" python3 coordination/c7-native-rs2/run_functional.py \
+            green .ci/c7-green-build artifacts/c7-native-rs2
+      - name: Retain engineering evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: c7-native-rs2-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/c7-native-rs2/
+          if-no-files-found: error
+          retention-days: 14

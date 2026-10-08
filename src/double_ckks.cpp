@@ -71,6 +71,59 @@ bool IsInEvaluationFormat(const lbcrypto::DCRTPoly& polynomial) {
     return true;
 }
 
+
+// Ordinary single-rescale reordering. Center the dropped coefficient tower,
+// transform its projection, subtract, then multiply once by q^{-1}.
+void ReorderedRescaleInPlace(lbcrypto::DCRTPoly& value,
+                             const std::vector<lbcrypto::NativeInteger>& inverses) {
+    auto residue = value.GetAllElements().back();
+    residue.SetFormat(Format::COEFFICIENT);
+    value.DropLastElement();
+    auto& towers = value.GetAllElements();
+    for (std::size_t i = 0; i < towers.size(); ++i) {
+        auto correction = residue;
+        correction.SwitchModulus(towers[i].GetModulus(), towers[i].GetRootOfUnity(), 0, 0);
+        correction.SetFormat(Format::EVALUATION);
+        towers[i] -= correction;
+        towers[i] *= inverses.at(i);
+    }
+}
+
+// Both polynomials are owned output buffers, already validated in the same
+// evaluation basis. There are still two independent rounding residues.
+void FusedRescalePairInPlace(lbcrypto::DCRTPoly& high, lbcrypto::DCRTPoly& low,
+                            const lbcrypto::NativeInteger& divisor,
+                            const std::vector<lbcrypto::NativeInteger>& inverses) {
+    auto highResidue = high.GetAllElements().back();
+    auto recombinedResidue = low.GetAllElements().back();
+    highResidue.SetFormat(Format::COEFFICIENT);
+    recombinedResidue.SetFormat(Format::COEFFICIENT);
+    auto scaledHighResidue = highResidue;
+    scaledHighResidue *= divisor.Mod(highResidue.GetModulus());
+    recombinedResidue += scaledHighResidue;
+    high.DropLastElement();
+    low.DropLastElement();
+    auto& highTowers = high.GetAllElements();
+    auto& lowTowers = low.GetAllElements();
+    for (std::size_t i = 0; i < highTowers.size(); ++i) {
+        auto highCorrection = highResidue;
+        auto combinedCorrection = recombinedResidue;
+        const auto& modulus = highTowers[i].GetModulus();
+        const auto& root = highTowers[i].GetRootOfUnity();
+        // SwitchModulus implements the centered coefficient representative.
+        highCorrection.SwitchModulus(modulus, root, 0, 0);
+        combinedCorrection.SwitchModulus(modulus, root, 0, 0);
+        highCorrection.SetFormat(Format::EVALUATION);
+        combinedCorrection.SetFormat(Format::EVALUATION);
+        highTowers[i] -= highCorrection;
+        highTowers[i] *= inverses.at(i);
+        highCorrection *= divisor.Mod(modulus);
+        lowTowers[i] += highCorrection;
+        lowTowers[i] -= combinedCorrection;
+        lowTowers[i] *= inverses.at(i);
+    }
+}
+
 }  // namespace
 
 CiphertextPair::CiphertextPair(lbcrypto::Ciphertext<lbcrypto::DCRTPoly> high,
@@ -1082,8 +1135,9 @@ CiphertextPair DoubleCKKS::RS2(const CiphertextPair& relinearized) const {
 }
 
 CiphertextPair DoubleCKKS::RS2WithBackend(const CiphertextPair& relinearized, RS2Backend backend) const {
-    if (backend != RS2Backend::Reference) {
-        Invalid("requested RS2 backend is not implemented");
+    if (backend != RS2Backend::Reference && backend != RS2Backend::Reordered &&
+        backend != RS2Backend::Fused) {
+        Invalid("unknown RS2 backend");
     }
     if (plan_) {
         const auto family = plan_->RequireReceipt(relinearized.receipt_);
@@ -1141,58 +1195,104 @@ CiphertextPair DoubleCKKS::RS2WithBackend(const CiphertextPair& relinearized, RS
         Invalid("the RS2 output logical scaling factors are invalid");
     }
 
-    auto highInput = relinearized.high_->Clone();
-    ReadOnlyCiphertext highInputReadOnly = highInput;
-    ValidateCiphertext(highInputReadOnly, relinearized.orderedModuli_, relinearized.level_,
-                       relinearized.noiseScaleDegree_, relinearized.recordedScalingFactor_,
-                       relinearized.keyTag_, relinearized.slots_, 2, "RS2 input", "RS2 high input clone");
+    lbcrypto::Ciphertext<lbcrypto::DCRTPoly> rescaledHigh;
+    lbcrypto::Ciphertext<lbcrypto::DCRTPoly> newLow;
+    if (backend == RS2Backend::Reference) {
+        auto highInput = relinearized.high_->Clone();
+        ReadOnlyCiphertext highInputReadOnly = highInput;
+        ValidateCiphertext(highInputReadOnly, relinearized.orderedModuli_, relinearized.level_,
+                           relinearized.noiseScaleDegree_, relinearized.recordedScalingFactor_,
+                           relinearized.keyTag_, relinearized.slots_, 2, "RS2 input", "RS2 high input clone");
 
-    auto recombinedInput = RCB(relinearized);
-    ReadOnlyCiphertext recombinedInputReadOnly = recombinedInput;
-    ValidateCiphertext(recombinedInputReadOnly, relinearized.orderedModuli_, relinearized.level_,
-                       relinearized.noiseScaleDegree_, relinearized.recordedScalingFactor_,
-                       relinearized.keyTag_, relinearized.slots_, 2, "RS2 input",
-                       "RS2 recombined input");
+        auto recombinedInput = RCB(relinearized);
+        ReadOnlyCiphertext recombinedInputReadOnly = recombinedInput;
+        ValidateCiphertext(recombinedInputReadOnly, relinearized.orderedModuli_, relinearized.level_,
+                           relinearized.noiseScaleDegree_, relinearized.recordedScalingFactor_,
+                           relinearized.keyTag_, relinearized.slots_, 2, "RS2 input",
+                           "RS2 recombined input");
 
-    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> highInputConst = highInput;
-    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> recombinedInputConst = recombinedInput;
-    // Definition 4.5 requires these two independently rounded rescale calls.
-    auto rescaledHigh = context_->Rescale(highInputConst);
-    auto rescaledRecombined = context_->Rescale(recombinedInputConst);
+        lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> highInputConst = highInput;
+        lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> recombinedInputConst = recombinedInput;
+        // Definition 4.5 requires these two independently rounded rescale calls.
+        rescaledHigh = context_->Rescale(highInputConst);
+        auto rescaledRecombined = context_->Rescale(recombinedInputConst);
 
-    ReadOnlyCiphertext rescaledHighReadOnly = rescaledHigh;
-    ReadOnlyCiphertext rescaledRecombinedReadOnly = rescaledRecombined;
-    ValidateCiphertext(rescaledHighReadOnly, outputModuli, outputLevel, outputNoiseScaleDegree,
-                       outputRecordedScalingFactor, relinearized.keyTag_, relinearized.slots_, 2,
-                       "RS2 output", "RS2 rescaled high");
-    ValidateCiphertext(rescaledRecombinedReadOnly, outputModuli, outputLevel,
-                       outputNoiseScaleDegree, outputRecordedScalingFactor,
-                       relinearized.keyTag_, relinearized.slots_, 2, "RS2 output",
-                       "RS2 rescaled recombined");
+        ReadOnlyCiphertext rescaledHighReadOnly = rescaledHigh;
+        ReadOnlyCiphertext rescaledRecombinedReadOnly = rescaledRecombined;
+        ValidateCiphertext(rescaledHighReadOnly, outputModuli, outputLevel, outputNoiseScaleDegree,
+                           outputRecordedScalingFactor, relinearized.keyTag_, relinearized.slots_, 2,
+                           "RS2 output", "RS2 rescaled high");
+        ValidateCiphertext(rescaledRecombinedReadOnly, outputModuli, outputLevel,
+                           outputNoiseScaleDegree, outputRecordedScalingFactor,
+                           relinearized.keyTag_, relinearized.slots_, 2, "RS2 output",
+                           "RS2 rescaled recombined");
 
-    lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> rescaledHighConst = rescaledHigh;
-    auto scaledRescaledHigh = context_->EvalMultNoCheck(rescaledHighConst, qDiv);
-    ReadOnlyCiphertext scaledRescaledHighReadOnly = scaledRescaledHigh;
-    ValidateCiphertext(scaledRescaledHighReadOnly, outputModuli, outputLevel,
-                       outputNoiseScaleDegree, outputRecordedScalingFactor,
-                       relinearized.keyTag_, relinearized.slots_, 2, "RS2 output",
-                       "RS2 q_div-scaled high");
+        lbcrypto::ConstCiphertext<lbcrypto::DCRTPoly> rescaledHighConst = rescaledHigh;
+        auto scaledRescaledHigh = context_->EvalMultNoCheck(rescaledHighConst, qDiv);
+        ReadOnlyCiphertext scaledRescaledHighReadOnly = scaledRescaledHigh;
+        ValidateCiphertext(scaledRescaledHighReadOnly, outputModuli, outputLevel,
+                           outputNoiseScaleDegree, outputRecordedScalingFactor,
+                           relinearized.keyTag_, relinearized.slots_, 2, "RS2 output",
+                           "RS2 q_div-scaled high");
 
-    // Both operands were validated in the identical post-rescale state, so a
-    // direct component subtraction cannot trigger hidden level/degree adjustment.
-    auto newLow = rescaledRecombined->Clone();
-    auto& newLowElements = newLow->GetElements();
-    const auto& scaledHighElements = scaledRescaledHigh->GetElements();
-    if (newLowElements.size() != scaledHighElements.size()) {
-        Invalid("RS2 post-rescale component counts do not match");
-    }
-    for (std::size_t index = 0; index < newLowElements.size(); ++index) {
-        const auto& recombinedBasis = newLowElements[index].GetParams();
-        const auto& scaledHighBasis = scaledHighElements[index].GetParams();
-        if (!recombinedBasis || !scaledHighBasis || !(*recombinedBasis == *scaledHighBasis)) {
-            Invalid("RS2 post-rescale subtraction bases do not match");
+        // Both operands were validated in the identical post-rescale state, so a
+        // direct component subtraction cannot trigger hidden level/degree adjustment.
+        newLow = rescaledRecombined->Clone();
+        auto& newLowElements = newLow->GetElements();
+        const auto& scaledHighElements = scaledRescaledHigh->GetElements();
+        if (newLowElements.size() != scaledHighElements.size()) {
+            Invalid("RS2 post-rescale component counts do not match");
         }
-        newLowElements[index] -= scaledHighElements[index];
+        for (std::size_t index = 0; index < newLowElements.size(); ++index) {
+            const auto& recombinedBasis = newLowElements[index].GetParams();
+            const auto& scaledHighBasis = scaledHighElements[index].GetParams();
+            if (!recombinedBasis || !scaledHighBasis || !(*recombinedBasis == *scaledHighBasis)) {
+                Invalid("RS2 post-rescale subtraction bases do not match");
+            }
+            newLowElements[index] -= scaledHighElements[index];
+        }
+    }
+    else {
+        // CloneEmpty preserves high-derived metadata without copying discarded
+        // polynomial data. Each output has its own metadata map and elements.
+        rescaledHigh = relinearized.high_->Clone();
+        newLow = relinearized.high_->CloneEmpty();
+        newLow->SetElements(backend == RS2Backend::Fused
+                                ? relinearized.low_->GetElements()
+                                : relinearized.high_->GetElements());
+        const auto& inverses = parameters_->GetqlInvModq(
+            fullTowerParameters.size() - relinearized.orderedModuli_.size());
+        auto& highElements = rescaledHigh->GetElements();
+        auto& lowElements = newLow->GetElements();
+        for (std::size_t component = 0; component < highElements.size(); ++component) {
+            if (backend == RS2Backend::Fused) {
+                FusedRescalePairInPlace(highElements[component], lowElements[component],
+                                       qDiv, inverses);
+            }
+            else {
+                lowElements[component] *= qDiv;
+                lowElements[component] += relinearized.low_->GetElements()[component];
+                ReorderedRescaleInPlace(highElements[component], inverses);
+                ReorderedRescaleInPlace(lowElements[component], inverses);
+                auto& lowTowers = lowElements[component].GetAllElements();
+                const auto& highTowers = highElements[component].GetAllElements();
+                for (std::size_t i = 0; i < lowTowers.size(); ++i) {
+                    auto scaledHigh = highTowers[i];
+                    scaledHigh *= qDiv.Mod(highTowers[i].GetModulus());
+                    lowTowers[i] -= scaledHigh;
+                }
+            }
+        }
+        for (auto& output : {rescaledHigh, newLow}) {
+            output->SetLevel(outputLevel);
+            output->SetNoiseScaleDeg(outputNoiseScaleDegree);
+            output->SetScalingFactor(outputRecordedScalingFactor);
+        }
+        ReadOnlyCiphertext rescaledHighReadOnly = rescaledHigh;
+        ValidateCiphertext(rescaledHighReadOnly, outputModuli, outputLevel,
+                           outputNoiseScaleDegree, outputRecordedScalingFactor,
+                           relinearized.keyTag_, relinearized.slots_, 2,
+                           "RS2 output", "RS2 rescaled high");
     }
     ReadOnlyCiphertext newLowReadOnly = newLow;
     ValidateCiphertext(newLowReadOnly, outputModuli, outputLevel, outputNoiseScaleDegree,
