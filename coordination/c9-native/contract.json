@@ -32,8 +32,8 @@
     },
     {
       "path": "tests/mult2_backends_test.cpp",
-      "sha256": "0479e958e3df559f34ce148cefbfab61643849bb0ceed5dc95351de322c20760",
-      "bytes": 22583
+      "sha256": "db129fe1e9b588467a8168ff84248e7f995085c7880f32233709c1e8ccfc775e",
+      "bytes": 22757
     },
     {
       "path": "tests/tensor2_test.cpp",
@@ -44,6 +44,21 @@
       "path": "tests/relin2_test.cpp",
       "sha256": "8798bbc98a526f8265c1346392f4f7169e92178937813652ef4c72b3ccc0fa60",
       "bytes": 273995
+    },
+    {
+      "path": "tests/precision_dcp_rcb_fixture.cpp",
+      "sha256": "4bcd633c3fb4b6ad4fa5d2088908e7992ccd50dec0d3b826fe976e590a3aa596",
+      "bytes": 10117
+    },
+    {
+      "path": "tests/precision_dcp_rcb_fixture.h",
+      "sha256": "4b7b1c4f2670f5dc93e8d28f1ad585a47bb9cf4b81130bb45200a3af82e6b554",
+      "bytes": 1007
+    },
+    {
+      "path": "src/repeated_mult2.cpp",
+      "sha256": "6781d01ff9b4012e7c6d14d16f482def0821c54f4e81e2de80bd8db9d1aea41b",
+      "bytes": 39523
     }
   ],
   "trace_green_sha256": "2f4e05ef2c2e84db6fe42db68d953b27a834a5ad8a2390081a9cba7f6bfb2744",
@@ -127,5 +142,17 @@
   "classification": "bounded functional engineering only",
   "randomness": "fixed plaintext and controlled coefficient construction; library encryption and key generation randomness unseeded",
   "security": "HEStd_NotSet diagnostic fixtures",
-  "red_status": "retrospective actual v1 trace defect with v2 counterexample, not test-first source history"
+  "red_status": "retrospective actual v1 trace defect with v2 counterexample, not test-first source history",
+  "repeated_fixture": {
+    "slots": 16,
+    "ring_dimension": 64,
+    "scale_bits": 100,
+    "first_two_real_values": [
+      "0.125",
+      "-0.0625"
+    ],
+    "all_imaginary_values": "0",
+    "remaining_real_slots_2_through_15": "0",
+    "purpose": "Complete the unchanged specialized fixture input contract; no precision, security or performance claim."
+  }
 }

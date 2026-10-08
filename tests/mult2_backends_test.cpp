@@ -351,9 +351,12 @@ void Legacy(std::uint32_t n, std::uint32_t depth, std::uint32_t bits,
 void Repeated() {
     const auto setup = CreateRepeatedMult2DiagnosticSetup();
     const auto c = setup.plan->GetFamilyContext(0);
+    std::vector<precision_dcp_rcb_test::MpComplex> values(
+        16, {precision_dcp_rcb_test::BigFloat(0), precision_dcp_rcb_test::BigFloat(0)});
+    values[0].real = precision_dcp_rcb_test::BigFloat("0.125");
+    values[1].real = precision_dcp_rcb_test::BigFloat("-0.0625");
     const auto plaintext = precision_dcp_rcb_test::MakePrecisionPlaintext(
-        c, {{precision_dcp_rcb_test::BigFloat("0.125"), 0},
-            {precision_dcp_rcb_test::BigFloat("-0.0625"), 0}}, 100);
+        c, values, 100);
     const auto input = c->Encrypt(setup.publicKey, plaintext);
     DoubleCKKS module(setup.plan);
     const auto pair = module.DCP(input);
