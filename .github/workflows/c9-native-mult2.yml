@@ -5,6 +5,7 @@ on:
     tags:
       - c9-native-mult2-20261009-01
       - c9-native-mult2-20261009-02
+      - c9-native-mult2-20261009-03
 
 permissions:
   contents: read
@@ -24,7 +25,7 @@ jobs:
   functional:
     if: ${{ github.event.created == true && github.event.deleted == false && github.event.forced == false && github.run_attempt == 1 }}
     runs-on: macos-15-intel
-    timeout-minutes: 35
+    timeout-minutes: 22
     defaults:
       run:
         shell: bash
@@ -74,7 +75,7 @@ jobs:
           cmake --build .ci/openfhe-build --parallel 2 2>&1 | tee artifacts/c9-native/openfhe-build.txt
           cmake --install .ci/openfhe-build > artifacts/c9-native/openfhe-install.txt
           cp .ci/openfhe-build/compile_commands.json artifacts/c9-native/openfhe-compile-commands.json
-      - name: Build candidate and original API regressions with strict project warnings
+      - name: Build candidate with strict project warnings
         run: |
           set -euo pipefail
           cmake -S . -B .ci/c9-green -DCMAKE_BUILD_TYPE=Release \
@@ -83,11 +84,9 @@ jobs:
             -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' \
             -DCMAKE_CXX_FLAGS="-I$(brew --prefix boost)/include" \
             2>&1 | tee artifacts/c9-native/green-configure.txt
-          cmake --build .ci/c9-green --parallel 2 --target mult2_backends_test \
-            dcp_rcb_test tensor2_test relin2_test rs2_test mult2_test mult2_e2e_oracle_test \
-            repeated_mult2_semantic_two_square_test mult2_api_contract_test relin2_api_contract_test \
-            rs2_api_contract_test 2>&1 | tee artifacts/c9-native/green-build.txt
           cp .ci/c9-green/compile_commands.json artifacts/c9-native/green-compile-commands.json
+          cmake --build .ci/c9-green --parallel 2 --target mult2_backends_test \
+            2>&1 | tee artifacts/c9-native/green-build.txt
       - name: Reproduce the historical trace defect with the new counterexample
         run: |
           set -euo pipefail
@@ -104,10 +103,30 @@ jobs:
             2>&1 | tee artifacts/c9-native/red-build.txt
           cp .ci/c9-red/compile_commands.json artifacts/c9-native/red-compile-commands.json
           python3 coordination/c9-native/run_checks.py red .ci/c9-red artifacts/c9-native
-      - name: Execute new behavior and the exact 51 original regression cases once
+      - name: Execute candidate normal behavior once
         run: |
           set -euo pipefail
           python3 coordination/c9-native/run_checks.py green .ci/c9-green artifacts/c9-native
+      - name: Collect all original target compilation outcomes with strict warnings
+        run: |
+          set -euo pipefail
+          failed=0
+          for target in dcp_rcb_test tensor2_test relin2_test rs2_test mult2_test \
+            mult2_e2e_oracle_test repeated_mult2_semantic_two_square_test \
+            mult2_api_contract_test relin2_api_contract_test rs2_api_contract_test; do
+            if cmake --build .ci/c9-green --parallel 2 --target "$target" \
+              2>&1 | tee "artifacts/c9-native/original-${target}-build.txt"; then
+              printf '%s\t0\n' "$target" >> artifacts/c9-native/original-build-exits.tsv
+            else
+              code=$?
+              printf '%s\t%s\n' "$target" "$code" >> artifacts/c9-native/original-build-exits.tsv
+              failed=1
+            fi
+          done
+          test "$failed" -eq 0
+      - name: Execute the exact 51 original regression cases once
+        run: |
+          set -euo pipefail
           python3 coordination/c9-native/run_checks.py regressions .ci/c9-green artifacts/c9-native
           .ci/c9-green/mult2_api_contract_test
           .ci/c9-green/relin2_api_contract_test

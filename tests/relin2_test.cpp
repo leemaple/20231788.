@@ -892,7 +892,8 @@ void TestWrongEvaluationKeySubtype() {
               "Relin2 wrong-subtype negative-control key must keep the bound context");
         Check(wrongSubtypeKey->GetKeyTag() == tensor.GetKeyTag(),
               "Relin2 wrong-subtype negative-control key must match the Tensor tag");
-        Check(typeid(*wrongSubtypeKey) == typeid(lbcrypto::EvalKeyImpl<DCRTPoly>) &&
+        const auto* wrongSubtypeObject = wrongSubtypeKey.get();
+        Check(typeid(*wrongSubtypeObject) == typeid(lbcrypto::EvalKeyImpl<DCRTPoly>) &&
                   std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(wrongSubtypeKey) == nullptr,
               "Relin2 wrong-subtype negative control must use the exact base evaluation-key type");
 
@@ -917,7 +918,7 @@ void TestWrongEvaluationKeySubtype() {
               "Relin2 wrong-subtype rejection mutated the evaluation-key context");
         Check(wrongSubtypeKey->GetKeyTag() == keyTagBefore,
               "Relin2 wrong-subtype rejection mutated the evaluation-key tag");
-        Check(typeid(*wrongSubtypeKey) == typeid(lbcrypto::EvalKeyImpl<DCRTPoly>) &&
+        Check(typeid(*wrongSubtypeObject) == typeid(lbcrypto::EvalKeyImpl<DCRTPoly>) &&
                   std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(wrongSubtypeKey) == nullptr,
               "Relin2 wrong-subtype rejection changed the concrete evaluation-key type");
     }
@@ -3653,7 +3654,8 @@ DeepKeyCacheSnapshot SnapshotDeepKeyCache() {
             entry.pointerIdentity = key.get();
             entry.contextIdentity = key->GetCryptoContext().get();
             entry.actualTag = key->GetKeyTag();
-            entry.concreteSubtype = typeid(*key).name();
+            const auto* keyObject = key.get();
+            entry.concreteSubtype = typeid(*keyObject).name();
             const auto relin = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(key);
             if (relin) {
                 entry.isRelin = true;
@@ -3687,7 +3689,8 @@ void CheckDeepKeyCacheMatches(const DeepKeyCacheSnapshot& expected, const std::s
             Check(key.get() == e.pointerIdentity, label + " cache pointer identity changed");
             Check(key->GetCryptoContext().get() == e.contextIdentity, label + " key context identity changed");
             Check(key->GetKeyTag() == e.actualTag, label + " actual key tag changed");
-            Check(typeid(*key).name() == e.concreteSubtype, label + " concrete key subtype changed");
+            const auto* keyObject = key.get();
+            Check(typeid(*keyObject).name() == e.concreteSubtype, label + " concrete key subtype changed");
             const auto relin = std::dynamic_pointer_cast<lbcrypto::EvalKeyRelinImpl<DCRTPoly>>(key);
             Check((relin != nullptr) == e.isRelin, label + " relin subtype classification changed");
             if (relin) {
