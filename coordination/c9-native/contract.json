@@ -1,0 +1,121 @@
+{
+  "source_files": [
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "5f5971db131245a2d9f249d229843a365956b85c867c597063cb1b95468b2e08",
+      "bytes": 23721
+    },
+    {
+      "path": "include/openfhe_2023_1788/double_ckks.h",
+      "sha256": "7d55c2208b64156d3b31701ffb005af1f65219773be188339121d637320bcc4b",
+      "bytes": 10521
+    },
+    {
+      "path": "src/double_ckks.cpp",
+      "sha256": "caed0377c319dd96e66ea0da97e312c4af65916a2210e837cf447bfb21dbac86",
+      "bytes": 64788
+    },
+    {
+      "path": "src/mult2_schedule.h",
+      "sha256": "d5c4a41ef0a93fde6fd0164e1537a39a13c0e82d393dc0ab28601802ad52ef13",
+      "bytes": 841
+    },
+    {
+      "path": "src/mult2_schedule.cpp",
+      "sha256": "c6f921740d6866129c8c25ea5dcfdd6081ee1226730eace7d5e32ec8fe8f376f",
+      "bytes": 11146
+    },
+    {
+      "path": "src/mult2_backends.cpp",
+      "sha256": "2f4e05ef2c2e84db6fe42db68d953b27a834a5ad8a2390081a9cba7f6bfb2744",
+      "bytes": 8761
+    },
+    {
+      "path": "tests/mult2_backends_test.cpp",
+      "sha256": "0479e958e3df559f34ce148cefbfab61643849bb0ceed5dc95351de322c20760",
+      "bytes": 22583
+    }
+  ],
+  "trace_green_sha256": "2f4e05ef2c2e84db6fe42db68d953b27a834a5ad8a2390081a9cba7f6bfb2744",
+  "trace_red_sha256": "9ab27c8f6b98cd98e545700bba1f51b8aadb7c1609583bed03f5ba0af3e8cf86",
+  "regression_pattern": "^(dcp_rcb|tensor2_.*|relin2_.*|rs2_.*|mult2_.*|repeated_mult2_semantic_two_square_contract)$",
+  "regression_names": [
+    "dcp_rcb",
+    "tensor2_valid_arithmetic_immutability",
+    "tensor2_result_scale_contract",
+    "tensor2_right_input_validation",
+    "tensor2_mutual_compatibility",
+    "tensor2_prearithmetic_key_compatibility",
+    "relin2_tensor_validation_order",
+    "relin2_insufficient_active_basis",
+    "relin2_missing_eval_key",
+    "relin2_key_empty",
+    "relin2_key_null_first",
+    "relin2_key_wrong_context",
+    "relin2_key_wrong_tag",
+    "relin2_key_wrong_subtype",
+    "relin2_key_hybrid_a_length",
+    "relin2_key_hybrid_b_length",
+    "relin2_key_hybrid_entry_basis",
+    "relin2_key_hybrid_entry_format",
+    "relin2_key_bv_zero_digit_a_length",
+    "relin2_key_bv_zero_digit_b_length",
+    "relin2_key_bv_nonzero_digit_a_length",
+    "relin2_key_bv_nonzero_digit_b_length",
+    "relin2_key_bv_zero_digit_entry_basis",
+    "relin2_key_bv_nonzero_digit_entry_basis",
+    "relin2_key_bv_zero_digit_entry_format",
+    "relin2_key_bv_nonzero_digit_entry_format",
+    "relin2_valid_arithmetic_state_immutability",
+    "relin2_controlled_witnesses_and_boundaries",
+    "relin2_representative_public_input",
+    "relin2_key_extra_later_valid",
+    "relin2_key_malformed_later_ignored",
+    "relin2_hybrid_valid_shapes",
+    "relin2_bv_zero_digit_valid_shapes",
+    "relin2_bv_nonzero_digit_valid_shapes",
+    "relin2_first_recombined_rcb_validation",
+    "relin2_first_recombined_tensor2_validation",
+    "relin2_tensor2_requires_first_lifecycle",
+    "rs2_wrong_lifecycle",
+    "rs2_valid_arithmetic_state_immutability",
+    "rs2_mixed_tower_format",
+    "rs2_untouched_public_pipeline",
+    "rs2_declared_basis_mismatch",
+    "rs2_terminal_rejections",
+    "mult2_composition_contract",
+    "mult2_e2e_hybrid_real",
+    "mult2_e2e_hybrid_complex",
+    "mult2_e2e_bv_real",
+    "mult2_e2e_bv_complex",
+    "mult2_pair_add_input_hybrid_complex",
+    "mult2_pair_sub_input_hybrid_complex",
+    "repeated_mult2_semantic_two_square_contract"
+  ],
+  "negative_cases": {
+    "terminal_legacy_lifecycle": 4,
+    "recorded_scale": 4,
+    "noise_degree": 4,
+    "level": 4,
+    "slots": 4,
+    "key_tag": 4,
+    "arity": 4,
+    "coefficient_format": 4,
+    "ordered_basis": 4,
+    "missing_tower_storage": 4,
+    "context_identity": 4,
+    "missing_eval_key": 4,
+    "empty_eval_key": 4,
+    "null_eval_key": 4,
+    "planned_terminal_input": 4,
+    "planned_cross_family": 1,
+    "foreign_receipt_for_legacy": 1,
+    "foreign_plan_receipt": 1,
+    "planned_integer_factor": 1,
+    "planned_metadata": 1
+  },
+  "classification": "bounded functional engineering only",
+  "randomness": "fixed plaintext and controlled coefficient construction; library encryption and key generation randomness unseeded",
+  "security": "HEStd_NotSet diagnostic fixtures",
+  "red_status": "retrospective actual v1 trace defect with v2 counterexample, not test-first source history"
+}

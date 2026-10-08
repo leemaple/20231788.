@@ -146,6 +146,19 @@ private:
 
 enum class RS2Backend { Reference, Reordered, Fused };
 
+enum class Mult2Backend { Reference, SharedStaged, TailDigit, TailWide };
+enum class Mult2Fallback {
+    None, NonNative64, WideUnavailable, ModulusRange, NonPrimeModulus,
+    DuplicateModulus, InvalidRoot
+};
+// Per-call observation only: never an authority to skip input validation.
+struct Mult2BackendTrace final {
+    Mult2Backend requested = Mult2Backend::Reference;
+    Mult2Backend executed = Mult2Backend::Reference;
+    Mult2Fallback fallback = Mult2Fallback::None;
+    bool completed = false;
+};
+
 class DoubleCKKS final {
 public:
     explicit DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context);
@@ -162,10 +175,21 @@ public:
     // Experimental opt-in backends; the original public entry point is unchanged.
     CiphertextPair RS2WithBackend(const CiphertextPair& relinearized, RS2Backend backend) const;
     CiphertextPair Mult2(const CiphertextPair& left, const CiphertextPair& right) const;
+    CiphertextPair Mult2WithBackend(const CiphertextPair& left, const CiphertextPair& right,
+                                   Mult2Backend backend) const;
+    CiphertextPair Mult2WithBackend(const CiphertextPair& left, const CiphertextPair& right,
+                                   Mult2Backend backend, Mult2BackendTrace* trace) const;
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> RCB(const CiphertextPair& pair) const;
     RepeatedMult2Result RCBWithReceipt(const CiphertextPair& pair) const;
 
 private:
+    std::pair<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>, lbcrypto::Ciphertext<lbcrypto::DCRTPoly>>
+    PrepareRelin2(const TensorCiphertextPair& tensor) const;
+    void ValidateMult2Stage(const TensorCiphertextPair& tensor) const;
+    CiphertextPair FinishMult2FromRelin(const TensorCiphertextPair& tensor,
+                                      const ReadOnlyCiphertext& high,
+                                      const ReadOnlyCiphertext& low,
+                                      Mult2Backend backend) const;
     DoubleCKKS(std::shared_ptr<const RepeatedMult2Plan> plan,std::size_t family);
     void ValidatePlannedPair(const CiphertextPair& pair) const;
     void ValidatePlannedTensor(const TensorCiphertextPair& pair) const;

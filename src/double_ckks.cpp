@@ -944,13 +944,8 @@ TensorCiphertextPair DoubleCKKS::Tensor2(const CiphertextPair& left, const Ciphe
     return result;
 }
 
-CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
-    if (plan_) {
-        const auto family = plan_->RequireReceipt(tensor.receipt_);
-        if (family != familyIndex_) {
-            return DoubleCKKS(plan_, family).Relin2(tensor);
-        }
-    }
+std::pair<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>, lbcrypto::Ciphertext<lbcrypto::DCRTPoly>>
+DoubleCKKS::PrepareRelin2(const TensorCiphertextPair& tensor) const {
     ValidateTensorResult(tensor);
     if (tensor.GetOrderedModuli().size() < tensor.GetNoiseScaleDegree()) {
         Invalid("Relin2 requires at least as many active Q_l towers as the Tensor noise-scale degree");
@@ -1089,6 +1084,19 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
     ValidateCiphertext(relinearizedHighReadOnly, fullModuli_, 0, tensor.noiseScaleDegree_,
                        tensor.recordedScalingFactor_, tensor.keyTag_, tensor.slots_, 2,
                        "Relin2 relinearized-high", "Relin2 relinearized high");
+
+    return {std::move(relinearizedHigh), std::move(relinearizedLow)};
+}
+
+CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
+    if (plan_) {
+        const auto family = plan_->RequireReceipt(tensor.receipt_);
+        if (family != familyIndex_) {
+            return DoubleCKKS(plan_, family).Relin2(tensor);
+        }
+    }
+    auto [relinearizedHigh, relinearizedLow] = PrepareRelin2(tensor);
+    ReadOnlyCiphertext relinearizedHighReadOnly = relinearizedHigh;
 
     auto [high, remainder] = DecomposeValidatedCiphertext(relinearizedHighReadOnly);
     ReadOnlyCiphertext highReadOnly = high;
