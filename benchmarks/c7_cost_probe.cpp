@@ -31,13 +31,23 @@ void Require(bool value, const char* message) {
     if (!value) throw std::runtime_error(message);
 }
 
+void CloseChecked(std::ofstream& stream, const char* message) {
+    stream.flush();
+    stream.close();
+    Require(static_cast<bool>(stream), message);
+}
+
 bool SameCiphertext(const ReadOnlyCiphertext& a, const ReadOnlyCiphertext& b) {
     return a->GetCryptoContext().get() == b->GetCryptoContext().get() &&
            a->GetKeyTag() == b->GetKeyTag() && a->GetSlots() == b->GetSlots() &&
-           a->GetLevel() == b->GetLevel() && a->GetNoiseScaleDeg() == b->GetNoiseScaleDeg() &&
+           a->GetLevel() == b->GetLevel() && a->GetHopLevel() == b->GetHopLevel() &&
+           a->GetNoiseScaleDeg() == b->GetNoiseScaleDeg() &&
            a->GetScalingFactor() == b->GetScalingFactor() &&
            a->GetScalingFactorInt() == b->GetScalingFactorInt() &&
-           a->GetEncodingType() == b->GetEncodingType() && a->GetElements() == b->GetElements();
+           a->GetEncodingType() == b->GetEncodingType() &&
+           a->GetMetadataMap() && b->GetMetadataMap() &&
+           a->GetMetadataMap()->empty() && b->GetMetadataMap()->empty() &&
+           a->GetElements() == b->GetElements();
 }
 
 void SamePair(const CiphertextPair& a, const CiphertextPair& b) {
@@ -49,6 +59,9 @@ void SamePair(const CiphertextPair& a, const CiphertextPair& b) {
             a.GetComponentCount() == b.GetComponentCount() && a.GetLevel() == b.GetLevel() &&
             a.GetNoiseScaleDegree() == b.GetNoiseScaleDegree() &&
             a.GetRecordedScalingFactor() == b.GetRecordedScalingFactor() &&
+            a.GetContextIdentity() == b.GetContextIdentity() && a.GetKeyTag() == b.GetKeyTag() &&
+            a.GetSlots() == b.GetSlots() && !a.GetRepeatedReceipt() && !b.GetRepeatedReceipt() &&
+            x.inputRecordedScalingFactor == y.inputRecordedScalingFactor && x.divisor == y.divisor &&
             x.approximateLogicalScalingFactor == y.approximateLogicalScalingFactor &&
             x.approximateRecombinedLogicalScalingFactor == y.approximateRecombinedLogicalScalingFactor,
             "backend output differs from Reference in full coefficients or state");
@@ -125,7 +138,7 @@ void RunFixture(std::uint32_t n, bool measure, const std::filesystem::path& dire
     const auto prefix = directory / ("N" + std::to_string(n));
     std::ofstream inputs(prefix.string() + "-public-inputs.bin", std::ios::binary);
     SavePublicPair(inputs, left); SavePublicPair(inputs, right); SavePublicPair(inputs, relin);
-    inputs.close();
+    CloseChecked(inputs, "public input close failed");
     std::ofstream shape(prefix.string() + "-shape.json");
     shape << "{\"N\":" << n << ",\"slots\":" << n / 2
           << ",\"qDiv\":\"" << relin.GetDivisor() << "\",\"moduli\":[";
@@ -137,7 +150,7 @@ void RunFixture(std::uint32_t n, bool measure, const std::filesystem::path& dire
              "\"byte_order\":\"little\",\"coefficient_format\":\"NTT evaluation\","
              "\"secret_key_distribution\":\"OpenFHE default uniform ternary\","
              "\"paper_h128_sparse_key_claim\":false}\n";
-    Require(static_cast<bool>(shape), "shape record write failed");
+    CloseChecked(shape, "shape record close failed");
     const auto operation = [&](unsigned stage, unsigned backend) {
         if (stage == 0) return module.RS2WithBackend(relin, backends[backend]);
         return module.RS2WithBackend(module.Relin2(module.Tensor2(left, right)), backends[backend]);
@@ -202,19 +215,19 @@ int main(int argc, char** argv) {
         std::ofstream started(directory / "started.json");
         started << "{\"source_commit\":\"" << C7_SOURCE_COMMIT << "\",\"mode\":\"" << mode
                 << "\",\"admission_sha256\":\"" << admission << "\"}\n";
-        started.close();
+        CloseChecked(started, "started record close failed");
         std::ofstream records(directory / "records.jsonl");
         if (measure) {
             RunFixture(16384, true, directory, records);
             RunFixture(32768, true, directory, records);
         }
         else RunFixture(32, false, directory, records);
-        records.close();
+        CloseChecked(records, "measurement record close failed");
         std::ofstream completed(directory / "completed.json");
         completed << "{\"source_commit\":\"" << C7_SOURCE_COMMIT << "\",\"mode\":\"" << mode
                   << "\",\"passed\":true,\"sample_rows\":" << (measure ? 288 : 0)
                   << ",\"functional_comparator_negative_controls\":true}\n";
-        Require(static_cast<bool>(completed), "completion record write failed");
+        CloseChecked(completed, "completion record close failed");
         std::cout << "C7 " << mode << " completed; performance publication admission is separate\n";
         return 0;
     }
