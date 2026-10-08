@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+option(C7_STATIC_BUNDLE "Link the experimental transport binary to static OpenFHE" OFF)
 find_package(OpenFHE 1.5.0 CONFIG REQUIRED)
 
 if(NOT BASE_OPENFHE_VERSION VERSION_EQUAL "1.5.0")
@@ -16,7 +17,12 @@ if(UNIX AND NOT APPLE)
     add_link_options(-Wl,--no-as-needed)
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenFHE_CXX_FLAGS}")
+set(C7_IMPORTED_CXX_FLAGS "${OpenFHE_CXX_FLAGS}")
+if(C7_STATIC_BUNDLE)
+    # The dependency-only OpenMP-off warning workaround must not weaken this project.
+    string(REPLACE "-Wno-error=unused-variable" "" C7_IMPORTED_CXX_FLAGS "${C7_IMPORTED_CXX_FLAGS}")
+endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${C7_IMPORTED_CXX_FLAGS}")
 
 include_directories(${OPENMP_INCLUDES})
 include_directories(SYSTEM
@@ -32,7 +38,6 @@ add_library(openfhe_2023_1788 src/double_ckks.cpp)
 target_sources(openfhe_2023_1788 PRIVATE src/high_precision_client_io.cpp)
 target_sources(openfhe_2023_1788 PRIVATE src/repeated_mult2.cpp src/paper_h128_client_keypair.cpp)
 target_include_directories(openfhe_2023_1788 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-option(C7_STATIC_BUNDLE "Link the experimental transport binary to static OpenFHE" OFF)
 if(C7_STATIC_BUNDLE)
     if(NOT OpenFHE_STATIC_LIBRARIES OR OpenFHE_OPENMP)
         message(FATAL_ERROR "C7 static bundle requires static OpenFHE with OpenMP disabled")
