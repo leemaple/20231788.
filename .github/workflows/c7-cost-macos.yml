@@ -1,9 +1,9 @@
-name: C7 macOS compatibility validation
+name: C7 macOS static import validation
 
 on:
   push:
     tags:
-      - c7-compat-macos-20261009-01
+      - c7-static-macos-20261009-01
 
 permissions:
   contents: read
@@ -57,22 +57,27 @@ jobs:
           brew list --versions boost > artifacts/c7-cost/boost.txt
           cmake -S .ci/openfhe-src -B .ci/openfhe-build \
             -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$OPENFHE_PREFIX" \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_CXX_FLAGS=-Wno-error=unused-variable \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' \
             -DBUILD_STATIC=ON -DBUILD_SHARED=OFF -DWITH_OPENMP=OFF -DWITH_NATIVEOPT=OFF \
             -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF \
             -DBUILD_EXTRAS=OFF -DNATIVE_SIZE=64 -DMATHBACKEND=4 \
             2>&1 | tee artifacts/c7-cost/openfhe-configure.txt
+          cp .ci/openfhe-build/compile_commands.json artifacts/c7-cost/openfhe-compile-commands.json
           cmake --build .ci/openfhe-build --parallel 2 2>&1 | tee artifacts/c7-cost/openfhe-build.txt
           cmake --install .ci/openfhe-build > artifacts/c7-cost/openfhe-install.txt
+          cp "$OPENFHE_PREFIX/lib/OpenFHE/OpenFHEConfig.cmake" artifacts/c7-cost/OpenFHEConfig.cmake
       - name: Build exact project and run check-only fixtures
         run: |
           set -euo pipefail
           cmake -S . -B .ci/c7-cost-build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_PREFIX_PATH="$OPENFHE_PREFIX" -DC7_STATIC_BUNDLE=ON \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' \
             -DCMAKE_CXX_FLAGS="-I$(brew --prefix boost)/include" \
             2>&1 | tee artifacts/c7-cost/project-configure.txt
+          cp .ci/c7-cost-build/compile_commands.json artifacts/c7-cost/project-compile-commands.json
           cmake --build .ci/c7-cost-build --target rs2_test rs2_api_contract_test c7_cost_probe --parallel 2 \
             2>&1 | tee artifacts/c7-cost/project-build.txt
           .ci/c7-cost-build/rs2_api_contract_test
