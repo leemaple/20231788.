@@ -139,6 +139,23 @@ def native(phase, build, evidence):
             "stdout_sha256": digest(output), "stderr_sha256": digest(error)}
 
 
+def successful_regression_run(code, output):
+    # CTest versions differ in the zero-failure summary wording. Require the
+    # complete per-test result set as well as one compatible success summary.
+    rows = re.findall(
+        r"^\s*(\d+)/(\d+) Test\s+#\d+:\s+(\S+)\s+\.{2,}\s+([^\r\n]+)\r?$",
+        output, re.MULTILINE)
+    summaries = re.findall(
+        r"^100% tests passed(?:, 0 tests failed)? out of (\d+)[ \t\r]*$",
+        output, re.MULTILINE)
+    return (code == 0 and len(rows) == 51 and summaries == ["51"] and
+            [row[0] for row in rows] == [str(i) for i in range(1, 52)] and
+            all(row[1] == "51" for row in rows) and
+            Counter(row[2] for row in rows) == Counter(CONTRACT["regression_names"]) and
+            all(re.fullmatch(r"Passed\s+\d+(?:\.\d+)?\s+sec", row[3].strip())
+                is not None for row in rows))
+
+
 def regressions(build, evidence):
     selection = evidence / "regression-selection.json"
     selection_error = evidence / "regression-selection.stderr.txt"
@@ -156,7 +173,7 @@ def regressions(build, evidence):
                    "-j", "1", "-R", pattern], 900, output, error)
     out = output.read_text()
     # Empty or different selections must not count as an all-green regression.
-    passed = code == 0 and re.search(r"100% tests passed, 0 tests failed out of 51\b", out) is not None
+    passed = successful_regression_run(code, out)
     return {"selected_tests": names, "exit_code": code, "passed": passed,
             "stdout_sha256": digest(output), "stderr_sha256": digest(error)}
 
