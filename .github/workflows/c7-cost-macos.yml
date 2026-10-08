@@ -1,0 +1,91 @@
+name: C7 macOS fixed-source cost preparation
+
+on:
+  push:
+    tags:
+      - c7-cost-macos-20261009-01
+      - c7-cost-macos-20261009-02
+
+permissions:
+  contents: read
+
+concurrency:
+  group: c7-cost-macos-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+  OPENFHE_PREFIX: ${{ github.workspace }}/.ci/openfhe-install
+
+jobs:
+  macos-functional:
+    if: ${{ github.event.created == true && github.event.deleted == false && github.event.forced == false && github.run_attempt == 1 }}
+    runs-on: macos-15
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Record source and host
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = arm64
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p artifacts/c7-cost
+          git rev-parse HEAD > artifacts/c7-cost/source-commit.txt
+          sw_vers > artifacts/c7-cost/os.txt
+          sysctl -n machdep.cpu.brand_string hw.memsize > artifacts/c7-cost/hardware.txt
+          clang++ --version > artifacts/c7-cost/compiler.txt
+          cmake --version > artifacts/c7-cost/cmake.txt
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: openfheorg/openfhe-development
+          ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+          path: .ci/openfhe-src
+          submodules: recursive
+          persist-credentials: false
+      - name: Build pristine static OpenFHE
+        run: |
+          set -euo pipefail
+          test "$(git -C .ci/openfhe-src rev-parse HEAD)" = "$OPENFHE_COMMIT"
+          brew list --versions boost || brew install boost
+          brew list --versions boost > artifacts/c7-cost/boost.txt
+          cmake -S .ci/openfhe-src -B .ci/openfhe-build \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$OPENFHE_PREFIX" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DBUILD_STATIC=ON -DBUILD_SHARED=OFF -DWITH_OPENMP=OFF -DWITH_NATIVEOPT=OFF \
+            -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF \
+            -DBUILD_EXTRAS=OFF -DNATIVE_SIZE=64 -DMATHBACKEND=4 \
+            2>&1 | tee artifacts/c7-cost/openfhe-configure.txt
+          cmake --build .ci/openfhe-build --parallel 2 2>&1 | tee artifacts/c7-cost/openfhe-build.txt
+          cmake --install .ci/openfhe-build > artifacts/c7-cost/openfhe-install.txt
+      - name: Build exact project and run check-only fixtures
+        run: |
+          set -euo pipefail
+          cmake -S . -B .ci/c7-cost-build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$OPENFHE_PREFIX" -DC7_STATIC_BUNDLE=ON \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_CXX_FLAGS="-I$(brew --prefix boost)/include" \
+            2>&1 | tee artifacts/c7-cost/project-configure.txt
+          cmake --build .ci/c7-cost-build --target rs2_test rs2_api_contract_test c7_cost_probe --parallel 2 \
+            2>&1 | tee artifacts/c7-cost/project-build.txt
+          .ci/c7-cost-build/rs2_api_contract_test
+          C7_TEST_COMMIT="$GITHUB_SHA" python3 coordination/c7-native-rs2/run_functional.py \
+            green .ci/c7-cost-build artifacts/c7-cost
+          .ci/c7-cost-build/c7_cost_probe --check artifacts/c7-cost/probe-check \
+            > artifacts/c7-cost/probe-check.stdout.txt 2> artifacts/c7-cost/probe-check.stderr.txt
+      - name: Package system-only arm64 binaries
+        run: python3 coordination/c7-cost/bundle.py
+      - name: Preserve bounded engineering artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: c7-cost-macos-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/c7-cost/
+          if-no-files-found: error
+          retention-days: 14
