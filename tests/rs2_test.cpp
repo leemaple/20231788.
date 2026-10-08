@@ -30,6 +30,12 @@ using openfhe_2023_1788::PairLifecycle;
 using openfhe_2023_1788::PaperScaleDescriptor;
 using openfhe_2023_1788::ReadOnlyCiphertext;
 
+openfhe_2023_1788::RS2Backend selectedBackend = openfhe_2023_1788::RS2Backend::Reference;
+
+CiphertextPair ApplyRS2(const DoubleCKKS& module, const CiphertextPair& input) {
+    return module.RS2WithBackend(input, selectedBackend);
+}
+
 class TestFailure final : public std::runtime_error {
 public:
     using std::runtime_error::runtime_error;
@@ -510,11 +516,12 @@ std::vector<BigInt> BoundaryValues(const BigInt& droppedModulus,
 }
 
 CryptoContext<DCRTPoly> MakeContext(
-    lbcrypto::KeySwitchTechnique keySwitchTechnique = lbcrypto::HYBRID) {
+    lbcrypto::KeySwitchTechnique keySwitchTechnique = lbcrypto::HYBRID,
+    std::uint32_t scalingBits = 30) {
     lbcrypto::CCParams<lbcrypto::CryptoContextCKKSRNS> parameters;
     parameters.SetMultiplicativeDepth(3);
-    parameters.SetScalingModSize(30);
-    parameters.SetFirstModSize(35);
+    parameters.SetScalingModSize(scalingBits);
+    parameters.SetFirstModSize(scalingBits == 58 ? 60 : 35);
     parameters.SetScalingTechnique(lbcrypto::FIXEDMANUAL);
     parameters.SetSecurityLevel(lbcrypto::HEStd_NotSet);
     parameters.SetRingDim(32);
@@ -787,7 +794,7 @@ void TestWrongLifecycle() {
 
     CheckThrowsInvalidArgument(
         [&] {
-            (void)module.RS2(pair);
+            (void)ApplyRS2(module, pair);
         },
         "DoubleCKKS: RS2 requires ReadyForRS2 input");
     CheckPairUnchanged(pair, before, "RS2 wrong-lifecycle input");
@@ -795,8 +802,8 @@ void TestWrongLifecycle() {
     lbcrypto::CryptoContextFactory<DCRTPoly>::ReleaseAllContexts();
 }
 
-void TestValidArithmeticStateImmutability() {
-    auto context = MakeContext();
+void TestValidArithmeticStateImmutability(bool wide = false) {
+    auto context = MakeContext(lbcrypto::HYBRID, wide ? 58 : 30);
     const auto keys = context->KeyGen();
     context->EvalMultKeyGen(keys.secretKey);
     const auto plaintext = context->MakeCKKSPackedPlaintext(std::vector<double>{0.0}, 2, 0);
@@ -826,7 +833,7 @@ void TestValidArithmeticStateImmutability() {
               evaluationKeysBefore.count(unrelatedKeys.secretKey->GetKeyTag()) == 1,
           "retained-cache fixture is missing its own or unrelated key row");
 
-    const CiphertextPair result = module.RS2(relinearized);
+    const CiphertextPair result = ApplyRS2(module, relinearized);
     CheckPairUnchanged(relinearized, before, "RS2 valid input");
     CheckEvaluationKeyCacheUnchanged(evaluationKeysBefore);
     CheckResultState(result, relinearized, before, context);
@@ -872,7 +879,7 @@ void TestUntouchedPublicPipeline() {
               "public pipeline did not remove its evaluation key");
         const auto evaluationKeysBefore = evaluationKeys;
 
-        const auto result = module.RS2(relinearized);
+        const auto result = ApplyRS2(module, relinearized);
         CheckResultState(result, relinearized, before, context);
         // Every coefficient is checked; the fixed controlled fixture separately
         // guarantees shortcut discrimination without depending on encryption randomness.
@@ -896,7 +903,7 @@ void TestTerminalRejections() {
         context->MakeCKKSPackedPlaintext(std::vector<double>{0.25, -0.5, 0.0}, 2, 0);
     DoubleCKKS module(context);
     const auto fresh = module.DCP(context->Encrypt(plaintext, keys.publicKey));
-    const auto terminal = module.RS2(module.Relin2(module.Tensor2(fresh, fresh)));
+    const auto terminal = ApplyRS2(module, module.Relin2(module.Tensor2(fresh, fresh)));
     Check(terminal.GetLifecycle() == PairLifecycle::RefreshRequired,
           "terminal rejection fixture did not reach RefreshRequired");
 
@@ -910,7 +917,7 @@ void TestTerminalRejections() {
     const auto freshBefore = SnapshotPair(fresh, "fresh pair");
 
     CheckThrowsInvalidArgument(
-        [&] { (void)module.RS2(terminal); },
+        [&] { (void)ApplyRS2(module, terminal); },
         "DoubleCKKS: RS2 requires ReadyForRS2 input");
     CheckThrowsInvalidArgument(
         [&] { (void)module.Tensor2(terminal, fresh); },
@@ -954,7 +961,7 @@ void TestDeclaredBasisMismatch() {
         const auto before = SnapshotPair(input, "RS2 declared-basis mismatch input");
         const std::string memberName = corruptHigh ? "pair high" : "pair low";
         CheckThrowsInvalidArgument(
-            [&] { (void)module.RS2(input); },
+            [&] { (void)ApplyRS2(module, input); },
             "DoubleCKKS: " + memberName + " declared RNS basis mismatch");
         CheckPairUnchanged(input, before, "RS2 declared-basis input after rejection");
     }
@@ -984,7 +991,7 @@ void TestMixedTowerFormat() {
         const auto before = SnapshotPair(input, "RS2 mixed-format input");
         const std::string memberName = corruptHigh ? "pair high" : "pair low";
         CheckThrowsInvalidArgument(
-            [&] { (void)module.RS2(input); },
+            [&] { (void)ApplyRS2(module, input); },
             "DoubleCKKS: " + memberName + " tower must be in evaluation format");
         CheckPairUnchanged(input, before, "RS2 mixed-format input after rejection");
     }
@@ -995,8 +1002,14 @@ void TestMixedTowerFormat() {
 
 int main(int argc, char** argv) {
     try {
-        if (argc != 2) {
-            throw TestFailure("usage: rs2_test <case>");
+        if (argc != 2 && argc != 3) {
+            throw TestFailure("usage: rs2_test <case> [reference|reordered|fused]");
+        }
+        if (argc == 3) {
+            const std::string backend(argv[2]);
+            if (backend == "reordered") selectedBackend = openfhe_2023_1788::RS2Backend::Reordered;
+            else if (backend == "fused") selectedBackend = openfhe_2023_1788::RS2Backend::Fused;
+            else if (backend != "reference") throw TestFailure("unknown RS2 backend");
         }
         const std::string name(argv[1]);
         if (name == "wrong_lifecycle") {
@@ -1004,6 +1017,9 @@ int main(int argc, char** argv) {
         }
         else if (name == "valid_arithmetic_state_immutability") {
             TestValidArithmeticStateImmutability();
+        }
+        else if (name == "valid_wide_arithmetic_state_immutability") {
+            TestValidArithmeticStateImmutability(true);
         }
         else if (name == "mixed_tower_format") {
             TestMixedTowerFormat();

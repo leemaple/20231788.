@@ -1078,10 +1078,17 @@ CiphertextPair DoubleCKKS::Relin2(const TensorCiphertextPair& tensor) const {
 }
 
 CiphertextPair DoubleCKKS::RS2(const CiphertextPair& relinearized) const {
+    return RS2WithBackend(relinearized, RS2Backend::Reference);
+}
+
+CiphertextPair DoubleCKKS::RS2WithBackend(const CiphertextPair& relinearized, RS2Backend backend) const {
+    if (backend != RS2Backend::Reference) {
+        Invalid("requested RS2 backend is not implemented");
+    }
     if (plan_) {
         const auto family = plan_->RequireReceipt(relinearized.receipt_);
         if (family != familyIndex_) {
-            return DoubleCKKS(plan_, family).RS2(relinearized);
+            return DoubleCKKS(plan_, family).RS2WithBackend(relinearized, backend);
         }
     }
     ValidatePair(relinearized);

@@ -144,6 +144,8 @@ private:
     std::shared_ptr<const RepeatedMult2Receipt> receipt_;
 };
 
+enum class RS2Backend { Reference, Reordered, Fused };
+
 class DoubleCKKS final {
 public:
     explicit DoubleCKKS(lbcrypto::CryptoContext<lbcrypto::DCRTPoly> context);
@@ -157,6 +159,8 @@ public:
     TensorCiphertextPair Tensor2(const CiphertextPair& left, const CiphertextPair& right) const;
     CiphertextPair Relin2(const TensorCiphertextPair& tensor) const;
     CiphertextPair RS2(const CiphertextPair& relinearized) const;
+    // Experimental opt-in backends; the original public entry point is unchanged.
+    CiphertextPair RS2WithBackend(const CiphertextPair& relinearized, RS2Backend backend) const;
     CiphertextPair Mult2(const CiphertextPair& left, const CiphertextPair& right) const;
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> RCB(const CiphertextPair& pair) const;
     RepeatedMult2Result RCBWithReceipt(const CiphertextPair& pair) const;
