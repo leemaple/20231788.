@@ -153,8 +153,8 @@ jobs:
           mkdir -p artifacts/c9-native/bin
           cp .ci/c9-green/mult2_backends_test artifacts/c9-native/bin/mult2_backends_test
           cp .ci/c9-fallback/mult2_backends_test artifacts/c9-native/bin/mult2_backends_fallback_test
-          lipo -verify_arch arm64 x86_64 artifacts/c9-native/bin/mult2_backends_test
-          lipo -verify_arch arm64 x86_64 artifacts/c9-native/bin/mult2_backends_fallback_test
+          lipo artifacts/c9-native/bin/mult2_backends_test -verify_arch arm64 x86_64
+          lipo artifacts/c9-native/bin/mult2_backends_fallback_test -verify_arch arm64 x86_64
           otool -L artifacts/c9-native/bin/mult2_backends_test > artifacts/c9-native/linked-libraries.txt
           python3 - <<'PY'
           from pathlib import Path

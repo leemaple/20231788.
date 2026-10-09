@@ -1,0 +1,118 @@
+name: C9 complete-call diagnostic probe build and check
+
+on:
+  push:
+    tags:
+      - c9-cost-bundle-20261009-01
+
+permissions:
+  contents: read
+
+concurrency:
+  group: c9-cost-bundle-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  OPENFHE_COMMIT: df495ba2e91739a6dc8f1de254fc5a41155ce504
+  OPENFHE_PREFIX: ${{ github.workspace }}/.ci/openfhe-install
+  OMP_NUM_THREADS: '1'
+  OMP_THREAD_LIMIT: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  functional:
+    if: ${{ github.event.created == true && github.event.deleted == false && github.event.forced == false && github.run_attempt == 1 }}
+    runs-on: macos-15-intel
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind clean source and host
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = x86_64
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p artifacts/c9-cost
+          git rev-parse HEAD > artifacts/c9-cost/source-commit.txt
+          sw_vers > artifacts/c9-cost/os.txt
+          sysctl -n machdep.cpu.brand_string hw.memsize > artifacts/c9-cost/hardware.txt
+          clang++ --version > artifacts/c9-cost/compiler.txt
+          cmake --version > artifacts/c9-cost/cmake.txt
+          python3 --version > artifacts/c9-cost/python.txt
+          cp coordination/c9-cost/contract.json artifacts/c9-cost/source-contract.json
+          cp coordination/c9-cost/run_checks.py artifacts/c9-cost/run_checks.py
+          cp .github/workflows/c9-cost-bundle.yml artifacts/c9-cost/workflow.yml
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: openfheorg/openfhe-development
+          ref: df495ba2e91739a6dc8f1de254fc5a41155ce504
+          path: .ci/openfhe-src
+          submodules: recursive
+          persist-credentials: false
+      - name: Build pinned static universal OpenFHE
+        run: |
+          set -euo pipefail
+          test "$(git -C .ci/openfhe-src rev-parse HEAD)" = "$OPENFHE_COMMIT"
+          git -C .ci/openfhe-src rev-parse HEAD > artifacts/c9-cost/openfhe-commit.txt
+          brew list --versions boost || brew install boost
+          brew list --versions boost > artifacts/c9-cost/boost.txt
+          cmake -S .ci/openfhe-src -B .ci/openfhe-build \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$OPENFHE_PREFIX" \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS=-Wno-error=unused-variable \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' \
+            -DBUILD_STATIC=ON -DBUILD_SHARED=OFF -DWITH_OPENMP=OFF -DWITH_NATIVEOPT=OFF \
+            -DBUILD_UNITTESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF \
+            -DBUILD_EXTRAS=OFF -DNATIVE_SIZE=64 -DMATHBACKEND=4 \
+            2>&1 | tee artifacts/c9-cost/openfhe-configure.txt
+          cmake --build .ci/openfhe-build --parallel 2 2>&1 | tee artifacts/c9-cost/openfhe-build.txt
+          cmake --install .ci/openfhe-build > artifacts/c9-cost/openfhe-install.txt
+          cp .ci/openfhe-build/compile_commands.json artifacts/c9-cost/openfhe-compile-commands.json
+      - name: Build the diagnostic probe with strict project warnings
+        run: |
+          set -euo pipefail
+          cmake -S . -B .ci/c9-cost -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DCMAKE_PREFIX_PATH="$OPENFHE_PREFIX" -DC7_STATIC_BUNDLE=ON \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' \
+            -DCMAKE_CXX_FLAGS="-I$(brew --prefix boost)/include" \
+            2>&1 | tee artifacts/c9-cost/configure.txt
+          cp .ci/c9-cost/compile_commands.json artifacts/c9-cost/compile-commands.json
+          cmake --build .ci/c9-cost --parallel 2 --target c9_cost_probe \
+            2>&1 | tee artifacts/c9-cost/build.txt
+      - name: Check the small fixture once without performance samples
+        run: |
+          set -euo pipefail
+          cp coordination/c9-native/run_checks.py artifacts/c9-cost/native-run-checks.py
+          cp coordination/c9-native/contract.json artifacts/c9-cost/native-contract.json
+          python3 coordination/c9-cost/run_checks.py .ci/c9-cost/c9_cost_probe artifacts/c9-cost
+      - name: Preserve the checked portable binary and producer manifest
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/c9-cost/bin
+          cp .ci/c9-cost/c9_cost_probe artifacts/c9-cost/bin/c9_cost_probe
+          lipo artifacts/c9-cost/bin/c9_cost_probe -verify_arch arm64 x86_64
+          lipo artifacts/c9-cost/bin/c9_cost_probe -archs > artifacts/c9-cost/architectures.txt
+          otool -L artifacts/c9-cost/bin/c9_cost_probe > artifacts/c9-cost/linked-libraries.txt
+          python3 - <<'PYMANIFEST'
+          from pathlib import Path
+          import hashlib,json
+          p=Path('artifacts/c9-cost')
+          files=[{'path':str(f.relative_to(p)),'bytes':f.stat().st_size,
+                  'sha256':hashlib.sha256(f.read_bytes()).hexdigest()}
+                 for f in sorted(p.rglob('*')) if f.is_file()]
+          (p/'artifact-manifest.json').write_text(json.dumps({'files':files},indent=2)+'\n')
+          PYMANIFEST
+      - name: Retain complete or partial engineering evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: c9-cost-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/c9-cost/
+          if-no-files-found: error
+          retention-days: 14

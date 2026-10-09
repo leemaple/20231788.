@@ -1,0 +1,175 @@
+{
+  "classification": "bounded complete-call feasibility probe, source preparation only",
+  "openfhe_commit": "df495ba2e91739a6dc8f1de254fc5a41155ce504",
+  "source_files": [
+    {
+      "path": ".github/workflows/c9-cost-bundle.yml",
+      "sha256": "87ab85c76be3368c0ffcf5f07e044ebb40f0dbdfa2eef4423c091d9807ef46ab",
+      "bytes": 5771
+    },
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "639b2ab3907c8a75432c69bd62d3d19b98b941dfea0203121b71a3b5815696f1",
+      "bytes": 24120
+    },
+    {
+      "path": "benchmarks/c9_cost_probe.cpp",
+      "sha256": "a433e9c9fdd8fffe9d75a80ace7323b7b88289425059e7a41b68b8bd0b4fdb4a",
+      "bytes": 18513
+    },
+    {
+      "path": "coordination/c9-cost/SPEC.md",
+      "sha256": "d0cda2313bb75c3f945acf3a261735e26d051b9d3e04a22c3ed79fe16ca92fa7",
+      "bytes": 6091
+    },
+    {
+      "path": "coordination/c9-cost/run_checks.py",
+      "sha256": "aaa869592cce4ff8300437334322e5ba1a36e42670dbdaa9f45907786cbbead2",
+      "bytes": 5749
+    },
+    {
+      "path": "coordination/c9-native/contract.json",
+      "sha256": "f5c05c24ff3edf89b09be67368f4f9a5cb6d2b97f3f1d027d17777bf9ea6acfc",
+      "bytes": 5500
+    },
+    {
+      "path": "coordination/c9-native/run_checks.py",
+      "sha256": "c2b799413ea58944254bb8bd3514179bb7c91b7ce36898dfcb67117142f51a8c",
+      "bytes": 11707
+    },
+    {
+      "path": "include/openfhe_2023_1788/double_ckks.h",
+      "sha256": "7d55c2208b64156d3b31701ffb005af1f65219773be188339121d637320bcc4b",
+      "bytes": 10521
+    },
+    {
+      "path": "include/openfhe_2023_1788/high_precision_client_io.h",
+      "sha256": "1fda66deb55db1743b32f28f8c9325090aa86b2ee1eb5b7f782ce3fccaf48289",
+      "bytes": 6465
+    },
+    {
+      "path": "include/openfhe_2023_1788/paper_h128_client_keypair.h",
+      "sha256": "23499bfa938fde88584fb6f44996e65f59f250bb056625bacdc08ebd96ae5a94",
+      "bytes": 989
+    },
+    {
+      "path": "include/openfhe_2023_1788/public_s100_encoding_probe.h",
+      "sha256": "ecbb493c5a14f91788f7c99b4967d8830abbefe487dbd2fe1f1ecb3d11bdbc7c",
+      "bytes": 617
+    },
+    {
+      "path": "include/openfhe_2023_1788/repeated_mult2.h",
+      "sha256": "f95acc03b0feecd78a4763c9f776cbb3e0f6429860d71e81cc6ceb75e47f7cf3",
+      "bytes": 5715
+    },
+    {
+      "path": "src/double_ckks.cpp",
+      "sha256": "caed0377c319dd96e66ea0da97e312c4af65916a2210e837cf447bfb21dbac86",
+      "bytes": 64788
+    },
+    {
+      "path": "src/high_precision_client_io.cpp",
+      "sha256": "85b2b03954262344544dca96f84f8aa06044fb0fc74ff13f1a2317b67d666ac6",
+      "bytes": 45419
+    },
+    {
+      "path": "src/mult2_backends.cpp",
+      "sha256": "2f4e05ef2c2e84db6fe42db68d953b27a834a5ad8a2390081a9cba7f6bfb2744",
+      "bytes": 8761
+    },
+    {
+      "path": "src/mult2_schedule.cpp",
+      "sha256": "c6f921740d6866129c8c25ea5dcfdd6081ee1226730eace7d5e32ec8fe8f376f",
+      "bytes": 11146
+    },
+    {
+      "path": "src/mult2_schedule.h",
+      "sha256": "d5c4a41ef0a93fde6fd0164e1537a39a13c0e82d393dc0ab28601802ad52ef13",
+      "bytes": 841
+    },
+    {
+      "path": "src/paper_h128_client_keypair.cpp",
+      "sha256": "679d4fa226b95770282fd5c877bf47044a290949bbaed501bd8f662744a6f22e",
+      "bytes": 11625
+    },
+    {
+      "path": "src/repeated_mult2.cpp",
+      "sha256": "6781d01ff9b4012e7c6d14d16f482def0821c54f4e81e2de80bd8db9d1aea41b",
+      "bytes": 39523
+    }
+  ],
+  "check": {
+    "profile": "check_N64_D3",
+    "sample_rows": 0,
+    "routes": 4,
+    "comparator_negative_controls": 2,
+    "timeout_seconds": 120
+  },
+  "future_diagnostic": {
+    "profiles": [
+      "N16384_D3",
+      "N32768_D3",
+      "N32768_D5"
+    ],
+    "backends": [
+      "Reference",
+      "SharedStaged",
+      "TailDigit",
+      "TailWide"
+    ],
+    "orders": [
+      [
+        0,
+        1,
+        2,
+        3
+      ],
+      [
+        1,
+        2,
+        3,
+        0
+      ],
+      [
+        2,
+        3,
+        0,
+        1
+      ],
+      [
+        3,
+        0,
+        1,
+        2
+      ],
+      [
+        3,
+        2,
+        1,
+        0
+      ],
+      [
+        2,
+        1,
+        0,
+        3
+      ],
+      [
+        1,
+        0,
+        3,
+        2
+      ],
+      [
+        0,
+        3,
+        2,
+        1
+      ]
+    ],
+    "iterations_per_order": 3,
+    "sample_rows": 288,
+    "requires_separate_admission": true,
+    "repeated_performance": false
+  }
+}
